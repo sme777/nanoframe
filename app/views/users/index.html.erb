@@ -15,34 +15,92 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <%= stylesheet_link_tag 'application', media: 'all' %>
+    <%= javascript_pack_tag 'main', 'data-turbolinks-track': 'reload' %>
   </head>
   <body>
+    <!-- Start of NAVBAR-->
+    <ul class="nav nav-tabs justify-content-end">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="/">Homepage</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/about">The Project</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link nanofont" href="#">The Nanobot</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/contact">Contact</a>
+      </li>
+    </ul>
+    <% if logged_in? %>
+      <div class="sign-out-container">
+        <a class="btn btn-danger" id="signOutButton" href="/signout">Sign Out</a> 
+      </div>
+    <% else %>
+      <div class="sign-in-container">
+        <a class="btn btn-outline-danger" id="signInButton" href="/signin">Sign In</a> 
+      </div>
+    <% end %>
+    <!-- End of NAVBAR-->
+
+
+
     <!-- Start of SIGN UP-->
     
     <div class="sign-up-form container">
       <div class="sign-up-form-header">
         <h3>Join Project NanoFrame</h3>
       </div>
-    
-      <div class="input-group mb-3">
-        <span class="input-group-text" id="basic-addon1">@</span>
-        <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
-      </div>
+      <form action="/" method="POST">
+        <input type="hidden" name="authenticity_token" value="<%=form_authenticity_token%>">
+        <div class="input-group mb-3">
+          <span class="input-group-text" id="basic-addon1">@</span>
+          <input type="text" id="username" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" name="user[username]">
+        </div>
 
-      <div class="input-group mb-3">
-        <span class="input-group-text">First and last name</span>
-        <input type="text" aria-label="First name" class="form-control" placeholder="John">
-        <input type="text" aria-label="Last name" class="form-control" placeholder="Doe">
-      </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text">First and last name</span>
+          <input type="text" id="first_name" aria-label="First name" class="form-control" placeholder="John" name="user[first]">
+          <input type="text" id="last_name" aria-label="Last name" class="form-control" placeholder="Doe" name="user[last]">
+        </div>
 
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" placeholder="Username" aria-label="Email">
-        <span class="input-group-text">@</span>
-        <input type="text" class="form-control" placeholder="Server" aria-label="Server">
-      </div>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Username" aria-label="Email" name="user[email_first]">
+          <span class="input-group-text">@</span>
+          <input type="text" class="form-control" placeholder="Server" aria-label="Server" name="user[email_last]">
+        </div>
 
-      <button class="btn btn-outline-dark w-100" type="button">Sign Up</button>
+        <div class="input-group mb-3">
+          <span class="input-group-text">Password</span>
+          <input type="text" class="form-control" aria-label="password" placeholder="your password here" name="user[password]"> 
+        </div>
+        
+        <button class="btn btn-outline-dark w-100" type="submit">Sign Up</button>
+      </form>
     </div>
     <!-- End of SIGN UP-->
+
+    <!-- Start of CONTINUE AS GUEST-->
+    <div class="guest-form container">
+      <div class="guest-from-label">
+        <div class="separator">or</div>
+      </div>
+      <button id="signupSubmit" type="submit" class="btn btn-dark w-100">Continue as a Guest</button>
+    </div>
+    <!-- End of CONTINUE AS GUEST-->
+
+
+  <!-- Start of FOOTER-->
+    <div class="container" id="footer">
+      <hr class="my-4">
+    
+      <div class="footer-copyright text-center py-3">
+        <div class="copyright">
+          <p>© 2021 <a href="https://tilabberkeley.com/">Ti Lab</a> @ Berkeley</p>
+        </div> 
+      </div>
+    </div> 
+  <!-- End of FOOTER-->
   </body>
 </html>
