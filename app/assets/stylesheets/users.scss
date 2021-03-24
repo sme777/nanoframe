@@ -6,11 +6,15 @@
  *= require_tree .
  *= require_self
  */
+ //body {
+    //background-image: linear-gradient(#dddddd, #f9f3f3);
+ //}
 
  .sign-up-form {
-     margin-top: 20%;
-     padding-left: 10%;
-     padding-right: 10%;
+     margin-left: 30%;
+     margin-top: 10%; //20
+     padding-left: 30%; //10
+     padding-right: 30%; //10
  }
 
  .sign-up-form-header {
@@ -20,9 +24,9 @@
  }
 
  .guest-form {
-
-    padding-left: 10%;
-    padding-right: 10%;
+    margin-left: 30%;
+    padding-left: 30%;
+    padding-right: 30%;
  }
 
  .guest-from-label {
@@ -55,4 +59,27 @@
 
 .nanofont {
     font-family: 'Syne Mono', monospace;
+}
+
+// .login-username {
+//     //width: 200px;
+// }
+
+// .login-password {
+//     float: left;
+//     //width: 20px;
+// }
+
+.sign-in-container {
+    padding-top: 3%;
+    padding-left: 10%;
+}
+
+.menu-items {
+    padding-top: 2%;
+    padding-right: 2%;
+}
+
+a {
+    text-decoration: none;
 }

@@ -36,9 +36,28 @@ class UsersController < ApplicationController
         end
     end
 
+    def sign_in
+        user = User.find_by(username: login_params[:login_username])
+        if user && user.authenticate(login_params[:login_password])
+            session[:user_id] = user.id
+            redirect_to '/nanobot'
+        else
+            redirect_to '/'
+        end
+    end
+
+    def sign_out
+        session[:user_id] = nil
+        redirect_to '/'
+    end
+
     private
     def user_params
         params.require(:user).permit(:first, :last, :username, :email_first, :email_last, :password)
+    end
+
+    def login_params
+        params.require(:user).permit(:login_username, :login_password)
     end
 
 end

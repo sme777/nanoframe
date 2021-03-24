@@ -19,29 +19,49 @@
   </head>
   <body>
     <!-- Start of NAVBAR-->
-    <ul class="nav nav-tabs justify-content-end">
-      <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="/">Homepage</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/about">The Project</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link nanofont" href="#">The Nanobot</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="/contact">Contact</a>
-      </li>
-    </ul>
-    <% if logged_in? %>
-      <div class="sign-out-container">
-        <a class="btn btn-danger" id="signOutButton" href="/signout">Sign Out</a> 
+    <div class="row">
+      <div class="col-md-6">
+          <% if logged_in? %>
+        <div class="sign-out-container">
+          <a class="btn btn-danger" id="signOutButton" href="/signout">Sign Out</a> 
+        </div>
+      <% else %>
+        <div class="sign-in-container">
+          <form action='/signin' method='GET' class="row g-3">
+            <div class="col-auto">
+              <label for="staticEmail2" class="visually-hidden">Email</label>
+              <input type="text" class="form-control" id="staticEmail2" placeholder="Username" name="user[login_username]">
+            </div>
+            <div class="col-auto">
+              <label for="inputPassword2" class="visually-hidden">Password</label>
+              <input type="password" class="form-control" id="inputPassword2" placeholder="Password" name="user[login_password]">
+            </div>
+            <div class="col-auto">
+              <button type="submit" class="btn btn-dark mb-3">Log In</button>
+            </div>
+          </form>
+        </div>
+      <% end %>
+      
       </div>
-    <% else %>
-      <div class="sign-in-container">
-        <a class="btn btn-outline-danger" id="signInButton" href="/signin">Sign In</a> 
+
+      <div class="col-md-6 menu-items">
+        <ul class="nav nav-tabs justify-content-end">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/">Homepage</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/about">The Project</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link nanofont" href="/nanobot">The Nanobot</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/contact">Contact</a>
+          </li>
+        </ul>
       </div>
-    <% end %>
+    </div>
     <!-- End of NAVBAR-->
 
 
@@ -86,7 +106,7 @@
       <div class="guest-from-label">
         <div class="separator">or</div>
       </div>
-      <button id="signupSubmit" type="submit" class="btn btn-dark w-100">Continue as a Guest</button>
+      <a href="/nanobot" class="btn btn-dark w-100">Continue as a Guest</a>
     </div>
     <!-- End of CONTINUE AS GUEST-->
 
