@@ -1,7 +1,9 @@
 class UsersController < ApplicationController
 
     def index
-        
+        if session[:user_id] != nil
+            @current_user = User.find_by(id: session[:user_id])
+        end
     end
 
     def contact
@@ -12,8 +14,15 @@ class UsersController < ApplicationController
 
     end
 
+    def profile
+        if session[:user_id] != nil
+            @current_user = User.find_by(id: session[:user_id])
+        else
+            redirect_to '/'
+        end
+    end
+
     def create
-        #byebug
         first = user_params[:first]
         last = user_params[:last]
         
@@ -24,8 +33,6 @@ class UsersController < ApplicationController
 
         email = email_first + "@" + email_last
         username = user_params[:username]
-        #@x = user_params
-        #byebug
         user = User.new({name: name, username: username, email: email, password: user_params[:password]})
         if user.save
             session[:user_id] = user.id
