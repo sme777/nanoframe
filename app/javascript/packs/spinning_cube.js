@@ -22,14 +22,18 @@ scene.add( cube );
 // scene.add( helper );
 
 camera.position.z = 5;
-
+let rate = 0.01;
 var animate = function () {
 	requestAnimationFrame( animate );
 
-	cube.rotation.x += 0.01;
-	cube.rotation.y += 0.01;
+	cube.rotation.x += rate;
+	cube.rotation.y += rate;
 
 	renderer.render( scene, camera );
 };
+
+document.getElementById("guest").addEventListener("click", function() {
+	rate += 0.05;
+})
 
 animate();

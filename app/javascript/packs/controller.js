@@ -14,6 +14,7 @@ const Type = Object.freeze({
     ENZYME: Symbol("enzyme")
 })
 
+// Controller class
 class Controller{
     constructor(type, shape) {
         this.type = type;

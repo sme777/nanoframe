@@ -23,7 +23,7 @@
 
     <canvas id="artifactCanvas"></canvas>
     <!-- Start of Spinning Cube-->
-    <%= javascript_pack_tag 'spinning_cube', 'data-turbolinks-track': 'reload' %> 
+    
     <!-- End of Spinning Cube-->
    
    
@@ -129,7 +129,7 @@
         <div class="guest-from-label">
           <div class="separator">or</div>
         </div>
-        <a href="/nanobot" class="btn btn-dark w-100">Continue as a Guest</a>
+        <a id="guest" class="btn btn-dark w-100">Continue as a Guest</a>
       </div>
     </div>
     <% end %>
@@ -150,5 +150,7 @@
       </div>
     </div> 
     <!-- End of FOOTER-->
+
+    <%= javascript_pack_tag 'spinning_cube', 'data-turbolinks-track': 'reload' %> 
   </body>
 </html>
