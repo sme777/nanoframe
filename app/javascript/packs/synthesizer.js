@@ -1,3 +1,11 @@
+const Shape = Object.freeze({
+    CUBE:   Symbol("cube"),
+    SPHERE:  Symbol("sphere"),
+    PRISM: Symbol("prism"),
+    TETRAHEDRON: Symbol("tetrahedron") 
+});
+
+
 let camera, scene, renderer;
 let plane;
 let mouse, raycaster, isShiftDown = false;
@@ -58,6 +66,8 @@ function init() {
     for (i = 0; i < sphereArr.length; i++) {
         scene.add(sphereArr[i]);
     }
+
+    feedbackControlModel(points.slice(0, 1208))
     // floating effect
     // let time = 0;
     // for (i = 0; time < 10000; i++) {
@@ -241,12 +251,76 @@ function render() {
 // }
 
 function plotScaffoldPoints(arr) {
+    console.log(arr);
     let sphereArr = [];
-    for (i = 0; i < arr.length; i += 40) {
-        const voxel = new THREE.Mesh(new THREE.SphereGeometry(5, 50, 50), rollOverMaterial);
+    for (i = 0; i < arr.length; i += 1) {
+        const voxel = new THREE.Mesh(new THREE.SphereGeometry(1.5, 50, 50), rollOverMaterial);
+        //console.log("dicks");
         voxel.position.set(arr[i].width, arr[i].height, 3);
         //console.log(arr[0].x);
         sphereArr.push(voxel);
     }
     return sphereArr;
+}
+
+
+function feedbackControlModel(arr, desiredShape=Shape.CUBE) {
+    let startArr = arr;
+    let endArr;
+    if (desiredShape === Shape.CUBE) {
+        endArr = generateCubePlane(startArr[0]);
+        console.log(endArr[300].height);
+        let newPoint = plotScaffoldPoints(endArr);
+
+        for (i = 0; i < newPoint.length; i++) {
+            
+            scene.add(newPoint[i]);
+        }
+    }
+    
+
+}
+
+function generateCubePlane(startPoint, length=50, mode="short") {
+    
+    //50nm = 1000 pixels
+    //10nm = 200pixels
+    const desLength = 1000;
+    const desWidth = 200;
+
+    //let plateEndpointY = startPoint.height + 1000;
+    //let plateEndpointX = startPoint.width;
+
+    let platePoints = [];
+    for (j = 0; j < 6; j++){
+        let lastCoordinateX;
+        let lastCoordinateY;
+
+        if (platePoints.length != 0) {
+            lastCoordinateX = platePoints[platePoints.length - 1].width;
+            lastCoordinateY = platePoints[platePoints.length - 1].height;
+        } else {
+            lastCoordinateX = startPoint.width;
+            lastCoordinateY = startPoint.height;
+        }
+
+        for (i = 0; i < 148; i++) {
+            if (j % 2 == 0) {
+                platePoints[i+j*172] = new THREE.Vector2(lastCoordinateX, lastCoordinateY+i*desLength/147);
+            } else {
+                platePoints[i+j*172] = new THREE.Vector2(lastCoordinateX, lastCoordinateY-i*desLength/147);
+            }
+        }
+        if (j < 5) {
+            let straightLineEndpointX = platePoints[platePoints.length - 1].width;
+            let straightLineEndpointY = platePoints[platePoints.length - 1].height;
+            let lastLength = platePoints.length;
+            for (i = 1; i < 26; i++) {
+                platePoints[lastLength + i - 1] = new THREE.Vector2(straightLineEndpointX+i*desWidth/25, straightLineEndpointY);
+            }
+        }
+    }
+
+    //console.log(platePoints);
+    return platePoints;
 }
