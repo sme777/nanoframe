@@ -67,7 +67,7 @@ function init() {
         scene.add(sphereArr[i]);
     }
 
-    feedbackControlModel(points.slice(0, 1208))
+    feedbackControlModel(points)
     // floating effect
     // let time = 0;
     // for (i = 0; time < 10000; i++) {
@@ -250,13 +250,13 @@ function render() {
 //     return position_array;
 // }
 
-function plotScaffoldPoints(arr) {
+function plotScaffoldPoints(arr, material=rollOverMaterial) {
     console.log(arr);
     let sphereArr = [];
     for (i = 0; i < arr.length; i += 1) {
-        const voxel = new THREE.Mesh(new THREE.SphereGeometry(1.5, 50, 50), rollOverMaterial);
+        const voxel = new THREE.Mesh(new THREE.SphereGeometry(1.5, 50, 50), material);
         //console.log("dicks");
-        voxel.position.set(arr[i].width, arr[i].height, 3);
+        voxel.position.set(arr[i].x, arr[i].y, arr[i].z);
         //console.log(arr[0].x);
         sphereArr.push(voxel);
     }
@@ -265,59 +265,121 @@ function plotScaffoldPoints(arr) {
 
 
 function feedbackControlModel(arr, desiredShape=Shape.CUBE) {
-    let startArr = arr;
-    let endArr;
-    if (desiredShape === Shape.CUBE) {
-        endArr = generateCubePlane(startArr[0]);
-        console.log(endArr[300].height);
-        let newPoint = plotScaffoldPoints(endArr);
+    let firstPoint = arr[0];
+    let sides = ["up", "west", "east"];
+    for (side = 0; side < 3; side++){
+        let startArr = arr.slice(0+1208*side, 1208+1208*side);
+        let endArr;
+        
+        if (desiredShape === Shape.CUBE) {
+            endArr = generateCubePlane(firstPoint, 50, "short", sides[side]);
+            firstPoint = endArr[endArr.length - 1];
+            let newPoint = plotScaffoldPoints(endArr, rollOverMaterial2);
 
-        for (i = 0; i < newPoint.length; i++) {
-            
-            scene.add(newPoint[i]);
+            for (i = 0; i < newPoint.length; i++) {
+                scene.add(newPoint[i]);
+            }
         }
     }
     
 
 }
 
-function generateCubePlane(startPoint, length=50, mode="short") {
+function generateCubePlane(startPoint, length=50, mode="short", side) {
     
     //50nm = 1000 pixels
     //10nm = 200pixels
-    const desLength = 1000;
-    const desWidth = 200;
-
-    //let plateEndpointY = startPoint.height + 1000;
-    //let plateEndpointX = startPoint.width;
+    const desLength = 250*1.5;
+    const desWidth = -50*1.5;
 
     let platePoints = [];
     for (j = 0; j < 6; j++){
         let lastCoordinateX;
         let lastCoordinateY;
+        let lastCoordinateZ;
 
         if (platePoints.length != 0) {
-            lastCoordinateX = platePoints[platePoints.length - 1].width;
-            lastCoordinateY = platePoints[platePoints.length - 1].height;
+            lastCoordinateX = platePoints[platePoints.length - 1].x;
+            lastCoordinateY = platePoints[platePoints.length - 1].y;
+            lastCoordinateZ = platePoints[platePoints.length - 1].z;
         } else {
-            lastCoordinateX = startPoint.width;
-            lastCoordinateY = startPoint.height;
+            lastCoordinateX = startPoint.x;
+            lastCoordinateY = startPoint.y;
+            lastCoordinateZ = startPoint.z;
         }
 
-        for (i = 0; i < 148; i++) {
-            if (j % 2 == 0) {
-                platePoints[i+j*172] = new THREE.Vector2(lastCoordinateX, lastCoordinateY+i*desLength/147);
-            } else {
-                platePoints[i+j*172] = new THREE.Vector2(lastCoordinateX, lastCoordinateY-i*desLength/147);
+        // for loop for long plates
+
+        if (side == "up") {
+
+            for (i = 0; i < 148; i++) {
+                if (j % 2 == 0) {
+                    platePoints[i+j*172] = new THREE.Vector3(lastCoordinateX, lastCoordinateY+i*desLength/147, lastCoordinateZ);
+                } else {
+                    platePoints[i+j*172] = new THREE.Vector3(lastCoordinateX, lastCoordinateY-i*desLength/147, lastCoordinateZ);
+                }
             }
+        } else if (side == "west") {
+
+            for (i = 0; i < 148; i++) {
+                if (j % 2 == 0) {
+                    platePoints[i+j*172] = new THREE.Vector3(lastCoordinateX, lastCoordinateY, lastCoordinateZ-i*desLength/147);
+                } else {
+                    platePoints[i+j*172] = new THREE.Vector3(lastCoordinateX, lastCoordinateY, lastCoordinateZ+i*desLength/147);
+                }
+            }
+        } else if (side == "east") {
+            if (j < 5) {
+                for (i = 1; i < 26; i++) {
+                    platePoints[i -1 + j*172] = new THREE.Vector3(lastCoordinateX, lastCoordinateY-i*desWidth/25, lastCoordinateZ);
+                }
+            }
+        } else {
+
         }
-        if (j < 5) {
-            let straightLineEndpointX = platePoints[platePoints.length - 1].width;
-            let straightLineEndpointY = platePoints[platePoints.length - 1].height;
-            let lastLength = platePoints.length;
-            for (i = 1; i < 26; i++) {
-                platePoints[lastLength + i - 1] = new THREE.Vector2(straightLineEndpointX+i*desWidth/25, straightLineEndpointY);
+
+
+        // for loop for short plates
+        if (side == "up") {
+            if (j < 5) {
+                let straightLineEndpointX = platePoints[platePoints.length - 1].x;
+                let straightLineEndpointY = platePoints[platePoints.length - 1].y;
+                let straightLineEndpointZ = platePoints[platePoints.length - 1].z;
+                let lastLength = platePoints.length;
+                for (i = 1; i < 26; i++) {
+                    platePoints[lastLength + i - 1] = new THREE.Vector3(straightLineEndpointX+i*desWidth/25, straightLineEndpointY, straightLineEndpointZ);
+                }
             }
+        } else if (side == "west") {
+            if (j < 5) {
+                let straightLineEndpointX = platePoints[platePoints.length - 1].x;
+                let straightLineEndpointY = platePoints[platePoints.length - 1].y;
+                let straightLineEndpointZ = platePoints[platePoints.length - 1].z;
+
+                let lastLength = platePoints.length;
+                for (i = 1; i < 26; i++) {
+                    platePoints[lastLength + i - 1] = new THREE.Vector3(straightLineEndpointX-i*desWidth/25, straightLineEndpointY, straightLineEndpointZ);
+                }
+            }
+        } else if (side == "east") {
+            if (j < 5) {
+                let straightLineEndpointX = platePoints[platePoints.length - 1].x;
+                let straightLineEndpointY = platePoints[platePoints.length - 1].y;
+                let straightLineEndpointZ = platePoints[platePoints.length - 1].z;
+                let lastLength = platePoints.length;
+
+                for (i = 0; i < 148; i++) {
+                    if (j % 2 == 0) {
+                        platePoints[lastLength + i] = new THREE.Vector3(straightLineEndpointX, straightLineEndpointY, straightLineEndpointZ-i*desLength/147);
+                    } else {
+                        platePoints[lastLength + i] = new THREE.Vector3(straightLineEndpointX, straightLineEndpointY, straightLineEndpointZ+i*desLength/147);
+                    }
+                }
+            }
+            camera.position.set( 1000, 800, 1300 );
+            camera.lookAt( 0, 90, 0 );
+        } else {
+
         }
     }
 
