@@ -26,7 +26,9 @@
     
     <!-- End of Spinning Cube-->
    
+   <!-- Flash message display -->
    
+
    <!-- Start of NAVBAR-->
     <div class="row">
       <div class="col-md-6">
@@ -59,9 +61,20 @@
             <div class="col-auto">
               <button type="submit" class="btn btn-dark mb-3">Log In</button>
             </div>
+            <div class="col-auto">
+              <% flash.each do |key, value| %>
+                <div class="alert alert-<%= key %> alert-dismissible" role="alert">
+                  <!-- <button type="button" class="closing-btn close-<%= key %>" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
+                  <%= value %>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              <% end %>
+            </div>
           </form>
         </div>
       <% end %>
+
+
       
       </div>
 

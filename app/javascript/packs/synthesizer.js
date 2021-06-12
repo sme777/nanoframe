@@ -26,8 +26,8 @@ function init() {
 
 	scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xf0f0f0 );
-    rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0xffcc29, opacity: 1, transparent: false } );
-    rollOverMaterial2 = new THREE.MeshBasicMaterial( {color: 0xce1212, opacity: 1, transparent: false } );
+    rollOverMaterial = new THREE.MeshBasicMaterial( { color: 0xce1212, opacity: 1, transparent: false } );
+    rollOverMaterial2 = new THREE.MeshBasicMaterial( {color: 0x000000, opacity: 1, transparent: false } );
     let initial_voxel_array = [];
     // roll-over helpers
     // for (i = 0; i < 20; i++) {
@@ -47,7 +47,7 @@ function init() {
 
     const curve = new THREE.EllipseCurve(
         0,  0,            // ax, aY
-        500, 300,           // xRadius, yRadius
+        600, 400,           // xRadius, yRadius
         0,  2 * Math.PI,  // aStartAngle, aEndAngle
         false,            // aClockwise
         0                 // aRotation
@@ -56,16 +56,16 @@ function init() {
     const points = curve.getPoints( 7249 );
     const geometry2 = new THREE.BufferGeometry().setFromPoints( points );
 
-    const material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+    const material = new THREE.LineBasicMaterial( { color : 0x000000 } );
 
     // Create the final object to add to the scene
     const ellipse = new THREE.Line( geometry2, material );
     const sphereArr = plotScaffoldPoints(points);
-    scene.add(ellipse);
+    //scene.add(ellipse);
 
-    for (i = 0; i < sphereArr.length; i++) {
-        scene.add(sphereArr[i]);
-    }
+    // for (i = 0; i < sphereArr.length; i++) {
+    //     scene.add(sphereArr[i]);
+    // }
 
     feedbackControlModel(points)
     // floating effect
@@ -84,7 +84,7 @@ function init() {
     // cubes
 
     sphereGeo = new THREE.SphereGeometry( 10, 50, 50 );
-    cubeMaterial = new THREE.MeshLambertMaterial( { color: 0xfeb74c});//, map: new THREE.TextureLoader().load( 'textures/square-outline-textured.png' ) } );
+    cubeMaterial = new THREE.MeshLambertMaterial( { color: 0x000000});//, map: new THREE.TextureLoader().load( 'textures/square-outline-textured.png' ) } );
 
     // grid
 
@@ -250,40 +250,38 @@ function render() {
 //     return position_array;
 // }
 
-function plotScaffoldPoints(arr, material=rollOverMaterial) {
-    console.log(arr);
-    let sphereArr = [];
-    for (i = 0; i < arr.length; i += 1) {
-        const voxel = new THREE.Mesh(new THREE.SphereGeometry(1.5, 50, 50), material);
-        //console.log("dicks");
-        voxel.position.set(arr[i].x, arr[i].y, arr[i].z);
-        //console.log(arr[0].x);
-        sphereArr.push(voxel);
-    }
-    return sphereArr;
-}
+// function plotScaffoldPoints(arr, material=rollOverMaterial) {
+//     console.log(arr);
+//     let sphereArr = [];
+//     for (i = 0; i < arr.length; i += 1) {
+//         const voxel = new THREE.Mesh(new THREE.SphereGeometry(1.5, 50, 50), material);
+//         //console.log("dicks");
+//         voxel.position.set(arr[i].x, arr[i].y, arr[i].z);
+//         //console.log(arr[0].x);
+//         sphereArr.push(voxel);
+//     }
+//     return sphereArr;
+// }
 
 
-function feedbackControlModel(arr, desiredShape=Shape.CUBE) {
-    let firstPoint = arr[0];
-    let sides = ["up", "west", "east", "left", "up2", "up3"];
-    for (side = 0; side < sides.length; side++){
-        let startArr = arr.slice(0+1208*side, 1208+1208*side);
-        let endArr;
+// function feedbackControlModel(arr, desiredShape=Shape.CUBE) {
+//     let firstPoint = arr[0];
+//     let sides = ["up", "west", "east", "left", "up2", "up3"];
+//     for (side = 0; side < sides.length; side++){
+//         let startArr = arr.slice(0+1208*side, 1208+1208*side);
+//         let endArr;
         
-        if (desiredShape === Shape.CUBE) {
-            endArr = generateCubePlane(firstPoint, 50, "short", sides[side]);
-            firstPoint = endArr[endArr.length - 1];
-            let newPoint = plotScaffoldPoints(endArr, rollOverMaterial2);
+//         if (desiredShape === Shape.CUBE) {
+//             endArr = generateCubePlane(firstPoint, 50, "short", sides[side]);
+//             firstPoint = endArr[endArr.length - 1];
+//             let newPoint = plotScaffoldPoints(endArr, rollOverMaterial2);
 
-            for (i = 0; i < newPoint.length; i++) {
-                scene.add(newPoint[i]);
-            }
-        }
-    }
-    
-
-}
+//             for (i = 0; i < newPoint.length; i++) {
+//                 scene.add(newPoint[i]);
+//             }
+//         }
+//     }
+// }
 
 function generateCubePlane(startPoint, length=50, mode="short", side) {
     
@@ -394,7 +392,7 @@ function generateCubePlane(startPoint, length=50, mode="short", side) {
                     }
                 }
             }
-            camera.position.set( 1000, 800, 1300 );
+            camera.position.set( 1200, 1200, 1300 );
             camera.lookAt( 0, 90, 0 );
         } else if (side == "left") {
             if (j < 5) {
