@@ -11,17 +11,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
     <!-- Script Links-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script> -->
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <script src="https://threejs.org/build/three.js"></script>
     <%= stylesheet_link_tag 'application', media: 'all' %>
     <%= javascript_pack_tag 'main', 'data-turbolinks-track': 'reload' %>
+   
   </head>
   <body>
 
     <canvas id="artifactCanvas"></canvas>
+    <%= javascript_pack_tag 'init' %>
     <!-- Start of Spinning Cube-->
     
     <!-- End of Spinning Cube-->
@@ -33,7 +36,7 @@
     <div class="row">
       <div class="col-md-6">
       <% if logged_in? %>
-        <div class="row">
+       <!-- <div class="row">
            <div class="col-md-3">
             <div class="logged-in-profile-image">
               <%= link_to image_tag("default-profile-pic", class: "profile-picture"), "/profile" %>
@@ -46,9 +49,9 @@
             </div>
            </div>
           <%# <a class="btn btn-danger" id="signOutButton" href="/signout">Sign Out</a>  %>
-        </div>
+        </div> -->
       <% else %>
-        <div class="sign-in-container">
+        <!-- <div class="sign-in-container">
           <form action='/signin' method='GET' class="row g-3">
             <div class="col-auto">
               <label for="staticEmail2" class="visually-hidden">Email</label>
@@ -61,17 +64,8 @@
             <div class="col-auto">
               <button type="submit" class="btn btn-dark mb-3">Log In</button>
             </div>
-            <div class="col-auto">
-              <% flash.each do |key, value| %>
-                <div class="alert alert-<%= key %> alert-dismissible" role="alert">
-                  <!-- <button type="button" class="closing-btn close-<%= key %>" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
-                  <%= value %>
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              <% end %>
-            </div>
           </form>
-        </div>
+        </div> -->
       <% end %>
 
 
@@ -100,7 +94,47 @@
 
 
     <!-- Start of SIGN UP-->
-    <div>
+
+    <div class="sign-in-outer-container">
+      <% if !logged_in?%>
+        <div class="transparent-layer">
+          <div class="sign-in-container">
+            <form action='/signin' method='GET' class="row g-3">
+                <% flash.each do |key, value| %>
+                  <div class="alert alert-<%= key %> alert-dismissible" role="alert">
+                    <!-- <button type="button" class="closing-btn close-<%= key %>" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
+                    <%= value %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                <% end %>
+              <div class="input-group mb-3">
+                <!-- <span class="input-group-text" id="basic-addon1">@</span> -->
+                <input type="text" id="username" class="form-control p-3" placeholder="Username or Email" aria-label="Username or Email" aria-describedby="basic-addon1" name="user[username]">
+              </div>
+
+              <div class="input-group mb-3">
+                <!-- <span class="input-group-text">Password</span> -->
+                <input type="text" class="form-control p-3" aria-label="password" placeholder="Password" name="user[password]"> 
+              </div>
+              <div>
+
+              <button class="btn btn-dark w-100 p-2" type="submit">Log In</button>
+              <div class="forgot-password-container">
+                <a href="">Forgot Password?</a>
+              <div>
+              <div class="guest-form">
+                <div class="guest-from-label">
+                  <div class="separator">or</div>
+                </div>
+                <a id="guest" class="btn btn-outline-dark w-100">Sign Up</a>
+              </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      <% end%>
+    </div>
+    <!-- <div>
     <% if !logged_in?%>
     <div class="transparent-layer">
       <div class="sign-up-form container">
@@ -133,12 +167,12 @@
           
           <button class="btn btn-outline-dark w-100" type="submit">Sign Up</button>
         </form>
-      </div>
+      </div> 
       
-      <!-- End of SIGN UP-->
+      <!- End of SIGN UP-->
 
       <!-- Start of CONTINUE AS GUEST-->
-      <div class="guest-form container">
+      <!-- <div class="guest-form container">
         <div class="guest-from-label">
           <div class="separator">or</div>
         </div>
@@ -146,13 +180,14 @@
       </div>
     </div>
     <% end %>
-    </div>
+    </div> -->
     <!-- End of CONTINUE AS GUEST-->
 
 
 
 
     <!-- Start of FOOTER-->
+    </div>
     <div class="container" id="footer">
       <hr class="my-4">
     
@@ -163,7 +198,7 @@
       </div>
     </div> 
     <!-- End of FOOTER-->
-
-    <%= javascript_pack_tag 'spinning_cube', 'data-turbolinks-track': 'reload' %> 
+    
+    <!-- <%= javascript_pack_tag 'spinning_cube', 'data-turbolinks-track': 'reload' %> -->
   </body>
 </html>
