@@ -109,12 +109,12 @@
                 <% end %>
               <div class="input-group mb-3">
                 <!-- <span class="input-group-text" id="basic-addon1">@</span> -->
-                <input type="text" id="username" class="form-control p-3" placeholder="Username or Email" aria-label="Username or Email" aria-describedby="basic-addon1" name="user[username]">
+                <input type="text" id="username" class="form-control p-3" placeholder="Username or Email" aria-label="Username or Email" aria-describedby="basic-addon1" name="user[login_username]">
               </div>
 
               <div class="input-group mb-3">
                 <!-- <span class="input-group-text">Password</span> -->
-                <input type="text" class="form-control p-3" aria-label="password" placeholder="Password" name="user[password]"> 
+                <input type="password" class="form-control p-3" aria-label="password" placeholder="Password" name="user[login_password]"> 
               </div>
               <div>
 
@@ -126,7 +126,7 @@
                 <div class="guest-from-label">
                   <div class="separator">or</div>
                 </div>
-                <a id="guest" class="btn btn-outline-dark w-100">Sign Up</a>
+                <a id="signup-btn" class="btn btn-outline-dark w-100">Sign Up</a>
               </div>
               </div>
             </form>
@@ -134,42 +134,50 @@
         </div>
       <% end%>
     </div>
-    <!-- <div>
+    
+
     <% if !logged_in?%>
-    <div class="transparent-layer">
-      <div class="sign-up-form container">
-        <div class="sign-up-form-header">
-          <h3>Join Project NanoFrame</h3>
-        </div>
-        <form action="/" method="POST">
-          <input type="hidden" name="authenticity_token" value="<%=form_authenticity_token%>">
-          <div class="input-group mb-3">
-            <span class="input-group-text" id="basic-addon1">@</span>
-            <input type="text" id="username" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" name="user[username]">
-          </div>
-
-          <div class="input-group mb-3">
-            <span class="input-group-text">First and last name</span>
-            <input type="text" id="first_name" aria-label="First name" class="form-control" placeholder="John" name="user[first]">
-            <input type="text" id="last_name" aria-label="Last name" class="form-control" placeholder="Doe" name="user[last]">
-          </div>
-
-          <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Username" aria-label="Email" name="user[email_first]">
-            <span class="input-group-text">@</span>
-            <input type="text" class="form-control" placeholder="Server" aria-label="Server" name="user[email_last]">
-          </div>
-
-          <div class="input-group mb-3">
-            <span class="input-group-text">Password</span>
-            <input type="text" class="form-control" aria-label="password" placeholder="your password here" name="user[password]"> 
+      <div class="sign-up-outer-container">
+        <%= image_tag("close", class: "close-btn") %>
+        <div class="sign-up-form">
+          
+          <div class="sign-up-form-header">
+            <h3>Join Project NanoFrame</h3>
+            <hr class="my-4">
           </div>
           
-          <button class="btn btn-outline-dark w-100" type="submit">Sign Up</button>
-        </form>
-      </div> 
+          <form action="/" method="POST">
+            <input type="hidden" name="authenticity_token" value="<%=form_authenticity_token%>">
+            <div class="input-group mb-3">
+              <span class="input-group-text" id="basic-addon1">@</span>
+              <input type="text" id="username" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" name="user[username]">
+            </div>
+
+            <div class="input-group mb-3">
+              <span class="input-group-text">First and last name</span>
+              <input type="text" id="first_name" aria-label="First name" class="form-control" placeholder="John" name="user[first]">
+              <input type="text" id="last_name" aria-label="Last name" class="form-control" placeholder="Doe" name="user[last]">
+            </div>
+
+            <div class="input-group mb-3">
+              <input type="text" class="form-control" placeholder="Mail Name" aria-label="Mail Name" name="user[email_first]">
+              <span class="input-group-text">@</span>
+              <input type="text" class="form-control" placeholder="Mail Address" aria-label="Mail Address" name="user[email_last]">
+            </div>
+
+            <div class="input-group mb-3">
+              <span class="input-group-text">Password</span>
+              <input type="password" class="form-control" aria-label="password" placeholder="Password" name="user[password]"> 
+            </div>
+            <div class="sign-up-btn-container">
+              <button class="btn btn-dark w-50" type="submit">Sign Up</button>
+            </div>
+            
+          </form>
+        </div> 
+      </div>
       
-      <!- End of SIGN UP-->
+      <!-- End of SIGN UP-->
 
       <!-- Start of CONTINUE AS GUEST-->
       <!-- <div class="guest-form container">

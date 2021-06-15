@@ -14,23 +14,37 @@
      background-color: #F8F8F8;
  }
 
+ .sign-up-outer-container {
+     display: none;
+     position: fixed;
+     top: 50%;
+     left: 50%;
+     transform: translate(-50%, -50%);
+     -webkit-transform: translate(-50%, -50%);
+     -moz-transform: translate(-50%, -50%);
+     -o-transform: translate(-50%, -50%);
+     -ms-transform: translate(-50%, -50%);
+     background-color: white;
+     border-radius: 2%;
+     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+     
+     opacity: 1;
+     filter: alpha(opacity=100);
+ }
+
  .sign-up-form {
-     //margin-left: 30%;
-     //margin-top: 10%; //20
-     //padding-left: 30%; //10
-     //padding-right: 30%; //10
+     padding: 4% 6%;
  }
 
  .sign-up-form-header {
-     text-align: center;
-     margin-bottom: 5%;
-     font-family: 'Syne Mono', monospace;
+    text-align: center;
+    padding-bottom: 5%;
+    font-family: 'Syne Mono', monospace;
  }
 
- .guest-form {
-    //margin-left: 30%;
-    //padding-left: 30%;
-    //padding-right: 30%;
+ .sign-up-btn-container {
+     padding-top: 5%;
+     text-align: center;
  }
 
  .guest-from-label {
@@ -65,14 +79,11 @@
     font-family: 'Syne Mono', monospace;
 }
 
-// .login-username {
-//     //width: 200px;
-// }
-
-// .login-password {
-//     float: left;
-//     //width: 20px;
-// }
+.close-btn {
+    float: right;
+    width: 15px;
+    margin: 3%;
+}
 .profile-picture {
     width: 65px;
     border-radius: 50%;

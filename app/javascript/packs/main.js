@@ -3,6 +3,43 @@
 //     $(html).css("background-color: black;")
 // var validate = false;
 
+$(document).ready(function() {
+
+    $("#signup-btn").click(function(e) {
+        $(".sign-in-container").css({"opacity": "0.5"});
+        $(".sign-up-outer-container").css({"display": "block"});
+    });
+    
+
+
+    
+    // let n = 0;
+    // $(".sign-up-outer-container").mouseenter(function() {
+    //     n = 0;
+    // }).mouseleave(function() {
+    //     n = 1;
+    // });
+
+    $(".close-btn").click(function(e) {
+        $(".sign-up-outer-container").css({"display": "none"});
+        $(".sign-in-container").css({"opacity": "1"});
+        n = 0;
+        //$("#signup-btn").click();
+    });
+    
+    // $("html").click(function(e){ 
+    //     if (n == 1 && $(".sign-up-outer-container").css("display") == "block") {
+    //         $(".sign-up-outer-container").css({"display": "none"});
+    //         $(".sign-in-container").css({"opacity": "1"});
+    //         n = 0;
+    //         //alert("clickoutside");
+    //     }
+    // });
+
+
+});
+
+
 // $(document).ready(function() {
 //     $('#signupSubmit').click(function(e) {
 //         //return true;

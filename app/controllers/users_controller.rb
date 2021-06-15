@@ -49,7 +49,7 @@ class UsersController < ApplicationController
             session[:user_id] = user.id
             redirect_to '/nanobot'
         else
-            flash[:danger] = "Invalid Login Credentials"
+            flash[:danger] = "Invalid Login Credentials" 
             redirect_to '/'
         end
     end
