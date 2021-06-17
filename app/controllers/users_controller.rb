@@ -59,6 +59,20 @@ class UsersController < ApplicationController
         redirect_to '/'
     end
 
+    def check_email
+        @user = User.find_by_email(params[:email])
+        respond_to do |format|
+            format.json {render :json => {email_exists: @user.present?}}
+        end
+    end
+
+    def check_username
+        @user = User.find_by_username(params[:username])
+        respond_to do |format|
+          format.json {render :json => {username_exists: @user.present?}} 
+        end
+    end
+
     private
     def user_params
         params.require(:user).permit(:first, :last, :username, :email_first, :email_last, :password)

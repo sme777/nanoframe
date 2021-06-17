@@ -16,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <script src="https://threejs.org/build/three.js"></script>
-    <%= javascript_pack_tag 'controller', 'data-turbolinks-track': 'reload' %>    
+    <%= javascript_pack_tag 'nanobot', 'data-turbolinks-track': 'reload' %>    
     <%= stylesheet_link_tag 'application', media: 'all' %> 
     </head>  
   <body>
@@ -24,7 +24,7 @@
     <div class="row"> 
 
       <div class="col-md-6">
-      <% if logged_in? %>
+      <!-- <% if logged_in? %>
         <div class="row">
            <div class="col-md-3">
             <div class="logged-in-profile-image">
@@ -55,7 +55,7 @@
             </div>
           </form>
         </div>
-      <% end %>
+      <% end %> -->
       </div>
 
       <div class="col-md-6 menu-items">
@@ -83,7 +83,7 @@
         <h3>Select Synthesizing Options</h3>
       </div>
       <div class="shape-dropdown">
-        <select class="form-select" aria-label="Default select example">
+        <select id="synthesizer-shape" class="form-select" aria-label="Default select example">
           <option selected>The Desired 3D Object</option>
           <option value="1">Cube</option>
           <option value="2">Prism</option>
@@ -94,7 +94,7 @@
         <div class="col-md-5 color-select">
           <div class="row">
             <div class="col-md-7">
-              <span class="input-group-text">Select a Color</span>
+              <span class="input-group-text">Color</span>
             </div>
             <div class="col-md-5">
               <input type="color" class="form-control form-control-color" id="exampleColorInput" value="#000000">
@@ -113,16 +113,19 @@
         </div>
       </div>
       <div class="dimension-picker">
+        <p class="dimension-text"></p>
         <div class="input-group mb-3">
-          <span class="input-group-text">Height (nm)</span>
-          <input type="text" class="form-control" placeholder="50" aria-label="Username">
-          <span class="input-group-text">Width (nm) </span>
-          <input type="text" class="form-control" placeholder="50" aria-label="Server">
-          <span class="input-group-text">Length (nm)</span>
-          <input type="text" class="form-control" placeholder="50" aria-label="Server">
+          <span class="input-group-text">Height</span>
+          <input type="text" class="height-input form-control" placeholder="50" aria-label="Username">
+          <span class="input-group-text">Width</span>
+          <input type="text" class="width-input form-control" placeholder="50" aria-label="Server">
+          <span class="input-group-text">Length</span>
+          <input type="text" class="length-input form-control" placeholder="50" aria-label="Server">
         </div>
       </div>
-
+      <div class="synthesizer-btn-container">
+        <button type="button" class="synthesizer-btn btn btn-secondary btn-lg w-50">Synthesize</button>
+      </div>
     </div>
     <!-- End of Synthesizer Selection-->
 

@@ -8,4 +8,6 @@ Rails.application.routes.draw do
   get '/contact' => 'users#contact'
   get '/about' => 'users#about'
   get '/nanobot' => 'generators#index'
+  get '/checkemail' => 'users#check_email', :defaults => { :format => :json }
+  get '/checkusername' => 'users#check_username', :defaults => { :format => :json }
 end
