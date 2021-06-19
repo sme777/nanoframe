@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
     <!-- Script Links-->
+    <link rel="stylesheet" href="croppie.css" />
+    <script src="croppie.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script> -->
@@ -17,6 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <script src="https://threejs.org/build/three.js"></script>
+    <script src="https://kit.fontawesome.com/5a425d24f2.js" crossorigin="anonymous"></script>
     <%= stylesheet_link_tag 'application', media: 'all' %>
     <%= javascript_pack_tag 'main', 'data-turbolinks-track': 'reload' %>
    
@@ -33,46 +36,8 @@
    
 
    <!-- Start of NAVBAR-->
-    <div class="row">
-      <div class="col-md-6">
-      <% if logged_in? %>
-       <!-- <div class="row">
-           <div class="col-md-3">
-            <div class="logged-in-profile-image">
-              <%= link_to image_tag("default-profile-pic", class: "profile-picture"), "/profile" %>
-            </div>
-           </div>
-           <div class="col-md-9">
-            <div class="logged-in-profile-id">
-              <h5 class="nunito"><%= @current_user.name%></h5>
-              <h6><i>Student @ UC Berkeley</i></h6>
-            </div>
-           </div> -->
-          <a class="btn btn-danger" id="signOutButton" href="/signout">Sign Out</a> 
-        <!-- </div> --> 
-      <% else %>
-        <!-- <div class="sign-in-container">
-          <form action='/signin' method='GET' class="row g-3">
-            <div class="col-auto">
-              <label for="staticEmail2" class="visually-hidden">Email</label>
-              <input type="text" class="form-control" id="staticEmail2" placeholder="Username" name="user[login_username]">
-            </div>
-            <div class="col-auto">
-              <label for="inputPassword2" class="visually-hidden">Password</label>
-              <input type="password" class="form-control" id="inputPassword2" placeholder="Password" name="user[login_password]">
-            </div>
-            <div class="col-auto">
-              <button type="submit" class="btn btn-dark mb-3">Log In</button>
-            </div>
-          </form>
-        </div> -->
-      <% end %>
-
-
-      
-      </div>
-
-      <div class="col-md-6 menu-items">
+    <div>
+      <div class="menu-items">
         <ul class="nav nav-tabs justify-content-end">
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" href="/">Homepage</a>
@@ -89,52 +54,77 @@
         </ul>
       </div>
     </div>
+    <% if logged_in? %>
+    <!-- Body of a Logged In User -->
+      <div class="profile-container">
+        <div class="user-portrait-mask">
+          <%= image_tag("default-profile-pic", class: "user-portrait")%>
+        </div>
+        <input class="file-upload" type="file" accept="image/*"/>
+      </div>
+      <div class="user-details-container">
+        <h2 class="user-fullname"><%= @current_user.name %></h2>
+        <h5 class="user-username"><%= @current_user.username%></h5>
+      </div>
+      <div class="feed-container">
+        <div class="switch-field">
+          <input type="radio" id="radio-one" name="switch-one" value="public" checked/>
+          <label for="radio-one" class="radio-label"><%= image_tag("public", class: "public-png")%> Public</label>
+          <input type="radio" id="radio-two" name="switch-one" value="private" />
+          <label for="radio-two" class="radio-label"><%= image_tag("private", class: "private-png")%> Private</label>
+          <input type="radio" id="radio-three" name="switch-one" value="history" />
+          <label for="radio-three" class="radio-label"><%= image_tag("history", class: "history-png")%> History</label>
+        </div>
+      </div>
+      <a class="btn btn-danger" id="signOutButton" href="/signout">Sign Out</a>
+    <% end %>
+    
     <!-- End of NAVBAR-->
 
 
 
     <!-- Start of SIGN UP-->
-
-    <div class="sign-in-outer-container">
-      <% if !logged_in?%>
-        <div class="transparent-layer">
-          <div class="sign-in-container">
-            <form action='/signin' method='GET' class="row g-3">
-                <% flash.each do |key, value| %>
-                  <div class="alert alert-<%= key %> alert-dismissible" role="alert">
-                    <!-- <button type="button" class="closing-btn close-<%= key %>" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
-                    <%= value %>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                  </div>
-                <% end %>
-              <div class="input-group mb-3">
-                <!-- <span class="input-group-text" id="basic-addon1">@</span> -->
-                <input type="text" id="logInUsername" class="form-control p-3" placeholder="Username or Email" aria-label="Username or Email" aria-describedby="basic-addon1" name="user[login_username]">
-              </div>
-
-              <div class="input-group mb-3">
-                <!-- <span class="input-group-text">Password</span> -->
-                <input type="password" class="form-control p-3" aria-label="password" placeholder="Password" name="user[login_password]"> 
-              </div>
-              <div>
-
-              <button class="btn btn-dark w-100 p-2" type="submit">Log In</button>
-              <div class="forgot-password-container">
-                <a href="">Forgot Password?</a>
-              <div>
-              <div class="guest-form">
-                <div class="guest-from-label">
-                  <div class="separator">or</div>
+    <% if !logged_in?%>
+      <div class="sign-in-outer-container">
+        
+          <div class="transparent-layer">
+            <div class="sign-in-container">
+              <form action='/signin' method='GET' class="row g-3">
+                  <% flash.each do |key, value| %>
+                    <div class="alert alert-<%= key %> alert-dismissible" role="alert">
+                      <!-- <button type="button" class="closing-btn close-<%= key %>" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
+                      <%= value %>
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                  <% end %>
+                <div class="input-group mb-3">
+                  <!-- <span class="input-group-text" id="basic-addon1">@</span> -->
+                  <input type="text" id="logInUsername" class="form-control p-3" placeholder="Username or Email" aria-label="Username or Email" aria-describedby="basic-addon1" name="user[login_username]">
                 </div>
-                <a id="signup-btn" class="btn btn-outline-dark w-100">Sign Up</a>
-              </div>
-              </div>
-            </form>
+
+                <div class="input-group mb-3">
+                  <!-- <span class="input-group-text">Password</span> -->
+                  <input type="password" class="form-control p-3" aria-label="password" placeholder="Password" name="user[login_password]"> 
+                </div>
+                <div>
+
+                <button class="btn btn-dark w-100 p-2" type="submit">Log In</button>
+                <div class="forgot-password-container">
+                  <a href="">Forgot Password?</a>
+                <div>
+                <div class="guest-form">
+                  <div class="guest-from-label">
+                    <div class="separator">or</div>
+                  </div>
+                  <a id="signup-btn" class="btn btn-outline-dark w-100">Sign Up</a>
+                </div>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      <% end%>
-    </div>
-    
+        
+      </div>
+    <% end%>
 
     <% if !logged_in?%>
       <div class="sign-up-outer-container">
@@ -176,26 +166,15 @@
           </form>
         </div> 
       </div>
-      
-      <!-- End of SIGN UP-->
-
-      <!-- Start of CONTINUE AS GUEST-->
-      <!-- <div class="guest-form container">
-        <div class="guest-from-label">
-          <div class="separator">or</div>
-        </div>
-        <a id="guest" class="btn btn-dark w-100">Continue as a Guest</a>
-      </div>
     </div>
     <% end %>
-    </div> -->
-    <!-- End of CONTINUE AS GUEST-->
+
 
 
 
 
     <!-- Start of FOOTER-->
-    </div>
+    
     <div class="container" id="footer">
       <hr class="my-4">
     

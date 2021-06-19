@@ -1,3 +1,4 @@
+// handles signup/signin
 $(document).ready(function() {
 
     $("#signup-btn").click(function(e) {
@@ -97,6 +98,62 @@ $(document).ready(function() {
             $("#passwordField").addClass("is-valid");
             password_is_valid = true;
         }
+
+        if (username == "") {
+            $("#signUpUsername").removeClass("is-valid");
+            $("#signUpUsername").addClass("is-invalid");
+            username_is_valid = false;
+        } else {
+            $.ajax({
+                url: "/checkusername?username=" + username,
+                dataType: "json",
+                success: function(data) {
+                    if (!data["username_exists"]) {
+                        $("#signUpUsername").addClass("is-valid");
+                        $("#signUpUsername").removeClass("is-invalid");
+                        username_is_valid = true;
+
+                        if (email == "") {
+                            $("#mailAddress").removeClass("is-valid");
+                            $("#mailAddress").addClass("is-invalid");
+                            $("#mailName").removeClass("is-valid");
+                            $("#mailName").addClass("is-invalid");
+                        } else if (validateEmail(email)){
+                            $.ajax({
+                                url: "/checkemail?email=" + email,
+                                dataType: "json",
+                                success: function(data) {
+                                    if (!data["email_exists"]) {
+                                        $("#mailAddress").addClass("is-valid");
+                                        $("#mailAddress").removeClass("is-invalid");
+                                        $("#mailName").addClass("is-valid");
+                                        $("#mailName").removeClass("is-invalid");
+                                        email_is_valid = true;
+                                        if (fname_is_valid && email_is_valid && lname_is_valid 
+                                            && password_is_valid && username_is_valid) {
+                                            $("#signUpForm").submit();
+                                        }
+                                    } else {
+                                        $("#mailAddress").removeClass("is-valid");
+                                        $("#mailAddress").addClass("is-invalid");
+                                        $("#mailName").removeClass("is-valid");
+                                        $("#mailName").addClass("is-invalid");
+                                    }
+                                } 
+                            });
+                        } else {
+                            $("#mailAddress").removeClass("is-valid");
+                            $("#mailAddress").addClass("is-invalid");
+                            $("#mailName").removeClass("is-valid");
+                            $("#mailName").addClass("is-invalid");
+                        }
+                    } else {
+                        $("#signUpUsername").removeClass("is-valid");
+                        $("#signUpUsername").addClass("is-invalid");
+                    }
+                } 
+            });
+        }
         
         if (email == "") {
             $("#mailAddress").removeClass("is-valid");
@@ -157,6 +214,54 @@ $(document).ready(function() {
         }
     });
   });
+
+$(document).ready(function() {
+    $('#radio-one').click(function() {
+        //
+     });
+
+     $('#radio-two').click(function() {
+        //alert("private selected"); 
+     });
+
+     $('#radio-three').click(function() {
+        //alert("history selected"); 
+     });
+});
+
+$(document).ready(function() {
+    let img_width = $('.user-portrait').width();
+    let img_height = $('.user-portrait').height();
+    if (img_height > img_width) {
+        $('.user-portrait').addClass("portrait")
+    } else {
+        $('.user-portrait').addClass("landscape");
+    }
+    //$('.user-portrait').css({'height':img_width+'px'});
+
+    $('.user-portrait').bind('click', function (evt) { 
+        $(".file-upload").click();
+        let readURL = function(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+    
+                reader.onload = function (e) {
+                    $('.user-portrait').attr('src', e.target.result);
+                }
+        
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        
+    
+        $(".file-upload").on('change', function(){
+            readURL(this);
+        });
+        
+    });
+});
+
+
 
 function validateEmail(email) {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

@@ -1,38 +1,59 @@
-var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+let scene = new THREE.Scene();
+var drawingSurface = document.getElementById('synthesizer');
+let camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
 
-//var renderer = Detector.webgl? new THREE.WebGLRenderer( { antialias: true } ): new THREE.CanvasRenderer();
-var renderer = new THREE.WebGLRenderer({canvas: artifactCanvas});
+let renderer = new THREE.WebGLRenderer( { antialias: true, canvas: drawingSurface} )
+//let canvas_container = document.getElementById('synthesizer');
+//renderer.setSize($(canvas_container).width(), $(canvas_container).height());
+//canvas_container.appendChild(renderer.domElement);
 
-var cylinder = 0x2e50ac;
-var purple = 0x74ffc4;
+let adenine = 0x87A96B;
+let thymine = 0xA52A2A;
+let guanine = 0x7CB9E8;
+let cytosine = 0xF28C28;
+
+let cylinder = 0x2e50ac;
+let purple = 0x74ffc4;
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 camera.position.z = 35;
 
-var tubeGeometry = new THREE.CylinderGeometry(0.4,0.4,10,32);
-var ballGeometry = new THREE.SphereGeometry(1.1,32,32);
+let tubeGeometry = new THREE.CylinderGeometry(0.4,0.4,10,32);
+let ballGeometry = new THREE.SphereGeometry(1.1,32,32);
 
-var cylinderMaterial = new THREE.MeshBasicMaterial( { color: cylinder } );
-var purpleMaterial = new THREE.MeshBasicMaterial( { color: purple } );
+let cylinderMaterial = new THREE.MeshBasicMaterial( { color: cylinder } );
+let purpleMaterial = new THREE.MeshBasicMaterial( { color: purple } );
 
-var dna = new THREE.Object3D();
-var holder = new THREE.Object3D();
+let adenineMaterial = new THREE.MeshBasicMaterial( { color: adenine } );
+let thymineMaterial = new THREE.MeshBasicMaterial( { color: thymine } );
+let guanineMaterial = new THREE.MeshBasicMaterial( { color: guanine } );
+let cytosineMaterial = new THREE.MeshBasicMaterial( { color: cytosine } );
+
+let dna = new THREE.Object3D();
+let holder = new THREE.Object3D();
 
 
 for (var i = 0; i <= 20; i++) {
 
-	var cylinder = new THREE.Mesh(tubeGeometry, cylinderMaterial);
+
+	let cylinder = new THREE.Mesh(tubeGeometry, cylinderMaterial);
 	cylinder.rotation.z = 90 * Math.PI/180; 
 	cylinder.position.x = 0;
-
-	var ballRight = new THREE.Mesh( ballGeometry, purpleMaterial );
+	let ballRight;
+	let ballLeft;
+	if (i % 2 == 0) {
+		ballRight = new THREE.Mesh( ballGeometry, adenineMaterial );
+		ballLeft = new THREE.Mesh( ballGeometry, thymineMaterial );
+	} else {
+		ballRight = new THREE.Mesh( ballGeometry, guanineMaterial );
+		ballLeft = new THREE.Mesh( ballGeometry, cytosineMaterial );
+	}
 	ballRight.position.x = 6;
-
-	var ballLeft = new THREE.Mesh( ballGeometry, purpleMaterial );
 	ballLeft.position.x = -5;
+
+	
 
 	var row = new THREE.Object3D();
 

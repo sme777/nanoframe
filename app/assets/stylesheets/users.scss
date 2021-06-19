@@ -152,3 +152,124 @@ canvas {
     border-radius: 2%;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
+
+.user-profile-container {
+    text-align: center;
+    
+}
+
+.user-details-container {
+    text-align: center;
+}
+
+.user-fullname {
+    font-family: 'Nunito', sans-serif;
+}
+
+.user-username {
+    font-family: 'Syne Mono', monospace;
+    color: #0d6efd;
+}
+.switch-field {
+	display: flex;
+	margin-bottom: 36px;
+    justify-content: center;
+    //text-align: center;
+	//overflow: hidden;
+}
+
+.radio-label {
+    width: 20%;
+}
+
+.switch-field input {
+	position: absolute !important;
+	clip: rect(0, 0, 0, 0);
+	height: 1px;
+	width: 1px;
+	border: 0;
+	overflow: hidden;
+}
+
+.switch-field label {
+	background-color: #fff;
+	color: rgba(0, 0, 0, 0.6);
+	font-size: 14px;
+	line-height: 1;
+	text-align: center;
+	padding: 8px 16px;
+	margin-right: -1px;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+	transition: all 0.2s ease-in-out;
+}
+
+.switch-field label:hover {
+	cursor: pointer;
+}
+
+.switch-field input:checked + label {
+	background-color: #CDF0EA;
+	box-shadow: none;
+}
+
+.switch-field label:first-of-type {
+	border-radius: 4px 0 0 4px;
+}
+
+.switch-field label:last-of-type {
+	border-radius: 0 4px 4px 0;
+}
+
+.public-png {
+    width: 25px;
+}
+
+.private-png {
+    width: 25px;
+}
+
+.history-png {
+    width: 25px;
+}
+
+.user-portrait {
+    //margin: 10% 0 3% 0;
+    max-width: 100%;
+    //max-height: 240px;
+    //width: 25%;
+    //height: auto;
+    //border-radius: 50%;
+    cursor: pointer;
+    //border: 8px solid rgba(240, 240, 240, 0.7);
+    //overflow: hidden;
+}
+
+.user-portrait-mask {
+    width: 200px;
+    height: 200px;
+    overflow: hidden;
+}
+
+.landscape {
+    height: 100%;
+}
+
+.portrait {
+    width: 100%;
+}
+
+.user-portrait:hover {
+    opacity: 0.7;
+}
+
+.profile-container {
+    text-align: center;
+}
+
+.file-upload {
+    display: none;
+}
+
+
+

@@ -16,67 +16,37 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <script src="https://threejs.org/build/three.js"></script>
-    <%= javascript_pack_tag 'nanobot', 'data-turbolinks-track': 'reload' %>    
+    <%= javascript_pack_tag 'nanobot', 'data-turbolinks-track': 'reload' %>   
+    
     <%= stylesheet_link_tag 'application', media: 'all' %> 
     </head>  
   <body>
-    <!-- Start of NAVBAR-->
-    <div class="row"> 
 
-      <div class="col-md-6">
-      <!-- <% if logged_in? %>
-        <div class="row">
-           <div class="col-md-3">
-            <div class="logged-in-profile-image">
-              <%= link_to image_tag("default-profile-pic", class: "profile-picture"), "/profile" %>
-            </div>
-           </div>
-           <div class="col-md-9">
-            <div class="logged-in-profile-id">
-              <h5 class="nunito"><%= @current_user.name%></h5>
-              <h6><i>Student @ UC Berkeley</i></h6>
-            </div>
-           </div>
-          <%# <a class="btn btn-danger" id="signOutButton" href="/signout">Sign Out</a>  %>
-        </div>
-      <% else %>
-        <div class="sign-in-container">
-          <form action='/signin' method='GET' class="row g-3">
-            <div class="col-auto">
-              <label for="staticEmail2" class="visually-hidden">Email</label>
-              <input type="text" class="form-control" id="staticEmail2" placeholder="Username" name="user[login_username]">
-            </div>
-            <div class="col-auto">
-              <label for="inputPassword2" class="visually-hidden">Password</label>
-              <input type="password" class="form-control" id="inputPassword2" placeholder="Password" name="user[login_password]">
-            </div>
-            <div class="col-auto">
-              <button type="submit" class="btn btn-dark mb-3">Log In</button>
-            </div>
-          </form>
-        </div>
-      <% end %> -->
-      </div>
+      
 
-      <div class="col-md-6 menu-items">
-        <ul class="nav nav-tabs justify-content-end">
-          <li class="nav-item">
-            <a class="nav-link" href="/">Homepage</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/about">The Project</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active nanofont" href="/nanobot">The Nanobot</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/contact">Contact</a>
-          </li>
-        </ul>
-      </div>
+    <div class="menu-items">
+      <ul class="nav nav-tabs justify-content-end">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Homepage</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/about">The Project</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active nanofont" href="/nanobot">The Nanobot</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/contact">Contact</a>
+        </li>
+      </ul>
     </div>
-    <!-- End of NAVBAR-->
 
+
+    <canvas id="synthesizer"></canvas>
+    <%= javascript_pack_tag 'dna_art' %> 
+
+    <!-- End of NAVBAR-->
+    
     <!-- Start of Synthesizer Selection-->
     <div class="selection-menu">
       <div class="synthesizer-header">
@@ -132,8 +102,6 @@
 
     <!-- Start of Synthesizer-->
     <%# <iframe width="200"> %>
-      <canvas id="synthesizer"></canvas>
-      <%= javascript_pack_tag 'synthesizer', 'data-turbolinks-track': 'reload' %>
     <%# </iframe>  %>
      <!-- End of Synthesizer-->
 

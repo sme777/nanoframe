@@ -22,7 +22,10 @@ gem 'jbuilder', '~> 2.7'
 gem 'dotenv-rails'
 # Use Active Model has_secure_password
 gem 'bcrypt', '~> 3.1.7'
-
+# User Active Storage variant
+gem 'mini_magick', '~>4.8'
+# User AWS sdk
+gem 'aws-sdk-s3', require: false
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
