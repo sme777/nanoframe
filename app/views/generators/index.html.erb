@@ -40,63 +40,127 @@
         </li>
       </ul>
     </div>
-
-
-    <canvas id="synthesizer"></canvas>
-    <%= javascript_pack_tag 'dna_art' %> 
+    
 
     <!-- End of NAVBAR-->
     
     <!-- Start of Synthesizer Selection-->
-    <div class="selection-menu">
-      <div class="synthesizer-header">
-        <h3>Select Synthesizing Options</h3>
+    <div class="row selection-menu">
+      <div class="col-md-6 synthesizer-container">
+        <canvas id="synthesizer"></canvas>
+        
       </div>
-      <div class="shape-dropdown">
-        <select id="synthesizer-shape" class="form-select" aria-label="Default select example">
-          <option selected>The Desired 3D Object</option>
-          <option value="1">Cube</option>
-          <option value="2">Prism</option>
-          <option value="3">Tetrahedron</option>
-        </select>
-      </div>
-      <div class="row color-scaffold-select">
-        <div class="col-md-5 color-select">
-          <div class="row">
-            <div class="col-md-7">
-              <span class="input-group-text">Color</span>
+      <div class="col-md-6">
+        <div class="synthesizer-header">
+          <h3>Select Synthesizing Options</h3>
+        </div>
+        <div class="shape-dropdown">
+          <select id="synthesizer-shape" class="form-select" aria-label="Default select example">
+            <option value="0" selected disabled>The Desired 3D Object</option>
+            <option value="1">Cube</option>
+            <option value="2">Sphere</option>
+            <option value="3">Cylinder</option>
+            <option value="4">Cone</option>
+            <option value="5">Polyhedron</option>
+            <option value="6">Tetrahedron</option>
+            <option value="7">Octahedron</option>
+            <option value="8">Icosahedron</option>
+            <option value="9">Dodecahedron</option>
+          </select>
+        </div>
+        <div class="row color-scaffold-select">
+          <div class="col-md-5 color-select">
+            <div class="row">
+              <div class="col-md-7">
+                <span class="input-group-text">Color</span>
+              </div>
+              <div class="col-md-5">
+                <input type="color" class="form-control form-control-color" id="exampleColorInput" value="#000000">
+              </div>
             </div>
-            <div class="col-md-5">
-              <input type="color" class="form-control form-control-color" id="exampleColorInput" value="#000000">
+          </div>
+          <div class="col-md-7 scaffold-select">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
+              <label class="form-check-label" for="inlineRadio1">8064 nucleotides scaffold</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2" checked>
+              <label class="form-check-label" for="inlineRadio2">7249 nucleotides scaffold</label>
             </div>
           </div>
         </div>
-        <div class="col-md-7 scaffold-select">
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
-            <label class="form-check-label" for="inlineRadio1">8064 nucleotides scaffold</label>
+        <div class="dimension-picker">
+          <p class="dimension-text"></p>
+          <div class="height-container dimension-container">
+            <div class="input-group dimension-input-container">
+              <span class="input-group-text w-25">Height</span>
+              <input type="text" class="dimension-input height-input form-control" placeholder="50" aria-label="height">
+            </div>
           </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2" checked>
-            <label class="form-check-label" for="inlineRadio2">7249 nucleotides scaffold</label>
+          <div class="width-container dimension-container">
+            <div class="input-group dimension-input-container">
+              <span class="input-group-text w-25">Width</span>
+              <input type="text" class="dimension-input width-input form-control" placeholder="50" aria-label="width">
+            </div>
+          </div>
+          <div class="depth-container dimension-container">
+            <div class="input-group dimension-input-container">
+              <span class="input-group-text w-25">Depth</span>
+              <input type="text" class="dimension-input depth-input form-control" placeholder="50" aria-label="depth">
+            </div>
+          </div>
+          <div class="radius-container dimension-container">
+            <div class="input-group dimension-input-container">
+              <span class="input-group-text w-25">Radius</span>
+              <input type="text" class="dimension-input radius-input form-control" placeholder="50" aria-label="radius">
+            </div>
+          </div>
+          <div class="rs-container dimension-container">
+            <div class="input-group dimension-input-container">
+              <span class="input-group-text w-25">Radial Segment</span>
+              <input type="text" class="dimension-input rs-input form-control" placeholder="50" aria-label="radial segment">
+            </div>
+          </div>
+          <div class="rt-container dimension-container">
+            <div class="input-group dimension-input-container">
+              <span class="input-group-text w-25">Radius Top</span>
+              <input type="text" class="dimension-input rst-input form-control" placeholder="50" aria-label="radial segment">
+            </div>
+          </div>
+          <div class="rb-container dimension-container">
+            <div class="input-group dimension-input-container">
+              <span class="input-group-text w-25">Radius Bottom</span>
+              <input type="text" class="dimension-input rsb-input form-control" placeholder="50" aria-label="radial segment">
+            </div>
+          </div>
+          <div class="detail-container dimension-container">
+            <div class="input-group dimension-input-container">
+              <span class="input-group-text w-25">Detail</span>
+              <input type="text" class="dimension-input detail-input form-control" placeholder="50" aria-label="radial segment">
+            </div>
+          </div>
+          <div class="ws-container dimension-container">
+            <div class="input-group dimension-input-container">
+              <span class="input-group-text w-25">Width Segment</span>
+              <input type="text" class="dimension-input ws-input form-control" placeholder="50" aria-label="radial segment">
+            </div>
+          </div>
+          <div class="hs-container dimension-container">
+            <div class="input-group dimension-input-container">
+              <span class="input-group-text w-25">Height Segment</span>
+              <input type="text" class="dimension-input hs-input form-control" placeholder="50" aria-label="radial segment">
+            </div>
           </div>
         </div>
-      </div>
-      <div class="dimension-picker">
-        <p class="dimension-text"></p>
-        <div class="input-group mb-3">
-          <span class="input-group-text">Height</span>
-          <input type="text" class="height-input form-control" placeholder="50" aria-label="Username">
-          <span class="input-group-text">Width</span>
-          <input type="text" class="width-input form-control" placeholder="50" aria-label="Server">
-          <span class="input-group-text">Length</span>
-          <input type="text" class="length-input form-control" placeholder="50" aria-label="Server">
+        <div class="synthesizer-btn-container">
+          <button type="button" class="synthesizer-btn btn btn-secondary btn-lg w-50" disabled>Synthesize</button>
         </div>
       </div>
-      <div class="synthesizer-btn-container">
-        <button type="button" class="synthesizer-btn btn btn-secondary btn-lg w-50">Synthesize</button>
-      </div>
+
     </div>
+
+    
     <!-- End of Synthesizer Selection-->
 
 
@@ -116,6 +180,6 @@
       </div>
     </div> 
     <!-- End of FOOTER-->
-
+    <%= javascript_pack_tag 'model', 'data-turbolinks-track': 'reload'%>
   </body>
 </html>

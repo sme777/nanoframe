@@ -7194,10 +7194,22 @@
     "source-map" "~0.7.2"
     "source-map-support" "~0.5.19"
 
+"three-mtl-loader@^1.0.2":
+  "integrity" "sha512-GqDrWC5rbi+0/gp999S4lpCSHroBEfe9NqmH165orG0QhXeknL/eSNVMJUWBNgg2sBW7vlqVNWD/P0kdHeGC9g=="
+  "resolved" "https://registry.npmjs.org/three-mtl-loader/-/three-mtl-loader-1.0.2.tgz"
+  "version" "1.0.2"
+  dependencies:
+    "three" "^0.87.1"
+
 "three@^0.126.1":
   "integrity" "sha512-eOEXnZeE1FDV0XgL1u08auIP13jxdN9LQBAEmlErYzMxtIIfuGIAZbijOyookALUhqVzVOx0Tywj6n192VM+nQ=="
   "resolved" "https://registry.npmjs.org/three/-/three-0.126.1.tgz"
   "version" "0.126.1"
+
+"three@^0.87.1":
+  "integrity" "sha1-Rmo07cRUNFnO2bnX0na2Uhb+K6g="
+  "resolved" "https://registry.npmjs.org/three/-/three-0.87.1.tgz"
+  "version" "0.87.1"
 
 "through2@^2.0.0":
   "integrity" "sha512-/mrRod8xqpA+IHSLyGCQ2s8SPHiCDEeQJSep1jqLYeEUClOFG2Qsh+4FU6G9VeqpZnGW/Su8LQGc4YKni5rYSQ=="

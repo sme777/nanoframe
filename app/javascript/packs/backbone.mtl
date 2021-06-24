@@ -1,0 +1,15 @@
+newmtl Sphere material_6f8a3b10-09d6-4146-a1a4-0aaf615d0184
+Kd 0.761 0.733 0.427
+d 1.000
+newmtl Cylinder material 1_f8cb11a2-5156-46ae-9288-dcc3461fa8b0
+Kd 0.255 0.282 0.580
+d 1.000
+newmtl Cylinder material_f6a58dcd-a0cf-4244-92ca-b1956586f35d
+Kd 0.255 0.282 0.580
+d 1.000
+newmtl Sphere material 2_abc2e084-57e4-40c0-8b65-db2ff75153c6
+Kd 0.890 0.106 0.694
+d 1.000
+newmtl Sphere material 1_0b116c26-2e7a-4f0a-90eb-3864cc08d6ec
+Kd 0.761 0.733 0.427
+d 1.000

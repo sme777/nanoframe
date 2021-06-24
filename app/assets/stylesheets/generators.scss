@@ -8,11 +8,12 @@
  */
 
  .selection-menu {
-     margin-top: 15%;
+     margin: 5% 0;
      
-     margin-left: 55%;
-     margin-right: 5%;
-     width: 40%;
+     //margin-left: 55%;
+     //margin-right: 5%;
+     //width: 40%;
+     //height: 1000px;
  }
 
  .color-scaffold-select {
@@ -54,3 +55,60 @@
     width: 500px;
     //height: auto;
  }
+
+ .dimension-picker {
+     //display: none;
+ }
+
+ .dimension-input{
+     text-align: right;
+ }
+
+.height-container {
+    display: none;
+}
+.width-container {
+    display: none;
+}
+.depth-container {
+    display: none;
+}
+.radius-container {
+    display: none;
+}
+.rs-container {
+    display: none;
+}
+.rt-container {
+    display: none;
+}
+.rb-container {
+    display: none;
+}
+.detail-container {
+    display: none;
+}
+
+.ws-container {
+    display: none;
+}
+
+.hs-container {
+    display: none;
+}
+
+.dimension-container {
+    padding: 1%;
+}
+.synthesizer-container {
+    margin: 5% 0;
+    //position: relative;
+}
+
+#synthesizer {
+    width: 100%;
+    height: auto;
+    //padding: 50px 0;
+    //padding: 5% 0;
+}
+
