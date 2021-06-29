@@ -8,12 +8,8 @@
  */
 
  .selection-menu {
-     margin: 5% 0;
-     
-     //margin-left: 55%;
-     //margin-right: 5%;
-     //width: 40%;
-     //height: 1000px;
+     margin-top: 5%;
+     margin-bottom: 2%;
  }
 
  .color-scaffold-select {
@@ -23,7 +19,6 @@
 
  .scaffold-select {
     margin-top: .5%;
-    //vertical-align: middle;
  }
 
  .synthesizer-header {
@@ -47,21 +42,12 @@
     font-family: 'Syne Mono', monospace;
  }
 
- .selection-menu {
-     //position: absolute;
- }
-
- #synthesizer {
-    width: 500px;
-    //height: auto;
- }
-
  .dimension-picker {
-     //display: none;
+     padding: 0 5%;
  }
 
  .dimension-input{
-     text-align: right;
+     text-align: center;
  }
 
 .height-container {
@@ -117,14 +103,43 @@
     padding: 1%;
 }
 .synthesizer-container {
-    margin: 5% 0;
+    margin-top: 5%;
     //position: relative;
 }
 
 #synthesizer {
     width: 100%;
     height: auto;
-    //padding: 50px 0;
-    //padding: 5% 0;
 }
 
+.generator-container {
+    //display: none;
+    text-align: center;
+}
+
+#generator {
+    width: 100%;
+    height: auto;
+}
+
+.generator-outer-container {
+    visibility: hidden;
+}
+
+.middle-hr {
+    margin: 0 20%;
+}
+
+.generator-text {
+    text-align: center;
+    font-family: 'Syne Mono', monospace;
+    font-size: 32px;
+}
+
+.generate-download-txt {
+    width: 20px;
+}
+
+.generator-download-container {
+    display: none;
+}

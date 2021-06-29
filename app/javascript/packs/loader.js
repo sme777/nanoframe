@@ -1,5 +1,6 @@
 import { Nucleotide } from "./nucleotide";
 
+
 let nucleotides = [];
 
 function loader(shape, height, width, length, scaffold_length) {
