@@ -3,6 +3,7 @@ import {CSS2DRenderer, CSS2DObject} from 'three-css2drender'
 import TrackballControls from 'three-trackballcontrols';
 import { PDBLoader } from './PDBLoader';
 
+
 function main() {
     let camera, scene, renderer, labelRenderer;
     let controls;
@@ -48,9 +49,7 @@ function main() {
     controls.maxDistance = 2000;
 
     //
-    
-    loadMolecule("./models/cocaine.pdb");
-    
+    loadMolecule("/assets/cocaine-51e918a2501f056e3907e99db2b63403b0bac03cf2b05f2430dc3041b68d4615.pdb");
     //
 
     window.addEventListener( 'resize', onWindowResize );
@@ -168,8 +167,8 @@ function main() {
     
         const time = Date.now() * 0.0004;
     
-        root.rotation.x = time;
-        root.rotation.y = time * 0.7;
+        root.rotation.x = time * 0.3;
+        root.rotation.y = time * 0.3;
     
         render();
     
