@@ -16,16 +16,17 @@ $(document).ready(function() {
             $(".height-container").show();
             $(".width-container").show();
             $(".depth-container").show();
-            $(".width-input").prop("disabled", true);
-            $(".depth-input").prop("disabled", true);
+            $(".ws-container").show();
+            $(".hs-container").show();
+            $(".ds-container").show();
+            //$(".width-input").prop("disabled", true);
+            //$(".depth-input").prop("disabled", true);
             // hide unneccsary input fields
             $(".radius-container").hide();
             $(".rs-container").hide();
             $(".rt-container").hide();
             $(".rb-container").hide();
             $(".detail-container").hide();
-            $(".ws-container").hide();
-            $(".hs-container").hide();
             $(".tube-container").hide();
             $(".tubular-container").hide();
             $(".p-container").hide();
@@ -33,6 +34,9 @@ $(document).ready(function() {
             requiredParams.push(".height-input");
             requiredParams.push(".width-input");
             requiredParams.push(".depth-input");
+            requiredParams.push(".ws-input");
+            requiredParams.push(".hs-input");
+            requiredParams.push(".ds-input");
         } else if (synthesizerChoice == "Sphere") {
             requiredParams = [];
             // show neccsary input fields
@@ -52,6 +56,7 @@ $(document).ready(function() {
             $(".tubular-container").hide();
             $(".p-container").hide();
             $(".q-container").hide();
+            $(".ds-container").hide();
             requiredParams.push(".ws-input");
             requiredParams.push(".hs-input");
             requiredParams.push(".radius-input");
@@ -73,6 +78,7 @@ $(document).ready(function() {
             $(".tubular-container").hide();
             $(".p-container").hide();
             $(".q-container").hide();
+            $(".ds-container").hide();
 
             requiredParams.push(".rs-input");
             requiredParams.push(".rst-input");
@@ -96,6 +102,7 @@ $(document).ready(function() {
             $(".tubular-container").hide();
             $(".p-container").hide();
             $(".q-container").hide();
+            $(".ds-container").hide();
 
             requiredParams.push(".rs-input");
             requiredParams.push(".radius-input");
@@ -120,6 +127,7 @@ $(document).ready(function() {
             $(".tubular-container").hide();
             $(".p-container").hide();
             $(".q-container").hide();
+            $(".ds-container").hide();
             requiredParams.push(".radius-input");
             requiredParams.push(".detail-input");
         } else if (synthesizerChoice == "Torus"){
@@ -139,6 +147,7 @@ $(document).ready(function() {
             $(".depth-container").hide();
             $(".p-container").hide();
             $(".q-container").hide();
+            $(".ds-container").hide();
             requiredParams.push(".radius-input");
             requiredParams.push(".tube-input");
             requiredParams.push(".rs-input");
@@ -160,6 +169,7 @@ $(document).ready(function() {
             $(".hs-container").hide()
             $(".width-container").hide();
             $(".depth-container").hide();
+            $(".ds-container").hide();
             requiredParams.push(".radius-input");
             requiredParams.push(".tube-input");
             requiredParams.push(".rs-input");
@@ -180,6 +190,7 @@ $(document).ready(function() {
             $(".depth-container").hide();
             $(".tube-container").hide();
             $(".tubular-container").hide();
+            $(".ds-container").hide();
         }
     });
 
@@ -187,7 +198,7 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 
-    $(".dimension-input").on("input", function(evt) {
+    $(".height-input").on("input", function(evt) {
         let self = $(this);
         self.val(self.val().replace(/[^0-9\.]/g, ''));
         if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) 
@@ -196,9 +207,68 @@ $(document).ready(function() {
         } 
 
         if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
-            $(".width-input").val(self.val() + " nm");
-            $(".depth-input").val(self.val() + " nm");
+            $(".width-input").val(self.val());
+            $(".depth-input").val(self.val());
         }
+        checkIfDone();
+      });
+
+      $(".width-input").on("input", function(evt) {
+        let self = $(this);
+        self.val(self.val().replace(/[^0-9\.]/g, ''));
+        if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) 
+        {
+          evt.preventDefault();
+        } 
+
+        if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
+            $(".height-input").val(self.val());
+            $(".depth-input").val(self.val());
+        }
+        checkIfDone();
+      });
+
+      $(".depth-input").on("input", function(evt) {
+        let self = $(this);
+        self.val(self.val().replace(/[^0-9\.]/g, ''));
+        if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) 
+        {
+          evt.preventDefault();
+        } 
+        if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
+            $(".width-input").val(self.val());
+            $(".height-input").val(self.val());
+        }
+        checkIfDone();
+      });
+
+      $(".ws-input").on("input", function(evt) {
+        let self = $(this);
+        self.val(self.val().replace(/[^0-9\.]/g, ''));
+        if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) 
+        {
+          evt.preventDefault();
+        } 
+        checkIfDone();
+      });
+
+      $(".hs-input").on("input", function(evt) {
+        let self = $(this);
+        self.val(self.val().replace(/[^0-9\.]/g, ''));
+        if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) 
+        {
+          evt.preventDefault();
+        } 
+        checkIfDone();
+      });
+
+      $(".ds-input").on("input", function(evt) {
+        let self = $(this);
+        self.val(self.val().replace(/[^0-9\.]/g, ''));
+        if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) 
+        {
+          evt.preventDefault();
+        } 
         checkIfDone();
       });
 
@@ -217,12 +287,3 @@ $(document).ready(function() {
     }
 });
 
-$(document).ready(function() {
-    $(".synthesizer-btn").click(function() {
-        $(".generator-outer-container").css({"visibility": "visible"})
-        $(".generator-download-container").css({"display": "block"});
-        $('html, body').animate({
-            scrollTop: $(".generator-outer-container").offset().top
-        }, 2000);
-    });
-});

@@ -3,6 +3,7 @@ $(document).ready(function() {
 
     $("#signup-btn").click(function(e) {
         $(".sign-in-container").css({"opacity": "0.5"});
+        $(".dna-wrapper").css({"opacity": "0.5"});
         $(".sign-up-outer-container").css({"display": "block"});
     });
 
@@ -10,6 +11,7 @@ $(document).ready(function() {
     $(".close-btn").click(function(e) {
         $(".sign-up-outer-container").css({"display": "none"});
         $(".sign-in-container").css({"opacity": "1"});
+        $(".dna-wrapper").css({"opacity": "1"});
         // remove left on text
         $("#signUpUsername").val("");
         $("#firstName").val("");

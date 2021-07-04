@@ -1,222 +1,230 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Project Nanoframe</title>
-    
-    <!-- Stylesheet Links -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
-    <!-- Script Links-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-    <script src="https://threejs.org/build/three.js"></script>
-    
-     
 
-    <%= stylesheet_link_tag 'application', media: 'all' %> 
-    <%= stylesheet_link_tag 'pygments-dark', media: 'all' %>
-    </head>  
-  <body>
+<head>
+  <meta charset="utf-8">
+  <title>Project Nanoframe</title>
 
-      
+  <!-- Stylesheet Links -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
+  <!-- Script Links-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous">
+  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
+  </script>
+  <script src="https://threejs.org/build/three.js"></script>
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+</head>
 
-    <div class="menu-items">
-      <ul class="nav nav-tabs justify-content-end">
-        <li class="nav-item">
-          <a class="nav-link" href="/">Homepage</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/about">The Project</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active nanofont" href="/nanobot">The Nanobot</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/contact">Contact</a>
-        </li>
-      </ul>
-    </div>
-    
+<body>
 
-    <!-- End of NAVBAR-->
-    
-    <!-- Start of Synthesizer Selection-->
-    <div class="row selection-menu">
-      <div class="col-md-6 synthesizer-container">
-        <canvas id="synthesizer"></canvas>
-        
-      </div>
-      <div class="col-md-6">
-        <div class="synthesizer-header">
-          <h3>Select Synthesizing Options</h3>
-        </div>
-        <div class="shape-dropdown">
-          <select id="synthesizer-shape" class="form-select" aria-label="Default select example">
-            <option value="0" selected disabled>The Desired 3D Object</option>
-            <option value="1">Cube</option>
-            <option value="2">Sphere</option>
-            <option value="3">Cylinder</option>
-            <option value="4">Cone</option>
-            <option value="5">Polyhedron</option>
-            <option value="6">Tetrahedron</option>
-            <option value="7">Octahedron</option>
-            <option value="8">Icosahedron</option>
-            <option value="9">Dodecahedron</option>
-            <option value="10">Torus</option>
-            <option value="11">Torus Knot</option>
-          </select>
-        </div>
-        <div class="row color-scaffold-select">
-          <div class="col-md-5 color-select">
-            <div class="row">
-              <div class="col-md-7">
-                <span class="input-group-text">Color</span>
-              </div>
-              <div class="col-md-5">
-                <input type="color" class="form-control form-control-color" id="exampleColorInput" value="#000000">
-              </div>
-            </div>
-          </div>
-          <div class="col-md-7 scaffold-select">
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1">
-              <label class="form-check-label" for="inlineRadio1">8064 nucleotides scaffold</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2" checked>
-              <label class="form-check-label" for="inlineRadio2">7249 nucleotides scaffold</label>
-            </div>
-          </div>
-        </div>
-        <div class="dimension-picker">
-          <div class="height-container dimension-container">
-            <div class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Height</span>
-              <input type="text" class="dimension-input height-input form-control" placeholder="45 nm" aria-label="height">
-            </div>
-          </div>
-          <div class="width-container dimension-container">
-            <div class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Width</span>
-              <input type="text" class="dimension-input width-input form-control" placeholder="45 nm" aria-label="width">
-            </div>
-          </div>
-          <div class="depth-container dimension-container">
-            <div class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Depth</span>
-              <input type="text" class="dimension-input depth-input form-control" placeholder="45 nm" aria-label="depth">
-            </div>
-          </div>
-          <div class="radius-container dimension-container">
-            <div data-bs-toggle="tooltip" data-bs-placement="left" 
-            title="Radius of the chosen object." class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Radius</span>
-              <input type="text" class="dimension-input radius-input form-control" placeholder="20 nm" aria-label="radius">
-            </div>
-          </div>
-          <div class="rs-container dimension-container">
-            <div data-bs-toggle="tooltip" data-bs-placement="left" 
-            title="Number of segmented faces around the circumference." 
-            class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Radial Segment</span>
-              <input type="text" class="dimension-input rs-input form-control" placeholder="10 nm" aria-label="radial segment">
-            </div>
-          </div>
-          <div class="rt-container dimension-container">
-            <div data-bs-toggle="tooltip" data-bs-placement="left"
-            title="Radius of the chosen object at the top" 
-            class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Radius Top</span>
-              <input type="text" class="dimension-input rst-input form-control" placeholder="20 nm" aria-label="radial segment">
-            </div>
-          </div>
-          <div class="rb-container dimension-container">
-            <div data-bs-toggle="tooltip" data-bs-placement="left" 
-            title="Radius of the object at the bottom" 
-            class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Radius Bottom</span>
-              <input type="text" class="dimension-input rsb-input form-control" placeholder="15 nm" aria-label="radial segment">
-            </div>
-          </div>
-          <div class="detail-container dimension-container">
-            <div title="Setting this to a value greater than 0 adds vertices making it no longer a chosen hedron." class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Detail</span>
-              <input type="text" class="dimension-input detail-input form-control" placeholder="0" aria-label="radial segment">
-            </div>
-          </div>
-          <div class="ws-container dimension-container">
-            <div class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Width Segment</span>
-              <input type="text" class="dimension-input ws-input form-control" placeholder="13 nm" aria-label="radial segment">
-            </div>
-          </div>
-          <div class="hs-container dimension-container">
-            <div class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Height Segment</span>
-              <input type="text" class="dimension-input hs-input form-control" placeholder="20 nm" aria-label="radial segment">
-            </div>
-          </div>
 
-          <div class="tube-container dimension-container">
-            <div data-bs-toggle="tooltip" data-bs-placement="left" title="Radius of the tube." 
-            class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Tube Radius</span>
-              <input type="text" class="dimension-input tube-input form-control" placeholder="6 nm" aria-label="radial segment">
-            </div>
-          </div>
 
-          <div class="tubular-container dimension-container">
-            <div class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Tubular Segment</span>
-              <input type="text" class="dimension-input tubular-input form-control" placeholder="10 nm" aria-label="radial segment">
-            </div>
-          </div>
+  <div class="menu-items">
+    <ul class="nav nav-tabs justify-content-end">
+      <li class="nav-item">
+        <a class="nav-link" href="/">Homepage</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/about">The Project</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active nanofont" href="/nanobot">The Nanobot</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/contact">Contact</a>
+      </li>
+    </ul>
+  </div>
 
-          <div class="p-container dimension-container">
-            <div data-bs-toggle="tooltip" data-bs-placement="left" 
-            title="This value determines, how many times the geometry 
-            winds around its axis of rotational symmetry. Default is 2." class="input-group dimension-input-container">
-              <span class="input-group-text w-25">P</span>
-              <input type="text" class="dimension-input p-input form-control" placeholder="5" aria-label="radial segment">
-            </div>
-          </div>
 
-          <div class="q-container dimension-container">
-            <div data-bs-toggle="tooltip" data-bs-placement="left" 
-            title="This value determines, how many times the geometry winds around 
-            a circle in the interior of the torus. Default is 3." class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Q</span>
-              <input type="text" class="dimension-input q-input form-control" placeholder="5" aria-label="radial segment">
-            </div>
-          </div>
-          
-        </div>
-        <div class="synthesizer-btn-container">
-          <button type="button" class="synthesizer-btn btn btn-secondary btn-lg w-50" disabled>Synthesize</button>
-        </div>
-      </div>
+
+
+  <!-- End of NAVBAR-->
+
+  <!-- Start of Synthesizer Selection-->
+  <div class="row selection-menu">
+    <div class="col-md-6 synthesizer-container">
+      <canvas id="synthesizer"></canvas>
 
     </div>
+    <div class="col-md-6">
+      <div class="synthesizer-header">
+        <h3>Select Synthesizing Options</h3>
+      </div>
+      <%# puts @generator%>
+      <%= form_with(model: @generator, method: :post) do |f| %>
+      <%# <form action="/nanobot/new" method="GET"> %>
+      <div class="shape-dropdown">
+        <select id="synthesizer-shape" class="form-select" aria-label="Default select example">
+          <option value="0" selected disabled>The Desired 3D Object</option>
+          <option value="1">Cube</option>
+          <option value="2">Sphere</option>
+          <option value="3">Cylinder</option>
+          <option value="4">Cone</option>
+          <option value="5">Polyhedron</option>
+          <option value="6">Tetrahedron</option>
+          <option value="7">Octahedron</option>
+          <option value="8">Icosahedron</option>
+          <option value="9">Dodecahedron</option>
+          <option value="10">Torus</option>
+          <option value="11">Torus Knot</option>
+        </select>
+      </div>
+      <div class="color-scaffold-select">
+        <div class="scaffold-select">
 
-    <!-- End of Synthesizer Selection-->
+          <div class="form-check form-check-inline">
+            <%= f.radio_button :option, "8064 nucleotides scaffold", class: "btn-check", id: "btnradio1", autocomplete: "off", style: "display: none;"%>
+            <%= f.label "1", "8064 nucleotides scaffold", for: "btnradio1", class: "btn btn-outline-dark", id: "inlineRadio1"%>
+          </div>
+          <div class="form-check form-check-inline">
+            <%= f.radio_button :option, "7249 nucleotides scaffold", class: "btn-check", id: "btnradio2", autocomplete: "off", checked: true, style: "display: none;" %>
+            <%= f.label "2", "7249 nucleotides scaffold", for: "btnradio2", class: "btn btn-outline-dark", id: "inlineRadio2"%>
+          </div>
+
+        </div>
+      </div>
+      <div class="dimension-picker">
+        <div class="height-container dimension-container">
+          <div class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Height</span>
+            <%= f.text_field :height, type: "text", class: "dimension-input height-input form-control", placeholder: "45 nm" %>
+          </div>
+        </div>
+        <div class="width-container dimension-container">
+          <div class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Width</span>
+            <%= f.text_field :width, type: "text", class: "dimension-input width-input form-control", placeholder: "45 nm" %>
+          </div>
+        </div>
+        <div class="depth-container dimension-container">
+          <div class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Depth</span>
+            <%= f.text_field :depth, type: "text", class: "dimension-input depth-input form-control", placeholder: "45 nm" %>
+          </div>
+        </div>
+        <div class="radius-container dimension-container">
+          <div data-bs-toggle="tooltip" data-bs-placement="left" title="Radius of the chosen object."
+            class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Radius</span>
+            <%= f.text_field :radius, type: "text", class: "dimension-input radius-input form-control", placeholder: "20 nm" %>
+          </div>
+        </div>
+        <div class="rs-container dimension-container">
+          <div data-bs-toggle="tooltip" data-bs-placement="left"
+            title="Number of segmented faces around the circumference." class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Radial Segment</span>
+            <%= f.text_field :radial_segment, type: "text", class: "dimension-input rs-input form-control", placeholder: "10 nm" %>
+          </div>
+        </div>
+        <div class="rt-container dimension-container">
+          <div data-bs-toggle="tooltip" data-bs-placement="left" title="Radius of the chosen object at the top"
+            class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Radius Top</span>
+            <%= f.text_field :radius_top, type: "text", class: "dimension-input rst-input form-control", placeholder: "20 nm" %>
+          </div>
+        </div>
+        <div class="rb-container dimension-container">
+          <div data-bs-toggle="tooltip" data-bs-placement="left" title="Radius of the object at the bottom"
+            class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Radius Bottom</span>
+            <%= f.text_field :radius_bottom, type: "text", class: "dimension-input rsb-input form-control", placeholder: "15 nm" %>
+          </div>
+        </div>
+        <div class="detail-container dimension-container">
+          <div title="Setting this to a value greater than 0 adds vertices making it no longer a chosen hedron."
+            class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Detail</span>
+            <%= f.text_field :detail, type: "text", class: "dimension-input detail-input form-control", placeholder: "0" %>
+          </div>
+        </div>
+        <div class="ws-container dimension-container">
+          <div class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Width Segment</span>
+            <%= f.text_field :width_segment, type: "text", class: "dimension-input ws-input form-control", placeholder: "13 nm" %>
+          </div>
+        </div>
+        <div class="hs-container dimension-container">
+          <div class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Height Segment</span>
+            <%= f.text_field :height_segment, type: "text", class: "dimension-input hs-input form-control", placeholder: "20 nm" %>
+          </div>
+        </div>
+
+        <div class="ds-container dimension-container">
+          <div class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Depth Segment</span>
+            <%= f.text_field :width_segment, type: "text", class: "dimension-input ds-input form-control", placeholder: "8 nm" %>
+          </div>
+        </div>
+
+        <div class="tube-container dimension-container">
+          <div data-bs-toggle="tooltip" data-bs-placement="left" title="Radius of the tube."
+            class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Tube Radius</span>
+            <%= f.text_field :tube_radius, type: "text", class: "dimension-input tube-input form-control", placeholder: "6 nm" %>
+          </div>
+        </div>
+
+        <div class="tubular-container dimension-container">
+          <div class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Tubular Segment</span>
+            <%= f.text_field :tubular_radius, type: "text", class: "dimension-input tubular-input form-control", placeholder: "10 nm" %>
+          </div>
+        </div>
+
+        <div class="p-container dimension-container">
+          <div data-bs-toggle="tooltip" data-bs-placement="left" title="This value determines, how many times the geometry 
+              winds around its axis of rotational symmetry. Default is 2."
+            class="input-group dimension-input-container">
+            <span class="input-group-text w-25">P</span>
+            <%= f.text_field :p, type: "text", class: "dimension-input p-input form-control", placeholder: "5" %>
+          </div>
+        </div>
+
+        <div class="q-container dimension-container">
+          <div data-bs-toggle="tooltip" data-bs-placement="left" title="This value determines, how many times the geometry winds around 
+              a circle in the interior of the torus. Default is 3." class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Q</span>
+            <%= f.text_field :q, type: "text", class: "dimension-input q-input form-control", placeholder: "5" %>
+          </div>
+        </div>
+
+      </div>
+      <div class="synthesizer-btn-container">
+        <%= f.submit "Synthesize", class: "synthesizer-btn btn btn-secondary btn-lg w-50", disabled: true%>
+        <%# <button type="submit" class="synthesizer-btn btn btn-secondary btn-lg w-50" disabled>Synthesize</button> %>
+      </div>
+      <% end %>
+    </div>
+
+  </div>
+
+  <!-- End of Synthesizer Selection-->
 
 
-    <!-- Start of Synthesizer-->
-    
-    <div class="generator-outer-container">
+  <!-- Start of Synthesizer-->
+
+  <!-- <div class="generator-outer-container">
       <div class="generator-text">
         <div class="animate-typing" data-type-speed="200" data-type-delay="20" 
         data-remove-speed="20" data-remove-delay="500" >
           Synthesization Results |
           Generated
         </div>
-        <!-- download buttons start -->
+        
         <div class="generator-download-container">
           <button type="button" class="btn btn-outline-warning" data-bs-toggle="button" autocomplete="off">
           <%= image_tag("download", class: "generate-download-txt") %> .txt
@@ -231,31 +239,32 @@
           </button>
         </div>
 
-        <!-- download buttons end-->
+        
         <hr class="middle-hr my-4">
       </div>
       <div class="generator-container">
         <canvas id="generator"></canvas>
       </div>
-    </div>
+    </div> -->
 
-    <!-- End of Synthesizer-->
+  <!-- End of Synthesizer-->
 
-    <!-- Start of FOOTER-->
-    <div class="container" id="footer">
-      <hr class="my-4">
-    
-      <div class="footer-copyright text-center py-3">
-        <div class="copyright">
-          <p>© 2021 <a href="https://tilabberkeley.com/">Ti Lab</a> @ Berkeley</p>
-        </div> 
+  <!-- Start of FOOTER-->
+  <div class="container" id="footer">
+    <hr class="my-4">
+
+    <div class="footer-copyright text-center py-3">
+      <div class="copyright">
+        <p>© 2021 <a href="https://tilabberkeley.com/">Ti Lab</a> @ Berkeley</p>
       </div>
-    </div> 
-    <!-- End of FOOTER-->
-    <%= javascript_pack_tag 'model', 'typingAnimation', 'nanobot', 'synthesizer', 'data-turbolinks-track': 'reload'%>
-    
-    <!-- Start of Generator Script -->
+    </div>
+  </div>
+  <!-- End of FOOTER-->
+  <%= javascript_pack_tag 'model', 'nanobot', 'data-turbolinks-track': 'reload'%>
 
-    <!-- End of Generator Script -->
-  </body>
+  <!-- Start of Generator Script -->
+
+  <!-- End of Generator Script -->
+</body>
+
 </html>

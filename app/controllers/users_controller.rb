@@ -4,6 +4,7 @@ class UsersController < ApplicationController
         if session[:user_id] != nil
             @current_user = User.find_by(id: session[:user_id])
         end
+        
     end
 
     def contact
@@ -71,6 +72,10 @@ class UsersController < ApplicationController
         respond_to do |format|
           format.json {render :json => {username_exists: @user.present?}} 
         end
+    end
+
+    def get_contact
+        redirect_to '/'
     end
 
     private
