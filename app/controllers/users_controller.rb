@@ -4,6 +4,7 @@ class UsersController < ApplicationController
         if session[:user_id] != nil
             @current_user = User.find_by(id: session[:user_id])
         end
+        
     end
 
     def contact
@@ -49,13 +50,31 @@ class UsersController < ApplicationController
             session[:user_id] = user.id
             redirect_to '/nanobot'
         else
-            flash[:danger] = "Invalid Login Credentials"
+            flash[:danger] = "Invalid Login Credentials" 
             redirect_to '/'
         end
     end
 
     def sign_out
         session[:user_id] = nil
+        redirect_to '/'
+    end
+
+    def check_email
+        @user = User.find_by_email(params[:email])
+        respond_to do |format|
+            format.json {render :json => {email_exists: @user.present?}}
+        end
+    end
+
+    def check_username
+        @user = User.find_by_username(params[:username])
+        respond_to do |format|
+          format.json {render :json => {username_exists: @user.present?}} 
+        end
+    end
+
+    def get_contact
         redirect_to '/'
     end
 

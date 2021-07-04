@@ -1,57 +1,159 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title>Project Nanoframe</title>
-    
-    <!-- Stylesheet Links -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
-    <!-- Script Links-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-    <%= stylesheet_link_tag 'application', media: 'all' %>
-  </head>
-  <body>
-    <!-- Start of NAVBAR-->
-    <div class="row">
-      <div class="col-md-6">
 
-      </div>
-      <div class="col-md-6 menu-items">
-        <ul class="nav nav-tabs justify-content-end">
-          <li class="nav-item">
-            <a class="nav-link" href="/">Homepage</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/about">The Project</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link nanofont" href="/nanobot">The Nanobot</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="/contact">Contact</a>
-          </li>
-        </ul>
+<head>
+  <meta charset="utf-8">
+  <title>Project Nanoframe</title>
+
+  <!-- Stylesheet Links -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
+  <!-- Script Links-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous">
+  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+  </script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
+  </script>
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+</head>
+
+<body>
+  <!-- Start of NAVBAR-->
+  <div>
+    <div class="menu-items">
+      <ul class="nav nav-tabs justify-content-end">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Homepage</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/about">The Project</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/nanobot">The Nanobot</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active nanofont" aria-current="page" href="/contact">Contact</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- End of NAVBAR-->
+
+  <div class="row">
+
+    <div class="col-md-6 email-input-form">
+      <form class="contact-form" action='contact/new' method="GET">
+        <h1 class="contact-us-header">Contact Us</h1>
+        <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label">Full Name</label>
+          <input type="email" class="form-control" id="fullNameInput" placeholder="What's your full name?">
+        </div>
+        <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label">Email address</label>
+          <input type="email" class="form-control" id="emailInput" placeholder="you@example.com">
+        </div>
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
+          <textarea class="form-control" id="messageInput" placeholder="Write your message for the team here"
+            rows="3"></textarea>
+        </div>
+        <div class="submit-email-btn">
+          <button id="contact-btn" type="submit" class="w-50 btn btn-outline-dark btn-lg">Submit</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="col-md-6 dna-mascot-container">
+      <%= image_tag("dna_mascot.jpg", class: "dna-mascot")%>
+    </div>
+  </div>
+
+  <div class="email-confirm-container">
+    <%= image_tag("close", class: "close-btn") %>
+    <div>
+      <h2>Thank you for getting in touch!</h2>
+      <p>We have recieved your email, and will get back to you
+        as soon as possible. In the meantime, feel free to checkout us
+        on <a href="">github</a>. Did you know that we make 100% open-source software?</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1>Looking for something in particular?</h1>
+  </div>
+
+  <div class="row">
+    <div class="about-image col-md-6">
+      <%= image_tag("bayarea.jpg")%>
+    </div>
+
+    <div class="about-container col-md-6">
+      <h2>Located at the Heart of the Bay Area</h2>
+
+      <p class="about-text-view">Based off UC Berkeley, Ti Lab not only does the
+        most pioneering work in DNA nanotechnology in Northern California, but also
+        shares a marveluos view with a city of mass histroical heritage. This is where
+        all the magic happens. From breezy mornings till awing sunsets, not a day goes wasted
+        here in the Ti Lab, where we learn and build from the wonders of life. Inspired by nature, built by nature. </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="about-container col-md-6">
+      <h2>Empowered by the best Research Technologies</h2>
+
+      <p class="about-text-cell">The application of DNA nanotechnology are vast. Self-assembling
+        electronics, nanorobotics, nanomedicine and molecular programming are
+        few to mention. We aim to solve global problems using the miracle and
+        the source of life – the DNA. Nature has evolved mechanisms to self-assemble
+        complex functional architectures in a sustainable bottom-up way with atomic
+        precision.
+      </p>
+    </div>
+
+    <div class="about-image col-md-6">
+      <%= image_tag("cells.jpg")%>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="about-image col-md-6">
+      <%= image_tag("campanile.jpg")%>
+    </div>
+
+    <div class="about-container-lab col-md-6">
+      <h2>Brought to you by the Brightest Academics</h2>
+
+      <p class="about-text-lab"> From South Africa to Armenia, and from Russia to the US,
+        Ti Lab consists of a diverse group of academics passionate about DNA nanotechnology,
+        and the inspiring and limitless possibilities it offers. Pioneering in a newfangled field,
+        Ti Lab builds software and hardware that enables studying and developing the most intricate
+        ideas of the century. </p>
+    </div>
+  </div>
+  <!-- Start of FOOTER-->
+  <div class="container" id="footer">
+    <hr class="my-4">
+
+    <div class="footer-copyright text-center py-3">
+      <div class="copyright">
+        <p>© 2021 <a href="https://tilabberkeley.com/">Ti Lab</a> @ Berkeley</p>
       </div>
     </div>
-    <!-- End of NAVBAR-->
+  </div>
 
+  <%= javascript_pack_tag 'contact', 'data-turbolinks-track': 'reload' %>
+  <!-- End of FOOTER-->
+</body>
 
-    <!-- Start of FOOTER-->
-    <div class="container" id="footer">
-      <hr class="my-4">
-    
-      <div class="footer-copyright text-center py-3">
-        <div class="copyright">
-          <p>© 2021 <a href="https://tilabberkeley.com/">Ti Lab</a> @ Berkeley</p>
-        </div> 
-      </div>
-    </div> 
-    <!-- End of FOOTER-->
-  </body>
 </html>

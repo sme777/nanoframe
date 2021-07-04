@@ -6,53 +6,71 @@
  *= require_tree .
  *= require_self
  */
- //body {
-    //background-image: linear-gradient(#dddddd, #f9f3f3);
- //}
+//body {
+//background-image: linear-gradient(#dddddd, #f9f3f3);
+//}
 
- .sign-up-form {
-     //margin-left: 30%;
-     //margin-top: 10%; //20
-     //padding-left: 30%; //10
-     //padding-right: 30%; //10
- }
+//  body {
+//      background-color: #F8F8F8;
+//  }
 
- .sign-up-form-header {
-     text-align: center;
-     margin-bottom: 5%;
-     font-family: 'Syne Mono', monospace;
- }
+.sign-up-outer-container {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 2%;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
- .guest-form {
-    //margin-left: 30%;
-    //padding-left: 30%;
-    //padding-right: 30%;
- }
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
 
- .guest-from-label {
+.sign-up-form {
+    padding: 4% 6%;
+}
+
+.sign-up-form-header {
+    text-align: center;
+    padding-bottom: 5%;
+    font-family: 'Syne Mono', monospace;
+}
+
+.sign-up-btn-container {
+    padding-top: 5%;
+    text-align: center;
+}
+
+.guest-from-label {
     padding-top: 2%;
     padding-bottom: 2%;
     text-align: center;
- }
+}
 
- .separator {
+.separator {
     display: flex;
     align-items: center;
     text-align: center;
     font-family: 'Syne Mono', monospace;
-  }
-  
+}
+
 .separator::before,
 .separator::after {
     content: '';
     flex: 1;
     border-bottom: 1px solid #000;
 }
-  
+
 .separator:not(:empty)::before {
     margin-right: 1.5em;
 }
-  
+
 .separator:not(:empty)::after {
     margin-left: 1.5em;
 }
@@ -61,30 +79,32 @@
     font-family: 'Syne Mono', monospace;
 }
 
-// .login-username {
-//     //width: 200px;
-// }
+.close-btn {
+    float: right;
+    width: 15px;
+    margin: 3%;
+}
 
-// .login-password {
-//     float: left;
-//     //width: 20px;
-// }
 .profile-picture {
     width: 65px;
     border-radius: 50%;
 }
+
 .sign-in-container {
     padding-top: 3%;
     padding-left: 10%;
 }
+
 .logged-in-profile-id {
     margin-top: 15px;
 }
+
 .logged-in-profile-image {
     margin-top: 15px;
     margin-left: 50px;
     //float: left;
 }
+
 .menu-items {
     padding-top: 2%;
     padding-right: 2%;
@@ -97,6 +117,7 @@
 a {
     text-decoration: none;
 }
+
 .transparent-layer {
     z-index: 2;
     //background-color: rgba(255, 255, 255, 0.8);
@@ -106,16 +127,20 @@ a {
     //margin-top: 10%;
     //margin-right: 5%;
     //float: right;
-     margin-left: 30%;
-     margin-right: 5%;
-     margin-top: 10%; //20
-     padding-left: 30%; //10
-     //padding-right: 30%;
+    margin-left: 30%;
+    margin-right: 5%;
+    margin-top: 10%; //20
+    padding-left: 30%; //10
+    //padding-right: 30%;
 }
+
 canvas {
-    width: 100%;
-    height: 50%;
+    //padding-top: 2%;
+    width: 200px;
+    height: 200px;
+    //background-color: #000000 ;
 }
+
 #artifactCanvas {
     //width: 100%;
     margin-top: 5%;
@@ -123,6 +148,224 @@ canvas {
     position: absolute;
 }
 
-.invalid-login {
-    width: 150px;
+.profile-contents {
+    //display: inline;
+}
+
+.forgot-password-container {
+    text-align: center;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+.sign-in-container {
+    padding: 4% 6%;
+    background-color: white;
+    border-radius: 2%;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.signout-link-container {
+    position: absolute;
+    top: 20%;
+    left: 5%;
+}
+
+.create-link-container {
+    position: absolute;
+    top: 20%;
+    right: 5%;
+}
+
+.user-details-container {
+    text-align: center;
+}
+
+.user-fullname {
+    font-family: 'Nunito', sans-serif;
+}
+
+.user-username {
+    font-family: 'Syne Mono', monospace;
+    color: #0d6efd;
+}
+
+.switch-field {
+    display: flex;
+    margin-bottom: 36px;
+    justify-content: center;
+    //text-align: center;
+    //overflow: hidden;
+}
+
+.radio-label {
+    width: 20%;
+}
+
+.switch-field input {
+    position: absolute !important;
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    width: 1px;
+    border: 0;
+    overflow: hidden;
+}
+
+.switch-field label {
+    background-color: #fff;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 14px;
+    line-height: 1;
+    text-align: center;
+    padding: 8px 16px;
+    margin-right: -1px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    transition: all 0.2s ease-in-out;
+}
+
+.switch-field label:hover {
+    cursor: pointer;
+}
+
+.switch-field input:checked+label {
+    background-color: #CDF0EA;
+    box-shadow: none;
+}
+
+.switch-field label:first-of-type {
+    border-radius: 4px 0 0 4px;
+}
+
+.switch-field label:last-of-type {
+    border-radius: 0 4px 4px 0;
+}
+
+.public-png {
+    width: 25px;
+}
+
+.private-png {
+    width: 25px;
+}
+
+.history-png {
+    width: 25px;
+}
+
+.user-portrait {
+    //margin: 10% 0 3% 0;
+    //max-width: 100%;
+    //max-height: 240px;
+    width: 15%;
+    //height: auto;
+    border-radius: 50%;
+    //cursor: pointer;
+    //border: 8px solid rgba(240, 240, 240, 0.7);
+    //overflow: hidden;
+}
+
+.user-portrait-mask {
+    margin: 5% 0;
+    // width: 200px;
+    // height: 200px;
+    // overflow: hidden;
+}
+
+.landscape {
+    height: 100%;
+}
+
+.portrait {
+    width: 100%;
+}
+
+.user-portrait:hover {
+    opacity: 0.7;
+}
+
+.profile-container {
+    text-align: center;
+}
+
+.file-upload {
+    display: none;
+}
+
+.about-image {
+    margin: 5% 5%;
+    width: 40%;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.about-text-cell {
+    text-indent: 5%;
+    margin-top: 10%;
+    margin-left: 5%;
+    line-height: 2em;
+    text-align: justify;
+}
+
+.about-text-lab {
+    text-indent: 5%;
+    margin-top: 10%;
+    margin-right: 5%;
+    line-height: 2em;
+    text-align: justify;
+}
+
+.about-text-view {
+    text-indent: 5%;
+    margin-top: 10%;
+    margin-right: 5%;
+    line-height: 2em;
+    text-align: justify;
+}
+
+.about-container {
+    text-align: center;
+    margin-top: 10%;
+}
+
+.about-container-lab {
+    text-align: center;
+    margin-top: 15%;
+}
+
+.email-input-form {
+
+    padding-top: 5%;
+    padding-left: 10%;
+    padding-bottom: 5%;
+}
+
+.submit-email-btn {
+    margin-top: 5%;
+    text-align: center;
+}
+
+.dna-mascot {
+    width: 50%;
+}
+
+.dna-mascot-container {
+    padding-top: 10%;
+    padding-bottom: 5%;
+    text-align: center;
+}
+
+.contact-us-header {
+    margin-bottom: 5%;
+    font-weight: 600;
+}
+
+#footer {
+    padding-top: 8%;
+}
+
+.dna-wrapper {
+    position: absolute;
+    width: 100%;
+    top: 11%;
+    z-index: -1;
 }

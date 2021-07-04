@@ -8,11 +8,8 @@
  */
 
  .selection-menu {
-     margin-top: 15%;
-     
-     margin-left: 55%;
-     margin-right: 5%;
-     width: 40%;
+     margin-top: 5%;
+     margin-bottom: 2%;
  }
 
  .color-scaffold-select {
@@ -21,14 +18,172 @@
  }
 
  .scaffold-select {
-    margin-top: .5%;
-    //vertical-align: middle;
+    text-align: center;
+    margin-top: 3%;
  }
 
  .synthesizer-header {
+     text-align: center;
      margin-bottom: 5%;
  }
 
  .sz {
      width: 80%;
  }
+
+ .dimension-text {
+     display: none;
+ }
+
+ .synthesizer-btn-container {
+     text-align: center;
+     padding: 5% 0;
+ }
+
+ .synthesizer-btn {
+    font-family: 'Syne Mono', monospace;
+ }
+
+ .dimension-picker {
+     padding: 0 5%;
+ }
+
+ .dimension-input{
+     text-align: center;
+ }
+
+.height-container {
+    display: none;
+}
+.width-container {
+    display: none;
+}
+.depth-container {
+    display: none;
+}
+.radius-container {
+    display: none;
+}
+.rs-container {
+    display: none;
+}
+.rt-container {
+    display: none;
+}
+.rb-container {
+    display: none;
+}
+.detail-container {
+    display: none;
+}
+
+.ws-container {
+    display: none;
+}
+
+.hs-container {
+    display: none;
+}
+
+.ds-container {
+    display: none;
+}
+
+.tube-container {
+    display: none;
+}
+
+.tubular-container {
+    display: none;
+}
+
+.p-container {
+    display: none;
+}
+
+.q-container {
+    display: none;
+}
+
+.dimension-container {
+    padding: 1%;
+}
+.synthesizer-container {
+    margin-top: 5%;
+    //position: relative;
+}
+
+#synthesizer {
+    width: 100%;
+    height: auto;
+}
+
+.generator-container {
+    //display: none;
+    //margin: 0 5%;
+    height: auto;
+    text-align: center;
+}
+
+#generator {
+    width: 100%;
+    height: auto;
+}
+
+.generator-outer-container {
+    //visibility: hidden;
+}
+
+.middle-hr {
+    margin: 0 20%;
+}
+
+.generator-text {
+    text-align: center;
+    font-family: 'Syne Mono', monospace;
+    font-size: 32px;
+}
+
+.generate-download-txt {
+    width: 20px;
+}
+
+.generator-download-container {
+    //display: none;
+}
+
+
+.back-container {
+    margin-top: 3%;
+    margin-left: 5%;
+    font-size: 22px;
+}
+
+.back-anchor {
+    text-decoration: none;
+}
+
+.email-confirm-container {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 2%;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+
+.shape-dropdown {
+    padding: 0 5%;
+}
+
+
+
