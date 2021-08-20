@@ -49,64 +49,70 @@
  }
 
  .dimension-input{
+     
      text-align: center;
  }
 
-.height-container {
-    display: none;
-}
-.width-container {
-    display: none;
-}
-.depth-container {
-    display: none;
-}
-.radius-container {
-    display: none;
-}
-.rs-container {
-    display: none;
-}
-.rt-container {
-    display: none;
-}
-.rb-container {
-    display: none;
-}
-.detail-container {
-    display: none;
-}
+// .height-container {
+//     display: none;
+// }
+// .width-container {
+//     display: none;
+// }
+// .depth-container {
+//     display: none;
+// }
+// .radius-container {
+//     display: none;
+// }
+// .rs-container {
+//     display: none;
+// }
+// .rt-container {
+//     display: none;
+// }
+// .rb-container {
+//     display: none;
+// }
+// .detail-container {
+//     display: none;
+// }
 
-.ws-container {
-    display: none;
-}
+// .ws-container {
+//     display: none;
+// }
 
-.hs-container {
-    display: none;
-}
+// .hs-container {
+//     display: none;
+// }
 
-.ds-container {
-    display: none;
-}
+// .ds-container {
+//     display: none;
+// }
 
-.tube-container {
-    display: none;
-}
+// .tube-container {
+//     display: none;
+// }
 
-.tubular-container {
-    display: none;
-}
+// .tubular-container {
+//     display: none;
+// }
 
-.p-container {
-    display: none;
-}
+// .p-container {
+//     display: none;
+// }
 
-.q-container {
-    display: none;
+// .q-container {
+//     display: none;
+// }
+
+.dimension-wrapper-container {
+    padding: 1%;
 }
 
 .dimension-container {
-    padding: 1%;
+    
+    display: none;
 }
 .synthesizer-container {
     margin-top: 5%;
@@ -152,10 +158,28 @@
     //display: none;
 }
 
+.fc-arrow {
+    //color: aqua;
+}
 
-.back-container {
+.fc-flurry {
+    width: 20px;
+
+}
+
+.back-container  {
     margin-top: 3%;
-    margin-left: 5%;
+    margin-bottom: 3%;
+    margin-left: 7%;
+    text-align: left;
+    font-size: 22px;
+}
+
+.forward-container {
+    margin-top: 3%;
+    margin-bottom: 3%;
+    text-align: right;
+    margin-right: 7%;
     font-size: 22px;
 }
 
@@ -183,6 +207,17 @@
 
 .shape-dropdown {
     padding: 0 5%;
+}
+
+.save-container {
+    position: absolute;
+    top: 17%;
+    right: 5%;
+}
+
+#molstar-viewer {
+    width: 100%;
+    height: 100%;
 }
 
 

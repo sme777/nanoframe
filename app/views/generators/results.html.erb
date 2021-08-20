@@ -44,60 +44,16 @@
         </ul>
     </div>
 
-    <div class="back-container">
-        <a id="backbtn" class="back-anchor" href="/nanobot">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor"
-                class="bi bi-arrow-left-short" viewBox="0 0 16 16">
-                <path fill-rule="evenodd"
-                    d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5z" />
-            </svg>
-            Back
-        </a>
-    </div>
-
-    <div class="generator-outer-container">
-        <div class="generator-text">
-            <div class="animate-typing" data-type-speed="200" data-type-delay="20" data-remove-speed="20"
-                data-remove-delay="500">
-                Synthesization Results |
-                Generated
-            </div>
-
-            <div class="generator-download-container">
-                <button type="button" class="btn btn-outline-warning" data-bs-toggle="button" autocomplete="off">
-                    <%= image_tag("download", class: "generate-download-txt") %> .txt
-                </button>
-
-                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="button" autocomplete="off">
-                    <%= image_tag("download", class: "generate-download-txt") %> .oxview
-                </button>
-
-                <button type="button" class="btn btn-outline-success" data-bs-toggle="button" autocomplete="off">
-                    <%= image_tag("download", class: "generate-download-txt") %> .csv
-                </button>
-            </div>
-
-
-            <hr class="middle-hr my-4">
-        </div>
-        <div class="generator-container">
-            <canvas id="generator"></canvas>
-        </div>
-    </div>
-
-    
-    <div class="container" id="footer">
-        <hr class="my-4">
-
-        <div class="footer-copyright text-center py-3">
-            <div class="copyright">
-                <p>© 2021 <a href="https://tilabberkeley.com/">Ti Lab</a> @ Berkeley</p>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="back-container">
+                <a class="generator-arrow" href="/nanobot/routing/<%= @generator.id %>">&larr; Back</a>
             </div>
         </div>
+        <div class="col-md-6">
+
+        </div>
     </div>
-
-    <%= javascript_pack_tag 'typingAnimation', 'synthesizer', 'data-turbolinks-track': 'reload'%>
-
 </body>
 
 </html>

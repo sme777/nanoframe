@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 2021_07_03_224514) do
     t.float "width_segment"
     t.float "height_segment"
     t.float "tube_radius"
+    t.float "depth_segment"
     t.float "tubular_radius"
     t.float "p"
     t.float "q"

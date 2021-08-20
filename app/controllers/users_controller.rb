@@ -37,7 +37,7 @@ class UsersController < ApplicationController
         user = User.new({name: name, username: username, email: email, password: user_params[:password]})
         if user.save
             session[:user_id] = user.id
-            redirect_to '/nanobot'
+            redirect_to '/'
         else
             flash[:register_errors] = user.errors.full_messages 
             redirect_to '/'
@@ -48,7 +48,7 @@ class UsersController < ApplicationController
         user = User.find_by(username: login_params[:login_username])
         if user && user.authenticate(login_params[:login_password])
             session[:user_id] = user.id
-            redirect_to '/nanobot'
+            redirect_to '/'
         else
             flash[:danger] = "Invalid Login Credentials" 
             redirect_to '/'

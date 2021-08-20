@@ -6,9 +6,9 @@ export function makeDefault() {
 
 export function makeCube() {
   const size = 30;
-  const widthSegments = 2;  
+  const widthSegments = 3;  
   const heightSegments = 3;  
-  const depthSegments = 4;  
+  const depthSegments = 3;  
   const geometry = new THREE.WireframeGeometry(new THREE.BoxGeometry(size, size, size, widthSegments, heightSegments, depthSegments));
   const mesh = new THREE.LineSegments(geometry, wireframeMaterial);
   return mesh;

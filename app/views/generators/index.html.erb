@@ -68,109 +68,111 @@
       <%# <form action="/nanobot/new" method="GET"> %>
       <div class="shape-dropdown">
         <select id="synthesizer-shape" class="form-select" aria-label="Default select example">
-          <option value="0" selected disabled>The Desired 3D Object</option>
-          <option value="1">Cube</option>
-          <option value="2">Sphere</option>
-          <option value="3">Cylinder</option>
-          <option value="4">Cone</option>
-          <option value="5">Polyhedron</option>
-          <option value="6">Tetrahedron</option>
-          <option value="7">Octahedron</option>
-          <option value="8">Icosahedron</option>
-          <option value="9">Dodecahedron</option>
-          <option value="10">Torus</option>
-          <option value="11">Torus Knot</option>
+          <option value="0" disabled selected>Select Shape</option>
+          <option value="1" >Cube</option>
+          <option value="2" >Sphere</option>
+          <option value="3" >Cylinder</option>
+          <option value="4" >Cone</option>
+          <option value="5" >Polyhedron</option>
+          <option value="6" >Tetrahedron</option>
+          <option value="7" >Octahedron</option>
+          <option value="8" >Icosahedron</option>
+          <option value="9" >Dodecahedron</option>
+          <option value="10 ">Torus</option>
+          <option value="11" >Torus Knot</option>
+          <option value="/shaper">Custom</option>
         </select>
+        <%# <%= select_tag(:shape,  options_for_select(@options, :select => "2", :disabled => "0"), id: "synthesizer-shape", class: "form-select")%> 
       </div>
       <div class="color-scaffold-select">
         <div class="scaffold-select">
 
           <div class="form-check form-check-inline">
-            <%= f.radio_button :option, "8064 nucleotides scaffold", class: "btn-check", id: "btnradio1", autocomplete: "off", style: "display: none;"%>
+            <%= f.radio_button :option, "8064 nucleotides scaffold", class: "btn-check", id: "btnradio1", autocomplete: "off", checked: (true if @generator.option == "8064 nucleotides scaffold"), style: "display: none;"%>
             <%= f.label "1", "8064 nucleotides scaffold", for: "btnradio1", class: "btn btn-outline-dark", id: "inlineRadio1"%>
           </div>
           <div class="form-check form-check-inline">
-            <%= f.radio_button :option, "7249 nucleotides scaffold", class: "btn-check", id: "btnradio2", autocomplete: "off", checked: true, style: "display: none;" %>
+            <%= f.radio_button :option, "7249 nucleotides scaffold", class: "btn-check", id: "btnradio2", autocomplete: "off", checked: (true if @generator.option == "7249 nucleotides scaffold"), style: "display: none;" %>
             <%= f.label "2", "7249 nucleotides scaffold", for: "btnradio2", class: "btn btn-outline-dark", id: "inlineRadio2"%>
           </div>
 
         </div>
       </div>
       <div class="dimension-picker">
-        <div class="height-container dimension-container">
+        <div class="height-container dimension-wrapper-container <%= 'dimension-container' if @generator.height == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Height</span>
             <%= f.text_field :height, type: "text", class: "dimension-input height-input form-control", placeholder: "45 nm" %>
           </div>
         </div>
-        <div class="width-container dimension-container">
+        <div class="width-container dimension-wrapper-container <%= 'dimension-container' if @generator.width == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Width</span>
             <%= f.text_field :width, type: "text", class: "dimension-input width-input form-control", placeholder: "45 nm" %>
           </div>
         </div>
-        <div class="depth-container dimension-container">
+        <div class="depth-container dimension-wrapper-container <%= 'dimension-container' if @generator.depth == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Depth</span>
             <%= f.text_field :depth, type: "text", class: "dimension-input depth-input form-control", placeholder: "45 nm" %>
           </div>
         </div>
-        <div class="radius-container dimension-container">
+        <div class="radius-container dimension-wrapper-container <%= 'dimension-container' if @generator.radius == nil %>">
           <div data-bs-toggle="tooltip" data-bs-placement="left" title="Radius of the chosen object."
             class="input-group dimension-input-container">
             <span class="input-group-text w-25">Radius</span>
             <%= f.text_field :radius, type: "text", class: "dimension-input radius-input form-control", placeholder: "20 nm" %>
           </div>
         </div>
-        <div class="rs-container dimension-container">
+        <div class="rs-container dimension-wrapper-container <%= 'dimension-container' if @generator.radial_segment == nil %>">
           <div data-bs-toggle="tooltip" data-bs-placement="left"
             title="Number of segmented faces around the circumference." class="input-group dimension-input-container">
             <span class="input-group-text w-25">Radial Segment</span>
             <%= f.text_field :radial_segment, type: "text", class: "dimension-input rs-input form-control", placeholder: "10 nm" %>
           </div>
         </div>
-        <div class="rt-container dimension-container">
+        <div class="rt-container dimension-wrapper-container <%= 'dimension-container' if @generator.radius_top == nil %>">
           <div data-bs-toggle="tooltip" data-bs-placement="left" title="Radius of the chosen object at the top"
             class="input-group dimension-input-container">
             <span class="input-group-text w-25">Radius Top</span>
             <%= f.text_field :radius_top, type: "text", class: "dimension-input rst-input form-control", placeholder: "20 nm" %>
           </div>
         </div>
-        <div class="rb-container dimension-container">
+        <div class="rb-container dimension-wrapper-container <%= 'dimension-container' if @generator.radius_bottom == nil %>">
           <div data-bs-toggle="tooltip" data-bs-placement="left" title="Radius of the object at the bottom"
             class="input-group dimension-input-container">
             <span class="input-group-text w-25">Radius Bottom</span>
             <%= f.text_field :radius_bottom, type: "text", class: "dimension-input rsb-input form-control", placeholder: "15 nm" %>
           </div>
         </div>
-        <div class="detail-container dimension-container">
+        <div class="detail-container dimension-wrapper-container <%= 'dimension-container' if @generator.detail == nil %>">
           <div title="Setting this to a value greater than 0 adds vertices making it no longer a chosen hedron."
             class="input-group dimension-input-container">
             <span class="input-group-text w-25">Detail</span>
             <%= f.text_field :detail, type: "text", class: "dimension-input detail-input form-control", placeholder: "0" %>
           </div>
         </div>
-        <div class="ws-container dimension-container">
+        <div class="ws-container dimension-wrapper-container <%= 'dimension-container' if @generator.width_segment == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Width Segment</span>
             <%= f.text_field :width_segment, type: "text", class: "dimension-input ws-input form-control", placeholder: "13 nm" %>
           </div>
         </div>
-        <div class="hs-container dimension-container">
+        <div class="hs-container dimension-wrapper-container <%= 'dimension-container' if @generator.height_segment == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Height Segment</span>
             <%= f.text_field :height_segment, type: "text", class: "dimension-input hs-input form-control", placeholder: "20 nm" %>
           </div>
         </div>
 
-        <div class="ds-container dimension-container">
+        <div class="ds-container dimension-wrapper-container <%= 'dimension-container' if @generator.depth_segment == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Depth Segment</span>
             <%= f.text_field :width_segment, type: "text", class: "dimension-input ds-input form-control", placeholder: "8 nm" %>
           </div>
         </div>
 
-        <div class="tube-container dimension-container">
+        <div class="tube-container dimension-wrapper-container <%= 'dimension-container' if @generator.tube_radius == nil %>">
           <div data-bs-toggle="tooltip" data-bs-placement="left" title="Radius of the tube."
             class="input-group dimension-input-container">
             <span class="input-group-text w-25">Tube Radius</span>
@@ -178,14 +180,14 @@
           </div>
         </div>
 
-        <div class="tubular-container dimension-container">
+        <div class="tubular-container dimension-wrapper-container <%= 'dimension-container' if @generator.tubular_radius == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Tubular Segment</span>
             <%= f.text_field :tubular_radius, type: "text", class: "dimension-input tubular-input form-control", placeholder: "10 nm" %>
           </div>
         </div>
 
-        <div class="p-container dimension-container">
+        <div class="p-container dimension-wrapper-container <%= 'dimension-container' if @generator.p == nil %>">
           <div data-bs-toggle="tooltip" data-bs-placement="left" title="This value determines, how many times the geometry 
               winds around its axis of rotational symmetry. Default is 2."
             class="input-group dimension-input-container">
@@ -194,7 +196,7 @@
           </div>
         </div>
 
-        <div class="q-container dimension-container">
+        <div class="q-container dimension-wrapper-container <%= 'dimension-container' if @generator.q == nil %>">
           <div data-bs-toggle="tooltip" data-bs-placement="left" title="This value determines, how many times the geometry winds around 
               a circle in the interior of the torus. Default is 3." class="input-group dimension-input-container">
             <span class="input-group-text w-25">Q</span>

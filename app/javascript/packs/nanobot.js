@@ -177,20 +177,21 @@ $(document).ready(function() {
             requiredParams.push(".p-input");
             requiredParams.push(".q-input");
         } else {
+            window.location = $(this).val();
             // hide everything
-            $(".radius-container").hide();
-            $(".detail-container").hide();
-            $(".rs-container").hide();
-            $(".height-container").hide();
-            $(".rt-container").hide();
-            $(".rb-container").hide();
-            $(".ws-container").hide();
-            $(".hs-container").hide()
-            $(".width-container").hide();
-            $(".depth-container").hide();
-            $(".tube-container").hide();
-            $(".tubular-container").hide();
-            $(".ds-container").hide();
+            // $(".radius-container").hide();
+            // $(".detail-container").hide();
+            // $(".rs-container").hide();
+            // $(".height-container").hide();
+            // $(".rt-container").hide();
+            // $(".rb-container").hide();
+            // $(".ws-container").hide();
+            // $(".hs-container").hide()
+            // $(".width-container").hide();
+            // $(".depth-container").hide();
+            // $(".tube-container").hide();
+            // $(".tubular-container").hide();
+            // $(".ds-container").hide();
         }
     });
 

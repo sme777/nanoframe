@@ -12,7 +12,8 @@ class CreateGenerators < ActiveRecord::Migration[6.1]
       t.float :width_segment
       t.float :height_segment
       t.float :tube_radius
-      
+      t.float :depth_segment
+
       t.float :tubular_radius
       t.float :p
       t.float :q

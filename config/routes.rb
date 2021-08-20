@@ -7,12 +7,16 @@ Rails.application.routes.draw do
   get '/signout' => 'users#sign_out'
   get '/contact' => 'users#contact'
   get '/about' => 'users#about'
+  get 'shaper' => 'generators#shaper'
   get '/nanobot' => 'generators#index'
-  post '/nanobot' => 'generators#create'
-  get '/nanobot/:id', to: 'generators#show'
+  post '/nanobot' => 'generators#create', as: 'generator'
+  post '/nanobot' => 'generators#create', as: 'generators'
+  get '/nanobot/:id' => 'generators#synthesize'
+  get '/nanobot/routing/:id' => 'generators#routing'
+  get '/nanobot/results/:id' => 'generators#results'
   get '/contact/new' => 'users#get_contact'
   #get '/nanobot/new' => 'generators#new'
   get '/checkemail' => 'users#check_email', :defaults => { :format => :json }
   get '/checkusername' => 'users#check_username', :defaults => { :format => :json }
-  resources :generators 
+  #resources :generators 
 end

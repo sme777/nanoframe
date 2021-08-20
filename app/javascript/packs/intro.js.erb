@@ -7,7 +7,6 @@ import { PDBLoader } from './PDBLoader';
 function main() {
     let camera, scene, renderer, labelRenderer;
     let controls;
-    
     let root;
     
     const loader = new PDBLoader();
@@ -50,7 +49,7 @@ function main() {
 
     //
     <% helpers = ActionController::Base.helpers %>
-    loadMolecule("<%= helpers.image_path('cell.pdb') %>")
+    //loadMolecule("<%= helpers.image_path('cell.pdb') %>")
     //
 
     window.addEventListener( 'resize', onWindowResize );

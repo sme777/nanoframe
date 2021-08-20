@@ -1,6 +1,7 @@
 import * as Three from 'three'
 import oc from 'three-orbit-controls'
 import * as Maker from "./shapeMaker";
+import { DNA } from './dna';
 
 function main() {
     const OrbitControls = oc(Three)
@@ -99,6 +100,8 @@ function main() {
 
     renderer.setPixelRatio(window.devicePixelRatio);
     requestAnimationFrame(render);
+    // let dna = new DNA(7249);
+    // console.log(dna.sequence());
 }
 
 
