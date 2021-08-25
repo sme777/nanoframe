@@ -33,22 +33,22 @@ export const polyhedronData = {
 
 export const tetrahedronData = {
     radius: 22,
-    details: 0
+    detail: 0
 }
 
 export const octahedronData = {
     radius: 22,
-    details: 0
+    detail: 0
 }
 
 export const icosahedronData = {
     radius: 22,
-    details: 0
+    detail: 0
 }
 
 export const dodecahedronData = {
     radius: 22,
-    details: 0
+    detail: 0
 }
 
 export const torusData = {
@@ -59,10 +59,10 @@ export const torusData = {
 }
 
 export const torusKnotData = {
-    radius : 22,  
-    tubeRadius: 2,  
+    radius : 15,  
+    tubeRadius: 4,  
     radialSegments: 8,  
-    tubularSegments: 24,
+    tubularSegments: 64,
     p: 2,  
     q: 3 
 }
