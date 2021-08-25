@@ -1,3 +1,6 @@
+import * as THREE from 'three'
+import * as Data from './shapeData'
+
 const wireframeMaterial = new THREE.LineBasicMaterial({color: 0x000000});
 
 export function makeDefault() {
@@ -5,13 +8,32 @@ export function makeDefault() {
 }
 
 export function makeCube() {
-  const size = 30;
-  const widthSegments = 3;  
-  const heightSegments = 3;  
-  const depthSegments = 3;  
-  const geometry = new THREE.WireframeGeometry(new THREE.BoxGeometry(size, size, size, widthSegments, heightSegments, depthSegments));
+  //console.log(cubeData.width)
+  const geometry = new THREE.WireframeGeometry(new THREE.BoxGeometry(
+    Data.cubeData.width,
+    Data.cubeData.height, 
+    Data.cubeData.depth, 
+    Data.cubeData.widthSegments, 
+    Data.cubeData.heightSegments, 
+    Data.cubeData.depthSegments
+  ));
+  //console.log(geometry.sizes)
   const mesh = new THREE.LineSegments(geometry, wireframeMaterial);
   return mesh;
+}
+
+export function regenerateCube(cube) {
+    const newGeometry = new THREE.WireframeGeometry(new THREE.BoxGeometry(
+    Data.cubeData.width,
+    Data.cubeData.height, 
+    Data.cubeData.depth, 
+    Data.cubeData.widthSegments, 
+    Data.cubeData.heightSegments, 
+    Data.cubeData.depthSegments
+  ));
+  cube.geometry.dispose()
+  cube.geometry = newGeometry
+  return cube
 }
 
 export function makeSphere() {

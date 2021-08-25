@@ -23,7 +23,6 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
     integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
   </script>
-  <script src="https://threejs.org/build/three.js"></script>
   <%= stylesheet_link_tag 'application', media: 'all' %>
 </head>
 
@@ -56,6 +55,7 @@
   <!-- Start of Synthesizer Selection-->
   <div class="row selection-menu">
     <div class="col-md-6 synthesizer-container">
+      <div class="datGUI"></div>
       <canvas id="synthesizer"></canvas>
 
     </div>
@@ -67,7 +67,7 @@
       <%= form_with(model: @generator, method: :post) do |f| %>
       <%# <form action="/nanobot/new" method="GET"> %>
       <div class="shape-dropdown">
-        <select id="synthesizer-shape" class="form-select" aria-label="Default select example">
+        <select id="synthesizer-shape" class="form-select">
           <option value="0" disabled selected>Select Shape</option>
           <option value="1" >Cube</option>
           <option value="2" >Sphere</option>
@@ -262,7 +262,7 @@
     </div>
   </div>
   <!-- End of FOOTER-->
-  <%= javascript_pack_tag 'model', 'nanobot', 'data-turbolinks-track': 'reload'%>
+  <%= javascript_pack_tag 'dna', 'model', 'nanobot', 'data-turbolinks-track': 'reload'%>
 
   <!-- Start of Generator Script -->
 

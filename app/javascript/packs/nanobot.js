@@ -176,7 +176,7 @@ $(document).ready(function() {
             requiredParams.push(".tubular-input");
             requiredParams.push(".p-input");
             requiredParams.push(".q-input");
-        } else {
+        } else if (synthesizerChoice == "Custom"){
             window.location = $(this).val();
             // hide everything
             // $(".radius-container").hide();

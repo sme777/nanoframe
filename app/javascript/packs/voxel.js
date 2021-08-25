@@ -4,16 +4,4 @@ export class Voxel {
         this.y = y;
         this.z = z;
     }
-
-    setX(x) {
-        this.x = x;
-    }
-
-    setY(y) {
-        this.y = y;
-    }
-
-    setZ(z) {
-        this.z = z;
-    }
 }
