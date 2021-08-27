@@ -6,38 +6,44 @@ import { ScaffoldType } from "./scaffolds"
 export class DNA {
 
 
-    constructor(length, random=true, scaffold=null) {
+    constructor(length) {
         this.length = length
-        this.random = random
-        this.sequence = []
         this.positions = []
-        this.pointPositions = []
         this.bases = [Base.A, Base.C, Base.G, Base.T]
-        this.scaffold = scaffold
-        this.generate()
         this.position()
-        console.log(this.positions)
+        
     }
 
-    generate() {
-        if (this.random) {
-            for (let i = 0; i < this.length; i++) {
-                const seed = Math.floor(Math.random() * 4)
-                this.sequence.push(this.bases[seed])
-            }
-        } else {
-            switch (this.scaffold) {
-                case ScaffoldType.Virus:
-                    this.sequence = Scaffolds.virus
-                    break;
-                case ScaffoldType.Bacteria:
-                    this.sequence = Scaffolds.bacteria
-                    break;
-                default:
-                    // dummy array made of all adenines
-                    this.sequence = dummyScaffold()
+    generate(random, scaffold) {
+        this.sequence = random ? this.generateRandom() : this.generateFromFile(scaffold)
+    }
+
+    generateRandom() {
+        let arr = []
+        for (let i = 0; i < this.length; i++) {
+            const seed = Math.floor(Math.random() * 4)
+            arr.push(this.bases[seed])
+        }
+        return arr
+    }
+
+    generateFromFile(scaffold) {
+        //console.log(file)
+        let arr = []
+        for (let i = 0; i < scaffold.length; i++) {
+            if (scaffold[i] == "A") {
+                arr.push(Base.A)
+            } else if (scaffold[i] == "T") {
+                arr.push(Base.T)
+            } else if (scaffold[i] == "G") {
+                arr.push(Base.G)
+            } else if (scaffold[i] == "C") {
+                arr.push(Base.C)
+            } else {
+                continue
             }
         }
+        return arr
     }
 
     position() {

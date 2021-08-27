@@ -43,13 +43,21 @@
         </ul>
     </div>
 
-    <div class="row">
-        <div class="col-md-6">
+    <div class="row outer-menu-container">
+        <div class="col-md-4">
             <div class="back-container">
                 <a class="generator-arrow backbtn" href="/nanobot">&larr; Back</a>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
+            <div class="body-navbar">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/nanobot">Menu</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Synthesizer</li>
+                </ol>
+            </div>
+        </div>
+        <div class="col-md-4">
             <div class="forward-container">
                 <a class="route-arrow" href="/nanobot/routing/<%= @generator.id%>">Next &rarr;</a>
             </div>

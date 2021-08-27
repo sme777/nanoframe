@@ -92,29 +92,48 @@
             <%= f.label "1", "8064 nucleotides scaffold", for: "btnradio1", class: "btn btn-outline-dark", id: "inlineRadio1"%>
           </div>
           <div class="form-check form-check-inline">
-            <%= f.radio_button :option, "7249 nucleotides scaffold", class: "btn-check", id: "btnradio2", autocomplete: "off", checked: (true if @generator.option == "7249 nucleotides scaffold"), style: "display: none;" %>
+            <%= f.radio_button :option, "7249 nucleotides scaffold", class: "btn-check", id: "btnradio2", autocomplete: "off", checked: (true if @generator.option != "8064 nucleotides scaffold"), style: "display: none;" %>
             <%= f.label "2", "7249 nucleotides scaffold", for: "btnradio2", class: "btn btn-outline-dark", id: "inlineRadio2"%>
           </div>
 
         </div>
       </div>
-      <div class="dimension-picker">
-        <div class="height-container dimension-wrapper-container <%= 'dimension-container' if @generator.height == nil %>">
-          <div class="input-group dimension-input-container">
-            <span class="input-group-text w-25">Height</span>
-            <%= f.text_field :height, type: "text", class: "dimension-input height-input form-control", placeholder: "45 nm" %>
-          </div>
+
+      <%# Erbify %>
+      <div class="row sequence-container">
+        <div class="col-md-6 random-sequence-container">
+            <input class="form-check-input" type="checkbox" value="" id="sequenceCheckbox" checked autocomplete="off">
+            <label class="form-check-label" for="sequenceCheckbox">
+              Random Sequence
+            </label>
         </div>
+
+        <div class="col-md-6 input-container">
+          <input class="form-control" id="sequenceUpload" type="file" accept=".txt">
+        </div>
+      </div>
+
+      <%# Add hidden field for JSON data %>
+
+      <div class="dimension-picker">
         <div class="width-container dimension-wrapper-container <%= 'dimension-container' if @generator.width == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Width</span>
-            <%= f.text_field :width, type: "text", class: "dimension-input width-input form-control", placeholder: "45 nm" %>
+            <%= f.text_field :width, type: "text", class: "dimension-input width-input form-control", placeholder: "30 nm" %>
           </div>
         </div>
+
+        <div class="height-container dimension-wrapper-container <%= 'dimension-container' if @generator.height == nil %>">
+          <div class="input-group dimension-input-container">
+            <span class="input-group-text w-25">Height</span>
+            <%= f.text_field :height, type: "text", class: "dimension-input height-input form-control", placeholder: "30 nm" %>
+          </div>
+        </div>
+
         <div class="depth-container dimension-wrapper-container <%= 'dimension-container' if @generator.depth == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Depth</span>
-            <%= f.text_field :depth, type: "text", class: "dimension-input depth-input form-control", placeholder: "45 nm" %>
+            <%= f.text_field :depth, type: "text", class: "dimension-input depth-input form-control", placeholder: "30 nm" %>
           </div>
         </div>
         <div class="radius-container dimension-wrapper-container <%= 'dimension-container' if @generator.radius == nil %>">
@@ -155,20 +174,20 @@
         <div class="ws-container dimension-wrapper-container <%= 'dimension-container' if @generator.width_segment == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Width Segment</span>
-            <%= f.text_field :width_segment, type: "text", class: "dimension-input ws-input form-control", placeholder: "13 nm" %>
+            <%= f.text_field :width_segment, type: "text", class: "dimension-input ws-input form-control", placeholder: "3" %>
           </div>
         </div>
         <div class="hs-container dimension-wrapper-container <%= 'dimension-container' if @generator.height_segment == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Height Segment</span>
-            <%= f.text_field :height_segment, type: "text", class: "dimension-input hs-input form-control", placeholder: "20 nm" %>
+            <%= f.text_field :height_segment, type: "text", class: "dimension-input hs-input form-control", placeholder: "3" %>
           </div>
         </div>
 
         <div class="ds-container dimension-wrapper-container <%= 'dimension-container' if @generator.depth_segment == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Depth Segment</span>
-            <%= f.text_field :width_segment, type: "text", class: "dimension-input ds-input form-control", placeholder: "8 nm" %>
+            <%= f.text_field :width_segment, type: "text", class: "dimension-input ds-input form-control", placeholder: "3" %>
           </div>
         </div>
 

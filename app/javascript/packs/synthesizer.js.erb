@@ -1,4 +1,4 @@
-import * as Three from 'three'
+import * as THREE from 'three'
 import {CSS2DRenderer, CSS2DObject} from 'three-css2drender'
 import TrackballControls from 'three-trackballcontrols';
 import { PDBLoader } from './PDBLoader';
@@ -183,7 +183,7 @@ function main() {
     }
 
     animate();
-    const cancel = document.getElementById('backbtn')
+    const cancel = document.querySelector('.backbtn')
     cancel.addEventListener("click", function() {
         if (root != null) {
             root.removeFromParent();

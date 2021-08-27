@@ -58,7 +58,7 @@ function main() {
         clearGUIElemens()
         mesh = Maker.makeCube()
         meshData = Data.cubeData
-        
+
         guiElements.push(gui.add(meshData, 'width', 0, 60).name('Width').setValue(30).onChange(() => {
           Maker.regenerateCube(mesh)
         }))
@@ -69,14 +69,14 @@ function main() {
           Maker.regenerateCube(mesh)
         }))
 
-        guiElements.push(gui.add(meshData, 'widthSegments', 0, 6).step(1).name('Width Segment').setValue(3).onChange(() => {
+        guiElements.push(gui.add(meshData, 'widthSegments', 1, 6).step(1).name('Width Segment').setValue(3).onChange(() => {
           Maker.regenerateCube(mesh)
         }))
 
-        guiElements.push(gui.add(meshData, 'heightSegments', 0, 6).step(1).name('Height Segment').setValue(3).onChange(() => {
+        guiElements.push(gui.add(meshData, 'heightSegments', 1, 6).step(1).name('Height Segment').setValue(3).onChange(() => {
           Maker.regenerateCube(mesh)
         }))
-        guiElements.push(gui.add(meshData, 'depthSegments', 0, 6).step(1).name('Depth Segment').setValue(3).onChange(() => {
+        guiElements.push(gui.add(meshData, 'depthSegments', 1, 6).step(1).name('Depth Segment').setValue(3).onChange(() => {
           Maker.regenerateCube(mesh)
         }))
         
@@ -100,29 +100,34 @@ function main() {
         mesh = Maker.makeCylinder()
         meshData = Data.cylinderData
 
-        guiElements.push(gui.add(meshData, 'radiusTop', 0, 30).name('Top Radius').setValue(18).onChange(() => {
-          Maker.regenerateCylinder(mesh)
-        }))
-        guiElements.push(gui.add(meshData, 'radiusBottom', 0, 30).name('Bottom Radius').setValue(10).onChange(() => {
-          Maker.regenerateCylinder(mesh)
-        }))
         guiElements.push(gui.add(meshData, 'height', 0, 50).name('Height').setValue(33).onChange(() => {
           Maker.regenerateCylinder(mesh)
         }))
         guiElements.push(gui.add(meshData, 'radialSegments', 2, 25).name('Radial Segment').setValue(12).onChange(() => {
           Maker.regenerateCylinder(mesh)
         }))
+
+        guiElements.push(gui.add(meshData, 'radiusTop', 0, 30).name('Radius Top').setValue(18).onChange(() => {
+          Maker.regenerateCylinder(mesh)
+        }))
+        guiElements.push(gui.add(meshData, 'radiusBottom', 0, 30).name('Radius Bottom').setValue(10).onChange(() => {
+          Maker.regenerateCylinder(mesh)
+        }))
+
+
       } else if (chosenShape == 4) {
         clearGUIElemens()
         mesh = Maker.makeCone()
         meshData = Data.coneData
 
-        guiElements.push(gui.add(meshData, 'radius', 0, 40).name('Radius').setValue(20).onChange(() => {
-          Maker.regenerateCone(mesh)
-        }))
         guiElements.push(gui.add(meshData, 'height', 0, 50).name('Height').setValue(33).onChange(() => {
           Maker.regenerateCone(mesh)
         }))
+
+        guiElements.push(gui.add(meshData, 'radius', 0, 40).name('Radius').setValue(20).onChange(() => {
+          Maker.regenerateCone(mesh)
+        }))
+
         guiElements.push(gui.add(meshData, 'radialSegments', 2, 40).step(1).name('Radial Segment').setValue(20).onChange(() => {
           Maker.regenerateCone(mesh)
         }))
@@ -190,11 +195,11 @@ function main() {
         guiElements.push(gui.add(meshData, 'radius', 0, 40).name('Radius').setValue(22).onChange(() => {
           Maker.regenerateTorus(mesh)
         }))
-        guiElements.push(gui.add(meshData, 'tubeRadius', 0, 15).name('Tube Radius').setValue(2).onChange(() => {
+        guiElements.push(gui.add(meshData, 'radialSegments', 2, 30).name('Radial Segment').step(1).setValue(8).onChange(() => {
           Maker.regenerateTorus(mesh)
         }))
 
-        guiElements.push(gui.add(meshData, 'radialSegments', 2, 30).name('Radial Segment').step(1).setValue(8).onChange(() => {
+        guiElements.push(gui.add(meshData, 'tubeRadius', 0, 15).name('Tube Radius').setValue(2).onChange(() => {
           Maker.regenerateTorus(mesh)
         }))
         guiElements.push(gui.add(meshData, 'tubularSegments', 2, 50).name('Tubular Segment').step(1).setValue(24).onChange(() => {
@@ -208,13 +213,16 @@ function main() {
         guiElements.push(gui.add(meshData, 'radius', 0, 40).name('Radius').setValue(15).onChange(() => {
           Maker.regenerateTorusKnot(mesh)
         }))
-        guiElements.push(gui.add(meshData, 'tubeRadius', 0, 20).name('Tube Radius').setValue(4).onChange(() => {
-          Maker.regenerateTorusKnot(mesh)
-        }))
 
         guiElements.push(gui.add(meshData, 'radialSegments', 2, 30).name('Radial Segment').step(1).setValue(8).onChange(() => {
           Maker.regenerateTorusKnot(mesh)
         }))
+
+        guiElements.push(gui.add(meshData, 'tubeRadius', 0, 20).name('Tube Radius').setValue(4).onChange(() => {
+          Maker.regenerateTorusKnot(mesh)
+        }))
+
+
         guiElements.push(gui.add(meshData, 'tubularSegments', 2, 100).name('Tubular Segment').step(1).setValue(64).onChange(() => {
           Maker.regenerateTorusKnot(mesh)
         }))
@@ -280,7 +288,14 @@ function main() {
     
     requestAnimationFrame(render)
 
-
+  document.querySelector('#sequenceUpload').onchange = function(){
+    let file = this.files[0];
+    let reader = new FileReader();
+    reader.onload = function(progressEvent){
+      dna.generateFromFile(this.result)
+    };
+    reader.readAsText(file);
+  };
 }
 
 main()
