@@ -19,7 +19,7 @@ function main() {
     const far = 10000
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
     const controls = new OrbitControls( camera, renderer.domElement )
-    
+    let sequence
     controls.enableDamping = true
     const gui = new dat.GUI({ autoPlace: false })
     document.querySelector('.datGUI').append(gui.domElement)
@@ -292,10 +292,23 @@ function main() {
     let file = this.files[0];
     let reader = new FileReader();
     reader.onload = function(progressEvent){
-      dna.generateFromFile(this.result)
+        sequence = dna.generateFromFile(this.result)
     };
     reader.readAsText(file);
   };
+
+    document.querySelector(".synthesizer-btn").onclick = () => {
+        let dnaSequence
+        if (document.querySelector("#sequenceCheckbox").checked) {
+            dnaSequence = dna.generateRandom()
+        } else {
+            dnaSequence = sequence
+        }
+        let dnaPositions = dna.parsePositions()
+        let jsonObj = {"sequence": dnaSequence, "coordinates": dnaPositions}
+        //console.log(jsonObj)
+        document.querySelector(".json-input").value = JSON.stringify(jsonObj)
+    }
 }
 
 main()

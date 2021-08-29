@@ -1,3 +1,5 @@
+require 'json'
+
 class GeneratorsController < ApplicationController
     before_action :set_generator, except: [:create]
     
@@ -19,7 +21,13 @@ class GeneratorsController < ApplicationController
 
     def synthesize
         #@generator = Generator.find(params[:id])
-        
+        json_obj = JSON.parse(@generator.json)
+        sequence = json_obj["sequence"]
+        coordinates = json_obj["coordinates"]
+        # byebug
+
+        @generator.scaffold(sequence, coordinates)
+        @generator.pdb
         render :synthesize
     end
 
@@ -49,7 +57,7 @@ class GeneratorsController < ApplicationController
     def generator_params
         params.require(:generator).permit(:height, :width, :depth, :option, :depth_segment,
             :radius, :radial_segment, :radius_top, :radius_bottom, :width_segment, :detail,
-            :heigh_segment, :tube_radius, :tubular_radius, :p, :q, :scaffold_length, :shape)
+            :heigh_segment, :tube_radius, :tubular_radius, :p, :q, :scaffold_length, :shape, :json)
     end
 
     def set_generator

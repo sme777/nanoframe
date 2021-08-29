@@ -223,6 +223,9 @@
           </div>
         </div>
 
+        <div class="json-container">
+          <%= f.text_field :json, type: "hidden", class: "json-input" %>
+        </div>
       </div>
       <div class="synthesizer-btn-container">
         <%= f.submit "Synthesize", class: "synthesizer-btn btn btn-secondary btn-lg w-50", disabled: true%>

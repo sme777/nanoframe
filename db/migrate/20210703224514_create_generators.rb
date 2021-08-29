@@ -22,6 +22,7 @@ class CreateGenerators < ActiveRecord::Migration[6.1]
       t.integer :detail
       t.string :shape
       t.string :option      
+      t.string :json
 
       t.timestamps
     end

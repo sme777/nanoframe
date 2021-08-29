@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(version: 2021_07_03_224514) do
     t.integer "detail"
     t.string "shape"
     t.string "option"
+    t.string "json"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end
