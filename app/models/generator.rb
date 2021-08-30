@@ -4,6 +4,7 @@ class Generator < ApplicationRecord
     def scaffold(sequence, coordinates)
         @dna = []
         @atom_count = 0
+        index = 0
         sequence.each do |tide|
 
             if tide == "A"
@@ -16,7 +17,8 @@ class Generator < ApplicationRecord
                 @atom_count += 30
             end
 
-            @dna.push(Nucleotide.new(tide))
+            @dna.push(Nucleotide.new(tide, coordinates[index], index))
+            index += 1
         end
     end
 
