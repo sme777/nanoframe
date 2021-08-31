@@ -1,5 +1,6 @@
 # NanoFrame
 [![Build Status](https://app.travis-ci.com/tilabberkeley/nanoframe.svg?branch=master)](https://app.travis-ci.com/tilabberkeley/nanoframe)
+[![codecov](https://codecov.io/gh/tilabberkeley/nanoframe/branch/master/graph/badge.svg?token=0ZA6VAYVET)](https://codecov.io/gh/tilabberkeley/nanoframe)
 
 Welcome to project NanoFrame. This web application takes a single stranded DNA scaffold 
 (either 7249 or 8064-base) with custom sequences and forms the desired wireframe shape in 3D. 
