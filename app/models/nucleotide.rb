@@ -20,8 +20,13 @@ class Nucleotide
 
   def generate_adenine
     arr = []
+    index = 0
     adenine_atoms.each do |a|
       atom = Atom.new('DA', a)
+      atom.x = @start_pos[0] + adenine_delta[index]
+      atom.y = @start_pos[1] + adenine_delta[index + 1]
+      atom.z = @start_pos[2] + adenine_delta[index + 2]
+      index += 3
       arr.push(atom)
     end
     arr
@@ -29,8 +34,13 @@ class Nucleotide
 
   def generate_guanine
     arr = []
-    adenine_atoms.each do |a|
+    index = 0
+    guanine_atoms.each do |a|
       atom = Atom.new('DG', a)
+      atom.x = @start_pos[0] + guanine_delta[index]
+      atom.y = @start_pos[1] + guanine_delta[index + 1]
+      atom.z = @start_pos[2] + guanine_delta[index + 2]
+      index += 3
       arr.push(atom)
     end
     arr
@@ -38,8 +48,13 @@ class Nucleotide
 
   def generate_thymine
     arr = []
-    adenine_atoms.each do |a|
+    index = 0
+    thymine_atoms.each do |a|
       atom = Atom.new('DT', a)
+      atom.x = @start_pos[0] + thymine_delta[index]
+      atom.y = @start_pos[1] + thymine_delta[index + 1]
+      atom.z = @start_pos[2] + thymine_delta[index + 2]
+      index += 3
       arr.push(atom)
     end
     arr
@@ -47,8 +62,13 @@ class Nucleotide
 
   def generate_cytosine
     arr = []
-    adenine_atoms.each do |a|
+    index = 0
+    cytosine_atoms.each do |a|
       atom = Atom.new('DC', a)
+      atom.x = @start_pos[0] + cytosine_delta[index]
+      atom.y = @start_pos[1] + cytosine_delta[index + 1]
+      atom.z = @start_pos[2] + cytosine_delta[index + 2]
+      index += 3
       arr.push(atom)
     end
     arr

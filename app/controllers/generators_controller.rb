@@ -27,19 +27,52 @@ class GeneratorsController < ApplicationController
         # byebug
 
         @generator.scaffold(sequence, coordinates)
-        @generator.pdb
+        session[:filename] = @generator.pdb
         render :synthesize
     end
 
     def routing
-        #@generator = Generator.find(params[:id])
         render :routing
     end
 
     def results
-        #@generator = Generator.find(params[:id])
         render :results
     end
+
+    def download_pdb
+        file = File.open("app/assets/results/" + session[:filename] + ".pdb")
+        contents = file.read
+        file.close
+        send_data contents, filename:  session[:filename] + ".pdb"
+        # redirect_to '/nanobot/' + @generator.id.to_s
+    end
+
+    def download_oxdna
+        filename = @generator.oxdna
+        file = File.open("app/assets/results/" + filename + ".oxdna")
+        contents = file.read
+        file.close
+        send_data contents, filename:  filename + ".oxdna"
+    end
+
+
+    def download_csv
+        filename = @generator.csv
+        file = File.open("app/assets/results/" + filename + ".csv")
+        contents = file.read
+        file.close
+        send_data contents, filename:  filename + ".csv"
+    end
+
+    def download_fasta
+        filename = @generator.fasta
+        file = File.open("app/assets/results/" + filename + ".fasta")
+        contents = file.read
+        file.close
+        send_data contents, filename:  filename + ".fasta"
+    end
+
+
 
     def create
         @generator = Generator.new(generator_params)

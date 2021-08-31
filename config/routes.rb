@@ -18,5 +18,11 @@ Rails.application.routes.draw do
   #get '/nanobot/new' => 'generators#new'
   get '/checkemail' => 'users#check_email', :defaults => { :format => :json }
   get '/checkusername' => 'users#check_username', :defaults => { :format => :json }
+
+  #downloading files
+  get '/nanobot/:id/pdb' => 'generators#download_pdb'
+  get '/nanobot/:id/oxdna' => 'generators#download_oxdna'
+  get '/nanobot/:id/csv' => 'generators#download_csv'
+  get '/nanobot/:id/fasta' => 'generators#download_fasta'
   #resources :generators 
 end

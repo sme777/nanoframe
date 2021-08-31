@@ -86,9 +86,11 @@
             </div>
 
             <div class="generator-download-container">
-                <button type="button" class="btn btn-outline-warning" data-bs-toggle="button" autocomplete="off">
+                <a href="/nanobot/<%= @generator.id %>/pdb" class="btn btn-outline-warning">
                     <%= image_tag("download", class: "generate-download-txt") %> .pdb
-                </button>
+                </a>
+
+                <%#= link_to image_tag("download", class: "generate-download-txt"), download_pdb_path, class: "btn btn-outline-warning" %>
 
                 <button type="button" class="btn btn-outline-secondary" data-bs-toggle="button" autocomplete="off">
                     <%= image_tag("download", class: "generate-download-txt") %> .oxDNA
