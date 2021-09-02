@@ -1,5 +1,6 @@
 # NanoFrame
 [![Build Status](https://app.travis-ci.com/tilabberkeley/nanoframe.svg?branch=master)](https://app.travis-ci.com/tilabberkeley/nanoframe)
+[![Documentation Status](https://readthedocs.org/projects/nanoframe/badge/?version=latest)](https://nanoframe.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/tilabberkeley/nanoframe/branch/master/graph/badge.svg?token=0ZA6VAYVET)](https://codecov.io/gh/tilabberkeley/nanoframe)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a7c3b1796ed55dff5f27/maintainability)](https://codeclimate.com/github/tilabberkeley/nanoframe/maintainability)
 
