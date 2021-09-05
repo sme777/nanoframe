@@ -1,31 +1,56 @@
-<p id="notice"><%= notice %></p>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 
-<h1>Routers</h1>
+<head>
+    <meta charset="utf-8">
+    <title>Project Nanoframe</title>
+    <!-- Stylesheet Links -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
+    <!-- Script Links-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous">
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
+    </script>
+    <%= stylesheet_link_tag 'application', media: 'all' %>
+</head>
 
-<table>
-  <thead>
-    <tr>
-      <th>Shape</th>
-      <th>Coordinates</th>
-      <th>Sequence</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
+<body>
+    <div class="menu-items">
+        <ul class="nav nav-tabs justify-content-end">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/nanobot">NanoBot</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active nanofont" href="/routing">NanoRoute</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="/about">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/contact">Contact</a>
+            </li>
+        </ul>
+    </div>
 
-  <tbody>
-    <% @routers.each do |router| %>
-      <tr>
-        <td><%= router.shape %></td>
-        <td><%= router.coordinates %></td>
-        <td><%= router.sequence %></td>
-        <td><%= link_to 'Show', router %></td>
-        <td><%= link_to 'Edit', edit_router_path(router) %></td>
-        <td><%= link_to 'Destroy', router, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+    <div class="row">
+ 
+    </div>
 
-<br>
+    <%= javascript_pack_tag 'routing', 'data-turbolinks-track': 'reload'%>
+</body>
 
-<%= link_to 'New Router', new_router_path %>
+</html>

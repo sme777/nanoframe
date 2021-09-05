@@ -14,7 +14,7 @@ Rails.application.routes.draw do
   post '/nanobot' => 'generators#create', as: 'generators'
   get '/nanobot/:id' => 'generators#synthesize'
   
-  #get '/routing' => 'generators#routing'
+  get '/routing' => 'routers#index'
   #get '/routing/:id' => 'generators#routing'
   #get '/nanobot/results/:id' => 'generators#results'
   get '/contact/new' => 'users#get_contact'
