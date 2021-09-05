@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :routers
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   get '/' => 'users#index'
   post '/' => 'users#create'
@@ -12,8 +13,10 @@ Rails.application.routes.draw do
   post '/nanobot' => 'generators#create', as: 'generator'
   post '/nanobot' => 'generators#create', as: 'generators'
   get '/nanobot/:id' => 'generators#synthesize'
-  get '/nanobot/routing/:id' => 'generators#routing'
-  get '/nanobot/results/:id' => 'generators#results'
+  
+  #get '/routing' => 'generators#routing'
+  #get '/routing/:id' => 'generators#routing'
+  #get '/nanobot/results/:id' => 'generators#results'
   get '/contact/new' => 'users#get_contact'
   #get '/nanobot/new' => 'generators#new'
   get '/checkemail' => 'users#check_email', :defaults => { :format => :json }

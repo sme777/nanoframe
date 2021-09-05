@@ -23,7 +23,7 @@ class CreateGenerators < ActiveRecord::Migration[6.1]
       t.string :shape
       t.string :option      
       t.string :json
-      t.string :filename
+      # t.string :filename
 
       t.timestamps
     end

@@ -69,14 +69,14 @@ function main() {
           Maker.regenerateCube(mesh)
         }))
 
-        guiElements.push(gui.add(meshData, 'widthSegments', 1, 6).step(1).name('Width Segment').setValue(3).onChange(() => {
+        guiElements.push(gui.add(meshData, 'widthSegments', 1, 10).step(1).name('Width Segment').setValue(3).onChange(() => {
           Maker.regenerateCube(mesh)
         }))
 
-        guiElements.push(gui.add(meshData, 'heightSegments', 1, 6).step(1).name('Height Segment').setValue(3).onChange(() => {
+        guiElements.push(gui.add(meshData, 'heightSegments', 1, 10).step(1).name('Height Segment').setValue(3).onChange(() => {
           Maker.regenerateCube(mesh)
         }))
-        guiElements.push(gui.add(meshData, 'depthSegments', 1, 6).step(1).name('Depth Segment').setValue(3).onChange(() => {
+        guiElements.push(gui.add(meshData, 'depthSegments', 1, 10).step(1).name('Depth Segment').setValue(3).onChange(() => {
           Maker.regenerateCube(mesh)
         }))
         

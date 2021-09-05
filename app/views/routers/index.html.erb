@@ -1,0 +1,31 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Routers</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Shape</th>
+      <th>Coordinates</th>
+      <th>Sequence</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @routers.each do |router| %>
+      <tr>
+        <td><%= router.shape %></td>
+        <td><%= router.coordinates %></td>
+        <td><%= router.sequence %></td>
+        <td><%= link_to 'Show', router %></td>
+        <td><%= link_to 'Edit', edit_router_path(router) %></td>
+        <td><%= link_to 'Destroy', router, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Router', new_router_path %>

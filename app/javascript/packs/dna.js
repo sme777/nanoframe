@@ -69,22 +69,23 @@ export class DNA {
     }
 
     getCurve() {
-        const initialX =  (Math.random()-0.5) * 1000
+        const ratio = 100
+        const initialX =  (Math.random()-0.5) * ratio
         const initialY = 0
-        const initialZ = (Math.random()-0.5) * 1000
+        const initialZ = (Math.random()-0.5) * ratio
 
         const curve = new THREE.CatmullRomCurve3( [
             new THREE.Vector3( initialX, initialY, initialZ ),
-            new THREE.Vector3( (Math.random()-0.5) * 1000, (Math.random()-0.5) * 1000, (Math.random()-0.5) * 1000 ),
-            new THREE.Vector3( 0, (Math.random()-0.5) * 1000, (Math.random()-0.5) * 1000 ),
-            new THREE.Vector3( (Math.random()-0.5) * 1000, (Math.random()-0.5) * 1000, (Math.random()-0.5) * 1000 ),
-            new THREE.Vector3( (Math.random()-0.5) * 1000, (Math.random()-0.5) * 1000, 0 ),
-            new THREE.Vector3( (Math.random()-0.5) * 1000, (Math.random()-0.5) * 1000, (Math.random()-0.5) * 1000 ),
+            new THREE.Vector3( (Math.random()-0.5) * ratio, (Math.random()-0.5) * ratio, (Math.random()-0.5) * ratio ),
+            new THREE.Vector3( 0, (Math.random()-0.5) * ratio, (Math.random()-0.5) * ratio ),
+            new THREE.Vector3( (Math.random()-0.5) * ratio, (Math.random()-0.5) * ratio, (Math.random()-0.5) * ratio ),
+            new THREE.Vector3( (Math.random()-0.5) * ratio, (Math.random()-0.5) * ratio, 0 ),
+            new THREE.Vector3( (Math.random()-0.5) * ratio, (Math.random()-0.5) * ratio, (Math.random()-0.5) * ratio ),
             //new THREE.Vector3( (Math.random()-0.5) * 2500, (Math.random()-0.5) * 2500, (Math.random()-0.5) * 2500 ),
-            new THREE.Vector3( 0, (Math.random()-0.5) * 1000, (Math.random()-0.5) * 1000 ),
+            new THREE.Vector3( 0, (Math.random()-0.5) * ratio, (Math.random()-0.5) * ratio ),
             //new THREE.Vector3( (Math.random()-0.5) * 2500, (Math.random()-0.5) * 2500, (Math.random()-0.5) * 2500 ),
-            new THREE.Vector3( (Math.random()-0.5) * 1000, (Math.random()-0.5) * 1000, 0 ),
-            new THREE.Vector3( (Math.random()-0.5) * 1000, (Math.random()-0.5) * 1000, (Math.random()-0.5) * 1000 ),
+            new THREE.Vector3( (Math.random()-0.5) * ratio, (Math.random()-0.5) * ratio, 0 ),
+            new THREE.Vector3( (Math.random()-0.5) * ratio, (Math.random()-0.5) * ratio, (Math.random()-0.5) * ratio ),
             new THREE.Vector3( initialX, initialY, initialZ )
         ] );
 

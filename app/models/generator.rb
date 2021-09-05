@@ -4,7 +4,6 @@ class Generator < ApplicationRecord
 
     def scaffold(sequence, coordinates)
         @dna = []
-
         #byebug
         @atom_count = 0
         index = 0
@@ -24,6 +23,93 @@ class Generator < ApplicationRecord
             index += 3
         end
     end
+
+    def feedback_control(coordinates)
+        shape_coordinates = silhouette
+
+    end
+
+    def silhouette
+        coordinates = []
+        # if @shape == "1"
+        #     coordinates = cube_silhouette
+        case @shape
+        when "1"
+            coordinates = cube_silhouette
+        when "2"
+            coordinates = sphere_silhoutte
+        when "3"
+            coordinates = cylinder_silhoutte
+        when "4"
+            coordinates = cone_silhoutte
+        when "5"
+            coordinates = polyhedron_silhoutte
+        when "6"
+            coordinates = tetrahedron_silhoutte
+        when "7"
+            coordinates = octahedron_silhoutte
+        when "8"
+            coordinates = icosahedron_silhoutte
+        when "9"
+            coordinates = dodecahedron_silhoutte
+        when "10"
+            coordinates = torus_silhoutte
+        when "11"
+            coordinates = torus_knot_silhoutte
+        else
+            coordinates = custom_silhoutte
+        end
+        coordinates
+    end
+
+    def cube_silhouette
+
+    end
+
+    def sphere_silhoutte
+
+    end
+
+    def cylinder_silhoutte
+
+    end
+
+    def cone_silhoutte
+
+    end
+
+    def polyhedron_silhoutte
+
+    end
+
+    def tetrahedron_silhoutte
+
+    end
+
+    def octahedron_silhoutte
+
+    end
+
+    def icosahedron_silhoutte
+
+    end
+
+    def dodecahedron_silhoutte
+
+    end
+
+    def torus_silhoutte
+
+    end
+
+    def torus_knot_silhoutte
+
+    end
+
+    def custom_silhoutte
+
+    end
+
 
     # @note using tabs instead of spaces causes pdb loading issues
     def pdb

@@ -33,16 +33,19 @@
   <div class="menu-items">
     <ul class="nav nav-tabs justify-content-end">
       <li class="nav-item">
-        <a class="nav-link" href="/">Homepage</a>
+          <a class="nav-link" href="/">Home</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/about">The Project</a>
+          <a class="nav-link active nanofont" href="/nanobot">NanoBot</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active nanofont" href="/nanobot">The Nanobot</a>
+          <a class="nav-link" href="/routing">NanoRoute</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/contact">Contact</a>
+      <a class="nav-link" href="/about">About</a>
+      </li>
+      <li class="nav-item">
+          <a class="nav-link" href="/contact">Contact</a>
       </li>
     </ul>
   </div>
@@ -67,7 +70,7 @@
       <%= form_with(model: @generator, method: :post) do |f| %>
       <%# <form action="/nanobot/new" method="GET"> %>
       <div class="shape-dropdown">
-        <select id="synthesizer-shape" class="form-select">
+        <select id="synthesizer-shape" class="form-select" name="generator[shape]">
           <option value="0" disabled selected>Select Shape</option>
           <option value="1" >Cube</option>
           <option value="2" >Sphere</option>

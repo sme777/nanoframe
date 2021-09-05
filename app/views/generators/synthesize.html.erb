@@ -29,13 +29,16 @@
     <div class="menu-items">
         <ul class="nav nav-tabs justify-content-end">
             <li class="nav-item">
-                <a class="nav-link" href="/">Homepage</a>
+                <a class="nav-link" href="/">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/about">The Project</a>
+                <a class="nav-link active nanofont" href="/nanobot">NanoBot</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active nanofont" href="/nanobot">The Nanobot</a>
+                <a class="nav-link" href="/routing">NanoRoute</a>
+            </li>
+            <li class="nav-item">
+            <a class="nav-link" href="/about">About</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/contact">Contact</a>
@@ -97,7 +100,7 @@
                 </button>
 
                 <button type="button" class="btn btn-outline-success" data-bs-toggle="button" autocomplete="off">
-                    <%= image_tag("download", class: "generate-download-txt") %> .csv
+                    <%= image_tag("download", class: "generate-download-txt") %> .FASFA
                 </button>
                 <div class="btn-group dropend">
                     <button type="button" class="btn btn-outline-dark">
@@ -108,9 +111,9 @@
                         <span class="visually-hidden">Toggle Dropright</span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><button class="dropdown-item" type="button">FASTA</button></li>
+                        <li><button class="dropdown-item" type="button">.cif</button></li>
                         <li><button class="dropdown-item" type="button">.txt</button></li>
-                        <li><button class="dropdown-item" type="button">.tsv</button></li>
+                        <li><button class="dropdown-item" type="button">.xml</button></li>
                         <!-- Dropdown menu links -->
                     </ul>
                 </div>
