@@ -27,6 +27,7 @@ class GeneratorsController < ApplicationController
         # byebug
 
         @generator.scaffold(sequence, coordinates)
+        @generator.feedback_control(coordinates)
         session[:filename] = @generator.pdb
         render :synthesize
     end
@@ -90,7 +91,7 @@ class GeneratorsController < ApplicationController
     def generator_params
         params.require(:generator).permit(:height, :width, :depth, :option, :depth_segment,
             :radius, :radial_segment, :radius_top, :radius_bottom, :width_segment, :detail,
-            :heigh_segment, :tube_radius, :tubular_radius, :p, :q, :scaffold_length, :shape, :json)
+            :height_segment, :tube_radius, :tubular_radius, :p, :q, :scaffold_length, :shape, :json)
     end
 
     def set_generator

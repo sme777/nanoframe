@@ -33,7 +33,9 @@ class Generator < ApplicationRecord
         coordinates = []
         # if @shape == "1"
         #     coordinates = cube_silhouette
-        case @shape
+        byebug
+        case shape
+            
         when "1"
             coordinates = cube_silhouette
         when "2"
@@ -63,7 +65,7 @@ class Generator < ApplicationRecord
     end
 
     def cube_silhouette
-
+        
     end
 
     def sphere_silhoutte
