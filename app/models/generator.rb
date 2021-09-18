@@ -33,7 +33,7 @@ class Generator < ApplicationRecord
         coordinates = []
         # if @shape == "1"
         #     coordinates = cube_silhouette
-        byebug
+        # byebug
         case shape
             
         when "1"

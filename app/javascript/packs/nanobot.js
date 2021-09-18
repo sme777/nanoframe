@@ -343,4 +343,36 @@ $(document).ready(function() {
     })
 })
 
+$(document).ready(function() {
+  // console.log("hi")
+    $(".synthesizer-btn").click(function(e) {
+      e.preventDefault()
+      if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
+        // console.log("whatat")
+
+        const widthSeg = $(".ws-input").val()
+        const heightSeg = $(".hs-input").val()
+        const depthSeg = $(".ds-input").val()
+        const width = $(".width-input").val()
+        const totalStripes = heightSeg * 4 + depthSeg * 4 + widthSeg *4
+        let maxStripes
+
+        if ($("#8064-radiobtn").prop("checked")) {
+          maxStripes =  computeMaxStripes(8064, width)
+        } else {
+          maxStripes = computeMaxStripes(7249, width)
+        }
+
+        if (totalStripes > maxStripes) {
+          alert("Specified dimensions are greater than scaffold length!")
+        } else {
+          $(".synthesize-form").submit()
+        }
+      }
+  })
+})
+
+function computeMaxStripes(length, width) {
+  return Math.floor(length * 0.34 / width)
+}
 
