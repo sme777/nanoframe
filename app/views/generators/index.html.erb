@@ -92,11 +92,11 @@
 
           <div class="form-check form-check-inline">
             <%= f.radio_button :option, "8064 nucleotides scaffold", class: "btn-check", id: "8064-radiobtn", autocomplete: "off", checked: (true if @generator.option == "8064 nucleotides scaffold"), style: "display: none;"%>
-            <%= f.label "1", "8064 nucleotides scaffold", for: "btnradio1", class: "btn btn-outline-dark", id: "inlineRadio1"%>
+            <%= f.label "1", "8064 nucleotides scaffold", for: "8064-radiobtn", class: "btn btn-outline-dark", id: "inlineRadio1"%>
           </div>
           <div class="form-check form-check-inline">
             <%= f.radio_button :option, "7249 nucleotides scaffold", class: "btn-check", id: "7249-radiobtn", autocomplete: "off", checked: (true if @generator.option != "8064 nucleotides scaffold"), style: "display: none;" %>
-            <%= f.label "2", "7249 nucleotides scaffold", for: "btnradio2", class: "btn btn-outline-dark", id: "inlineRadio2"%>
+            <%= f.label "2", "7249 nucleotides scaffold", for: "7249-radiobtn", class: "btn btn-outline-dark", id: "inlineRadio2"%>
           </div>
 
         </div>

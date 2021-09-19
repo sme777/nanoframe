@@ -53,58 +53,6 @@
      text-align: center;
  }
 
-// .height-container {
-//     display: none;
-// }
-// .width-container {
-//     display: none;
-// }
-// .depth-container {
-//     display: none;
-// }
-// .radius-container {
-//     display: none;
-// }
-// .rs-container {
-//     display: none;
-// }
-// .rt-container {
-//     display: none;
-// }
-// .rb-container {
-//     display: none;
-// }
-// .detail-container {
-//     display: none;
-// }
-
-// .ws-container {
-//     display: none;
-// }
-
-// .hs-container {
-//     display: none;
-// }
-
-// .ds-container {
-//     display: none;
-// }
-
-// .tube-container {
-//     display: none;
-// }
-
-// .tubular-container {
-//     display: none;
-// }
-
-// .p-container {
-//     display: none;
-// }
-
-// .q-container {
-//     display: none;
-// }
 
 .dimension-wrapper-container {
     padding: 1%;
@@ -116,7 +64,6 @@
 }
 .synthesizer-container {
     margin-top: 5%;
-    //position: relative;
 }
 
 #synthesizer {
@@ -125,8 +72,6 @@
 }
 
 .generator-container {
-    //display: none;
-    //margin: 0 5%;
     height: auto;
     text-align: center;
 }
@@ -136,9 +81,6 @@
     height: auto;
 }
 
-.generator-outer-container {
-    //visibility: hidden;
-}
 
 .middle-hr {
     margin: 0 20%;
@@ -154,13 +96,6 @@
     width: 20px;
 }
 
-.generator-download-container {
-    //display: none;
-}
-
-.fc-arrow {
-    //color: aqua;
-}
 
 .fc-flurry {
     width: 20px;
@@ -309,5 +244,18 @@
     background: #eee;
 }
 
+.viewer-container {
+    // width: 20%;
+    padding-top: 5%;
+    padding-left: 20%;
+    padding-right: 20%;
+    font-size: x-large;
+}
+
+.iframe-viewer {
+    padding-top: 2%;
+    width: 100%;
+    height: 1000px;
+}
 
 

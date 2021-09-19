@@ -21,7 +21,7 @@ class CreateGenerators < ActiveRecord::Migration[6.1]
       t.integer :scaffold_length
       t.integer :detail
       t.string :shape
-      t.string :option      
+      t.string :option
       t.string :json
       # t.string :filename
 

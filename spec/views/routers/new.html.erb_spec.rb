@@ -1,24 +1,23 @@
 require 'rails_helper'
 
-RSpec.describe "routers/new", type: :view do
+RSpec.describe 'routers/new', type: :view do
   before(:each) do
     assign(:router, Router.new(
-      shape: "MyString",
-      coordinates: "",
-      sequence: ""
-    ))
+                      shape: 'MyString',
+                      coordinates: '',
+                      sequence: ''
+                    ))
   end
 
-  it "renders new router form" do
+  it 'renders new router form' do
     render
 
-    assert_select "form[action=?][method=?]", routers_path, "post" do
+    assert_select 'form[action=?][method=?]', routers_path, 'post' do
+      assert_select 'input[name=?]', 'router[shape]'
 
-      assert_select "input[name=?]", "router[shape]"
+      assert_select 'input[name=?]', 'router[coordinates]'
 
-      assert_select "input[name=?]", "router[coordinates]"
-
-      assert_select "input[name=?]", "router[sequence]"
+      assert_select 'input[name=?]', 'router[sequence]'
     end
   end
 end

@@ -38,7 +38,7 @@
                 <a class="nav-link" href="/routing">NanoRoute</a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" href="/about">About</a>
+                <a class="nav-link" href="/about">About</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/contact">Contact</a>
@@ -120,11 +120,34 @@
             </div>
 
 
+            <%
+=begin%>
             <hr class="middle-hr my-4">
+            <%
+=end%>
         </div>
-        <div class="generator-container">
+        <div class="viewer-container">
+            <ul class="nav nav-tabs justify-content-center view-tabs">
+                <li class="nav-item molstar-view">
+                    <a class="molstar-view-link nav-link active">Mol*</a>
+                </li>
+                <li class="nav-item oxview">
+                    <a class="oxview-link nav-link">Oxview</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="iframe-container">
+            <iframe src="https://molstar.org/viewer/" title="Mol*" class="iframe-viewer"></iframe>
+        </div>
+
+        <%
+=begin%>
+ <div class="generator-container">
             <canvas id="generator"></canvas>
-        </div>
+        </div> 
+<%
+=end%>
     </div>
     <%# <div class="iframe-container">
         <iframe id="molstar-viewer"src="https://molstar.org/viewer/"></iframe>
@@ -140,7 +163,7 @@
         </div>
     </div>
 
-    <%= javascript_pack_tag 'typingAnimation', 'synthesizer', 'data-turbolinks-track': 'reload'%>
+    <%= javascript_pack_tag 'nanogen', 'typingAnimation', 'synthesizer', 'data-turbolinks-track': 'reload'%>
 
 </body>
 
