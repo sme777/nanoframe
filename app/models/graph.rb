@@ -1,26 +1,27 @@
 class Graph 
     attr_accessor :vertices, :edges, :route
     def initialize(segments)
-        # each segment gets 4 sides        
-        @vertices = create_vertices(segments)
-        @edges = find_plane_routing(@vertices)
+        # each segment gets 4 sides 
+        @segments = segments       
+        @vertices = create_vertices
+        @edges = find_plane_routing
         # arr = plane_rotations(@edges)
         @route = find_plane_combination(["a", "b", "c", "d"]) 
     end
 
-    def create_vertices(s)
+    def create_vertices
         v = []
         x = 0
         y = 0
         # byebug
-        while (x <= s && y <= s)
+        while (x <= @segments && y <= @segments)
 
-            if !(x % s == 0 && y % s == 0)
+            if !(x % @segments == 0 && y % @segments == 0)
                 v.push(Vertex.new(x, y))
             end
             y += 1
 
-            if (y > s)
+            if (y > @segments)
                 y = 0
                 x += 1
             end
@@ -30,8 +31,30 @@ class Graph
     end
 
 
-    def find_plane_routing(v)
+    def find_plane_routing
+        sets = initialize_sets
+    end
 
+    def initialize_sets
+        sets = []
+        @vertices.each do |v|
+            set = Set.new(v)
+            sets.push(set)
+        end
+        sets
+    end
+
+    def connected(sets)
+        sets.each do |set|
+            vertices = set.vertices
+            if (vertices.length < 2)
+                v = vertices.first
+                if !(v.x % @segments == 0 || v.y % @segments == 0)
+                    return false
+                end
+            end
+        end
+        return true
     end
 
     def plane_rotations(e)
@@ -64,6 +87,17 @@ class Graph
         res += ")"
     end
 
+    def string_of_sets(sets)
+        res = "("
+        sets.each do |s|
+            res += s.string
+            if !(s == sets.last)
+                res += ", "
+            end
+        end
+        res += ")"
+    end
+
     def string_of_edges
         ""
     end
@@ -83,9 +117,25 @@ class Graph
     end
 
     class Set
-        def initialize(*vertices)
-            @s = add_vertices(*vertices)
+        attr_accessor :vertices
+
+        def initialize(vertex)
+            @vertices = [vertex]
+            
+            # *vertices.each do |v|
+            #     @vertices.push(v)
+            # end
         end
+
+        def string
+            res = "{"
+            @vertices.each do |v|
+                res += v.string
+            end
+            res += "}"
+        end
+
+        
     end
 
     class Edge

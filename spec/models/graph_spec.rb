@@ -15,6 +15,14 @@ RSpec.describe Graph, type: :model do
     end
   end
 
+  describe 'groups vertices into sets' do
+    it 'adding each vertex to a set' do
+      g = Graph.new(2)
+      g.string_of_sets(g.initialize_sets).should eq("({(0, 1)}, {(1, 0)}, {(1, 1)}, {(1, 2)}, {(2, 1)})")
+    end
+
+  end
+
   describe 'finds a valid routing' do
     it 'for 2 segment graph' do
         g = Graph.new(2)
