@@ -25,6 +25,10 @@ class GeneratorsController < ApplicationController
     @generator.scaffold(sequence, coordinates)
     @generator.feedback_control(coordinates)
     session[:filename] = @generator.pdb
+    gr = Graph.new(3)
+    gr1 = Graph.new(2)
+    gr5 = Graph.new(5)
+    puts gr
     render :synthesize
   end
 
