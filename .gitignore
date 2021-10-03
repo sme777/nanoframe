@@ -38,3 +38,4 @@ yarn-debug.log*
 # Ignore example Jasmine tests
 
 /spec/javascript/jasmine_examples
+/coverage/index.html
