@@ -1,14 +1,16 @@
+require 'json'
+
 class Graph 
-    attr_accessor :vertices, :edges, :route
+    attr_accessor :vertices, :edges, :sets, :route
     
     def initialize(segments)
         # each segment gets 4 sides 
         @segments = segments       
         @vertices = create_vertices
-        plane = find_plane_routing
-        @edges, @sets = plane[0], plane[1]
-        planes = plane_rotations(plane)
-        @route = find_plane_combination(planes) 
+        # plane = find_plane_routing
+        # @edges, @sets = plane[0], plane[1]
+        # planes = plane_rotations(plane)
+        # @route = find_plane_combination(planes) 
     end
 
     def create_vertices
@@ -35,21 +37,33 @@ class Graph
 
     def find_plane_routing
         sets = initialize_sets
+        singeltons = singeltons(sets)
         edges = []
+        queue = []
         i = 0
         while !connected(sets) && !full(sets)
              
-            s1 = sets[i]
-            s2 = sets[i+1]
-            if !s1.singelton && !s2.singelton
-                sets[i] = mergeSets(s1, s2)
-                sets.delete(s2)
-                i += 1
-            elsif !s1.singelton
+            while !singeltons.empty?
+                if queue.empty?
+                    queue.append(singeltons.first) 
+                elsif queue.first.e > 1
+                    queue.delete_at(0)
+                    singeltons.delete_at(0)
+                else             
+                    
+                end
+            end 
 
-            else
 
-            end
+            # if !s1.singelton && !s2.singelton
+            #     sets[i] = merge_sets(s1, s2)
+            #     sets.delete(s2)
+            #     i += 1
+            # elsif !s1.singelton
+
+            # else
+
+            # end
 
             # add remove vertices to sets as neccessary
         end
@@ -100,7 +114,7 @@ class Graph
     def full(sets)
         sets = singeltons(sets)
         sets.each do |s|
-            if s.length < 2
+            if s.vertices.length < 2
                 return false
             end
         end
@@ -130,8 +144,10 @@ class Graph
     end
 
     def merge_sets(s1, s2)
-
-
+        s2.v.each do |v|
+            s1.add_node(v)
+        end
+        s1
     end
 
 
@@ -153,8 +169,6 @@ class Graph
         end
     end
 
-    def 
-
     def plane_rotations(e)
 
     end
@@ -170,7 +184,7 @@ class Graph
     end
 
     def has_one_loop(g)
-        
+
     end
 
     def string_of_vertices
@@ -200,6 +214,40 @@ class Graph
         ""
     end
 
+    def make_vertex(x, y)
+        Vertex.new(x, y)
+    end
+
+    def make_set(v, singelton=false)
+        Set.new(v, singelton)
+    end
+
+    def make_edge(v1, v2)
+        Edge.new(v1, v2)
+    end
+
+    # Generates JSON file of the graph
+    def to_json
+        hash = {"segments": @segments, "vertices": [], "edges": [], "sets": []}
+        vs, es, ss = [], [], []
+        @vertices.each do |v|
+            vs.append(v.to_hash)
+        end
+
+        @edges.each do |e|
+            es.append(e.to_hash)
+        end
+
+        @sets.each do |s|
+            ss.append(s.to_hash)
+        end
+
+        hash[:vertices] = vs
+        hash[:edges] = es
+        hash[:sets] = ss
+        JSON.generate(hash)
+    end
+
     class Vertex
         attr_accessor :x, :y
 
@@ -212,40 +260,68 @@ class Graph
             "(#{@x}, #{@y})"
         end
 
+        def to_hash
+            {"x": @x, "y": @y}
+        end
+
+        def to_json
+            JSON.generate({"x": @x, "y": @y})
+        end
+
     end
 
     class Set
-        attr_accessor :vertices, :singelton, :edges
+        attr_accessor :v, :singelton, :e
 
         def initialize(vertex, singelton)
-            @vertices = [vertex]
+            @v = [vertex]
             @singelton = singelton
-            @edges = []
+            @e = []
             # *vertices.each do |v|
             #     @vertices.push(v)
             # end
         end
 
         def add_node(vertex)
-            @vertices.append(vertex)
+            @v.append(vertex)
         end
 
         def add_edge(edge)
-            @edges.append(edge)
+            @e.append(edge)
         end
 
         def is_loop_set?
-            @edges.length == 2 
+            @e.length == 2 
         end
 
         def string
             res = "{"
-            @vertices.each do |v|
+            @v.each do |v|
                 res += v.string
+                if v != @v.last
+                    res += ", "
+                end
             end
             res += "}"
         end
 
+        def to_hash
+            hash = {"vertices": [], "edges": [], "singelton": singelton}
+            vs, es = [], []
+            @v.each do |v|
+                vs.append(v.to_hash)
+            end
+            @e.each do |e|
+                es.append(e.to_hash)
+            end
+            hash[:vertices] = vs
+            hash[:edges] = es
+            hash
+        end
+
+        def to_json
+            JSON.generate(to_hash)
+        end
         
     end
 
@@ -262,5 +338,12 @@ class Graph
             "#{v1.string} -> #{v2.string}"
         end
 
+        def to_hash
+            {"v1": @v1.to_hash, "v2": @v2.to_hash}
+        end
+
+        def to_json
+            JSON.generate({"v1": @v1.to_hash, "v2": @v2.to_hash})
+        end
     end
 end

@@ -20,15 +20,12 @@ class GeneratorsController < ApplicationController
     json_obj = JSON.parse(@generator.json)
     sequence = json_obj['sequence']
     coordinates = json_obj['coordinates']
-    # byebug
-
+    byebug
+    @generator.route
     @generator.scaffold(sequence, coordinates)
     @generator.feedback_control(coordinates)
     session[:filename] = @generator.pdb
-    gr = Graph.new(3)
-    gr1 = Graph.new(2)
-    gr5 = Graph.new(5)
-    puts gr
+
     render :synthesize
   end
 

@@ -3,7 +3,6 @@
 //= link_tree ../images .png
 //= link_tree ../images .svg
 //= link_directory ../stylesheets .css
-//= link_directory ../javascript .js
 //= link_directory ../models .pdb
 //= link_tree ../results .pdb
 //= link_tree ../results .txt

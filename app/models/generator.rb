@@ -24,6 +24,15 @@ class Generator < ApplicationRecord
     end
   end
 
+
+  def route
+    graph = nil
+    if @shape == "Cube"
+      graph = Graph.new(@width_segment)
+    end
+    graph
+  end
+
   def feedback_control(_coordinates)
     shape_coordinates = silhouette
   end
