@@ -6,3 +6,4 @@
 //= link_directory ../models .pdb
 //= link_tree ../results .pdb
 //= link_tree ../results .txt
+//= link_tree ../shaders .glsl

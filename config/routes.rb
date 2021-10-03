@@ -11,14 +11,11 @@ Rails.application.routes.draw do
   get 'shaper' => 'generators#shaper'
   get '/nanobot' => 'generators#index'
   post '/nanobot' => 'generators#create', as: 'generator'
-  # post '/nanobot' => 'generators#create', as: 'generators'
   get '/nanobot/:id/synthesize' => 'generators#synthesize'
   get '/nanobot/:id/routing' => 'generators#routing'
   get '/nanobot/:id/compile' => 'generators#compile'
   post '/nanobot/:id/compile' => 'generators#signup_and_save'
-  # get '/nanobot/results/:id' => 'generators#results'
   get '/contact/new' => 'users#get_contact'
-  # get '/nanobot/new' => 'generators#new'
   get '/checkemail' => 'users#check_email', :defaults => { format: :json }
   get '/checkusername' => 'users#check_username', :defaults => { format: :json }
 
