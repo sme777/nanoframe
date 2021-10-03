@@ -26,16 +26,14 @@
 </head>
 
 <body>
+    <input type="hidden" id="generator-container" value="<%= @generator.to_json %>"></div>
     <div class="menu-items">
         <ul class="nav nav-tabs justify-content-end">
             <li class="nav-item">
                 <a class="nav-link" href="/">Home</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link active nanofont" href="/nanobot">NanoBot</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/routing">NanoRoute</a>
+                <a class="nav-link active nanofont" href="/nanobot">The NanoBot</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/about">About</a>
@@ -49,36 +47,15 @@
     <div class="row outer-menu-container">
         <div class="col-md-6">
             <div class="back-container">
-                <a class="generator-arrow backbtn" href="/nanobot">&larr; Back</a>
+                <a class="generator-arrow backbtn" href="/nanobot/<%= @generator.id%>/routing">&larr; Routing</a>
             </div>
         </div>
-        <%# <div class="col-md-4">
-            <div class="body-navbar">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/nanobot">Menu</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Synthesizer</li>
-                </ol>
-            </div>
-        </div> %>
         <div class="col-md-6">
             <div class="forward-container">
-                <a class="route-arrow" href="/routing">Routing &rarr;</a>
+                <a class="route-arrow" href="/nanobot/<%= @generator.id%>/compile">Save &rarr;</a>
             </div>
         </div>
     </div>
-
-    <%# <div class="save-container">
-        <div class="form-check">
-
-            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked">
-            <label class="form-check-label" for="flexCheckChecked">
-                Private
-            </label>
-        </div>
-        <div class="save-btn-container">
-            <a href='/' type="button" class="btn btn-link">Save</a>
-        </div>
-    </div> %>
 
     <div class="generator-outer-container">
         <div class="generator-text">
@@ -93,7 +70,6 @@
                     <%= image_tag("download", class: "generate-download-txt") %> .pdb
                 </a>
 
-                <%#= link_to image_tag("download", class: "generate-download-txt"), download_pdb_path, class: "btn btn-outline-warning" %>
 
                 <button type="button" class="btn btn-outline-secondary" data-bs-toggle="button" autocomplete="off">
                     <%= image_tag("download", class: "generate-download-txt") %> .oxDNA
@@ -120,11 +96,6 @@
             </div>
 
 
-            <%
-=begin%>
-            <hr class="middle-hr my-4">
-            <%
-=end%>
         </div>
         <div class="viewer-container">
             <ul class="nav nav-tabs justify-content-center view-tabs">
@@ -140,20 +111,9 @@
         <div class="iframe-container">
             <iframe src="https://molstar.org/viewer/" title="Mol*" class="iframe-viewer"></iframe>
         </div>
-
-        <%
-=begin%>
- <div class="generator-container">
-            <canvas id="generator"></canvas>
-        </div> 
-<%
-=end%>
     </div>
-    <%# <div class="iframe-container">
-        <iframe id="molstar-viewer"src="https://molstar.org/viewer/"></iframe>
-    </div> %>
 
-    <div class="container" id="footer">
+    <div value="2" class="container" id="footer">
         <hr class="my-4">
 
         <div class="footer-copyright text-center py-3">
@@ -163,7 +123,7 @@
         </div>
     </div>
 
-    <%= javascript_pack_tag 'nanogen', 'typingAnimation', 'synthesizer', 'data-turbolinks-track': 'reload'%>
+    <%= javascript_pack_tag 'nanogen', 'typingAnimation', 'data-turbolinks-track': 'reload'%>
 
 </body>
 

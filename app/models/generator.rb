@@ -7,6 +7,7 @@ class Generator < ApplicationRecord
     @dna = []
     # byebug
     @atom_count = 0
+    @graph = nil
     index = 0
     sequence.each do |tide|
       @atom_count += if tide == 'A'
@@ -26,11 +27,9 @@ class Generator < ApplicationRecord
 
 
   def route
-    graph = nil
-    if @shape == "Cube"
-      graph = Graph.new(@width_segment)
+    if shape == "1"
+      @graph = Graph.new(width_segment)
     end
-    graph
   end
 
   def feedback_control(_coordinates)
@@ -94,6 +93,11 @@ class Generator < ApplicationRecord
   def torus_knot_silhoutte; end
 
   def custom_silhoutte; end
+
+  def to_json
+    @graph.to_json
+  end
+
 
   # @note using tabs instead of spaces causes pdb loading issues
   def pdb

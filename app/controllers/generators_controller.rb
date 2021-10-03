@@ -20,12 +20,12 @@ class GeneratorsController < ApplicationController
     json_obj = JSON.parse(@generator.json)
     sequence = json_obj['sequence']
     coordinates = json_obj['coordinates']
-    byebug
-    @generator.route
+    
     @generator.scaffold(sequence, coordinates)
-    @generator.feedback_control(coordinates)
+    # byebug
+    @generator.route
+    # @generator.feedback_control(coordinates)
     session[:filename] = @generator.pdb
-
     render :synthesize
   end
 
@@ -33,8 +33,10 @@ class GeneratorsController < ApplicationController
     render :routing
   end
 
-  def results
-    render :results
+  def compile
+    if logged_in?
+      redirect_to '/'
+    end
   end
 
   def download_pdb
@@ -75,10 +77,34 @@ class GeneratorsController < ApplicationController
 
     if @generator.save
       session['id'] = @generator.id
-      redirect_to '/nanobot/' + @generator.id.to_s
+      redirect_to '/nanobot/' + @generator.id.to_s + '/routing'
     else
-      render :index
+      flash[:message] = "Could Not Complete Request"
+      redirect_to "/nanobot"
     end
+  end
+
+  def signup_and_save
+    first = user_generator_params[:first]
+    last = user_generator_params[:last]
+
+    name = first + ' ' + last
+
+    email_first = user_generator_params[:email_first]
+    email_last = user_generator_params[:email_last]
+
+    email = email_first + '@' + email_last
+    username = user_generator_params[:username]
+    user = User.new({ name: name, username: username, email: email, password: user_params[:password] })
+    user.add_generator(user_generator_params[:generator])
+    if user.save
+      session[:user_id] = user.id
+      redirect_to '/'
+    else
+      flash[:register_and_save_errors] = user.errors.full_messages
+      redirect_to '/nanobot/' + @generator.id.to_s + '/compile'
+    end
+
   end
 
   private
@@ -87,6 +113,10 @@ class GeneratorsController < ApplicationController
     params.require(:generator).permit(:height, :width, :depth, :option, :depth_segment,
                                       :radius, :radial_segment, :radius_top, :radius_bottom, :width_segment, :detail,
                                       :height_segment, :tube_radius, :tubular_radius, :p, :q, :scaffold_length, :shape, :json)
+  end
+
+  def user_generator_params
+    params.require(:user).permit(:first, :last, :username, :email_first, :email_last, :password, :generator)
   end
 
   def set_generator

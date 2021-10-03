@@ -7,6 +7,8 @@ class Graph
         # each segment gets 4 sides 
         @segments = segments       
         @vertices = create_vertices
+        @edges = []
+        @sets = []
         # plane = find_plane_routing
         # @edges, @sets = plane[0], plane[1]
         # planes = plane_rotations(plane)

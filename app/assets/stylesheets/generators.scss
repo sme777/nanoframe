@@ -258,4 +258,28 @@
     height: 1000px;
 }
 
+.compile-sign-up-form {
+    padding: 4% 10%;
+}
+
+.compile-sign-up-outer-container {
+    margin-top: 5%;
+    // background-color: white;
+    // border-radius: 2%;
+    // box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+
+.compile-header {
+    text-align: center;
+    font-family: 'Dosis', sans-serif;
+}
+
+.compile-subtitle {
+    margin-left: 10%;
+    color: #555;
+}
+
 

@@ -70,6 +70,11 @@ class UsersController < ApplicationController
     redirect_to '/'
   end
 
+  def add_generator(g)
+
+
+  end
+
   private
 
   def user_params
