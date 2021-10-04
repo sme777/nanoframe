@@ -66,8 +66,53 @@ export class DnaHelix extends THREE.Points {
                     value: 0
                 },
             },
-            vertexShader: require('./shaders/dnaHelixVertex.glsl'),
-            fragmentShader: require('./shaders/dnaHelixFragment.glsl'),
+            vertexShader: `
+            attribute vec3 position;
+            attribute float radian;
+            attribute float radius;
+            attribute float delay;
+
+            uniform mat4 projectionMatrix;
+            uniform mat4 viewMatrix;
+            uniform mat4 modelMatrix;
+            uniform float time;
+
+            varying vec3 vColor;
+
+            void main() {
+            // coordinate transformation
+            vec3 updatePosition = position + vec3(
+                sin(time * 4.0 + delay),
+                sin(radian + time * 0.4) * (radius + sin(time * 4.0 + delay)),
+                cos(radian + time * 0.4) * (radius + sin(time * 4.0 + delay))
+                );
+            vec4 mvPosition = viewMatrix * modelMatrix * vec4(updatePosition, 1.0);
+            float distanceFromCamera = length(mvPosition.xyz);
+            float pointSize = 1000.0 / distanceFromCamera * 1.6;
+
+            vColor = vec3(0.8 - delay * 0.1, 0.6, 0.6);
+
+            gl_Position = projectionMatrix * mvPosition;
+            gl_PointSize = pointSize;
+            }
+            `,
+            fragmentShader: `
+            precision mediump float;
+
+            varying vec3 vColor;
+
+            void main() {
+            // Convert PointCoord to the other vec2 has a range from -1.0 to 1.0.
+            vec2 p = gl_PointCoord * 2.0 - 1.0;
+
+            // Draw circle
+            float radius = length(p);
+            float opacity1 = (1.0 - smoothstep(0.5, 0.7, radius));
+            float opacity2 = smoothstep(0.8, 1.0, radius) * (1.0 - smoothstep(1.0, 1.2, radius));
+
+            gl_FragColor = vec4(vColor, (opacity1 + opacity2) * 0.5);
+            }
+            `,
             transparent: true,
             depthWrite: false,
         })
@@ -86,15 +131,15 @@ export class DnaHelix extends THREE.Points {
 
 
 export class PostEffect {
-    constructor(tex) {
+    constructor(texture) {
         this.uniforms = {
             time: {
                 type: 'f',
                 value: 0,
             },
-            tex: {
+            texture: {
                 type: 't',
-                value: tex,
+                value: texture,
             },
             resolution: {
                 type: 'v2',
@@ -109,8 +154,52 @@ export class PostEffect {
 
         let material = new THREE.RawShaderMaterial({
             uniforms: this.uniforms,
-            vertexShader: require('./shaders/postEffectVertex.glsl'),
-            fragmentShader: require('./shaders/postEffectFragment.glsl'),
+            vertexShader: `
+            attribute vec3 position;
+            attribute vec2 uv;
+
+            varying vec2 vUv;
+
+            void main() {
+                vUv = uv;
+                gl_Position = vec4(position, 1.0);
+            }
+            `,
+            fragmentShader: `
+            precision mediump float;
+
+            uniform float time;
+            uniform sampler2D texture;
+            uniform vec2 resolution;
+
+            varying vec2 vUv;
+
+            float random2(vec2 c){
+            return fract(sin(dot(c.xy ,vec2(12.9898,78.233))) * 43758.5453);
+            }
+            float randomNoise(vec2 p) {
+            return (random2(p - vec2(sin(time))) * 2.0 - 1.0) * 0.04;
+            }
+
+            void main() {
+            // Convert uv to the other vec2 has a range from -1.0 to 1.0.
+            vec2 p = vUv * 2.0 - 1.0;
+            vec2 ratio = 1.0 / resolution;
+
+            // Random Noise
+            float rNoise = randomNoise(vUv);
+
+            // RGB Shift
+            float texColorR = texture2D(texture, vUv - vec2((2.0 * abs(p.x) + 1.0) * ratio.x, 0.0)).r;
+            float texColorG = texture2D(texture, vUv + vec2((2.0 * abs(p.x) + 1.0) * ratio.x, 0.0)).g;
+            float texColorB = texture2D(texture, vUv).b;
+
+            // Sum total of colors.
+            vec3 color = vec3(texColorR, texColorG, texColorB) + rNoise;
+
+            gl_FragColor = vec4(vec3(texColorR, texColorG, texColorB) + rNoise, 1.0);
+            }
+            `,
         })
 
         this.obj = new THREE.Mesh(geometry, material)
