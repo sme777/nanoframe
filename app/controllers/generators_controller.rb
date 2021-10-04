@@ -30,7 +30,7 @@ class GeneratorsController < ApplicationController
   end
 
   def routing
-    render :routing
+    @generator.route
   end
 
   def compile

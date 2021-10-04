@@ -5,6 +5,8 @@ import {PostEffect} from './background-material'
 const resolution = new THREE.Vector2()
 const canvas = document.getElementById("background-webgl")
 let renderer = new THREE.WebGLRenderer({alpha: true, antialias: true, canvas: canvas})
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setSize( window.innerWidth, window.innerHeight );
 
 let scene = new THREE.Scene()
 let camera = new THREE.PerspectiveCamera()
@@ -70,4 +72,3 @@ scene.add(dnaHelix)
 
 clock.start()
 renderLoop()
-

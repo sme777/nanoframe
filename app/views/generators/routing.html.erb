@@ -27,6 +27,9 @@
 </head>
 
 <body>
+    <input type="hidden" id="generator-container" value="<%= @generator.to_json %>"></div>
+
+
 
     <div class="menu-items">
         <ul class="nav nav-tabs justify-content-end">
@@ -59,9 +62,20 @@
         </div>
     </div>
 
+    <div class="routing-controls">
+        <button id="up-key-button">Up</button>
+
+        <button id="down-key-button">Down</button>
+
+        <button id="right-key-button">Right</button>
+
+        <button id="left-key-button">Left</button>
+    </div>
+
 
     <div class="router-container">
-        <canvas id="router"></canvas>
+        <div class="datGUI"></div>
+        <canvas id="router-webgl"></canvas>
     </div>
 
 
@@ -75,7 +89,7 @@
         </div>
     </div>
 
-    <%= javascript_pack_tag 'routing', 'data-turbolinks-track': 'reload'%>
+    <%= javascript_pack_tag 'results', 'data-turbolinks-track': 'reload'%>
 
 </body>
 
