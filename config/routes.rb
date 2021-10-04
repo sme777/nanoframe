@@ -11,6 +11,8 @@ Rails.application.routes.draw do
   get 'shaper' => 'generators#shaper'
   get '/nanobot' => 'generators#index'
   post '/nanobot' => 'generators#create', as: 'generator'
+  post '/nanobot' => 'generators#create', as: 'generators'
+
   get '/nanobot/:id/synthesize' => 'generators#synthesize'
   get '/nanobot/:id/routing' => 'generators#routing'
   get '/nanobot/:id/compile' => 'generators#compile'
