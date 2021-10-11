@@ -15,6 +15,7 @@ Rails.application.routes.draw do
 
   get '/nanobot/:id/synthesize' => 'generators#synthesize'
   get '/nanobot/:id/routing' => 'generators#routing'
+  get '/nanobot/:id/visualize' => 'generators#visualize'
   get '/nanobot/:id/compile' => 'generators#compile'
   post '/nanobot/:id/compile' => 'generators#signup_and_save'
   get '/contact/new' => 'users#get_contact'
@@ -24,7 +25,10 @@ Rails.application.routes.draw do
   # downloading files
   get '/nanobot/:id/pdb' => 'generators#download_pdb'
   get '/nanobot/:id/oxdna' => 'generators#download_oxdna'
+  get '/nanobot/:id/txt' => 'generators#download_txt'
+  get '/nanobot/:id/cadnano' => 'generators#download_cadnano'
   get '/nanobot/:id/csv' => 'generators#download_csv'
   get '/nanobot/:id/fasta' => 'generators#download_fasta'
+  get '/nanobot/:id/bundle' => 'generators#download_bundle'
   # resources :generators
 end

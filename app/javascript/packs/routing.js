@@ -17,14 +17,18 @@ for (let j = 0; j < 6; j++) {
 let pointer = 0
 
 const canvas = document.querySelector("#router-webgl")
+let canvasContainer = document.querySelector(".router-container")
+let canvasContainerWidth = canvasContainer.offsetWidth
+let canvasContainerHeight = canvasContainer.offsetHeight
+
 const scene = new THREE.Scene()
-const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 5000)
+const camera = new THREE.PerspectiveCamera(70, canvasContainerWidth / canvasContainerHeight, 0.01, 5000)
 camera.position.y = 5
 const light = new THREE.DirectionalLight(0xffffff, 0.8)
 light.position.set(0, 0, 0);
 let renderer = new THREE.WebGLRenderer({alpha: true, canvas: canvas})
 renderer.setPixelRatio( window.devicePixelRatio );
-renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setSize( canvasContainerWidth, canvasContainerHeight );
     
 
 scene.add(camera)
@@ -34,7 +38,7 @@ scene.add(light)
 
 const gui = new dat.GUI({autoPlace: false})
 document.querySelector('.datGUI').append(gui.domElement)
-console.log(planes[pointer])
+// console.log(planes[pointer])
 
 let params = {
     color: 0xff00ff

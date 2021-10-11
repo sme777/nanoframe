@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'zip'
+
 class Generator < ApplicationRecord
   attr_accessor :atom_count
 
@@ -174,4 +177,10 @@ class Generator < ApplicationRecord
   def csv; end
 
   def fasta; end
+
+  def txt; end
+
+  def cadnano; end
+
+  def bundle; end
 end

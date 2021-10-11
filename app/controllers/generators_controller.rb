@@ -33,6 +33,10 @@ class GeneratorsController < ApplicationController
     @generator.route
   end
 
+  def visualize
+    @generator.route
+  end
+
   def compile
     if logged_in?
       redirect_to '/'
@@ -69,6 +73,32 @@ class GeneratorsController < ApplicationController
     contents = file.read
     file.close
     send_data contents, filename: filename + '.fasta'
+  end
+
+  def download_txt
+    filename = @generator.txt
+    file = File.open('app/assets/results/' + filename + '.txt')
+    contents = file.read
+    file.close
+    send_data contents, filename: filename + '.txt'
+  end
+
+  def download_cadnano
+    filename = @generator.cadnano
+    file = File.open('app/assets/results/' + filename + '.json')
+    contents = file.read
+    file.close
+    send_data contents, filename: filename + '.json'
+  end
+
+  def download_bundle
+    # zip files
+    filename = @generator.bundle
+    files = File.open('app/assets/results/' + filename + '.zip')
+    contents = file.read
+    file.close
+    send_data contents, filename: filename + '.zip'
+    
   end
 
   def create
