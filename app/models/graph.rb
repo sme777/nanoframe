@@ -11,7 +11,7 @@ class Graph
         @sets = []
         # plane = find_plane_routing
         # @edges, @sets = plane[0], plane[1]
-        # planes = plane_rotations(plane)
+        @planes = plane_rotations([]) # should be plane
         # @route = find_plane_combination(planes) 
     end
 
@@ -172,7 +172,7 @@ class Graph
     end
 
     def plane_rotations(e)
-
+        []
     end
 
     def find_plane_combination(planes)
@@ -230,7 +230,7 @@ class Graph
 
     # Generates JSON file of the graph
     def to_json
-        hash = {"segments": @segments, "vertices": [], "edges": [], "sets": []}
+        hash = {"segments": @segments, "lineSegments": 3, "vertices": [], "edges": [], "sets": [], "planes": @planes}
         vs, es, ss = [], [], []
         @vertices.each do |v|
             vs.append(v.to_hash)

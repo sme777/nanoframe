@@ -1,19 +1,24 @@
 import * as THREE from 'three'
 import oc from 'three-orbit-controls'
-import {Line2} from './Line2'
-import { LineMaterial } from './LineMaterial'
-import { LineGeometry } from './LineGeometry'
-import * as GeometryUtils from './GeometryUtils'
+import {Line2} from './threejs/Line2'
+import { LineMaterial } from './threejs/LineMaterial'
+import { LineGeometry } from './threejs/LineGeometry'
+import * as GeometryUtils from './threejs/GeometryUtils'
+import * as dat from 'dat.gui'
+
+
+
+
+const graph_json = JSON.parse(document.getElementById("generator-container").value)
+const segments = graph_json["segments"]
+
 const canvas = document.getElementById("visualize-webgl")
-
-// const renderer = new THREE.WebGLRenderer({canvas: canvas})
-
 
 let line, renderer, scene, camera, camera2, controls
 let line1
 let matLine, matLineBasic, matLineDashed
 // let stats, gpuPanel;
-// let gui;
+// let gui = new dat.GUI()
 
 // viewport
 let insetWidth
@@ -47,12 +52,12 @@ controls.maxDistance = 500
 const positions = []
 const colors = []
 
-const points = GeometryUtils.hilbert3D( new THREE.Vector3( 0, 0, 0 ), 20.0, 1, 0, 1, 2, 3, 4, 5, 6, 7 )
-
+const points = GeometryUtils.hilbert3D(segments)
+// console.log(points)
 const spline = new THREE.CatmullRomCurve3( points )
 const divisions = Math.round( 12 * points.length )
 const point = new THREE.Vector3()
-const color = new THREE.Color()
+// const color = new THREE.Color()
 
 for ( let i = 0, l = divisions; i < l; i ++ ) {
 
@@ -61,8 +66,8 @@ for ( let i = 0, l = divisions; i < l; i ++ ) {
     spline.getPoint( t, point )
     positions.push( point.x, point.y, point.z )
 
-    color.setHSL( t, 1.0, 0.5 )
-    colors.push( color.r, color.g, color.b )
+    // color.setHSL( t, 1.0, 0.5 )
+    colors.push( t, t, t )
 
 }
 
@@ -76,7 +81,7 @@ geometry.setColors( colors )
 matLine = new LineMaterial( {
 
     color: 0xffffff,
-    linewidth: 5, // in world units with size attenuation, pixels otherwise
+    linewidth: 10, // in world units with size attenuation, pixels otherwise
     vertexColors: true,
     
     //resolution:  // to be set by renderer, eventually
@@ -116,7 +121,7 @@ function onWindowResize() {
 
     renderer.setSize( canvasContainerWidth, canvasContainerHeight );
 
-    insetWidth = canvasContainerWidth / 4; // square
+    insetWidth = canvasContainerHeight / 4; // square
     insetHeight = canvasContainerHeight / 4;
 
     camera2.aspect = insetWidth / insetHeight;
