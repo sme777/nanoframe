@@ -8,7 +8,7 @@ NanoFrame [nanoframe.org](https://nanoframe.org) is a web based tool which enabl
 Supported wireframes include cube, sphere, cone, tetrahedron, and many more. 
 
 Consider citing the associated paper if you find the project useful.
-> NanoFrame: A browser-based DNA wireframe design tool for 3D structures  
+> <ins>NanoFrame: A browser-based DNA wireframe design tool for 3D structures</ins>.  
 > Samson Petrosyan, Grigory Tikhomirov  
 > [paper](https://google.com) | [arXiv](https://arxiv.org) 
  
