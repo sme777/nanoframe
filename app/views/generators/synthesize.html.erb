@@ -71,31 +71,37 @@
                 </a>
 
 
-                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="button" autocomplete="off">
+                <a href="/nanobot/<%= @generator.id %>/oxdna" class="btn btn-outline-secondary">
                     <%= image_tag("download", class: "generate-download-txt") %> .oxDNA
-                </button>
-
-                <button type="button" class="btn btn-outline-success" data-bs-toggle="button" autocomplete="off">
-                    <%= image_tag("download", class: "generate-download-txt") %> .FASFA
-                </button>
+                </a>
+                <a href="/nanobot/<%= @generator.id %>/txt" class="btn btn-outline-danger">
+                    <%= image_tag("download", class: "generate-download-txt") %> Staples (.txt)
+                </a>
                 <div class="btn-group dropend">
                     <button type="button" class="btn btn-outline-dark">
-                        Other formats
+                        Other files
                     </button>
                     <button type="button" class="btn btn-outline-dark dropdown-toggle dropdown-toggle-split"
                         data-bs-toggle="dropdown" aria-expanded="false">
                         <span class="visually-hidden">Toggle Dropright</span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><button class="dropdown-item" type="button">.cif</button></li>
-                        <li><button class="dropdown-item" type="button">.txt</button></li>
-                        <li><button class="dropdown-item" type="button">.xml</button></li>
+                        <li><a href="/nanobot/<%= @generator.id %>/cadnano" class="dropdown-item">.caDNAno (.json)</a></li>
+                        <li><a href="/nanobot/<%= @generator.id %>/csv" class="dropdown-item">sequence & staples (.csv)</a></li>
+                        <li><a href="/nanobot/<%= @generator.id %>/fasfa" class="dropdown-item">.FASFA</a></li>
                         <!-- Dropdown menu links -->
                     </ul>
                 </div>
             </div>
+                    
+            <br>
+            <div class="generator-download-container-2">
 
-
+                <h5>or download all</h5>
+                <a href="/nanobot/<%= @generator.id %>/bundle" class="btn btn-outline-success">
+                    <%= image_tag("download", class: "generate-download-txt") %> bundle
+                </a>
+            </div>
         </div>
         <div class="viewer-container">
             <ul class="nav nav-tabs justify-content-center view-tabs">

@@ -287,3 +287,127 @@
     height: auto;
 }
 
+#visualize-webgl {
+    width: 100%;
+    height: auto;
+}
+
+.up-button-container {
+    text-align: center;
+}
+
+.down-butoon-container {
+    text-align: center;
+}
+
+.left-key-container {
+    // text-align: center;
+    // justify-content: center;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%);
+}
+
+.right-key-container {
+    // text-align: center;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%);
+
+}
+
+
+$btn-size:                100px;
+$btn-arrowsize:           $btn-size / 4;
+
+// Button colors
+$btn-color:               #111;
+$btn-bg:                  white;
+$btn-border:              white;
+
+// Button hover colors
+$btn-hover-color:         #111;
+$btn-bg-hover:            white;
+$btn-hover-border-color:  #111;
+
+.arrowbtn {
+  width: $btn-size;
+  height: $btn-size;
+  background: $btn-bg;
+  border: 2px solid $btn-border;
+  border-radius: $btn-size;
+  color: $btn-color;
+  cursor: pointer;
+  line-height: $btn-size;
+  margin-left: -($btn-size / 2);
+  transition: all 0.25s ease-in-out;
+  &:hover {
+    background: $btn-bg-hover;
+    border-color: $btn-hover-border-color;
+    color: $btn-hover-color;
+  }
+  &:after {
+    position: absolute;
+    display: inline-block;
+    content: "";
+    width: $btn-arrowsize;
+    height: $btn-arrowsize;
+  }
+}
+
+.arrowbtn-up {
+  top: 20px;
+  &:after {
+    margin-left: -($btn-arrowsize * .5);
+    margin-top: -($btn-arrowsize * .25);
+    border-top: 2px solid;
+    border-left: 2px solid;
+    transform: rotateZ(45deg);
+  }
+}
+
+.arrowbtn-down {
+  bottom: 20px;
+  &:after {
+    margin-left: -($btn-arrowsize * .5);
+    margin-top: -($btn-arrowsize * .75);
+    border-bottom: 2px solid;
+    border-right: 2px solid;
+    transform: rotateZ(45deg);
+  }
+  
+}
+
+.arrowbtn-left {
+    // position: relative;
+    left: 20px;
+    // top: 50%;
+    // left: 50%;
+    // left: 20px;
+    &:after {
+      margin-left: -($btn-arrowsize * .25);
+      margin-top: -($btn-arrowsize * .5);
+      border-bottom: 2px solid;
+      border-right: 2px solid;
+      transform: rotateZ(135deg);
+    }
+}
+
+.arrowbtn-right {
+    // position: relative;
+
+    // top: 50%;
+    // left: 50%;
+    // left: 20px;
+    right: 20px;
+    &:after {
+      margin-left: -($btn-arrowsize * .75);
+      margin-top: -($btn-arrowsize * .5);
+      border-bottom: 2px solid;
+      border-right: 2px solid;
+      transform: rotateZ(-45deg);
+    }
+}
+

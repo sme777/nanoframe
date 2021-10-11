@@ -51,61 +51,30 @@
     <div class="row outer-menu-container">
         <div class="col-md-6">
             <div class="back-container">
-                <a class="generator-arrow backbtn" href="/nanobot">&larr; Back</a>
+                <a class="generator-arrow backbtn" href="/nanobot/<%= @generator.id%>/routing">&larr; Routing</a>
             </div>
         </div>
 
         <div class="col-md-6">
             <div class="forward-container">
-                <a class="route-arrow" href="/nanobot/<%= @generator.id%>/visualize">Visualize &rarr;</a>
+                <a class="route-arrow" href="/nanobot/<%= @generator.id%>/synthesize">Synthesize &rarr;</a>
             </div>
         </div>
     </div>
 
-    <div class="routing-controls">
-
-    </div>
-
-    <div class="row">
-        <div class="col-md-4">
-        </div>
-        <div class="col-md-4">
-            <div class="up-button-container">
-                <button id="up-key-button" class="arrowbtn arrowbtn-up"></button>
-            </div>
-        </div>
-        <div class="col-md-4">
-        </div>
-    </div>
     <div class="row">
         <div class="col-md-1">
-            <div class="left-key-container">
-                <button id="left-key-button" class="arrowbtn arrowbtn-left"></button>
-            </div>
         </div>
         <div class="col-md-10">
-            <div class="router-container">
+            <div class="visualizer-container">
                 <div class="datGUI"></div>
-                <canvas id="router-webgl"></canvas>
+                <canvas id="visualize-webgl"></canvas>
             </div>
         </div>
         <div class="col-md-1">
-            <div class="right-key-container">
-                <button id="right-key-button" class="arrowbtn arrowbtn-right"></button>
-            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-4">
-        </div>
-        <div class="col-md-4">
-            <div class="down-butoon-container">
-                <button id="down-key-button" class="arrowbtn arrowbtn-down"></button>
-            </div>
-        </div>
-        <div class="col-md-4">
-        </div>
-    </div>
+
 
     <div value="2" class="container" id="footer">
         <hr class="my-4">
@@ -117,8 +86,7 @@
         </div>
     </div>
 
-    <%= javascript_pack_tag 'routing', 'data-turbolinks-track': 'reload'%>
-
+    <%= javascript_pack_tag 'visualize', 'data-turbolinks-track': 'reload'%>
 </body>
 
 </html>
