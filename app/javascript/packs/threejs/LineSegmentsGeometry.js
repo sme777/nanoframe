@@ -62,7 +62,7 @@ class LineSegmentsGeometry extends THREE.InstancedBufferGeometry {
 
 		} else if ( Array.isArray( array ) ) {
 
-			lineSegments = new THREE.Float32Array( array );
+			lineSegments = new Float32Array( array );
 
 		}
 
@@ -90,7 +90,7 @@ class LineSegmentsGeometry extends THREE.InstancedBufferGeometry {
 
 		} else if ( Array.isArray( array ) ) {
 
-			colors = new THREE.Float32Array( array );
+			colors = new Float32Array( array );
 
 		}
 
