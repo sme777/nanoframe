@@ -1,17 +1,3 @@
 language: ruby
 rvm:
   - 2.6.6
-before_install:
-  - gem install bundler:2.1.4
-  - nvm install 12.13.1
-  - npm install -g yarn@1.22.4
-before_script:
-  - bundle install
-  - yarn install
-script:
-  - bundle exec rake db:drop
-  - bundle exec rake db:create
-  - RAILS_ENV=test bundle exec rake db:migrate --trace
-  - bundle exec rake db:test:prepare
-  - bundle exec rspec
-  - bundle exec cucumber
