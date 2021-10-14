@@ -5,7 +5,7 @@ class UsersController < ApplicationController
 
   def contact; end
 
-  def about; end 
+  def about; end  
 
   def profile
     if !session[:user_id].nil?
