@@ -11,6 +11,8 @@ import * as dat from 'dat.gui'
 
 const graph_json = JSON.parse(document.getElementById("generator-container").value)
 const segments = graph_json["segments"]
+console.log(graph_json["sets"])
+const set = graph_json["sets"][0]
 
 const canvas = document.getElementById("visualize-webgl")
 
@@ -52,7 +54,7 @@ controls.maxDistance = 500
 const positions = []
 const colors = []
 
-const points = GeometryUtils.hilbert3D(segments)
+const points = GeometryUtils.hilbert3D(set.edges)
 // console.log(points)
 const spline = new THREE.CatmullRomCurve3( points )
 const divisions = Math.round( 12 * points.length )

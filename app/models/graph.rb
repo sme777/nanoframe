@@ -7,10 +7,10 @@ class Graph
         # each segment gets 4 sides 
         @segments = segments       
         @vertices = create_vertices
-        @edges = []
-        @sets = []
-        # plane = find_plane_routing
-        # @edges, @sets = plane[0], plane[1]
+        # @edges = []
+        # @sets = []
+        plane = find_plane_routing
+        @edges, @sets = plane[0], plane[1]
         @planes = plane_rotations([]) # should be plane
         # @route = find_plane_combination(planes) 
     end
@@ -40,6 +40,7 @@ class Graph
     def find_plane_routing
         sets = initialize_sets
         singeltons = singeltons(sets)
+        outgoers = outgoers(sets)
         edges = []
         queue = []
         i = 0
@@ -48,11 +49,31 @@ class Graph
             while !singeltons.empty?
                 if queue.empty?
                     queue.append(singeltons.first) 
-                elsif queue.first.e > 1
+                elsif queue.first.e.length > 1
                     queue.delete_at(0)
                     singeltons.delete_at(0)
                 else             
+                    # singelton needs to have two vertices added
+                    curr = queue.first
+                    next_outgoer = find_next_closest_outgoer(outgoers, curr)
                     
+                    outgoers.delete(next_outgoer)
+                    
+                    edge = nil
+                    if distance(next_outgoer, curr)  == 1
+                        edge = connect_direct(next_outgoer, curr)
+                    else 
+                        edge = connect_through_singelton(next_outgoer, curr)
+                    end
+                    next_outgoer.add_edge(edge)
+                    curr.add_edge(edge)
+
+                    if curr.e == 2
+                        new_set = merge_sets(curr.e.first[0], curr.e.last[0])
+                        # new_edge = Edge.new()
+                        outgoers.append(new_set)
+                        
+                    end
                 end
             end 
 
@@ -69,24 +90,79 @@ class Graph
 
             # add remove vertices to sets as neccessary
         end
-        outgoers = (@segments - 1) * 4
-        loopers = loopers(sets)
+        # outgoers = (@segments - 1) * 4
+        # loopers = loopers(sets)
 
-        if loop_set_num(sets) >= outgoers / 2
-            for i in 0..(loopers.length - 1)
-                for j in 0..(loopers.length - 1)
-                    if share_singelton(loopers[i], loopers[j]) && i != j
-                        # implement adding or pruning edges
-                        s = merge_loop_sets(loopers[i], loopers[j])
-                        sets.delete(loopers[i])
-                        sets.delete(loopers[j])
-                        sets.append(s)
-                    end
+        # if loop_set_num(sets) >= outgoers / 2
+        #     for i in 0..(loopers.length - 1)
+        #         for j in 0..(loopers.length - 1)
+        #             if share_singelton(loopers[i], loopers[j]) && i != j
+        #                 # implement adding or pruning edges
+        #                 s = merge_loop_sets(loopers[i], loopers[j])
+        #                 sets.delete(loopers[i])
+        #                 sets.delete(loopers[j])
+        #                 sets.append(s)
+        #             end
+        #         end
+        #     end
+        # end
+        # implement a while loop if the number of looper is still greater than half of ourgoers
+        [edges, sets]
+    end
+
+    # Finds the nex closest outgoing set from the given singelton
+    def find_next_closest_outgoer(outgoers, singelton)
+        s_x = singleton.v.first.x
+        s_y = singleton.v.first.y
+        s_z = singleton.v.first.z
+
+        min = Float::INFINITY
+        closest = nil
+
+        outgoers.each do |outgoer|
+            outgoer.v.each do |vertex|
+                o_x = vertex.x
+                o_y = vertex.y
+                o_z = vertex.z
+                
+                d = Math.sqrt((s_x - o_x) ** 2 + (s_y - o_y) ** 2 + (s_z - o_z) ** 2)
+                if d < min
+                    closest = outgoer
                 end
             end
         end
-        # implement a while loop if the number of looper is still greater than half of ourgoers
-        [edges, sets]
+        closest
+    end
+
+    # Computes the distance between singelton and the outgoer set
+    # Return true if the singelton is adjacent to the outgoer set and 
+    # false otherwise  
+    def distance(ourgoer, singelton)
+        s_x = singleton.v.first.x
+        s_y = singleton.v.first.y
+        s_z = singleton.v.first.z
+
+        outgoer.v.each do |vertex|
+            dist = 0
+            o_x = vertex.x
+            o_y = vertex.y
+            o_z = vertex.z
+            
+            dist += (s_x - o_x) + (s_y - o_y) + (s_z - o_z)
+            if dist.abs() == 1
+                return true
+            end
+        end
+        false 
+    end
+
+
+    def connect_through_singelton(outgoer, singelton)
+
+    end
+
+    def connect_direct(outgoer, singelton)
+
     end
 
     def initialize_sets
@@ -105,7 +181,7 @@ class Graph
 
     def connected(sets)
         sets.each do |set|
-            if !set.singelton && set.vertices.length < 2
+            if !set.singelton && set.v.length < 2
                 return false
             end
         end
@@ -116,7 +192,7 @@ class Graph
     def full(sets)
         sets = singeltons(sets)
         sets.each do |s|
-            if s.vertices.length < 2
+            if s.e.length < 2
                 return false
             end
         end
@@ -129,6 +205,16 @@ class Graph
         s = []
         sets.each do |set|
             if set.singelton
+                s.append(set)
+            end
+        end
+        s
+    end
+
+    def outgoers(sets)
+        s = []
+        sets.each do |set|
+            if !set.singelton
                 s.append(set)
             end
         end
@@ -251,23 +337,24 @@ class Graph
     end
 
     class Vertex
-        attr_accessor :x, :y
+        attr_accessor :x, :y, :z
 
-        def initialize(x, y)
+        def initialize(x, y, z=0)
             @x = x
             @y = y
+            @z = z
         end
 
         def string
-            "(#{@x}, #{@y})"
+            "(#{@x}, #{@y}, #{@z})"
         end
 
         def to_hash
-            {"x": @x, "y": @y}
+            {"x": @x, "y": @y, "z": @z}
         end
 
         def to_json
-            JSON.generate({"x": @x, "y": @y})
+            JSON.generate({"x": @x, "y": @y, "z": @z})
         end
 
     end
@@ -307,18 +394,27 @@ class Graph
             res += "}"
         end
 
+        def sort_edges
+            last_vertex = @v.first
+            sorted_edges = []
+            while sorted_edges != @e.length
+                e = find_edge_starting_with(last_vertex)
+                sort_edges.append(e)
+                last_vertex = e.v2
+            end
+            sort_edges
+        end
+
+        def find_edge_starting_with(v)
+            @e.each do |edge|
+                if edge.v1 == v
+                    return edge
+                end
+            end
+        end
+
         def to_hash
-            hash = {"vertices": [], "edges": [], "singelton": singelton}
-            vs, es = [], []
-            @v.each do |v|
-                vs.append(v.to_hash)
-            end
-            @e.each do |e|
-                es.append(e.to_hash)
-            end
-            hash[:vertices] = vs
-            hash[:edges] = es
-            hash
+            hash = {"vertices": @v, "edges": sort_edges, "singelton": singelton}
         end
 
         def to_json

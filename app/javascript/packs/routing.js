@@ -21,15 +21,36 @@ const planeRoutings = graph_json["planes"]
 
 
 let planes = []
-for (let j = 0; j < 6; j++) {
+for (let j = 0; j < 2; j++) {
     const gridHelper = new THREE.GridHelper(30, segments)
-    // gridHelper.geometry1.rotateX( Math.PI / 2 );
+    j % 2 == 1 ? gridHelper.position.set(0, 15, 0) : gridHelper.position.set(0, -15, 0) 
+    // gridHelper.geometry.rotateX( Math.PI / 2 );
+    planes.push(gridHelper)
+}
+
+
+for (let j = 0; j < 2; j++) {
+    const gridHelper = new THREE.GridHelper(30, segments)
+    gridHelper.geometry.rotateZ( Math.PI / 2 );
+    j % 2 == 1 ? gridHelper.position.set(15, 0, 0) : gridHelper.position.set(-15, 0, 0) 
+    planes.push(gridHelper)
+}
+
+
+for (let j = 0; j < 2; j++) {
+    const gridHelper = new THREE.GridHelper(30, segments)
+    gridHelper.geometry.rotateX( Math.PI / 2 );
+    j % 2 == 1 ? gridHelper.position.set(0, 0, 15) : gridHelper.position.set(0, 0, -15) 
     planes.push(gridHelper)
 }
 
 
 
+
 let pointer = 0
+
+let insetWidth
+let insetHeight
 
 const canvas = document.querySelector("#router-webgl")
 let canvasContainer = document.querySelector(".router-container")
@@ -38,7 +59,8 @@ let canvasContainerHeight = canvasContainer.offsetHeight
 
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(70, canvasContainerWidth / canvasContainerHeight, 0.01, 5000)
-camera.position.y = 25
+camera.position.y = 35
+// camera.position.z = 25
 const light = new THREE.DirectionalLight(0xffffff, 0.8)
 light.position.set(0, 0, 0)
 
@@ -46,6 +68,12 @@ let renderer = new THREE.WebGLRenderer({
     alpha: true,
     canvas: canvas
 })
+
+const camera2 = new THREE.PerspectiveCamera(40, 1, 1, 1000)
+camera2.position.set(camera.position.x, camera.position.y + 10, camera.position.z)
+
+
+
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(canvasContainerWidth, canvasContainerHeight);
 
@@ -68,15 +96,18 @@ let params = {
 gui.add(params, "color")
 let guiElements = []
 
-// const geometry1 = new THREE.Boxgeometry1(1, 1, 1)
-// const material = new THREE.MeshPhongMaterial({color: 0x4562df})
-
-// let cube = new THREE.Mesh(geometry1, material)
-// scene.add(cube)
 const OrbitControls = oc(THREE)
 const controls = new OrbitControls(camera, renderer.domElement)
 
-scene.add(planes[pointer])
+const geometry = new THREE.BoxGeometry( 30, 30, 30);
+const edges = new THREE.EdgesGeometry( geometry );
+const mesh = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0x000000 } ) );
+// scene.add( line );
+// camera.position.copy()
+scene.add(mesh)
+for (let i = 0; i < planes.length; i++) {
+    scene.add(planes[i])
+} 
 // const gridHelper2 = new THREE.GridHelper(6, segments)
 // scene.add(gridHelper2)
 
@@ -98,146 +129,233 @@ scene.add(planes[pointer])
 // }
 
 // create sequence routing 
-let points1 = [new THREE.Vector3(0, 0, 15), new THREE.Vector3(1, 0, 1), new THREE.Vector3(15, 0, 0)]
-const spline1 = new THREE.CatmullRomCurve3(points1)
-const divisions1 = Math.round( 12 * points1.length )
-const point1 = new THREE.Vector3()
+// let points1 = [new THREE.Vector3(0, 0, 15), new THREE.Vector3(1, 0, 1), new THREE.Vector3(15, 0, 0)]
+// const spline1 = new THREE.CatmullRomCurve3(points1)
+// const divisions1 = Math.round( 12 * points1.length )
+// const point1 = new THREE.Vector3()
 
-let positions1 = []
-let colors1 = []
-// const color = new THREE.Color()
 
-for ( let i = 0, l = divisions1; i < l; i ++ ) {
-
-    const t = i / l
-
-    spline1.getPoint( t, point1 )
-    positions1.push( point1.x, point1.y, point1.z )
-
-    // color.setHSL( t, 1.0, 0.5 )
-    colors1.push( t, t, t )
+function addGridHelpers() {
 
 }
 
+function createGrid(opts) {
+    const config = opts || {
+        height: 30,
+        width: 30,
+        linesHeight: 10,
+        linesWidth: 10,
+        color: 0xB0B0B0
+    }
 
-let points2 = [new THREE.Vector3(-15, 0, 0), new THREE.Vector3(-1, 0, -1), new THREE.Vector3(0, 0, -15)]
-const spline2 = new THREE.CatmullRomCurve3(points2)
-const divisions2 = Math.round( 12 * points2.length )
-const point2 = new THREE.Vector3()
+    const material = new THREE.LineBasicMaterial({
+        color: config.color,
+        opacity: 1
+    })
+    const positions = new Float32Array(config.width * 4 * 3 + config.height * 4 * 3)
+    const colors = new Float32Array(config.width * 4 * 3 + config.height * 4 * 3)
+    const gridObject = new THREE.Object3D(),
+    gridGeo = new THREE.BufferGeometry(),
+    stepw = 2 * config.width / config.linesWidth,
+    steph = 2 * config.height / config.linesHeight
 
-let positions2 = []
-let colors2 = []
-// const color = new THREE.Color()
+    // width
+    let j = 0
+    for (let i = -config.width; i <= config.width; i += stepw) {
+        positions[j] = -config.height
+        colors[j] = 176
+        positions[j+1] = i
+        colors[j+1] = 176
+        positions[j+2] = 0
+        colors[j+2] = 176
+        // j += 3
+        positions[j+3] = config.height
+        colors[j+3] = 176
+        positions[j+4] = i
+        colors[j+4] = 176
+        positions[j+5] = 0
+        colors[j+5] = 176 
+        j += 6
+        // arr.push(config.height, i, 0)
+        // gridGeo.vertices.push(new THREE.Vector3(-config.height, i, 0));
+        // gridGeo.vertices.push(new THREE.Vector3(config.height, i, 0));
+    
+    }
+    //height
+    for (let i = -config.height; i <= config.height; i += steph) {
+        positions[j] = i
+        colors[j] = 176
+        positions[j+1] = -config.width
+        colors[j+1] = 176
+        positions[j+2] = 0
+        colors[j+2] = 176
+        // j += 3
+        positions[j+3] = i
+        colors[j+3] = 176
+        positions[j+4] = config.width
+        colors[j+4] = 176
+        positions[j+5] = 0
+        colors[j+5] = 176 
+        j += 6
+        
+        
+        // arr.push(i, -config.width, 0)
+        // arr.push(i, config.width, 0)
+        // gridGeo.vertices.push(new THREE.Vector3(i, -config.width, 0));
 
-for ( let i = 0, l = divisions2; i < l; i ++ ) {
+        // gridGeo.vertices.push(new THREE.Vector3(i, config.width, 0));
+    }
+    
+    gridGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+    gridGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+    gridGeo.computeBoundingBox()
+    console.log(gridGeo)
+    var line = new THREE.LineSegments(gridGeo, material);
+    gridObject.add(line);
 
-    const t = i / l
-
-    spline2.getPoint( t, point2 )
-    positions2.push( point2.x, point2.y, point2.z )
-
-    // color.setHSL( t, 1.0, 0.5 )
-    colors2.push( t, t, t )
-
+    return gridObject;
 }
 
+const g = createGrid({height: 10, width: 5, linesHeight: 2, linesWidth: 2, color: 0xb0b0b0})
+console.log(g)
+scene.add(g)
+
+// let positions1 = []
+// let colors1 = []
+
+// // const color = new THREE.Color()
+
+// for ( let i = 0, l = divisions1; i < l; i ++ ) {
+
+//     const t = i / l
+
+//     spline1.getPoint( t, point1 )
+//     positions1.push( point1.x, point1.y + 15, point1.z )
+
+//     // color.setHSL( t, 1.0, 0.5 )
+//     colors1.push( t, t, t )
+
+// }
 
 
-const geometry1 = new LineGeometry()
-// const geoAttributes = vSet1
-geometry1.setPositions(positions1)
-geometry1.setColors(colors1)
-// console.log(geometry1)
-let matLine = new LineMaterial({
-    color: 0xff0000,
-    linewidth: 10,
-    vertexColors: true,
-    dashed: false,
-    alphaToCoverage: true,
+// let points2 = [new THREE.Vector3(-15, 0, 0), new THREE.Vector3(-1, 0, -1), new THREE.Vector3(0, 0, -15)]
+// const spline2 = new THREE.CatmullRomCurve3(points2)
+// const divisions2 = Math.round( 12 * points2.length )
+// const point2 = new THREE.Vector3()
 
-})
-let line = new Line2(geometry1, matLine)
-line.computeLineDistances()
-line.scale.set(1, 1, 1)
-scene.add(line)
+// let positions2 = []
+// let colors2 = []
+// // const color = new THREE.Color()
 
+// for ( let i = 0, l = divisions2; i < l; i ++ ) {
 
-const geometry2 = new LineGeometry()
-// const geoAttributes = vSet1
-geometry2.setPositions(positions2)
-geometry2.setColors(colors2)
+//     const t = i / l
 
-let line2 = new Line2(geometry2, matLine)
-line2.computeLineDistances()
-line2.scale.set(1, 1, 1)
-scene.add(line2)
+//     spline2.getPoint( t, point2 )
+//     positions2.push( point2.x, point2.y + 15, point2.z )
+
+//     // color.setHSL( t, 1.0, 0.5 )
+//     colors2.push( t, t, t )
+
+// }
 
 
-let points3 = [new THREE.Vector3(-3, 0, 0), new THREE.Vector3(-1, 0, 1), new THREE.Vector3(0, 0, 3)]
-const spline3 = new THREE.CatmullRomCurve3(points3)
-const divisions3 = Math.round( 12 * points3.length )
-const point3 = new THREE.Vector3()
 
-let positions3 = []
-let colors3 = []
-// const color = new THREE.Color()
+// const geometry1 = new LineGeometry()
+// // const geoAttributes = vSet1
+// geometry1.setPositions(positions1)
+// geometry1.setColors(colors1)
+// // console.log(geometry1)
+// let matLine = new LineMaterial({
+//     color: 0xff0000,
+//     linewidth: 10,
+//     vertexColors: true,
+//     dashed: false,
+//     alphaToCoverage: true,
 
-for ( let i = 0, l = divisions3; i < l; i ++ ) {
-
-    const t = i / l
-
-    spline3.getPoint( t, point3 )
-    positions3.push( point3.x, point3.y, point3.z )
-
-    // color.setHSL( t, 1.0, 0.5 )
-    colors3.push( t, t, t )
-
-}
-
-const geometry3 = new LineGeometry()
-// const geoAttributes = vSet1
-geometry3.setPositions(positions3)
-geometry3.setColors(colors3)
-// console.log(geometry1)
-
-let line3 = new Line2(geometry3, matLine)
-line3.computeLineDistances()
-line3.scale.set(1, 1, 1)
-scene.add(line3)
+// })
+// let line = new Line2(geometry1, matLine)
+// line.computeLineDistances()
+// line.scale.set(1, 1, 1)
+// scene.add(line)
 
 
-//
-let points4 = [new THREE.Vector3(3, 0, 0), new THREE.Vector3(1, 0, -1), new THREE.Vector3(0, 0, -3)]
-const spline4 = new THREE.CatmullRomCurve3(points4)
-const divisions4 = Math.round( 12 * points4.length )
-const point4 = new THREE.Vector3()
+// const geometry2 = new LineGeometry()
+// // const geoAttributes = vSet1
+// geometry2.setPositions(positions2)
+// geometry2.setColors(colors2)
 
-let positions4 = []
-let colors4 = []
-// const color = new THREE.Color()
+// let line2 = new Line2(geometry2, matLine)
+// line2.computeLineDistances()
+// line2.scale.set(1, 1, 1)
+// scene.add(line2)
 
-for ( let i = 0, l = divisions4; i < l; i ++ ) {
 
-    const t = i / l
+// let points3 = [new THREE.Vector3(-3, 0, 0), new THREE.Vector3(-1, 0, 1), new THREE.Vector3(0, 0, 3)]
+// const spline3 = new THREE.CatmullRomCurve3(points3)
+// const divisions3 = Math.round( 12 * points3.length )
+// const point3 = new THREE.Vector3()
 
-    spline4.getPoint( t, point4 )
-    positions4.push( point4.x, point4.y, point4.z )
+// let positions3 = []
+// let colors3 = []
+// // const color = new THREE.Color()
 
-    // color.setHSL( t, 1.0, 0.5 )
-    colors4.push( t, t, t )
+// for ( let i = 0, l = divisions3; i < l; i ++ ) {
 
-}
+//     const t = i / l
 
-const geometry4 = new LineGeometry()
-// const geoAttributes = vSet1
-geometry4.setPositions(positions4)
-geometry4.setColors(colors4)
-// console.log(geometry1)
+//     spline3.getPoint( t, point3 )
+//     positions3.push( point3.x, point3.y + 15, point3.z )
 
-let line4 = new Line2(geometry4, matLine)
-line4.computeLineDistances()
-line4.scale.set(1, 1, 1)
-scene.add(line4)
+//     // color.setHSL( t, 1.0, 0.5 )
+//     colors3.push( t, t, t )
+
+// }
+
+// const geometry3 = new LineGeometry()
+// // const geoAttributes = vSet1
+// geometry3.setPositions(positions3)
+// geometry3.setColors(colors3)
+// // console.log(geometry1)
+
+// let line3 = new Line2(geometry3, matLine)
+// line3.computeLineDistances()
+// line3.scale.set(1, 1, 1)
+// scene.add(line3)
+
+
+// //
+// let points4 = [new THREE.Vector3(3, 0, 0), new THREE.Vector3(1, 0, -1), new THREE.Vector3(0, 0, -3)]
+// const spline4 = new THREE.CatmullRomCurve3(points4)
+// const divisions4 = Math.round( 12 * points4.length )
+// const point4 = new THREE.Vector3()
+
+// let positions4 = []
+// let colors4 = []
+// // const color = new THREE.Color()
+
+// for ( let i = 0, l = divisions4; i < l; i ++ ) {
+
+//     const t = i / l
+
+//     spline4.getPoint( t, point4 )
+//     positions4.push( point4.x, point4.y + 15, point4.z )
+
+//     // color.setHSL( t, 1.0, 0.5 )
+//     colors4.push( t, t, t )
+
+// }
+
+// const geometry4 = new LineGeometry()
+// // const geoAttributes = vSet1
+// geometry4.setPositions(positions4)
+// geometry4.setColors(colors4)
+// // console.log(geometry1)
+
+// let line4 = new Line2(geometry4, matLine)
+// line4.computeLineDistances()
+// line4.scale.set(1, 1, 1)
+// scene.add(line4)
 
 
 window.addEventListener( 'resize', onWindowResize )
@@ -379,12 +497,17 @@ function onWindowResize() {
 
     renderer.setSize( canvasContainerWidth, canvasContainerHeight );
 
+    insetWidth = canvasContainerHeight / 4
+    insetHeight = canvasContainerHeight / 4
+
+    camera2.aspect = insetWidth / insetHeight
+    camera2.updateProjectionMatrix()
 }
 
 function render(time) {
     renderer.setClearColor( 0x000000, 0 );
     renderer.setViewport( 0, 0, canvasContainerWidth, canvasContainerHeight );
-    matLine.resolution.set( canvasContainerWidth, canvasContainerHeight ); // resolution of the viewport
+    // matLine.resolution.set( canvasContainerWidth, canvasContainerHeight ); // resolution of the viewport
 
     time *= 0.001
 
@@ -395,6 +518,23 @@ function render(time) {
     }
 
     renderer.render(scene, camera)
+    renderer.setClearColor( 0xf5f5f5, 1 );
+
+    renderer.clearDepth(); // important!
+
+    renderer.setScissorTest( true );
+
+    renderer.setScissor( 20, 20, insetWidth, insetHeight );
+
+    renderer.setViewport( 20, 20, insetWidth, insetHeight );
+
+    camera2.position.set(camera.position.x, camera.position.y + 10, camera.position.z)
+    camera2.quaternion.copy(camera.quaternion)
+
+    renderer.render( scene, camera2 )
+
+    renderer.setScissorTest( false )
+
     requestAnimationFrame(render)
 }
 
