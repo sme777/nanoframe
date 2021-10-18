@@ -166,7 +166,7 @@ const controls = new OrbitControls(camera, renderer.domElement)
 
 const geometry = new THREE.BoxGeometry( 30, 30, 30);
 const edges = new THREE.EdgesGeometry( geometry );
-const mesh = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0x000000 } ) );
+const mesh = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0xD3D3D3 } ) );
 // scene.add( line );
 // camera.position.copy()
 scene.add(mesh)
@@ -524,31 +524,6 @@ function equalsVector(v1, v2) {
 }
 
 
-document.getElementById("up-key-button").addEventListener("click", () => {
-    scene.remove(planes[pointer])
-    scene.remove(line)
-    scene.remove(line2)
-    console.log("Your pressed Up")
-})
-
-
-document.getElementById("down-key-button").addEventListener("click", () => {
-    scene.add(planes[pointer])
-    scene.add(line)
-    scene.add(line2)
-    console.log("Your pressed Down")
-})
-
-
-document.getElementById("right-key-button").addEventListener("click", () => {
-    console.log("Your pressed Right")
-})
-
-
-document.getElementById("left-key-button").addEventListener("click", () => {
-    console.log("Your pressed Left")
-})
-
 function resizeRendererToDisplaySize(renderer) {
     const canvas = renderer.domElement
     const width = canvas.clientWidth
@@ -598,7 +573,7 @@ function render(time) {
 
     renderer.setViewport( 20, 20, insetWidth, insetHeight );
 
-    camera2.position.set(camera.position.x, camera.position.y + 10, camera.position.z)
+    camera2.position.set(camera.position.x * 2, camera.position.y * 2, camera.position.z * 2)
     camera2.quaternion.copy(camera.quaternion)
 
     renderer.render( scene, camera2 )
@@ -610,3 +585,42 @@ function render(time) {
 
 requestAnimationFrame(render)
 renderer.render(scene, camera)
+
+// DOM modifiers
+
+document.querySelector(".select-container").style.visibility = 'hidden'
+
+document.getElementById("select-btn").addEventListener("click", () => {
+    const selectionDiv = document.querySelector(".select-container")
+    if (selectionDiv.style.visibility == 'visible') {
+        selectionDiv.style.visibility = 'hidden'
+    } else {
+        selectionDiv.style.visibility = 'visible'
+    }
+})
+
+
+document.getElementById("up-key-button").addEventListener("click", () => {
+    scene.remove(planes[pointer])
+    scene.remove(line)
+    scene.remove(line2)
+    console.log("Your pressed Up")
+})
+
+
+document.getElementById("down-key-button").addEventListener("click", () => {
+    scene.add(planes[pointer])
+    scene.add(line)
+    scene.add(line2)
+    console.log("Your pressed Down")
+})
+
+
+document.getElementById("right-key-button").addEventListener("click", () => {
+    console.log("Your pressed Right")
+})
+
+
+document.getElementById("left-key-button").addEventListener("click", () => {
+    console.log("Your pressed Left")
+})

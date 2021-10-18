@@ -273,7 +273,18 @@ class Graph
     end
 
     def has_one_loop(g)
+        front = g[0]
+        right = g[1]
+        left = g[2]
+        back = g[3]
+        top = g[4]
+        bottom = g[5]
 
+        g.each do |plane|
+            outgoers = g.outgoers
+            
+
+        end
     end
 
     def string_of_vertices
