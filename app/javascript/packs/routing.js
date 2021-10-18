@@ -18,30 +18,95 @@ const graph_json = JSON.parse(document.getElementById("generator-container").val
 const segments = graph_json["segments"]
 const lineSegments = graph_json["lineSegments"]
 const planeRoutings = graph_json["planes"]
-
+const dimension = 30
 
 let planes = []
+let grids = []
 for (let j = 0; j < 2; j++) {
-    const gridHelper = new THREE.GridHelper(30, segments)
-    j % 2 == 1 ? gridHelper.position.set(0, 15, 0) : gridHelper.position.set(0, -15, 0) 
+    const gridHelper = new THREE.GridHelper(dimension, segments, 0xD3D3D3, 0xD3D3D3)
+    j % 2 == 1 ? gridHelper.position.set(0, dimension/2, 0) : gridHelper.position.set(0, -dimension/2, 0)
+    const pos2Seg = dimension / (segments - 1)
+
     // gridHelper.geometry.rotateX( Math.PI / 2 );
     planes.push(gridHelper)
 }
 
 
-for (let j = 0; j < 2; j++) {
-    const gridHelper = new THREE.GridHelper(30, segments)
-    gridHelper.geometry.rotateZ( Math.PI / 2 );
-    j % 2 == 1 ? gridHelper.position.set(15, 0, 0) : gridHelper.position.set(-15, 0, 0) 
-    planes.push(gridHelper)
+for (let i = 1; i < segments ; i++) {
+    const g1 = createGrid({height: dimension / 2, width: 1, linesHeight: 40, linesWidth: 3, color: 0x000000})
+    const g2 = createGrid({height: 1, width: dimension / 2, linesHeight: 3, linesWidth: 40, color: 0x000000})
+    const g3 = createGrid({height: dimension / 2, width: 1, linesHeight: 40, linesWidth: 3, color: 0x000000})
+    const g4 = createGrid({height: 1, width: dimension / 2, linesHeight: 3, linesWidth: 40, color: 0x000000})
+    // g2.geometry.rotateX(Math.PI / 2) , 0, 0,  Math.PI / 2
+    g1.position.set(0, -dimension/2 + (i * dimension / segments), dimension /2 )
+    g2.position.set(-dimension/2 + (i * dimension / segments), 0, dimension /2 )
+
+    g3.position.set(0, -dimension/2 + (i * dimension / segments), - dimension /2 )
+    g4.position.set(-dimension/2 + (i * dimension / segments), 0, - dimension /2 )
+
+    
+    grids.push(g1)
+    grids.push(g2)
+    grids.push(g3)
+    grids.push(g4)
+
 }
 
 
 for (let j = 0; j < 2; j++) {
-    const gridHelper = new THREE.GridHelper(30, segments)
-    gridHelper.geometry.rotateX( Math.PI / 2 );
-    j % 2 == 1 ? gridHelper.position.set(0, 0, 15) : gridHelper.position.set(0, 0, -15) 
+    const gridHelper = new THREE.GridHelper(dimension, segments, 0xD3D3D3, 0xD3D3D3)
+    gridHelper.geometry.rotateZ( Math.PI / 2 );
+    j % 2 == 1 ? gridHelper.position.set(dimension / 2, 0, 0) : gridHelper.position.set(-dimension / 2, 0, 0) 
     planes.push(gridHelper)
+}
+
+for (let i = 1; i < segments ; i++) {
+    const g1 = createGrid({height: dimension / 2, width: 1, linesHeight: 40, linesWidth: 3, color: 0x000000}, Math.PI / 2)
+    const g2 = createGrid({height: 1, width: dimension / 2, linesHeight: 3, linesWidth: 40, color: 0x000000},  Math.PI / 2)
+    const g3 = createGrid({height: dimension / 2, width: 1, linesHeight: 40, linesWidth: 3, color: 0x000000},  Math.PI / 2)
+    const g4 = createGrid({height: 1, width: dimension / 2, linesHeight: 3, linesWidth: 40, color: 0x000000},  Math.PI / 2)
+    // g2.geometry.rotateX(Math.PI / 2) , 0, 0,  Math.PI / 2
+    g1.position.set(0, dimension /2, -dimension/2 + (i * dimension / segments))
+    g2.position.set(-dimension/2 + (i * dimension / segments), dimension /2 , 0)
+
+    g3.position.set(0, - dimension /2, -dimension/2 + (i * dimension / segments) )
+    g4.position.set(-dimension/2 + (i * dimension / segments), - dimension /2 , 0)
+
+    
+    grids.push(g1)
+    grids.push(g2)
+    grids.push(g3)
+    grids.push(g4)
+
+}
+
+
+
+for (let j = 0; j < 2; j++) {
+    const gridHelper = new THREE.GridHelper(dimension, segments, 0xD3D3D3, 0xD3D3D3)
+    gridHelper.geometry.rotateX( Math.PI / 2 );
+    j % 2 == 1 ? gridHelper.position.set(0, 0, dimension /2 ) : gridHelper.position.set(0, 0, -dimension / 2) 
+    planes.push(gridHelper)
+}
+
+for (let i = 1; i < segments ; i++) {
+    const g1 = createGrid({height: dimension / 2, width: 1, linesHeight: 40, linesWidth: 3, color: 0x000000}, Math.PI / 2, 0, Math.PI / 2)
+    const g2 = createGrid({height: 1, width: dimension / 2, linesHeight: 3, linesWidth: 40, color: 0x000000}, Math.PI / 2, 0, Math.PI / 2)
+    const g3 = createGrid({height: dimension / 2, width: 1, linesHeight: 40, linesWidth: 3, color: 0x000000}, Math.PI / 2, 0, Math.PI / 2)
+    const g4 = createGrid({height: 1, width: dimension / 2, linesHeight: 3, linesWidth: 40, color: 0x000000}, Math.PI / 2, 0, Math.PI / 2)
+    // g2.geometry.rotateX(Math.PI / 2) , 0, 0,  Math.PI / 2
+    g1.position.set(dimension /2, 0, -dimension/2 + (i * dimension / segments))
+    g2.position.set(dimension /2 , -dimension/2 + (i * dimension / segments),  0)
+    g3.position.set(- dimension /2, 0, -dimension/2 + (i * dimension / segments))
+    g4.position.set(- dimension /2 , -dimension/2 + (i * dimension / segments),  0)
+
+    
+    grids.push(g1)
+    grids.push(g2)
+    grids.push(g3)
+    grids.push(g4)
+
+
 }
 
 
@@ -108,6 +173,10 @@ scene.add(mesh)
 for (let i = 0; i < planes.length; i++) {
     scene.add(planes[i])
 } 
+
+for (let i = 0; i < grids.length; i++) {
+    scene.add(grids[i])
+}
 // const gridHelper2 = new THREE.GridHelper(6, segments)
 // scene.add(gridHelper2)
 
@@ -136,10 +205,12 @@ for (let i = 0; i < planes.length; i++) {
 
 
 function addGridHelpers() {
+    for (let i = 0; i < segments; i++) {
 
+    }
 }
 
-function createGrid(opts) {
+function createGrid(opts, rotationX=0, rotationY=0, rotationZ=0) {
     const config = opts || {
         height: 30,
         width: 30,
@@ -152,15 +223,17 @@ function createGrid(opts) {
         color: config.color,
         opacity: 1
     })
-    const positions = new Float32Array(config.width * 4 * 3 + config.height * 4 * 3)
-    const colors = new Float32Array(config.width * 4 * 3 + config.height * 4 * 3)
+    const positions = new Float32Array(config.width * config.linesWidth  + config.height * config.linesHeight )
+    const colors = new Float32Array(config.width * config.linesWidth  + config.height * config.linesHeight )
     const gridObject = new THREE.Object3D(),
     gridGeo = new THREE.BufferGeometry(),
     stepw = 2 * config.width / config.linesWidth,
     steph = 2 * config.height / config.linesHeight
-
+    console.log(config.width * config.linesWidth + config.height * config.linesHeight )
     // width
+    // let count = 0
     let j = 0
+
     for (let i = -config.width; i <= config.width; i += stepw) {
         positions[j] = -config.height
         colors[j] = 176
@@ -176,9 +249,6 @@ function createGrid(opts) {
         positions[j+5] = 0
         colors[j+5] = 176 
         j += 6
-        // arr.push(config.height, i, 0)
-        // gridGeo.vertices.push(new THREE.Vector3(-config.height, i, 0));
-        // gridGeo.vertices.push(new THREE.Vector3(config.height, i, 0));
     
     }
     //height
@@ -197,28 +267,28 @@ function createGrid(opts) {
         positions[j+5] = 0
         colors[j+5] = 176 
         j += 6
-        
-        
-        // arr.push(i, -config.width, 0)
-        // arr.push(i, config.width, 0)
-        // gridGeo.vertices.push(new THREE.Vector3(i, -config.width, 0));
-
-        // gridGeo.vertices.push(new THREE.Vector3(i, config.width, 0));
     }
+    console.log(j)
     
     gridGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     gridGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3))
     gridGeo.computeBoundingBox()
-    console.log(gridGeo)
+    gridGeo.rotateX(rotationX)
+    gridGeo.rotateY(rotationY)
+    gridGeo.rotateZ(rotationZ)
+
     var line = new THREE.LineSegments(gridGeo, material);
     gridObject.add(line);
 
     return gridObject;
 }
 
-const g = createGrid({height: 10, width: 5, linesHeight: 2, linesWidth: 2, color: 0xb0b0b0})
-console.log(g)
-scene.add(g)
+// const g1 = createGrid({height: 2, width: 15, linesHeight: 5, linesWidth: 20, color: 0xb0b0b0})
+// const g2 = createGrid({height: 2, width: 15, linesHeight: 5, linesWidth: 20, color: 0xb0b0b0}, Math.PI / 2)
+// // console.log(g)
+// scene.add(g1)
+// scene.add(g2)
+
 
 // let positions1 = []
 // let colors1 = []

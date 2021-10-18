@@ -9,8 +9,8 @@ class Graph
         @vertices = create_vertices
         # @edges = []
         # @sets = []
-        plane = find_plane_routing
-        @edges, @sets = plane[0], plane[1]
+        # plane = find_plane_routing
+        @edges, @sets = [], []#plane[0], plane[1]
         @planes = plane_rotations([]) # should be plane
         # @route = find_plane_combination(planes) 
     end
@@ -49,7 +49,7 @@ class Graph
             while !singeltons.empty?
                 if queue.empty?
                     queue.append(singeltons.first) 
-                elsif queue.first.e.length > 1
+                elsif queue.first.e.length > 3
                     queue.delete_at(0)
                     singeltons.delete_at(0)
                 else             
@@ -60,10 +60,11 @@ class Graph
                     outgoers.delete(next_outgoer)
                     
                     edge = nil
-                    if distance(next_outgoer, curr)  == 1
-                        edge = connect_direct(next_outgoer, curr)
+                    result = distance(next_outgoer, curr)
+                    if result[0]  == 1
+                        edge = connect_direct(result[1], curr)
                     else 
-                        edge = connect_through_singelton(next_outgoer, curr)
+                        edge = connect_through_singeltons(next_outgoer, curr)
                     end
                     next_outgoer.add_edge(edge)
                     curr.add_edge(edge)
@@ -111,7 +112,7 @@ class Graph
     end
 
     # Finds the nex closest outgoing set from the given singelton
-    def find_next_closest_outgoer(outgoers, singelton)
+    def find_next_closest_outgoer(outgoers, singleton)
         s_x = singleton.v.first.x
         s_y = singleton.v.first.y
         s_z = singleton.v.first.z
@@ -137,7 +138,7 @@ class Graph
     # Computes the distance between singelton and the outgoer set
     # Return true if the singelton is adjacent to the outgoer set and 
     # false otherwise  
-    def distance(ourgoer, singelton)
+    def distance(outgoer, singleton)
         s_x = singleton.v.first.x
         s_y = singleton.v.first.y
         s_z = singleton.v.first.z
@@ -150,19 +151,19 @@ class Graph
             
             dist += (s_x - o_x) + (s_y - o_y) + (s_z - o_z)
             if dist.abs() == 1
-                return true
+                return [1, vertex]
             end
         end
-        false 
+        [-1, nil] 
     end
 
 
-    def connect_through_singelton(outgoer, singelton)
+    def connect_through_singeltons(outgoer, singelton)
 
     end
 
     def connect_direct(outgoer, singelton)
-
+        edge = Edge.new(outgoer, singelton)
     end
 
     def initialize_sets
