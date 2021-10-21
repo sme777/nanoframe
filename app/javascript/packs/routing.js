@@ -12,7 +12,6 @@ const context = Object.freeze({
 const graph_json = JSON.parse(document.getElementById("generator-container").value)
 
 const segments = graph_json["segments"]
-const lineSegments = graph_json["lineSegments"]
 const planeRoutings = graph_json["planes"]
 const dimension = 30 // setup from user choice
 
@@ -68,15 +67,113 @@ scene.add(light)
 const gui = new dat.GUI({
     autoPlace: false
 })
+
+// dat.GUI.toggleHide()
 document.querySelector('.datGUI').append(gui.domElement)
 
-let params = {
-    color: 0xff00ff
+const viewParams = {
+    scaffold_color: 0xff0000,
+    staple_color: 0xffff00,
+    switchView: () => {
+        if (switchContext == context.objectMode) {
+        
+            controls.enableRotate = false
+            cubeGroup.position.z = 2000
+            currPlane.position.set(0, 0, 0)
+            camera = prevCamera
+            controls = new OrbitControls(camera, renderer.domElement)
+            switchContext = context.planeMode
+            camera.position.y = 25
+            scene.add(camera2)    
+            
+        } else {
+            controls.enableRotate = true
+            currPlane.position.set(0, 0, 2000)
+            cubeGroup.position.z = 0
+            console.log(camera)
+            prevCamera = camera.clone()
+            switchContext = context.objectMode
+            camera.position.y = 40
+            scene.remove(camera2)
+        }
+    }
 }
 
-gui.add(params, "color")
-let guiElements = []
+const selectionParams = {
+    strand: () => {
+        console.log("strand selected")
+    },
 
+    crossover: () => {
+
+    },
+    loopout: () => {
+
+    }
+}
+
+const fivePrimeParams = {
+    strand: () => {
+
+    },
+    domain: () => {
+
+    }
+}
+
+const threePrimeParams = {
+    strand: () => {
+
+    },
+    domain: () => {
+
+    }
+}
+
+const otherParams = {
+    pencil: () => {
+
+    },
+
+    split: () => {
+
+    },
+
+    insertion: () => {
+
+    },
+
+    deletion: () => {
+
+    }
+}
+
+const viewFolder = gui.addFolder("view")
+viewFolder.addColor(viewParams, "scaffold_color").name("scaffold color")
+viewFolder.addColor(viewParams, "staple_color").name("staple color")
+viewFolder.add(viewParams, "switchView").name("switch view")
+viewFolder.closed = false
+const selectionFolder = gui.addFolder("selection")
+selectionFolder.add(selectionParams, "strand")
+
+selectionFolder.add(selectionParams, "crossover")
+selectionFolder.add(selectionParams, "loopout")
+selectionFolder.closed = false
+
+const fivePrimeFolder = selectionFolder.addFolder("5'")
+const threePrimeFolder = selectionFolder.addFolder("3'")
+fivePrimeFolder.add(fivePrimeParams, "strand")
+fivePrimeFolder.add(fivePrimeParams, "domain")
+
+threePrimeFolder.add(threePrimeParams, "strand")
+threePrimeFolder.add(threePrimeParams, "domain")
+
+const editFolder = gui.addFolder("edit")
+editFolder.add(otherParams, "pencil")
+editFolder.add(otherParams, "split")
+editFolder.add(otherParams, "insertion")
+editFolder.add(otherParams, "deletion")
+editFolder.closed = false
 const OrbitControls = oc(THREE)
 let controls = new OrbitControls(camera, renderer.domElement)
 
@@ -349,167 +446,6 @@ requestAnimationFrame(render)
 renderer.render(scene, camera)
 
 // DOM modifiers
-
-document.querySelector(".select-container").style.display = 'none'
-
-document.getElementById("select-btn").addEventListener("click", () => {
-    const selectionDiv = document.querySelector(".select-container")
-    
-    if (selectionDiv.style.display == 'none') {
-        selectionDiv.style.display = 'block'
-        document.querySelector(".insertion-elem").classList.remove("active")
-        document.querySelector(".deletion-elem").classList.remove("active")
-        document.querySelector(".select-elem").classList.add("active")
-    } else {
-        selectionDiv.style.display = 'none'
-        document.querySelector(".select-elem").classList.remove("active")
-    }
-})
-
-document.getElementById("select-strand-btn").addEventListener("click", () => {
-    const strand = document.querySelector(".strand-elem")
-    if (strand.classList.contains("bg-warning")) {
-        strand.classList.remove("bg-warning")
-    } else {
-        document.querySelector(".crossover-elem").classList.remove("bg-warning")
-        document.querySelector(".three-elem").classList.remove("bg-warning")
-        document.querySelector(".five-elem").classList.remove("bg-warning")
-        document.querySelector(".loopout-elem").classList.remove("bg-warning")
-        strand.classList.add("bg-warning")
-    }
-})
-
-document.getElementById("select-three-prime-btn").addEventListener("click", () => {
-    const threePrime = document.querySelector(".three-elem")
-    if (threePrime.classList.contains("bg-warning")) {
-        threePrime.classList.remove("bg-warning")
-    } else {
-        document.querySelector(".crossover-elem").classList.remove("bg-warning")
-        document.querySelector(".strand-elem").classList.remove("bg-warning")
-        document.querySelector(".five-elem").classList.remove("bg-warning")
-        document.querySelector(".loopout-elem").classList.remove("bg-warning")
-        threePrime.classList.add("bg-warning")
-    }
-})
-
-document.getElementById("select-five-prime-btn").addEventListener("click", () => {
-    const fivePrime = document.querySelector(".five-elem")
-    if (fivePrime.classList.contains("bg-warning")) {
-        fivePrime.classList.remove("bg-warning")
-    } else {
-        document.querySelector(".strand-elem").classList.remove("bg-warning")
-        document.querySelector(".three-elem").classList.remove("bg-warning")
-        document.querySelector(".crossover-elem").classList.remove("bg-warning")
-        document.querySelector(".loopout-elem").classList.remove("bg-warning")
-        fivePrime.classList.add("bg-warning")
-    }
-})
-
-document.getElementById("select-crossover-btn").addEventListener("click", () => {
-    const crossover = document.querySelector(".crossover-elem")
-    if (crossover.classList.contains("bg-warning")) {
-        crossover.classList.remove("bg-warning")
-    } else {
-        document.querySelector(".strand-elem").classList.remove("bg-warning")
-        document.querySelector(".three-elem").classList.remove("bg-warning")
-        document.querySelector(".five-elem").classList.remove("bg-warning")
-        document.querySelector(".loopout-elem").classList.remove("bg-warning")
-        crossover.classList.add("bg-warning")
-    }
-})
-
-
-document.getElementById("select-loopout-btn").addEventListener("click", () => {
-    const loopout = document.querySelector(".loopout-elem")
-    if (loopout.classList.contains("bg-warning")) {
-        loopout.classList.remove("bg-warning")
-    } else {
-        document.querySelector(".strand-elem").classList.remove("bg-warning")
-        document.querySelector(".three-elem").classList.remove("bg-warning")
-        document.querySelector(".five-elem").classList.remove("bg-warning")
-        document.querySelector(".crossover-elem").classList.remove("bg-warning")
-        loopout.classList.add("bg-warning")
-    }
-})
-
-document.getElementById("insertion-btn").addEventListener("click", () => {
-
-    let insertion = document.querySelector(".insertion-elem")
-    if (insertion.classList.contains("active")) {
-        insertion.classList.remove("active")
-    } else {
-        insertion.classList.add("active")
-        document.querySelector(".deletion-elem").classList.remove("active")
-        document.querySelector(".select-elem").classList.remove("active")
-        document.querySelector(".select-container").style.display = 'none'
-    }
-})
-
-document.getElementById("deletion-btn").addEventListener("click", () => {
-
-    let deletion = document.querySelector(".deletion-elem")
-    if (deletion.classList.contains("active")) {
-        deletion.classList.remove("active")
-    } else {
-        deletion.classList.add("active")
-        document.querySelector(".insertion-elem").classList.remove("active")
-        document.querySelector(".select-elem").classList.remove("active")
-        document.querySelector(".select-container").style.display = 'none'
-    }
-})
-
-// switch view from plane to 3d object or vice versa
-
-document.getElementById("switch-view-btn").addEventListener("click", () => {
-    if (switchContext == context.objectMode) {
-        
-        controls.enableRotate = false
-        cubeGroup.position.z = 2000
-        currPlane.position.set(0, 0, 0)
-        // camera.rotation.set(0, 0, 0)??
-        // camera.updateMatrix()
-        console.log(camera)
-        camera = prevCamera
-        controls = new OrbitControls(camera, renderer.domElement)
-        // camera2Object = cubeGroup
-        switchContext = context.planeMode
-        camera.position.y = 25
-        scene.add(camera2)
-
-        scene.add(meshik)
-        scene.add(meshik2)
-        scene.add(meshik3)
-        scene.add(meshik4)
-        scene.add(meshik5)
-        scene.add(meshik6)
-        document.querySelector(".switch-elem").classList.remove("active")
-
-        
-    } else {
-        controls.enableRotate = true
-        currPlane.position.set(0, 0, 2000)
-        cubeGroup.position.z = 0
-        console.log(camera)
-        prevCamera = camera.clone()
-        switchContext = context.objectMode
-        camera.position.y = 40
-        // console.log(cubeGroup)
-        scene.remove(camera2)
-        scene.remove(meshik)
-        scene.remove(meshik2)
-        scene.remove(meshik3)
-        scene.remove(meshik4)
-        scene.remove(meshik5)
-        scene.remove(meshik6)
-        document.querySelector(".insertion-elem").classList.remove("active")
-        document.querySelector(".deletion-elem").classList.remove("active")
-        document.querySelector(".select-elem").classList.remove("active")
-        document.querySelector(".switch-elem").classList.add("active")
-    }
-    
-})
-
-
 document.getElementById("up-key-button").addEventListener("click", () => {
     scene.remove(currPlane)
     const res = planeNeighbors[current]["up"]

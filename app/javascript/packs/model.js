@@ -39,7 +39,7 @@ function main() {
     const geometry = new THREE.BufferGeometry().setFromPoints( dna.positions )
     const material = new THREE.LineBasicMaterial( { color : 0xff0000 } )
     const curveObject = new THREE.Line( geometry, material )
-    scene.add(curveObject)
+    // scene.add(curveObject)
 
     const axesHelper = new THREE.AxesHelper(15)
     scene.add(axesHelper)
