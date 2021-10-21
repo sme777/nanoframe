@@ -156,7 +156,12 @@
 }
 
 .datGUI { 
-    float: right;
+    position: absolute;
+    right: 5%;
+}
+
+input {
+    line-height: normal;
 }
 
 .random-sequence-container {
@@ -317,6 +322,8 @@
     transform: translateY(-50%);
 
 }
+
+
 
 
 $btn-size:                100px;
