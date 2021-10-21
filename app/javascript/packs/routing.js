@@ -4,17 +4,6 @@ import * as dat from 'dat.gui'
 import * as RoutingHelpers from './routingHelpers' 
 import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline';
 
-import {
-    Line2
-} from './threejs/Line2'
-import {
-    LineMaterial
-} from './threejs/LineMaterial'
-import {
-    LineGeometry
-} from './threejs/LineGeometry'
-import * as geometry1Utils from './threejs/GeometryUtils'
-
 const context = Object.freeze({
     planeMode: Symbol("plane"),
     objectMode: Symbol("object"),
@@ -27,10 +16,22 @@ const lineSegments = graph_json["lineSegments"]
 const planeRoutings = graph_json["planes"]
 const dimension = 30 // setup from user choice
 
+console.log(graph_json)
+
 const cubeGroup = RoutingHelpers.makeCubeGroup(dimension, segments)
 let planes = RoutingHelpers.makePlanes(dimension, segments)
+let routings = RoutingHelpers.makeRoutings(planeRoutings)
+let planeAndRoutingGroups = []
+const planeNeighbors = RoutingHelpers.planeNeighbors(planes)
 
-let pointer = 0
+// for (let i = 0; i < planes.length; i++) {
+//     const gr = new THREE.Group()
+//     gr.add(planes[i])
+//     gr.add(routings[i])
+//     planeAndRoutingGroups.push(gr)
+// }
+
+let current = "front"
 let switchContext = context.planeMode
 let insetWidth
 let insetHeight
@@ -86,20 +87,136 @@ let currPlane = planes[0]
 cubeGroup.position.z = 2000
 scene.add(cubeGroup)
 scene.add(currPlane)
-// scene.add(cubeGroup)
-
-
-function addGridHelpers() {
-    for (let i = 0; i < segments; i++) {
-
-    }
-}
-
 
 
 window.addEventListener( 'resize', onWindowResize )
 onWindowResize()
 
+// DNA scaffold
+
+const points = [];
+for (let j = 0; j < 7.5; j += 0.1) {
+  points.push(-15 + j, 0, 0);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points.push(-7.5, 0, j);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points.push(-7.5 + j, 0, 7.5);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points.push(0, 0, 7.5 + j);
+}
+const line = new MeshLine();
+line.setPoints(points);
+const material = new MeshLineMaterial();
+material.color.setHex(0xff0000)
+material.lineWidth = 0.2
+const meshik = new THREE.Mesh(line, material);
+scene.add(meshik);
+
+
+// part 2
+const points2 = [];
+for (let j = 0; j < 7.5; j += 0.1) {
+  points2.push(-15 + j, 0, -7.5);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points2.push(-7.5, 0, -7.5+j);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points2.push(-7.5 + j, 0, 0);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points2.push(0, 0, j);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points2.push(j, 0, 7.5);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points2.push(7.5, 0, 7.5+j);
+}
+const line2 = new MeshLine();
+line2.setPoints(points2);
+const meshik2 = new THREE.Mesh(line2, material);
+scene.add(meshik2);
+
+// part 3
+const points3 = [];
+for (let j = 0; j < 7.5; j += 0.1) {
+  points3.push(-7.5, 0, -15+j);
+}
+for (let j = 0; j < 7.3; j += 0.1) {
+    points3.push(-7.5+j, 0, -7.5);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points3.push(0, 0, -7.5+j);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points3.push(j, 0, 0);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points3.push(7.5, 0, j);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points3.push(7.5+j, 0, 7.5);
+}
+
+const line3 = new MeshLine();
+line3.setPoints(points3);
+const meshik3 = new THREE.Mesh(line3, material);
+scene.add(meshik3);
+
+// part 4
+const points4 = [];
+for (let j = 0; j < 7.5; j += 0.1) {
+  points4.push(0, 0, -15+j);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points4.push(j, 0, -7.5);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points4.push(7.5, 0, -7.5+j);
+}
+
+for (let j = 0; j < 7.5; j += 0.1) {
+    points4.push(7.5+j, 0, 0);
+}
+
+const line4 = new MeshLine();
+line4.setPoints(points4);
+const meshik4 = new THREE.Mesh(line4, material);
+scene.add(meshik4);
+
+// part 5
+const points5 = [];
+for (let j = 0; j < 7.5; j += 0.1) {
+  points5.push(7.5, 0, -15+j);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points5.push(7.5+j, 0, -7.5);
+}
+
+
+const line5 = new MeshLine();
+line5.setPoints(points5);
+const meshik5 = new THREE.Mesh(line5, material);
+scene.add(meshik5);
+
+// part 6
+const points6 = [];
+for (let j = 0; j < 7.5; j += 0.1) {
+  points6.push(-15+j, 0, 7.5);
+}
+for (let j = 0; j < 7.5; j += 0.1) {
+    points6.push(-7.5, 0, 7.5+j);
+}
+
+
+const line6 = new MeshLine();
+line6.setPoints(points6);
+const meshik6 = new THREE.Mesh(line6, material);
+scene.add(meshik6);
 
 function getSegmentAttributes(index) {
     let positions = []
@@ -358,6 +475,13 @@ document.getElementById("switch-view-btn").addEventListener("click", () => {
         switchContext = context.planeMode
         camera.position.y = 25
         scene.add(camera2)
+
+        scene.add(meshik)
+        scene.add(meshik2)
+        scene.add(meshik3)
+        scene.add(meshik4)
+        scene.add(meshik5)
+        scene.add(meshik6)
         document.querySelector(".switch-elem").classList.remove("active")
 
         
@@ -371,6 +495,12 @@ document.getElementById("switch-view-btn").addEventListener("click", () => {
         camera.position.y = 40
         // console.log(cubeGroup)
         scene.remove(camera2)
+        scene.remove(meshik)
+        scene.remove(meshik2)
+        scene.remove(meshik3)
+        scene.remove(meshik4)
+        scene.remove(meshik5)
+        scene.remove(meshik6)
         document.querySelector(".insertion-elem").classList.remove("active")
         document.querySelector(".deletion-elem").classList.remove("active")
         document.querySelector(".select-elem").classList.remove("active")
@@ -381,24 +511,40 @@ document.getElementById("switch-view-btn").addEventListener("click", () => {
 
 
 document.getElementById("up-key-button").addEventListener("click", () => {
-    scene.remove(line)
-    scene.remove(line2)
-    console.log("Your pressed Up")
+    scene.remove(currPlane)
+    const res = planeNeighbors[current]["up"]
+    current = res[0]
+    currPlane = res[1]
+    scene.add(currPlane)
+    console.log("up pressed")
 })
 
 
 document.getElementById("down-key-button").addEventListener("click", () => {
-    scene.add(line)
-    scene.add(line2)
-    console.log("Your pressed Down")
+    scene.remove(currPlane)
+    const res = planeNeighbors[current]["down"]
+    current = res[0]
+    currPlane = res[1]
+    scene.add(currPlane)
+    console.log("down pressed")
 })
 
 
 document.getElementById("right-key-button").addEventListener("click", () => {
-    console.log("Your pressed Right")
+    scene.remove(currPlane)
+    const res = planeNeighbors[current]["right"]
+    current = res[0]
+    currPlane = res[1]
+    scene.add(currPlane)
+    console.log("right pressed")
 })
 
 
 document.getElementById("left-key-button").addEventListener("click", () => {
-    console.log("Your pressed Left")
+    scene.remove(currPlane)
+    const res = planeNeighbors[current]["left"]
+    current = res[0]
+    currPlane = res[1]
+    scene.add(currPlane)
+    console.log("left pressed")
 })

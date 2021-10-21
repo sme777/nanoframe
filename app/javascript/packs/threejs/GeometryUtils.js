@@ -104,7 +104,7 @@ function hilbert3D(segments, vectors = []) {
 			new THREE.Vector3(0, -15, 0),
 
 		]
-	} else if (segments == 3) {
+	} else if (segments - 1== 3) {
 
 		vec = [
 			new THREE.Vector3(0, -10, 0),
@@ -180,6 +180,52 @@ function hilbert3D(segments, vectors = []) {
 			new THREE.Vector3(10, 10, 0),
 			new THREE.Vector3(10, 10, -10),
 			new THREE.Vector3(0, 10, -10),
+
+		]
+	} else if (segments == 4 ){
+		vec = [
+			new THREE.Vector3(0, 0, 0),
+			new THREE.Vector3(0, 10, 0),
+			new THREE.Vector3(-10, 10, 0),
+			new THREE.Vector3(-10, 20, 0),
+			new THREE.Vector3(-10, 20, -10),
+			new THREE.Vector3(-20, 20, -10),
+			new THREE.Vector3(-20, 10, -10),
+			new THREE.Vector3(-20, 10, -20),
+			new THREE.Vector3(-20, 0, -20),
+			new THREE.Vector3(-20, 0, -30),
+			new THREE.Vector3(-20, -10, -30),
+			new THREE.Vector3(-20, -10, -40),
+			new THREE.Vector3(-10, -10, -40),
+			// new THREE.Vector3(-10, -10, -40),
+			new THREE.Vector3(-10, 0, -40),
+			new THREE.Vector3(0, 0, -40),
+			new THREE.Vector3(0, 10, -40),
+			new THREE.Vector3(10, 10, -40),
+			new THREE.Vector3(10, 20, -40),
+			new THREE.Vector3(10, 20, -30),
+			new THREE.Vector3(20, 20, -30),
+			new THREE.Vector3(20, 10, -30),
+			new THREE.Vector3(20, 10, -40),
+			new THREE.Vector3(10, 10, -40),
+			new THREE.Vector3(10, 0, -40),
+			new THREE.Vector3(0, 0, -40),
+			new THREE.Vector3(0, -10, -40),
+			new THREE.Vector3(0, -10, -30),
+			new THREE.Vector3(-10, -10, -30),
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		]
 	} else {

@@ -125,6 +125,60 @@ export function makePlanes(dimension, segments) {
     return planeArray
 }
 
+export function makeRoutings(planeRoutings) {
+    let routings = []
+    for (let i = 0; i < 6; i++) {
+
+    }
+    return routings
+}
+
+// neighbors of planes
+export function planeNeighbors(planes) { 
+    return {
+        "front": {
+            "up": ["top", planes[1]],
+            "right": ["right", planes[2]],
+            "down": ["bottom", planes[3]],
+            "left": ["left", planes[4]]
+        },
+        
+        "right": {
+            "up": ["top", planes[1]],
+            "right": ["back", planes[5]],
+            "down": ["bottom", planes[0]],
+            "left": ["front", planes[3]]
+        },
+
+        "left": {
+            "up": ["top", planes[1]],
+            "right": ["front", planes[0]],
+            "down": ["bottom", planes[3]],
+            "left": ["back", planes[5]]
+        },
+
+        "back": {
+            "up": ["top", planes[1]],
+            "right": ["left", planes[4]],
+            "down": ["bottom", planes[3]],
+            "left": ["right", planes[2]]
+        },
+
+        "top": {
+            "up": ["back", planes[5]],
+            "right": ["right", planes[2]],
+            "down": ["front", planes[0]],
+            "left": ["left", planes[4]]
+        },
+
+        "bottom": {
+            "up": ["front", planes[0]],
+            "right": ["right", planes[2]],
+            "down": ["back", planes[5]],
+            "left": ["left", planes[4]]
+        }
+    }
+}
 
 function createGrid(opts, rotationX=0, rotationY=0, rotationZ=0) {
     const config = opts || {

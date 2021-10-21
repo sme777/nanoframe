@@ -53,8 +53,8 @@ controls.maxDistance = 500
 
 const positions = []
 const colors = []
-
-const points = GeometryUtils.hilbert3D(set.edges)
+console.log(segments)
+const points = GeometryUtils.hilbert3D(segments)
 // console.log(points)
 const spline = new THREE.CatmullRomCurve3( points )
 const divisions = Math.round( 12 * points.length )
