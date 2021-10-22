@@ -452,7 +452,6 @@ document.getElementById("up-key-button").addEventListener("click", () => {
     current = res[0]
     currPlane = res[1]
     scene.add(currPlane)
-    console.log("up pressed")
 })
 
 
@@ -462,7 +461,6 @@ document.getElementById("down-key-button").addEventListener("click", () => {
     current = res[0]
     currPlane = res[1]
     scene.add(currPlane)
-    console.log("down pressed")
 })
 
 
@@ -472,7 +470,6 @@ document.getElementById("right-key-button").addEventListener("click", () => {
     current = res[0]
     currPlane = res[1]
     scene.add(currPlane)
-    console.log("right pressed")
 })
 
 
@@ -482,5 +479,4 @@ document.getElementById("left-key-button").addEventListener("click", () => {
     current = res[0]
     currPlane = res[1]
     scene.add(currPlane)
-    console.log("left pressed")
 })
