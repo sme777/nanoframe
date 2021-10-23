@@ -24,6 +24,20 @@ Consider citing the associated paper if you find the project useful.
 - [Contributions](#contributions)
 
 # Control Flow
+The application is broken down into three parts, each can be navigated to with the ribbon at the top of the page.
+#### Home
+NanoFrame allows users to sign up and save their work. Generated work can be saved as both private and public, further, once users login they can discover what other creators have been synthesizing with NanoFrame. 
+
+#### The NanoBot
+The NanoBot tab is where all the magic happens. Users can select one of the predefined shapes, or create their own (upcoming feature). After selecting a shape, users can interact with the shape dynamically by adjusting its attributes.
+
+#### API
+NanoFrame relies on several API which were developed on par with the project, primarilly motivated by the lack of such API. These are completely free, but to make API calls clients need to register and obtain an API key. 
+
+##### Automatic Staple Generation
+
+##### DNA File Converter
+DNA file converter is delivered by [popDNA](https://github.com/tilabberkeley/popDNA). Currently supported file formats are `pdb`, `oxdna`, and `json` (cadnano). The web API is provided for small file formats (< 100Mbs), for larger files please install `popDNA` with one of the [package managers](https://github.com/tilabberkeley/popDNA#installation). For extensive API documentation visit [popDNA.io/api](https://popdna.io/api).
 
 # Video Tutorials
 
