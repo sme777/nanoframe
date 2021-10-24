@@ -328,23 +328,14 @@ class Graph
 
     # Generates JSON file of the graph
     def to_json
-        hash = {"segments": @segments, "lineSegments": 3, "vertices": [], "edges": [], "sets": [], "planes": @planes}
-        vs, es, ss = [], [], []
-        @vertices.each do |v|
-            vs.append(v.to_hash)
+
+        plane_arr = []        
+        @planes.each do |plane|
+            plane_arr.append(plane.to_hash)
         end
 
-        @edges.each do |e|
-            es.append(e.to_hash)
-        end
+        hash = {"segments": @segments,  "planes": plane_arr}
 
-        @sets.each do |s|
-            ss.append(s.to_hash)
-        end
-
-        hash[:vertices] = vs
-        hash[:edges] = es
-        hash[:sets] = ss
         JSON.generate(hash)
     end
 

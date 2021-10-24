@@ -137,45 +137,45 @@ export function makeRoutings(planeRoutings) {
 export function planeNeighbors(planes) { 
     return {
         "front": {
-            "up": ["top", planes[1]],
-            "right": ["right", planes[2]],
-            "down": ["bottom", planes[3]],
-            "left": ["left", planes[4]]
+            "up": ["top", planes[1], 1],
+            "right": ["right", planes[2], 2],
+            "down": ["bottom", planes[3], 3],
+            "left": ["left", planes[4], 4]
         },
         
         "right": {
-            "up": ["top", planes[1]],
-            "right": ["back", planes[5]],
-            "down": ["bottom", planes[0]],
-            "left": ["front", planes[3]]
+            "up": ["top", planes[1], 1],
+            "right": ["back", planes[5], 5],
+            "down": ["bottom", planes[0], 0],
+            "left": ["front", planes[3], 3]
         },
 
         "left": {
-            "up": ["top", planes[1]],
-            "right": ["front", planes[0]],
-            "down": ["bottom", planes[3]],
-            "left": ["back", planes[5]]
+            "up": ["top", planes[1], 1],
+            "right": ["front", planes[0], 0],
+            "down": ["bottom", planes[3], 3],
+            "left": ["back", planes[5], 5]
         },
 
         "back": {
-            "up": ["top", planes[1]],
-            "right": ["left", planes[4]],
-            "down": ["bottom", planes[3]],
-            "left": ["right", planes[2]]
+            "up": ["top", planes[1], 1],
+            "right": ["left", planes[4], 4],
+            "down": ["bottom", planes[3], 3],
+            "left": ["right", planes[2], 2]
         },
 
         "top": {
-            "up": ["back", planes[5]],
-            "right": ["right", planes[2]],
-            "down": ["front", planes[0]],
-            "left": ["left", planes[4]]
+            "up": ["back", planes[5], 5],
+            "right": ["right", planes[2], 2],
+            "down": ["front", planes[0], 0],
+            "left": ["left", planes[4], 4]
         },
 
         "bottom": {
-            "up": ["front", planes[0]],
-            "right": ["right", planes[2]],
-            "down": ["back", planes[5]],
-            "left": ["left", planes[4]]
+            "up": ["front", planes[0], 0],
+            "right": ["right", planes[2], 2],
+            "down": ["back", planes[5], 5],
+            "left": ["left", planes[4], 4]
         }
     }
 }
