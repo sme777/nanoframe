@@ -46,7 +46,7 @@ let renderer = new THREE.WebGLRenderer({
 })
 
 let raycaster = new THREE.Raycaster()
-let pointer = new THREE.Vector2()
+let mouse = new THREE.Vector2()
 // change this attribute when edit menu is selected
 let isRaycastMode = false 
 
@@ -68,7 +68,12 @@ const gui = new dat.GUI({
 })
 
 // dat.GUI.toggleHide()
-document.querySelector('.datGUIRouting').append(gui.domElement)
+const guiTag = document.querySelector('.datGUIRouting')
+if (guiTag.value == undefined) {
+    guiTag.append(gui.domElement)
+    guiTag.value = "added"
+}
+
 
 const viewParams = {
     scaffold_color: 0xff0000,
@@ -100,38 +105,38 @@ const viewParams = {
 
 const selectionParams = {
     strand: () => {
-        isRaycastMode = true
+        isRaycastMode = !isRaycastMode
         console.log("strand selected")
     },
 
     crossover: () => {
-        isRaycastMode = true
+        isRaycastMode = !isRaycastMode
 
     },
     loopout: () => {
-        isRaycastMode = true
+        isRaycastMode = !isRaycastMode
 
     }
 }
 
 const fivePrimeParams = {
     strand: () => {
-        isRaycastMode = true
+        isRaycastMode = !isRaycastMode
 
     },
     domain: () => {
-        isRaycastMode = true
+        isRaycastMode = !isRaycastMode
 
     }
 }
 
 const threePrimeParams = {
     strand: () => {
-        isRaycastMode = true
+        isRaycastMode = !isRaycastMode
 
     },
     domain: () => {
-        isRaycastMode = true
+        isRaycastMode = !isRaycastMode
 
     }
 }
@@ -194,6 +199,7 @@ scene.add(currPlane)
 
 
 window.addEventListener( 'resize', onWindowResize )
+window.addEventListener( 'pointermove', onMouseMove )
 onWindowResize()
 
 // DNA scaffold
@@ -298,12 +304,15 @@ function generateRoutings() {
             line = new MeshLine()
             line.setPoints([vectorize(e.v1), vectorize(e.v2)])
             mesh = new THREE.Mesh(line, material)
+            // mesh.raycast = MeshLineRaycast
+            scaffoldObjects.push(mesh)
             routingGroup.add(mesh)
             next = e.v2 
         }
     }
 }
 addRoutings()
+// scaffoldObjects.push(routingGroup)
 // scene.add(routingGroup)
 
 function find_next_edge(edges, start) {
@@ -340,16 +349,23 @@ function equalsVector(v1, v2) {
     return (v1.x == v2.x && v1.y == v2.y && v1.z == v2.z)
 }
 
-function onPointerMove(event) {
-    pointer.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 )
+function onMouseMove(event) {
 
-    raycaster.setFromCamera( pointer, camera )
+    if (!isRaycastMode) {
+        return
+    }
+    // console.log(event.clientX)
+    // console.log(( event.clientX / window.innerWidth ) * 2 - 1)
+    mouse.set( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1 )
 
-    const intersects = raycaster.intersectObjects( scaffold, false )
+    // raycaster.setFromCamera( pointer, camera )
+    // console.log(routingGroup)
+    const intersects = raycaster.intersectObjects( scene, false )
+    // console.log(intersects)
     // const intersects = raycaster.intersectObjects( scaffold, false )
-
+    // console.log(scaffoldObjects)
     if ( intersects.length > 0 ) {
-
+        console.log("wow")
         const intersect = intersects[ 0 ]
 
         rollOverMesh.position.copy( intersect.point ).add( intersect.face.normal )
