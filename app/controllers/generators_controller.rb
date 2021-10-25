@@ -114,6 +114,22 @@ class GeneratorsController < ApplicationController
     end
   end
 
+  def generator
+    @returned_results = false
+    # byebug
+    if (!params[:step_size].nil? && params[:step_size] != "" && !params[:loopout_length].nil? && params[:loopout_length] != "")
+
+      @step_size = params[:step_size]
+      @loopout_length = params[:loopout_length]
+      min = params[:min]
+      max = params[:max]
+      scaff_length = params[:scaff_length]
+      @objects = Generator.generate_objects(@step_size, @loopout_length, min, max, scaff_length)
+      @returned_results = true
+    end
+
+  end
+
   def signup_and_save
     first = user_generator_params[:first]
     last = user_generator_params[:last]

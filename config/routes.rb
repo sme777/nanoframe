@@ -31,4 +31,5 @@ Rails.application.routes.draw do
   get '/nanobot/:id/fasta' => 'generators#download_fasta'
   get '/nanobot/:id/bundle' => 'generators#download_bundle'
   # resources :generators
+  get 'nanobot/generator' => 'generators#generator', as: "shape_generator"
 end

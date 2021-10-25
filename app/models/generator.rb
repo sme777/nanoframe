@@ -28,6 +28,47 @@ class Generator < ApplicationRecord
     end
   end
 
+  def self.generate_objects(step_size, loopout_length, min_len, max_len, scaff_length)
+    min_len = min_len.to_i
+    max_len = max_len.to_i
+    scaff_length = scaff_length.to_i * 0.34
+    step_size = step_size.to_i
+    loopout_length = loopout_length.to_i
+    # byebug
+    seg = 1
+    object3Ds = []
+    # min_len ||=  10
+    # max_len ||= 240
+    # scaff_length ||= 7249 * 0.34
+    hs = min_len
+    ws = min_len
+    ds = min_len
+    count = 0
+    while hs < max_len+1
+      ws = min_len
+      while ws < max_len + 1
+        ds = min_len
+        while ds < max_len + 1
+          seg = 1
+          while seg < 11
+            count += 1
+            res = hs * seg * 4 + ws * seg * 4 + ds * seg * 4
+            if (((scaff_length - res) > 0) && ((scaff_length - res) < loopout_length))
+              # byebug
+              object3Ds.push(Object3D.new(hs, ws, ds, seg, (scaff_length - res)))
+            end
+            seg += 1
+          end
+          ds += step_size
+        end
+        ws += step_size
+      end
+      hs += step_size
+    end
+    # byebug
+    object3Ds
+  end
+
 
   def route
     if shape == "1"
