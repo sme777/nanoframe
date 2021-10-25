@@ -4,6 +4,7 @@ import {Line2} from './threejs/Line2'
 import { LineMaterial } from './threejs/LineMaterial'
 import { LineGeometry } from './threejs/LineGeometry'
 import * as GeometryUtils from './threejs/GeometryUtils'
+import { PLYExporter } from './threejs/PLYExporter'
 import * as dat from 'dat.gui'
 
 
@@ -761,6 +762,11 @@ line = new Line2( geometry, matLine )
 line.computeLineDistances()
 line.scale.set( 1, 1, 1 )
 scene.add( line )
+
+// exporter
+const exporter = new PLYExporter()
+const data = exporter.parse(line)
+document.getElementById("ply-value").value = data
 
 const geo = new THREE.BufferGeometry()
 geo.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) )
