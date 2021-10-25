@@ -360,6 +360,20 @@ function vectorize(vertex) {
 // trialLine.setPoints(trialPoints)
 // const trialMesh = new THREE.Mesh(trialLine, material)
 // scene.add(trialMesh) 
+// const scaff_length = 7249 * 0.34
+// // let poss_arr = []
+// for (let a = 10; a < 240; a += 10) {
+//     for (let b = 10; b < 240; b += 10) {
+//         for (let c = 10; c < 250; c += 10) {
+//             for (let d = 1; d < 10; d++) {
+//                 const res = a * d * 4 + b * d * 4 + c * d * 4 
+//                 if (0 < (scaff_length - res) &&  (scaff_length - res) < 40) {
+//                     console.log("Width: ", a, " Height: ", b, " Depth: ", c, "Segments: ", d, "Looparound: ", scaff_length-res)
+//                 }
+//             }
+//         }
+//     }
+// }
 
 const line = new MeshLine()
 line.setPoints([vectorize({x: -15, y: 0, z: 0}), vectorize({x: 15, y: 0, z: 0})])
