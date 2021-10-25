@@ -266,12 +266,28 @@ const planeRoutings = [
                             y: 0,
                             z: 0
                         }
+                    },
+                    {
+                        v1: {
+                            x: -5,
+                            y: 0,
+                            z: 0
+                        }, 
+                        v2: {
+                            x: 0,
+                            y: 0,
+                            z: 0
+                        }
                     }
                 ]
             }
         ]
     }
 ]
+
+
+
+
 
 let routingGroup = new THREE.Group() 
 let currIndex = 0
@@ -311,7 +327,7 @@ function generateRoutings() {
         }
     }
 }
-addRoutings()
+// addRoutings()
 // scaffoldObjects.push(routingGroup)
 // scene.add(routingGroup)
 
@@ -332,17 +348,28 @@ function vectorize(vertex) {
 
 
 
-const trialPoints = []
-for (let z = 1; z < 2; z += 0.01) {
-    trialPoints.push(5-z, 0, -3/z+5)
+// const trialPoints = []
+// for (let z = 1; z < 2; z += 0.01) {
+//     trialPoints.push(5-z, 0, -3/z+5)
 
-}
+// }
 
-const trialLine = new MeshLine()
-trialLine.setPoints(trialPoints)
-const trialMesh = new THREE.Mesh(trialLine, material)
-scene.add(trialMesh) 
 
+
+// const trialLine = new MeshLine()
+// trialLine.setPoints(trialPoints)
+// const trialMesh = new THREE.Mesh(trialLine, material)
+// scene.add(trialMesh) 
+
+const line = new MeshLine()
+line.setPoints([vectorize({x: -15, y: 0, z: 0}), vectorize({x: 15, y: 0, z: 0})])
+let mesh1 = new THREE.Mesh(line, material)
+scene.add(mesh1)
+
+const line2 = new MeshLine()
+line2.setPoints([vectorize({x: 0, y: 0, z: 15}), vectorize({x: 0, y: 0, z: -15})])
+let mesh2 = new THREE.Mesh(line2, material)
+scene.add(mesh2)
 
 
 function equalsVector(v1, v2) {
@@ -453,7 +480,7 @@ document.getElementById("up-key-button").addEventListener("click", () => {
     current = res[0]
     currPlane = res[1]
     currIndex = res[2]
-    addRoutings()
+    // addRoutings()
     scene.add(currPlane)
 })
 
@@ -465,7 +492,7 @@ document.getElementById("down-key-button").addEventListener("click", () => {
     current = res[0]
     currPlane = res[1]
     currIndex = res[2]
-    addRoutings()
+    // addRoutings()
     scene.add(currPlane)
 })
 
@@ -476,7 +503,7 @@ document.getElementById("right-key-button").addEventListener("click", () => {
     current = res[0]
     currPlane = res[1]
     currIndex = res[2]
-    addRoutings()
+    // addRoutings()
     scene.add(currPlane)
 })
 
@@ -487,6 +514,6 @@ document.getElementById("left-key-button").addEventListener("click", () => {
     current = res[0]
     currPlane = res[1]
     currIndex = res[2]
-    addRoutings()
+    // addRoutings()
     scene.add(currPlane)
 })

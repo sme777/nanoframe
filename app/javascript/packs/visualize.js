@@ -40,7 +40,7 @@ renderer.setSize( canvasContainerWidth, canvasContainerHeight )
 scene = new THREE.Scene()
 
 camera = new THREE.PerspectiveCamera( 40, canvasContainerWidth / canvasContainerHeight, 1, 1000 )
-camera.position.set( - 40, 0, 60 )
+camera.position.set( -40, 30, 60 )
 
 camera2 = new THREE.PerspectiveCamera( 40, 1, 1, 1000 )
 camera2.position.copy( camera.position )
@@ -768,6 +768,10 @@ const exporter = new PLYExporter()
 const data = exporter.parse(line)
 document.getElementById("ply-value").value = data
 
+// middle coordinates
+// let pos = new THREE.Vector3()
+// geometry.boundingBox.getCenter(pos)
+// camera.position.set(pos.x*2 , pos.y*2, pos.z*2)
 const geo = new THREE.BufferGeometry()
 geo.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) )
 geo.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) )
