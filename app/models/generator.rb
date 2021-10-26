@@ -31,7 +31,7 @@ class Generator < ApplicationRecord
   def self.generate_objects(step_size, loopout_length, min_len, max_len, scaff_length)
     min_len = min_len.to_i
     max_len = max_len.to_i
-    scaff_length = scaff_length.to_i * 0.34
+    scaff_length = scaff_length.to_i * 0.332
     step_size = step_size.to_i
     loopout_length = loopout_length.to_i
     # byebug
@@ -55,7 +55,7 @@ class Generator < ApplicationRecord
             res = hs * seg * 4 + ws * seg * 4 + ds * seg * 4
             if (((scaff_length - res) > 0) && ((scaff_length - res) < loopout_length))
               # byebug
-              object3Ds.push(Object3D.new(hs, ws, ds, seg, (scaff_length - res)))
+              object3Ds.push(Object3D.new(hs, ws, ds, seg, (scaff_length - res) / 0.332))
             end
             seg += 1
           end

@@ -6,6 +6,6 @@ class Object3D
         @width = wt
         @depth = dt
         @segments = s
-        @leftover = l.ceil()
+        @leftover = l.floor()
     end
 end
