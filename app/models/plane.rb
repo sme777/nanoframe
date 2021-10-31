@@ -10,7 +10,7 @@ class Plane
     def to_hash
         sets_arr = []
         # byebug
-        @graph.plane.each do |set|
+        @graph.each do |set|
             # byebug
             edges_arr = []
             set.e.each do |edge|

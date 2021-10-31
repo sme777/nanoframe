@@ -1,7 +1,7 @@
 require 'json'
 
 class Graph 
-    attr_accessor :vertices, :edges, :sets, :route, :plane
+    attr_accessor :vertices, :edges, :sets, :route, :planes
     
     def initialize(segments)
         # each segment gets 4 sides 
@@ -11,7 +11,10 @@ class Graph
         # @sets = []
         @plane = find_step_plane_routing
         # byebug
+        # byebug
         # @edges, @sets = [], []#plane[0], plane[1]
+        # @planes = plane_rotations(transform)
+        @planes = transform
         # @planes = plane_rotations([]) # should be plane
         # @route = find_plane_combination(planes) 
     end
@@ -68,10 +71,7 @@ class Graph
 
 
     def find_step_plane_routing
-        # sets = initialize_sets
-        # singeltons = singeltons(sets)
         outgoers = find_outgoers
-        # taken_edges = []
         plane_sets = []
 
         outgoers.each do |vertex|
@@ -119,8 +119,6 @@ class Graph
             end
             plane_sets.append(outgoer_set)
         end
-        # byebug
-        # byebug
         plane_sets
     end
 
@@ -348,6 +346,100 @@ class Graph
     def plane_rotations(e)
         []
     end
+    
+    # Generates plane routings for other faces of the cube
+    # back -> 0
+    # top -> 1
+    # bottom -> 2
+    # left -> 3
+    # right -> 4
+    def transform
+        plane_arr = [@plane]
+        #back - subtract z=dimension from all vertices
+        back = deep_clone_and_transform_plane(@plane, 0)
+        plane_arr.append(back)
+
+        top = deep_clone_and_transform_plane(@plane, 1)
+        plane_arr.append(top)
+
+        bottom = deep_clone_and_transform_plane(@plane, 2)
+        plane_arr.append(back)
+
+        left = deep_clone_and_transform_plane(@plane, 3)
+        plane_arr.append(left)
+
+        right = deep_clone_and_transform_plane(@plane, 4)
+        plane_arr.append(right)
+        # top.each do |set|
+        #     set.v.each do |v|
+        #         v.z -= @segments
+        #     end
+
+        #     set.e.each do |e|
+        #         e.v1.z -= @segments
+        #         e.v2.z -= @segments
+        #     end
+        # end
+        # plane_arr.append(top)
+        #top - swap y and z and set y = dimension 
+    
+        #bottom - swap y and z and set y = 0
+
+        #right - swap x and z and set x = dimension
+
+        #left - swap x and z and set x = 0
+        plane_arr
+    end
+
+    def deep_clone_and_transform_plane(obj, num)
+        res = []
+        edges_covered = []
+        obj.each do |set|
+            v_arr = []
+            set.v.each do |v|
+                case num
+                when 0
+                    v_arr.append(Vertex.new(v.x, v.y, v.z - @segments))
+                when 1
+                    v_arr.append(Vertex.new(v.x, v.z + @segments, v.y))
+                when 2
+                    v_arr.append(Vertex.new(v.x, v.z, v.y))
+                when 3
+                    v_arr.append(Vertex.new(v.z + @segments, v.y, v.x))
+                else 
+                    v_arr.append(Vertex.new(v.z, v.y, v.x))
+                end
+            end
+            new_set = Set.new(v_arr.first)
+            new_set.add_node(v_arr.last)
+            
+            
+            set.e.each do |e|
+                case num
+                when 0
+                    v1 = Vertex.new(e.v1.x, e.v1.y, e.v1.z - @segments)
+                    v2 = Vertex.new(e.v2.x, e.v2.y, e.v2.z - @segments)
+                when 1
+                    v1 = Vertex.new(e.v1.x, e.v1.z + @segments, e.v1.y)
+                    v2 = Vertex.new(e.v2.x, e.v2.z + @segments, e.v2.y)
+                when 2
+                    v1 = Vertex.new(e.v1.x, e.v1.z, e.v1.y)
+                    v2 = Vertex.new(e.v2.x, e.v2.z, e.v2.y)
+                when 3
+                    v1 = Vertex.new(e.v1.z + @segments, e.v1.y, e.v1.x)
+                    v2 = Vertex.new(e.v2.z + @segments, e.v2.y, e.v2.x)
+                else
+                    v1 = Vertex.new(e.v1.z, e.v1.y, e.v1.x)
+                    v2 = Vertex.new(e.v2.z, e.v2.y, e.v2.x)
+                end
+                new_edge = Edge.new(v1, v2)
+                new_set.add_edge(new_edge)        
+            end
+            res.append(new_set)
+        end
+        res
+    end
+
 
     def find_plane_combination(planes)
         combinations = planes.product(planes, planes, planes, planes, planes)
@@ -418,7 +510,8 @@ class Graph
 
         plane_arr = []        
         @planes.each do |plane|
-            plane_arr.append(plane.to_hash)
+            p = Plane.new(plane)
+            plane_arr.append(p.to_hash)
         end
 
         hash = {"segments": @segments,  "planes": plane_arr}
