@@ -72,7 +72,8 @@ class Generator < ApplicationRecord
 
   def route
     if shape == "1"
-      @graph = Graph.new(width_segment)
+      @graph = Graph.new(width_segment + 1)
+      @plane = Plane.new(@graph)
     end
   end
 
@@ -139,7 +140,7 @@ class Generator < ApplicationRecord
   def custom_silhoutte; end
 
   def to_json
-    @graph.to_json
+    JSON.generate(@plane.to_hash)
   end
 
 

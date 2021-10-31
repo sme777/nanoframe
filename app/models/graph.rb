@@ -1,7 +1,7 @@
 require 'json'
 
 class Graph 
-    attr_accessor :vertices, :edges, :sets, :route
+    attr_accessor :vertices, :edges, :sets, :route, :plane
     
     def initialize(segments)
         # each segment gets 4 sides 
@@ -9,9 +9,10 @@ class Graph
         @vertices = create_vertices
         # @edges = []
         # @sets = []
-        # plane = find_plane_routing
-        @edges, @sets = [], []#plane[0], plane[1]
-        @planes = plane_rotations([]) # should be plane
+        @plane = find_step_plane_routing
+        # byebug
+        # @edges, @sets = [], []#plane[0], plane[1]
+        # @planes = plane_rotations([]) # should be plane
         # @route = find_plane_combination(planes) 
     end
 
@@ -36,6 +37,92 @@ class Graph
         v
     end
 
+    def find_outgoers
+        v_set = []
+        @vertices.each do |v|
+            if (v.x % @segments == 0) || (v.y % @segments == 0)
+                v_set.append(v)
+            end
+        end
+        v_set
+    end
+
+    def is_contained?(o, sets)
+        sets.each do |s|
+            if ((o.x == s.v.first.x && o.y == s.v.first.y && o.z == s.v.first.z) ||
+                 (o.x == s.v.last.x && o.y == s.v.last.y && o.z == s.v.last.z))
+                return true
+            end
+        end
+        false 
+    end
+
+    def find_vertex(vs, x, y, z)
+        vs.each do |v|
+            if (v.x == x && v.y == y && v.z = z)
+                return v
+            end
+        end
+        nil
+    end
+
+
+    def find_step_plane_routing
+        # sets = initialize_sets
+        # singeltons = singeltons(sets)
+        outgoers = find_outgoers
+        # taken_edges = []
+        plane_sets = []
+
+        outgoers.each do |vertex|
+            if is_contained?(vertex, plane_sets)
+                next
+            end
+
+            i = 0
+            outgoer_set = Set.new(vertex)
+            curr = vertex
+            while outgoer_set.v.length != 2
+                
+                next_vertex = nil
+                if vertex.x == 0
+                    if i % 2 == 0
+                        # make right
+                        next_vertex = find_vertex(@vertices, curr.x + 1, curr.y, curr.z)
+                    else 
+                        # make down
+                        next_vertex = find_vertex(@vertices, curr.x, curr.y - 1, curr.z)
+                    end
+                    edge = Edge.new(curr, next_vertex)
+                    curr = next_vertex
+                    outgoer_set.add_edge(edge)
+                    i += 1
+                elsif vertex.y == @segments
+                    if i % 2 == 0
+                        # make down
+                        next_vertex = find_vertex(@vertices, curr.x, curr.y - 1, curr.z)
+                    else 
+                        # make right
+                        next_vertex = find_vertex(@vertices, curr.x + 1, curr.y, curr.z)
+                    end
+                    edge = Edge.new(curr, next_vertex)
+                    curr = next_vertex
+                    outgoer_set.add_edge(edge)
+                    i += 1
+                else
+                    next
+                end
+
+                if outgoers.include? next_vertex
+                    outgoer_set.add_node(next_vertex)
+                end
+            end
+            plane_sets.append(outgoer_set)
+        end
+        # byebug
+        # byebug
+        plane_sets
+    end
 
     def find_plane_routing
         sets = initialize_sets
@@ -365,7 +452,7 @@ class Graph
     class Set
         attr_accessor :v, :singelton, :e
 
-        def initialize(vertex, singelton)
+        def initialize(vertex, singelton=false)
             @v = [vertex]
             @singelton = singelton
             @e = []

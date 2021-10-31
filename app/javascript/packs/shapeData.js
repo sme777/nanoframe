@@ -2,9 +2,9 @@ export const cubeData = {
   height: 30,
   width: 30,
   depth: 30,
-  widthSegments: 3,
-  heightSegments: 3,
-  depthSegments: 3
+  widthSegments: 2,
+  heightSegments: 2,
+  depthSegments: 2
 }
 
 export const sphereData = {

@@ -12,9 +12,9 @@ export function makeCube() {
     Data.cubeData.width,
     Data.cubeData.height, 
     Data.cubeData.depth, 
-    Data.cubeData.widthSegments, 
-    Data.cubeData.heightSegments, 
-    Data.cubeData.depthSegments
+    Data.cubeData.widthSegments + 1, 
+    Data.cubeData.heightSegments + 1, 
+    Data.cubeData.depthSegments + 1
   ))
   const mesh = new THREE.LineSegments(geometry, wireframeMaterial)
   return mesh
@@ -25,9 +25,9 @@ export function regenerateCube(cube) {
     Data.cubeData.width,
     Data.cubeData.height, 
     Data.cubeData.depth, 
-    Data.cubeData.widthSegments, 
-    Data.cubeData.heightSegments, 
-    Data.cubeData.depthSegments
+    Data.cubeData.widthSegments + 1, 
+    Data.cubeData.heightSegments + 1, 
+    Data.cubeData.depthSegments + 1
   ))
   cube.geometry.dispose()
   cube.geometry = newGeometry

@@ -60,23 +60,25 @@ function main() {
         meshData = Data.cubeData
 
         guiElements.push(gui.add(meshData, 'width', 0, 60).name('Width').setValue(30).onChange(() => {
+          
           Maker.regenerateCube(mesh)
         }))
         guiElements.push(gui.add(meshData, 'height', 0, 60).name('Height').setValue(30).onChange(() => {
+          
           Maker.regenerateCube(mesh)
         }))
         guiElements.push(gui.add(meshData, 'depth', 0, 60).name('Depth').setValue(30).onChange(() => {
           Maker.regenerateCube(mesh)
         }))
 
-        guiElements.push(gui.add(meshData, 'widthSegments', 1, 10).step(1).name('Width Segment').setValue(3).onChange(() => {
+        guiElements.push(gui.add(meshData, 'widthSegments', 1, 10).step(1).name('Width Stripes').setValue(2).onChange(() => {
           Maker.regenerateCube(mesh)
         }))
 
-        guiElements.push(gui.add(meshData, 'heightSegments', 1, 10).step(1).name('Height Segment').setValue(3).onChange(() => {
+        guiElements.push(gui.add(meshData, 'heightSegments', 1, 10).step(1).name('Height Stripes').setValue(2).onChange(() => {
           Maker.regenerateCube(mesh)
         }))
-        guiElements.push(gui.add(meshData, 'depthSegments', 1, 10).step(1).name('Depth Segment').setValue(3).onChange(() => {
+        guiElements.push(gui.add(meshData, 'depthSegments', 1, 10).step(1).name('Depth Stripes').setValue(2).onChange(() => {
           Maker.regenerateCube(mesh)
         }))
         

@@ -31,6 +31,7 @@ class GeneratorsController < ApplicationController
 
   def routing
     @generator.route
+    render json: @generator.to_json
   end
 
   def visualize
@@ -102,6 +103,7 @@ class GeneratorsController < ApplicationController
   end
 
   def create
+    byebug
     @generator = Generator.new(generator_params)
     # byebug
 

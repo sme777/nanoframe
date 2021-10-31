@@ -9,9 +9,12 @@ class Plane
 
     def to_hash
         sets_arr = []
-        @graph.sets.each do |set|
+        # byebug
+        @graph.plane.each do |set|
+            # byebug
             edges_arr = []
-            set.e do |edge|
+            set.e.each do |edge|
+                # byebug
                 edges_arr.append(edge.to_hash)
             end
             set_hash = {edges: edges_arr}
