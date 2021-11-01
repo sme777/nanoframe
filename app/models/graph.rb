@@ -5,18 +5,20 @@ class Graph
     
     def initialize(segments)
         # each segment gets 4 sides 
-        @segments = segments       
+        @segments = segments.to_i
+        # byebug       
         @vertices = create_vertices
         # @edges = []
         # @sets = []
         @plane = find_step_plane_routing
-        # byebug
+        @reverse_plane = find_reverse_step_plane_routing
         # byebug
         # @edges, @sets = [], []#plane[0], plane[1]
         # @planes = plane_rotations(transform)
-        @planes = transform
+        # @planes = transform(@plane)
+        # @reverse_planes = transform(@reverse_plane)
         # @planes = plane_rotations([]) # should be plane
-        # @route = find_plane_combination(planes) 
+        @planes = find_plane_combination([@plane, @reverse_plane]) 
     end
 
     def create_vertices
@@ -101,6 +103,58 @@ class Graph
                     if i % 2 == 0
                         # make down
                         next_vertex = find_vertex(@vertices, curr.x, curr.y - 1, curr.z)
+                    else 
+                        # make right
+                        next_vertex = find_vertex(@vertices, curr.x + 1, curr.y, curr.z)
+                    end
+                    edge = Edge.new(curr, next_vertex)
+                    curr = next_vertex
+                    outgoer_set.add_edge(edge)
+                    i += 1
+                else
+                    next
+                end
+
+                if outgoers.include? next_vertex
+                    outgoer_set.add_node(next_vertex)
+                end
+            end
+            plane_sets.append(outgoer_set)
+        end
+        plane_sets
+    end
+
+    def find_reverse_step_plane_routing
+        outgoers = find_outgoers
+        plane_sets = []
+
+        outgoers.each do |vertex|
+            if is_contained?(vertex, plane_sets)
+                next
+            end
+
+            i = 0
+            outgoer_set = Set.new(vertex)
+            curr = vertex
+            while outgoer_set.v.length != 2
+                
+                next_vertex = nil
+                if vertex.x == 0
+                    if i % 2 == 0
+                        # make right
+                        next_vertex = find_vertex(@vertices, curr.x + 1, curr.y, curr.z)
+                    else 
+                        # make up
+                        next_vertex = find_vertex(@vertices, curr.x, curr.y + 1, curr.z)
+                    end
+                    edge = Edge.new(curr, next_vertex)
+                    curr = next_vertex
+                    outgoer_set.add_edge(edge)
+                    i += 1
+                elsif vertex.y == 0
+                    if i % 2 == 0
+                        # make up
+                        next_vertex = find_vertex(@vertices, curr.x, curr.y + 1, curr.z)
                     else 
                         # make right
                         next_vertex = find_vertex(@vertices, curr.x + 1, curr.y, curr.z)
@@ -342,10 +396,6 @@ class Graph
             end
         end
     end
-
-    def plane_rotations(e)
-        []
-    end
     
     # Generates plane routings for other faces of the cube
     # back -> 0
@@ -353,44 +403,39 @@ class Graph
     # bottom -> 2
     # left -> 3
     # right -> 4
-    def transform
-        plane_arr = [@plane]
+    def transform(plane)
+        plane_arr = [plane]
         #back - subtract z=dimension from all vertices
-        back = deep_clone_and_transform_plane(@plane, 0)
+        back = deep_clone_and_transform_plane(plane, 0)
         plane_arr.append(back)
 
-        top = deep_clone_and_transform_plane(@plane, 1)
+        top = deep_clone_and_transform_plane(plane, 1)
         plane_arr.append(top)
 
-        bottom = deep_clone_and_transform_plane(@plane, 2)
+        bottom = deep_clone_and_transform_plane(plane, 2)
         plane_arr.append(back)
 
-        left = deep_clone_and_transform_plane(@plane, 3)
+        left = deep_clone_and_transform_plane(plane, 3)
         plane_arr.append(left)
 
-        right = deep_clone_and_transform_plane(@plane, 4)
+        right = deep_clone_and_transform_plane(plane, 4)
         plane_arr.append(right)
-        # top.each do |set|
-        #     set.v.each do |v|
-        #         v.z -= @segments
-        #     end
-
-        #     set.e.each do |e|
-        #         e.v1.z -= @segments
-        #         e.v2.z -= @segments
-        #     end
-        # end
-        # plane_arr.append(top)
-        #top - swap y and z and set y = dimension 
-    
-        #bottom - swap y and z and set y = 0
-
-        #right - swap x and z and set x = dimension
-
-        #left - swap x and z and set x = 0
         plane_arr
     end
-
+    
+    def transform_arr(arr)
+        new_arr = arr[1..arr.length-1]
+        i = 1
+        while i < arr.length
+            arr[i] = deep_clone_and_transform_plane(arr[i], i - 1)
+            i += 1
+        end
+        arr
+    end
+    #top - swap y and z and set y = dimension 
+    #bottom - swap y and z and set y = 0
+    #right - swap x and z and set x = dimension
+    #left - swap x and z and set x = 0
     def deep_clone_and_transform_plane(obj, num)
         res = []
         edges_covered = []
@@ -401,13 +446,13 @@ class Graph
                 when 0
                     v_arr.append(Vertex.new(v.x, v.y, v.z - @segments))
                 when 1
-                    v_arr.append(Vertex.new(v.x, v.z + @segments, v.y))
+                    v_arr.append(Vertex.new(v.x, v.z + @segments, -v.y))
                 when 2
-                    v_arr.append(Vertex.new(v.x, v.z, v.y))
+                    v_arr.append(Vertex.new(v.x, v.z, -v.y))
                 when 3
-                    v_arr.append(Vertex.new(v.z + @segments, v.y, v.x))
+                    v_arr.append(Vertex.new(v.z + @segments, v.y, -v.x))
                 else 
-                    v_arr.append(Vertex.new(v.z, v.y, v.x))
+                    v_arr.append(Vertex.new(v.z, v.y, -v.x))
                 end
             end
             new_set = Set.new(v_arr.first)
@@ -420,17 +465,17 @@ class Graph
                     v1 = Vertex.new(e.v1.x, e.v1.y, e.v1.z - @segments)
                     v2 = Vertex.new(e.v2.x, e.v2.y, e.v2.z - @segments)
                 when 1
-                    v1 = Vertex.new(e.v1.x, e.v1.z + @segments, e.v1.y)
-                    v2 = Vertex.new(e.v2.x, e.v2.z + @segments, e.v2.y)
+                    v1 = Vertex.new(e.v1.x, e.v1.z + @segments, -e.v1.y)
+                    v2 = Vertex.new(e.v2.x, e.v2.z + @segments, -e.v2.y)
                 when 2
                     v1 = Vertex.new(e.v1.x, e.v1.z, e.v1.y)
                     v2 = Vertex.new(e.v2.x, e.v2.z, e.v2.y)
                 when 3
-                    v1 = Vertex.new(e.v1.z + @segments, e.v1.y, e.v1.x)
-                    v2 = Vertex.new(e.v2.z + @segments, e.v2.y, e.v2.x)
+                    v1 = Vertex.new(e.v1.z + @segments, e.v1.y, -e.v1.x)
+                    v2 = Vertex.new(e.v2.z + @segments, e.v2.y, -e.v2.x)
                 else
-                    v1 = Vertex.new(e.v1.z, e.v1.y, e.v1.x)
-                    v2 = Vertex.new(e.v2.z, e.v2.y, e.v2.x)
+                    v1 = Vertex.new(e.v1.z, e.v1.y, -e.v1.x)
+                    v2 = Vertex.new(e.v2.z, e.v2.y, -e.v2.x)
                 end
                 new_edge = Edge.new(v1, v2)
                 new_set.add_edge(new_edge)        
@@ -440,30 +485,88 @@ class Graph
         res
     end
 
+    def plane_rotations(plane)
+        [rotate(plane, 1), rotate(plane, 2), rotate(plane, 3)]
+    end
+
+    def rotate(plane, angle)
+        find_reverse_step_plane_routing
+    end
+
 
     def find_plane_combination(planes)
         combinations = planes.product(planes, planes, planes, planes, planes)
         combinations.each do |c|
-            if has_one_loop(c)
-                return c
-            end
+            byebug
+            arr = transform_arr(c)
+            # byebug
+            return arr
+            # if has_one_loop(arr)
+            #     return arr
+            # end
         end
+        # byebug
         return nil
     end
 
     def has_one_loop(g)
-        front = g[0]
-        right = g[1]
-        left = g[2]
-        back = g[3]
-        top = g[4]
-        bottom = g[5]
-
+        # byebug
+        all_sets = []
         g.each do |plane|
-            outgoers = g.outgoers
-            
-
+            plane.each do |set|
+                all_sets.append(set)
+            end
         end
+
+        next_set = all_sets.first
+        starting_vertex = next_set.v.first
+        end_vertex = next_set.v.last
+        count = 0
+        # byebug
+        while !equals_vertex(starting_vertex, end_vertex)
+            # do stuff
+            # byebug
+            res = find_next_set(all_sets, next_set)
+            next_set = res[0]
+            end_vertex = res[1]
+            # byebug
+            count += 1
+        end
+
+        if count != all_sets.length
+            return false
+        end
+        true
+    end
+
+    def equals_vertex(v1, v2)
+        v1.x == v2.x && v1.y == v2.y && v1.z == v2.z
+    end
+
+    def find_next_set(sets, next_set)
+        
+        sets.each do |s|
+            start_v = s.v.first
+            end_v = s.v.last 
+
+            prev_v = next_set.v.first
+            next_v = next_set.v.last
+            
+            if (start_v.x == next_v.x && start_v.y == next_v.y && start_v.z == next_v.z) 
+                # byebug
+                if !(end_v.x == prev_v.x && end_v.y == prev_v.y && end_v.z == prev_v.z)
+                    return [s, end_v]
+                end
+            end
+
+            if (end_v.x == next_v.x && end_v.y == next_v.y && end_v.z == next_v.z)
+                # byebug
+                if !(start_v.x == prev_v.x && start_v.y == prev_v.y && start_v.z == prev_v.z)
+                    return [s, start_v]
+                end
+            end
+        end
+        # byebug
     end
 
     def string_of_vertices
@@ -510,6 +613,7 @@ class Graph
 
         plane_arr = []        
         @planes.each do |plane|
+            byebug
             p = Plane.new(plane)
             plane_arr.append(p.to_hash)
         end
