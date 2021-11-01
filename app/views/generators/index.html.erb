@@ -47,8 +47,14 @@
     </ul>
   </div>
 
-
-
+<div class="message-container">
+<% flash.each do |key, value| %>
+  <div class="alert alert-<%= key %> alert-dismissible fade show" role="alert">
+    <span class="mesage-value"><%= value %></span>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+</div>
 
   <!-- End of NAVBAR-->
 

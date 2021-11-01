@@ -602,10 +602,11 @@ class Graph
 
     # Generates JSON file of the graph
     def to_json
-
+        if @planes == nil 
+            return nil
+        end
         plane_arr = []        
         @planes.each do |plane|
-    
             p = Plane.new(plane)
             plane_arr.append(p.to_hash)
         end

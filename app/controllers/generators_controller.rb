@@ -31,7 +31,12 @@ class GeneratorsController < ApplicationController
 
   def routing
     @generator.route
-    render json: @generator.to_json
+    if @generator.to_json == nil
+      flash[:danger] = "No routing found"
+      redirect_to '/nanobot'
+    else
+      # render json: @generator.to_json
+    end
   end
 
   def visualize
