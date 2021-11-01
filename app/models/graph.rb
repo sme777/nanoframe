@@ -6,13 +6,13 @@ class Graph
     def initialize(segments)
         # each segment gets 4 sides 
         @segments = segments.to_i
-        # byebug       
+             
         @vertices = create_vertices
         # @edges = []
         # @sets = []
         @plane = find_step_plane_routing
         @reverse_plane = find_reverse_step_plane_routing
-        # byebug
+        
         # @edges, @sets = [], []#plane[0], plane[1]
         # @planes = plane_rotations(transform)
         # @planes = transform(@plane)
@@ -25,7 +25,7 @@ class Graph
         v = []
         x = 0
         y = 0
-        # byebug
+        
         while (x <= @segments && y <= @segments)
 
             if !(x % @segments == 0 && y % @segments == 0)
@@ -468,8 +468,8 @@ class Graph
                     v1 = Vertex.new(e.v1.x, e.v1.z + @segments, -e.v1.y)
                     v2 = Vertex.new(e.v2.x, e.v2.z + @segments, -e.v2.y)
                 when 2
-                    v1 = Vertex.new(e.v1.x, e.v1.z, e.v1.y)
-                    v2 = Vertex.new(e.v2.x, e.v2.z, e.v2.y)
+                    v1 = Vertex.new(e.v1.x, e.v1.z, -e.v1.y)
+                    v2 = Vertex.new(e.v2.x, e.v2.z, -e.v2.y)
                 when 3
                     v1 = Vertex.new(e.v1.z + @segments, e.v1.y, -e.v1.x)
                     v2 = Vertex.new(e.v2.z + @segments, e.v2.y, -e.v2.x)
@@ -495,45 +495,45 @@ class Graph
 
 
     def find_plane_combination(planes)
+        i = 0
         combinations = planes.product(planes, planes, planes, planes, planes)
         combinations.each do |c|
-            byebug
+            
             arr = transform_arr(c)
             # byebug
-            return arr
-            # if has_one_loop(arr)
-            #     return arr
-            # end
+            if has_one_loop(arr)
+                return arr
+            end
+            i += 1
         end
-        # byebug
+        
         return nil
     end
 
     def has_one_loop(g)
-        # byebug
+     
         all_sets = []
         g.each do |plane|
             plane.each do |set|
                 all_sets.append(set)
             end
         end
-
+        # byebug
         next_set = all_sets.first
         starting_vertex = next_set.v.first
         end_vertex = next_set.v.last
-        count = 0
-        # byebug
+        all_sets.delete(next_set)
         while !equals_vertex(starting_vertex, end_vertex)
             # do stuff
-            # byebug
-            res = find_next_set(all_sets, next_set)
+           
+            res = find_next_set(all_sets, end_vertex)
             next_set = res[0]
             end_vertex = res[1]
-            # byebug
-            count += 1
+            all_sets.delete(next_set)
         end
 
-        if count != all_sets.length
+        if all_sets.length != 0
+            # byebug
             return false
         end
         true
@@ -543,30 +543,22 @@ class Graph
         v1.x == v2.x && v1.y == v2.y && v1.z == v2.z
     end
 
-    def find_next_set(sets, next_set)
+    # bug here
+    def find_next_set(sets, end_vertex)
         
         sets.each do |s|
             start_v = s.v.first
             end_v = s.v.last 
-
-            prev_v = next_set.v.first
-            next_v = next_set.v.last
             
-            if (start_v.x == next_v.x && start_v.y == next_v.y && start_v.z == next_v.z) 
-                # byebug
-                if !(end_v.x == prev_v.x && end_v.y == prev_v.y && end_v.z == prev_v.z)
-                    return [s, end_v]
-                end
+            if (equals_vertex(start_v, end_vertex)) 
+                return [s, end_v]    
             end
 
-            if (end_v.x == next_v.x && end_v.y == next_v.y && end_v.z == next_v.z)
-                # byebug
-                if !(start_v.x == prev_v.x && start_v.y == prev_v.y && start_v.z == prev_v.z)
-                    return [s, start_v]
-                end
+            if (equals_vertex(end_v, end_vertex))
+                return [s, start_v]
             end
         end
-        # byebug
+       
     end
 
     def string_of_vertices
@@ -613,7 +605,7 @@ class Graph
 
         plane_arr = []        
         @planes.each do |plane|
-            byebug
+    
             p = Plane.new(plane)
             plane_arr.append(p.to_hash)
         end
