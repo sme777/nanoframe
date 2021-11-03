@@ -10,15 +10,18 @@ class Graph
         @vertices = create_vertices
         # @edges = []
         # @sets = []
-        @plane = find_step_plane_routing
-        @reverse_plane = find_reverse_step_plane_routing
-        
+        # byebug
+        if @segments == 2
+            @template_planes = [find_step_plane_routing, find_reverse_step_plane_routing]
+        else
+            @template_planes = find_four_planes
+        end
         # @edges, @sets = [], []#plane[0], plane[1]
         # @planes = plane_rotations(transform)
         # @planes = transform(@plane)
         # @reverse_planes = transform(@reverse_plane)
         # @planes = plane_rotations([]) # should be plane
-        @planes = find_plane_combination([@plane, @reverse_plane]) 
+        @planes = find_plane_combination(@template_planes) 
     end
 
     def create_vertices
@@ -174,6 +177,49 @@ class Graph
             plane_sets.append(outgoer_set)
         end
         plane_sets
+    end
+
+    # randomized algorithm that finds general plane routings
+    # by selecting random start and end vertices
+    def find_general_plane_routing
+        outgoers = find_outgoers
+        taken_outgoers = []
+        taken_edges = []
+
+        while taken_outgoers.length != outgoer.length
+            s = outgoers[rand(0..(outgoers.length - 1))]
+            outgoers.delete(s)
+            t = outgoers[rand(0..(outgoers.length - 1))]
+            dfs_edges = dfs(s, t)
+            # first element of dfs_results tells whether s->t is
+            # accessible and the second return the list of edges
+            if dfs_edges != []
+                outgoers.delete(t)
+                taken_outgoers << [s, t]
+                taken_edges << dfs_edges
+            else
+                outgoers << s
+            end
+        end
+    end
+
+    # performs depth first search starting from s and find a 
+    # path to t if one is available, returns list of edges or []
+    def dfs(s, t)
+        visited = {}
+        @vertices.each do |v|
+            visited[v] = [] # empty array of edges
+        end
+
+        @vertices.each do |v|
+            visited[v] = explore(s, v) unless visited[v] != []
+        end
+
+        visited[t]
+    end
+
+    def explore(s, v)
+        
     end
 
     def find_plane_routing
@@ -493,6 +539,17 @@ class Graph
         find_reverse_step_plane_routing
     end
 
+    # find 4 unique plane routings
+    def find_four_planes
+        planes = []
+        while plane.length != 4
+            new_plane = find_general_plane_routing
+            if !includes_plane?(new_plane, planes)
+                planes << new_plane
+            end
+        end
+        planes
+    end
 
     def find_plane_combination(planes)
         i = 0
