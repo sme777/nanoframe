@@ -1,31 +1,28 @@
 require 'json'
 
-class Graph 
+class Graph
     attr_accessor :vertices, :edges, :sets, :route, :planes
     
     def initialize(segments)
         # each segment gets 4 sides 
         @segments = segments.to_i
              
-        @vertices = create_vertices
-        # @edges = []
-        # @sets = []
-        # byebug
+        v_and_e = create_vertices_and_edges
+        @vertices = v_and_e[0]
+        @edges = v_and_e[1]
+
         if @segments == 2
             @template_planes = [find_step_plane_routing, find_reverse_step_plane_routing]
         else
             @template_planes = find_four_planes
         end
-        # @edges, @sets = [], []#plane[0], plane[1]
-        # @planes = plane_rotations(transform)
-        # @planes = transform(@plane)
-        # @reverse_planes = transform(@reverse_plane)
-        # @planes = plane_rotations([]) # should be plane
+
         @planes = find_plane_combination(@template_planes) 
     end
 
-    def create_vertices
+    def create_vertices_and_edges
         v = []
+        e = []
         x = 0
         y = 0
         
@@ -33,16 +30,24 @@ class Graph
 
             if !(x % @segments == 0 && y % @segments == 0)
                 v.push(Vertex.new(x, y))
+                if (x == 0)
+                    e << Edge.new(Vertex.new(x, y), Vertex.new(x + 1, y))
+                elsif (y == 0)
+                    e << Edge.new(Vertex.new(x, y), Vertex.new(x, y + 1))
+                elsif (x != @segments && y != @segments )
+                    e << Edge.new(Vertex.new(x, y), Vertex.new(x + 1, y))
+                    e << Edge.new(Vertex.new(x, y), Vertex.new(x, y + 1))
+                end
             end
             y += 1
-
+            
             if (y > @segments)
                 y = 0
                 x += 1
             end
             
         end
-        v
+        [v, e]
     end
 
     def find_outgoers
@@ -183,10 +188,11 @@ class Graph
     # by selecting random start and end vertices
     def find_general_plane_routing
         outgoers = find_outgoers
+        total_outgoers = outgoers.length
         taken_outgoers = []
         taken_edges = []
 
-        while taken_outgoers.length != outgoer.length
+        while taken_outgoers.length != total_outgoers
             s = outgoers[rand(0..(outgoers.length - 1))]
             outgoers.delete(s)
             t = outgoers[rand(0..(outgoers.length - 1))]
@@ -195,7 +201,8 @@ class Graph
             # accessible and the second return the list of edges
             if dfs_edges != []
                 outgoers.delete(t)
-                taken_outgoers << [s, t]
+                taken_outgoers << s
+                taken_outgoers << t
                 taken_edges << dfs_edges
             else
                 outgoers << s
@@ -205,21 +212,80 @@ class Graph
 
     # performs depth first search starting from s and find a 
     # path to t if one is available, returns list of edges or []
-    def dfs(s, t)
+    def dfs(k, t)
+        # byebug
         visited = {}
+        edges = deep_copy_edges
+        # 0 denotes horizontal movement and 1 vertical
+        prev = k.x % @segments == 0 ? 0 : 1 
+        
         @vertices.each do |v|
-            visited[v] = [] # empty array of edges
+            visited[v.hash] = [] # empty array of edges
         end
-
-        @vertices.each do |v|
-            visited[v] = explore(s, v) unless visited[v] != []
-        end
-
-        visited[t]
+        visited = explore(k, prev, edges, visited)
+        # @vertices.each do |v|
+        #     visited[v] = explore(s, v, prev, edges) unless visited[v] != []
+        # end
+        # byebug
+        visited[t.hash]
     end
 
-    def explore(s, v)
-        
+    def explore(k, prev, edges, visited)
+        # byebug
+        neighbors = find_neighbors(k, prev, edges)
+        if neighbors.length == 0
+            return []
+        end
+
+        neighbors.each do |neighbor|
+            new_edge = Edge.new(k, neighbor)
+            edges = find_and_remove_edge(edges, new_edge)
+            visited[neighbor.hash] << new_edge
+            visited[k.hash].each do |p|
+                visited[neighbor.hash] << p
+            end
+            explore(neighbor, (prev - 1).abs(), edges, visited)
+        end
+        visited
+    end
+
+    def deep_copy_edges
+        edges = []
+        @edges.each do |e|
+            edges << Edge.new(e.v1, e.v2)
+        end
+        edges
+    end
+
+    def find_and_remove_edge(edges, e)
+        for i in (0...edges.length)
+            if (equals_vertex(edges[i].v1, e.v1) && equals_vertex(edges[i].v2, e.v2)) ||
+                (equals_vertex(edges[i].v2, e.v1) && equals_vertex(edges[i].v1, e.v2))
+                edges.delete_at(i)
+                break
+            end
+        end
+        edges
+    end
+
+    def find_neighbors(v, prev, edges)
+        n = []
+        edges.each do |e|
+            if equals_vertex(v, e.v1)
+                if prev == 1 && (e.v2.y - v.y).abs() == 1 
+                    n << e.v2
+                elsif prev == 0 && (e.v2.x - v.x).abs() == 1
+                    n << e.v2
+                end
+            elsif equals_vertex(v, e.v2)
+                if prev == 1 && (e.v1.y - v.y).abs() == 1 
+                    n << e.v1
+                elsif prev == 0 && (e.v1.x - v.x).abs() == 1
+                    n << e.v1
+                end
+            end
+        end
+        n
     end
 
     def find_plane_routing
@@ -542,13 +608,17 @@ class Graph
     # find 4 unique plane routings
     def find_four_planes
         planes = []
-        while plane.length != 4
+        while planes.length != 4
             new_plane = find_general_plane_routing
             if !includes_plane?(new_plane, planes)
                 planes << new_plane
             end
         end
         planes
+    end
+
+    def includes_plane?(new_plane, plane)
+        false
     end
 
     def find_plane_combination(planes)
@@ -673,6 +743,22 @@ class Graph
         JSON.generate(hash)
     end
 
+    def beautify_edges(edges=@edges)
+        result = ""
+        edges.each do |e|
+            result += e.string + "\n"
+        end
+        result
+    end
+
+    def beautify_vertices(vertices=@vertices)
+        result = ""
+        vertices.each do |v|
+            result += v.string + "\n"
+        end
+        result
+    end
+
     class Vertex
         attr_accessor :x, :y, :z
 
@@ -692,6 +778,10 @@ class Graph
 
         def to_json
             JSON.generate({"x": @x, "y": @y, "z": @z})
+        end
+
+        def hash
+            "#{x}#{y}#{z}"
         end
 
     end
