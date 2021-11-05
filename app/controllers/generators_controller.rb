@@ -35,7 +35,7 @@ class GeneratorsController < ApplicationController
       flash[:danger] = "No routing found"
       redirect_to '/nanobot'
     else
-      # render json: @generator.to_json
+      render json: @generator.to_json
     end
   end
 

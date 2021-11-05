@@ -10,14 +10,14 @@ class Graph
         v_and_e = create_vertices_and_edges
         @vertices = v_and_e[0]
         @edges = v_and_e[1]
-
         if @segments == 2
             @template_planes = [find_step_plane_routing, find_reverse_step_plane_routing]
         else
             @template_planes = find_four_planes
         end
-
-        @planes = find_plane_combination(@template_planes) 
+        
+        @planes = @template_planes
+        # @planes = find_plane_combination(@template_planes) 
     end
 
     def create_vertices_and_edges
@@ -191,70 +191,86 @@ class Graph
         total_outgoers = outgoers.length
         taken_outgoers = []
         taken_edges = []
-
+        sets = []
         while taken_outgoers.length != total_outgoers
             s = outgoers[rand(0..(outgoers.length - 1))]
             outgoers.delete(s)
             t = outgoers[rand(0..(outgoers.length - 1))]
-            dfs_edges = dfs(s, t)
+            dfs_edges = dfs(s, t, taken_edges)
             # first element of dfs_results tells whether s->t is
             # accessible and the second return the list of edges
             if dfs_edges != []
                 outgoers.delete(t)
                 taken_outgoers << s
                 taken_outgoers << t
-                taken_edges << dfs_edges
+                taken_edges.concat(dfs_edges)
+                # generate a new set
+                new_set = Set.new(s)
+                new_set.add_node(t)
+                dfs_edges.each do |e|
+                    new_set.add_edge(e)
+                end
+                sets << new_set
             else
                 outgoers << s
             end
         end
+        sets
     end
 
     # performs depth first search starting from s and find a 
     # path to t if one is available, returns list of edges or []
-    def dfs(k, t)
-        # byebug
+    def dfs(k, t, taken_edges)
         visited = {}
-        edges = deep_copy_edges
+        edges = deep_copy_edges(taken_edges)
         # 0 denotes horizontal movement and 1 vertical
         prev = k.x % @segments == 0 ? 0 : 1 
         
         @vertices.each do |v|
             visited[v.hash] = [] # empty array of edges
         end
-        visited = explore(k, prev, edges, visited)
-        # @vertices.each do |v|
-        #     visited[v] = explore(s, v, prev, edges) unless visited[v] != []
-        # end
-        # byebug
+        visited = explore(k, t, prev, edges, visited)
         visited[t.hash]
     end
 
-    def explore(k, prev, edges, visited)
-        # byebug
+    def explore(k, t, prev, edges, visited)
         neighbors = find_neighbors(k, prev, edges)
         if neighbors.length == 0
             return []
         end
-
         neighbors.each do |neighbor|
             new_edge = Edge.new(k, neighbor)
             edges = find_and_remove_edge(edges, new_edge)
-            visited[neighbor.hash] << new_edge
-            visited[k.hash].each do |p|
-                visited[neighbor.hash] << p
+
+            if visited[neighbor.hash] == []
+                visited[neighbor.hash] << new_edge
+                visited[k.hash].each do |p|
+                    visited[neighbor.hash] << p
+                end
             end
-            explore(neighbor, (prev - 1).abs(), edges, visited)
+            explore(neighbor, t, (prev - 1).abs(), edges, visited)
         end
         visited
     end
 
-    def deep_copy_edges
+    def deep_copy_edges(taken_edges)
         edges = []
         @edges.each do |e|
-            edges << Edge.new(e.v1, e.v2)
+            if !is_taken_edge?(e, taken_edges)
+                edges << Edge.new(e.v1, e.v2)
+            end
         end
         edges
+    end
+
+    def is_taken_edge?(e, taken_edges)
+        taken_edges.each do |tk|
+            if (equals_vertex(tk.v1, e.v1) && equals_vertex(tk.v2, e.v2)) ||
+                (equals_vertex(tk.v2, e.v1) && equals_vertex(tk.v1, e.v2))
+                return true
+            end
+        end
+        false
     end
 
     def find_and_remove_edge(edges, e)
@@ -608,13 +624,18 @@ class Graph
     # find 4 unique plane routings
     def find_four_planes
         planes = []
-        while planes.length != 4
+        new_plane = nil
+        while new_plane == nil
             new_plane = find_general_plane_routing
-            if !includes_plane?(new_plane, planes)
-                planes << new_plane
-            end
         end
-        planes
+        # while planes.length != 4
+        #     new_plane = find_general_plane_routing
+        #     if !includes_plane?(new_plane, planes)
+        #         planes << new_plane
+        #     end
+        # end
+        # planes
+        [new_plane]
     end
 
     def includes_plane?(new_plane, plane)
@@ -627,7 +648,7 @@ class Graph
         combinations.each do |c|
             
             arr = transform_arr(c)
-            # byebug
+            
             if has_one_loop(arr)
                 return arr
             end
@@ -645,7 +666,6 @@ class Graph
                 all_sets.append(set)
             end
         end
-        # byebug
         next_set = all_sets.first
         starting_vertex = next_set.v.first
         end_vertex = next_set.v.last
@@ -660,7 +680,6 @@ class Graph
         end
 
         if all_sets.length != 0
-            # byebug
             return false
         end
         true
