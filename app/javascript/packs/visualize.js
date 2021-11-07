@@ -13,7 +13,7 @@ import * as dat from 'dat.gui'
 
 const graph_json = JSON.parse(document.getElementById("generator-container").value)
 const segments = graph_json["segments"]
-console.log(graph_json["sets"])
+
 // const set = graph_json["sets"][0]
 
 const canvas = document.getElementById("visualize-webgl")
@@ -28,6 +28,7 @@ let matLine, matLineBasic, matLineDashed
 let insetWidth
 let insetHeight
 let dimensions = 30
+let segmentLength = dimensions / segments
 // init()
 
 let canvasContainer = document.querySelector(".visualizer-container")
@@ -55,11 +56,11 @@ controls.maxDistance = 500
 
 const positions = []
 const colors = []
-console.log(segments)
+
 // will need to replace with another function
 
-const planeRoutings = RoutingSamples.planeRoutings1x1x1
-
+const planeRoutings = graph_json["planes"] // RoutingSamples.planeRoutings1x1x1
+console.log(planeRoutings)
 let takenEdges = []
 let totalEdges = 0
 let prevVertex
@@ -69,11 +70,23 @@ let prevVertex
 let takenSets = []
 let visitedVertices = []
 let objectSets = sortSets(mergeSets())
+objectSets = normalize(objectSets)
 
+
+function normalize(vectors) {
+
+    for (let i = 0; i < vectors.length; i++) {
+        vectors[i].x *= segmentLength
+        vectors[i].y *= segmentLength
+        vectors[i].z *= segmentLength
+        vectors[i].y -= 2*segmentLength
+    }
+    return vectors
+}
 
 function mergePlaneEdges() {
     let arr = []
-    console.log(planeRoutings)
+    // console.log(planeRoutings)
     for (let i = 0; i < planeRoutings.length; i++) {
         const planeSets = planeRoutings[i].sets
         // console.log(planeSets[0].edges)
@@ -92,14 +105,12 @@ function mergeSets() {
         for (let j = 0; j < planeRoutings[i].sets.length; j++)
         arr.push(planeRoutings[i].sets[j])
     }
-    // console.log("this is brazil")
     // console.log(arr)
     return arr
 }
 
 function sortSets(sets) {
-    // console.log(sets)
-    // console.log(sets)
+
     let edgeArr = []
     let next = sets[0]
     let edgesAndLastVertex = getEdgesFromSet(next)
@@ -108,12 +119,11 @@ function sortSets(sets) {
     let lastVertex = edgesAndLastVertex[1]
     // let prevVertex = lastVertex
     takenSets.push(sets[0])
-    // console.log(sets.length)
+
     while (sets.length -1 != counter) {
-        // console.log(counter)
-        
+      
         next = findNextSet(sets, lastVertex)
-        // console.log(next)
+
         takenSets.push(next)
         
         edgesAndLastVertex = getEdgesFromSet(next)
@@ -129,30 +139,31 @@ function sortSets(sets) {
 
 
 function findNextSet(sets, lastVertex) {
-    // console.log(lastVertex)
+
     for (let s = 0; s < sets.length; s++) {
         let set = sets[s]
         
         for (let e = 0; e < set.edges.length; e++) {
             let edge = set.edges[e]
             
-            if (equalsVector(lastVertex, edge.v1)) {
+            if (equalsVector(lastVertex, edge.v1) || equalsVector(lastVertex, edge.v2)) {
                 if (!takenSets.includes(set)) {
-                    // console.log(set)
                     return set
                 }
             }
+
         }
     }
     return null
 }
 
 function getEdgesFromSet(set) {
+
     let vectors = []
     const edges = set.edges
-    // console.log(edges)
     let lastVertex
-    for (let i = 0; i < edges.length; i++) {
+    // console.log(set)
+    for (let i = edges.length - 1; i >= 0; i--) {
         
         if (!includesVector(vectors, edges[i].v1)) {
             vectors.push(vectorize(edges[i].v1))
@@ -160,18 +171,16 @@ function getEdgesFromSet(set) {
         if (!includesVector(vectors, edges[i].v2)) {
             vectors.push(vectorize(edges[i].v2))
         }
-        
-        
     }
-    // console.log("prrev vertex:", prevVertex)
-    
-    lastVertex = edges[edges.length - 1].v1
-    // console.log("last vertex:", lastVertex)
+    // console.log(edges)
+    lastVertex = edges[0].v2
+    // console.log("here", lastVertex)
     if (equalsVector(lastVertex, prevVertex)) {
-        lastVertex = edges[0].v1
+        lastVertex = edges[edges.length - 1].v1
         vectors = reverseArray(vectors)
     }
     prevVertex = lastVertex
+    // console.log(lastVertex)
     return [vectors.slice(0, -1), lastVertex]
 }
 
@@ -191,28 +200,6 @@ function reverseArray(v) {
     }
     return arr
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 function sortPlaneEdges(arr) {
@@ -360,8 +347,6 @@ function vectorize(vertex) {
     return new THREE.Vector3(vertex.x, vertex.y, vertex.z)
 }
 
-const points = GeometryUtils.hilbert3D(segments)
-// console.log(points)
 const spline = new THREE.CatmullRomCurve3( objectSets )
 const divisions = Math.round( 12 * objectSets.length )
 const point = new THREE.Vector3()

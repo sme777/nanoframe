@@ -30,17 +30,17 @@ class GeneratorsController < ApplicationController
   end
 
   def routing
-    @generator.route
+    @routing = @generator.route
     if @generator.to_json == nil
       flash[:danger] = "No routing found"
       redirect_to '/nanobot'
-    else
-      render json: @generator.to_json
+    # else
+    #   render json: @generator.to_json
     end
   end
 
   def visualize
-    @generator.route
+    @routing = @generator.route
   end
 
   def compile
@@ -114,7 +114,7 @@ class GeneratorsController < ApplicationController
 
     if @generator.save
       session['id'] = @generator.id
-      redirect_to '/nanobot/' + @generator.id.to_s + '/routing'
+      redirect_to '/nanobot/' + @generator.id.to_s + '/visualize'
     else
       flash[:message] = "Could Not Complete Request"
       redirect_to "/nanobot"

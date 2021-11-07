@@ -16,8 +16,8 @@ class Graph
             @template_planes = find_four_planes
         end
         
-        @planes = @template_planes
-        # @planes = find_plane_combination(@template_planes) 
+        # @planes = @template_planes
+        @planes = find_plane_combination(@template_planes) 
     end
 
     def create_vertices_and_edges
@@ -215,7 +215,11 @@ class Graph
                 outgoers << s
             end
         end
-        sets
+        if taken_edges.length != @edges.length
+            return find_general_plane_routing
+        else
+            return sets
+        end
     end
 
     # performs depth first search starting from s and find a 
@@ -231,6 +235,7 @@ class Graph
         end
         visited = explore(k, t, prev, edges, visited)
         visited[t.hash]
+
     end
 
     def explore(k, t, prev, edges, visited)
@@ -624,18 +629,17 @@ class Graph
     # find 4 unique plane routings
     def find_four_planes
         planes = []
-        new_plane = nil
-        while new_plane == nil
-            new_plane = find_general_plane_routing
-        end
-        # while planes.length != 4
+        # new_plane = nil
+        # while new_plane == nil
         #     new_plane = find_general_plane_routing
-        #     if !includes_plane?(new_plane, planes)
-        #         planes << new_plane
-        #     end
         # end
-        # planes
-        [new_plane]
+        while planes.length != 4
+            new_plane = find_general_plane_routing
+            if !includes_plane?(new_plane, planes)
+                planes << new_plane
+            end
+        end
+        planes
     end
 
     def includes_plane?(new_plane, plane)
@@ -644,18 +648,23 @@ class Graph
 
     def find_plane_combination(planes)
         i = 0
+        found = false
         combinations = planes.product(planes, planes, planes, planes, planes)
         combinations.each do |c|
             
             arr = transform_arr(c)
             
             if has_one_loop(arr)
+                found = true
                 return arr
             end
             i += 1
         end
         
-        return nil
+        if !found
+            return find_plane_combination(find_four_planes)
+        end
+        
     end
 
     def has_one_loop(g)
