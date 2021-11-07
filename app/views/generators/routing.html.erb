@@ -39,25 +39,22 @@
             <li class="nav-item">
                 <a class="nav-link active nanofont" href="/nanobot">The NanoBot</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/about">About</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/contact">Contact</a>
-            </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/miscellaneous">Miscellaneous</a>
+        </li>
         </ul>
     </div>
 
     <div class="row outer-menu-container">
         <div class="col-md-6">
             <div class="back-container">
-                <a class="generator-arrow backbtn" href="/nanobot">&larr; Back</a>
+                <a class="generator-arrow backbtn" href="/nanobot/<%= @generator.id%>/visualize">&larr; Visualize</a>
             </div>
         </div>
 
         <div class="col-md-6">
             <div class="forward-container">
-                <a class="route-arrow" href="/nanobot/<%= @generator.id%>/visualize">Visualize &rarr;</a>
+                <a class="route-arrow" href="/nanobot/<%= @generator.id%>/synthesize">Synthesize &rarr;</a>
             </div>
         </div>
     </div>
