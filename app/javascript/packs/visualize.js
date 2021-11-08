@@ -58,8 +58,8 @@ const positions = []
 const colors = []
 
 // will need to replace with another function
-
-const planeRoutings = graph_json["planes"] // RoutingSamples.planeRoutings1x1x1
+console.log(segments)
+const planeRoutings = segments == 2 ? RoutingSamples.planeRoutings1x1x1 : graph_json["planes"] // RoutingSamples.planeRoutings1x1x1
 console.log(planeRoutings)
 let takenEdges = []
 let totalEdges = 0

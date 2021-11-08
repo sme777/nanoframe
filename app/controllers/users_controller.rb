@@ -3,9 +3,7 @@ class UsersController < ApplicationController
     @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
   end
 
-  def contact; end
-
-  def about; end  
+  def miscellaneous; end
 
   def profile
     if !session[:user_id].nil?
