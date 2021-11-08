@@ -1,15 +1,20 @@
-class Edge {
+export class Edge {
     
     // sequence is the portion of the scaffold from which strands will be generated
     // length is the the length of the edge
     // side is the side of the cube which is needed for B-type Refractions
-    constructor(sequence, length, side) {
+    constructor(start, end, sequence, length, side) {
+        this.start = start
+        this.end = end
+        this.sequenceOriginal = sequence
         this.sequence = sequence
         this.strandLength = length
         this.side = side
-        this.reflection = this.computeReflection()
-        this.refraction = this.computeRefraction()
-        this.extensions = this.computeExtensions()
+        this.front = sequence.slice(0, length / 2)
+        this.back = sequence.slice(length / 2)
+        // this.reflection = this.computeReflection()
+        // this.refraction = this.computeRefraction()
+        // this.extensions = this.computeExtensions()
     }
 
     computeReflection() {
@@ -60,6 +65,21 @@ class Edge {
             }
         }
         return stapleArr
+    }
+    set v1(x) {
+        this.start = x
+    }
+
+    get v1() {
+        return this.start
+    }
+
+    set v2(x) {
+        this.end = x
+    }
+
+    get v2() {
+        return this.end
     }
 
 }

@@ -2,20 +2,20 @@ import * as THREE from 'three'
 import oc from 'three-orbit-controls'
 import * as dat from 'dat.gui'
 import * as RoutingHelpers from './routingHelpers' 
-import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline';
+import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline'
+import { Edge } from './edge'
 
 const context = Object.freeze({
     planeMode: Symbol("plane"),
     objectMode: Symbol("object"),
 })
 
-const graph_json = JSON.parse(document.getElementById("generator-container").value)
-
-const segments = graph_json["segments"]
+// const graph_json = JSON.parse(document.getElementById("generator-container").value)
+const sets = JSON.parse(document.getElementById("sets-container").value)
+const scaffoldSequence = document.getElementById("scaffold-container").value
+const segments = 5 //graph_json["segments"]
 // const planeRoutings = graph_json["planes"]
-const dimension = 30 // setup from user choice
-
-console.log(graph_json)
+const dimension = 50 // setup from user choice
 
 const cubeGroup = RoutingHelpers.makeCubeGroup(dimension, segments)
 let planes = RoutingHelpers.makePlanes(dimension, segments)
@@ -387,6 +387,7 @@ scene.add(mesh2)
 
 
 function equalsVector(v1, v2) {
+    // console.log(v1)
     return (v1.x == v2.x && v1.y == v2.y && v1.z == v2.z)
 }
 
@@ -416,6 +417,144 @@ function onMouseMove(event) {
 
     render()
 }
+const es = createEdgeStrands()
+
+const mps = createAdjacentEdgeMap(es)
+console.log(mps)
+// console.log(elolz)
+//create edges with strands
+function createEdgeStrands() {
+    let e 
+    let edgeSequence
+    let edges = []
+    const edgeLength = Math.floor((dimension / segments) / 0.332)
+    for (let i = 0; i < sets.length -1; i++) {
+        e = sets[i]
+        
+        if (i == edgeLength.length - 1) {
+            edgeSequence = scaffoldSequence.slice(i * edgeLength)
+            edges.push(new Edge(sets[i], sets[0], edgeSequence, edgeLength, null))
+        } else {
+            edgeSequence = scaffoldSequence.slice(i * edgeLength, i * edgeLength + edgeLength)
+            edges.push(new Edge(sets[i], sets[i+1], edgeSequence, edgeLength, null))
+        }
+    }
+    
+    return edges
+}
+
+function createAdjacentEdgeMap(edges) {
+    let edgeMap = {}
+    let edge
+    let adjacentEdgeList
+    for (let i = 0; i < edges.length; i++) {
+        edge = edges[i]
+        adjacentEdgeList = findAdjacentEdges(edge, edges, i)
+        edgeMap[edge.sequence] = adjacentEdgeList
+    }
+    return edgeMap
+}
+
+function findAdjacentEdges(edge, edges, index) {
+    let startArr = []
+    let endArr = []
+    
+    for (let i = 0; i < edges.length; i++) {
+        if (i != index) {
+
+            if (equalsVector(edges[i].v2, edge.v1)) {
+                if (!isStraightLine(edges[i].v1, edge.v2)) {
+                    if (!isNextOrPrevEdge(edges[i], edges, index)) {
+                        startArr.push(edges[i])
+                    }                        
+                }                    
+            }
+            
+            if (equalsVector(edges[i].v1, edge.v2)) {
+                if (!isStraightLine(edges[i].v2, edge.v1)) {
+                    if (!isNextOrPrevEdge(edges[i], edges, index)) {
+                        endArr.push(edges[i])
+                    }
+                }
+            }
+        }
+    }
+    return [startArr, endArr]
+}
+
+
+function isStraightLine(v1, v2) {
+    const xDist = Math.abs(v1.x - v2.x)
+    const yDist = Math.abs(v1.y - v2.y)
+    const zDist = Math.abs(v1.z - v2.z)
+
+    if (xDist != 0 && yDist == 0 && zDist == 0) {
+        return true
+    }
+    if (xDist == 0 && yDist != 0 && zDist == 0) {
+        return true
+    }
+    if (xDist == 0 && yDist == 0 && zDist != 0) {
+        return true
+    }
+    return false
+}
+
+function isNextOrPrevEdge(e1, edges, index) {
+    const e2 = index - 1 < 0 ? edges[edges.length - 1] : edges[index - 1] // previous edge
+    const e3 = edges[(index + 1) % edges.length] // next edge
+    if ((e1.v1.x % segments == 0 && e1.v1.y % segments == 0) ||
+        (e1.v1.x % segments == 0 && e1.v1.z % segments == 0) ||
+        (e1.v1.y % segments == 0 && e1.v1.z % segments == 0) ||
+        (e1.v2.x % segments == 0 && e1.v2.y % segments == 0) ||
+        (e1.v2.x % segments == 0 && e1.v2.z % segments == 0) ||
+        (e1.v2.y % segments == 0 && e1.v2.z % segments == 0))  {
+
+        return false
+    }
+
+    return (e1 == e2 || e1 == e3)
+}
+
+
+function generateStapleStrands(edgeMap) {
+    const edgeKeys = Object.keys(edgeMap)
+    let keyLength
+    let front
+    let back
+    let neighbors
+    let mergeFront
+    let mergeBack
+    let staples = []
+    for (let i = 0; i < edgeKeys.length; i++) {
+        keyLength = edgeKeys[i].length
+        neighbors = edgeMap[edgeKeys[i]]
+        console.log(neighbors)
+        front = edgeKeys[0, keyLength / 2]
+        mergeFront = neighbors[0][0].back + front
+        staples.push(mergeFront)
+        back = edgeKeys[keyLength / 2]
+        mergeBack = back + neighbors[1][0].front
+        staples.push(mergeBack)
+
+        // remove 
+    }
+    return staples
+}
+
+// let staples = generateStapleStrands(mps)
+// console.log(staples)
+
+
+
+function edgeToString(edge) {
+    let result =""
+    result += "(" + edge.v1.x + " " + edge.v1.y + " " + edge.v1.z +")"
+    result += "->"
+    result += "(" + edge.v2.x + " " + edge.v2.y + " " + edge.v2.z +")"
+    return result
+}
+
 
 function resizeRendererToDisplaySize(renderer) {
     const canvas = renderer.domElement

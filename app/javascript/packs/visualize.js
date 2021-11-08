@@ -70,6 +70,7 @@ let prevVertex
 let takenSets = []
 let visitedVertices = []
 let objectSets = sortSets(mergeSets())
+const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
 objectSets = normalize(objectSets)
 
 
@@ -470,3 +471,25 @@ function render() {
     requestAnimationFrame( render )
 
 }
+
+// document.getElementById("routing-btn").addEventListener("click", (e) => {
+//     e.preventDefault()
+//     let httpRequest
+//     if (window.XMLHttpRequest) { // Mozilla, Safari, IE7+ ...
+//         httpRequest = new XMLHttpRequest();
+//         console.log("FINE")
+//     } else if (window.ActiveXObject) { // IE 6 and older
+//         httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
+//         console.log("ok?")
+//     }
+//     console.log("lol")
+//     httpRequest.onreadystatechange = () => {
+
+//     }
+
+//     httpRequest.open('GET', '/nanobot/visualize_update', true);
+//     httpRequest.send();
+// })
+
+let link = document.getElementById("routing-btn").href + "?sets=" + JSON.stringify(simpleObjectSets)
+document.getElementById("routing-btn").href=link

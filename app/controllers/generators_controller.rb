@@ -30,7 +30,9 @@ class GeneratorsController < ApplicationController
   end
 
   def routing
-    @routing = @generator.route
+    # @routing = @generator.route
+    @sets = params[:sets]
+    @scaffold = Generator.m13_scaffold
     if @generator.to_json == nil
       flash[:danger] = "No routing found"
       redirect_to '/nanobot'
@@ -42,6 +44,7 @@ class GeneratorsController < ApplicationController
   def visualize
     @routing = @generator.route
   end
+
 
   def compile
     if logged_in?
@@ -136,6 +139,7 @@ class GeneratorsController < ApplicationController
     end
 
   end
+  
 
   def signup_and_save
     first = user_generator_params[:first]

@@ -143,7 +143,9 @@ class Generator < ApplicationRecord
     @graph.to_json
   end
 
-
+  def self.m13_scaffold
+    file = File.read('app/assets/scaffolds/7249.txt')
+  end
   # @note using tabs instead of spaces causes pdb loading issues
   def pdb
     filename = __id__.to_s
