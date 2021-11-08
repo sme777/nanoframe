@@ -35,7 +35,7 @@ let canvasContainerHeight = canvasContainer.offsetHeight
 
 const scene = new THREE.Scene()
 let camera = new THREE.PerspectiveCamera(70, canvasContainerWidth / canvasContainerHeight, 0.01, 8000)
-camera.position.y = 25
+camera.position.y = 40
 // camera.position.z = 25
 const light = new THREE.DirectionalLight(0xffffff, 0.8)
 light.position.set(0, 0, 0)
@@ -375,15 +375,15 @@ function vectorize(vertex) {
 //     }
 // }
 
-const line = new MeshLine()
-line.setPoints([vectorize({x: -15, y: 0, z: 0}), vectorize({x: 15, y: 0, z: 0})])
-let mesh1 = new THREE.Mesh(line, material)
-scene.add(mesh1)
+// const line = new MeshLine()
+// line.setPoints([vectorize({x: -15, y: 0, z: 0}), vectorize({x: 15, y: 0, z: 0})])
+// let mesh1 = new THREE.Mesh(line, material)
+// scene.add(mesh1)
 
-const line2 = new MeshLine()
-line2.setPoints([vectorize({x: 0, y: 0, z: 15}), vectorize({x: 0, y: 0, z: -15})])
-let mesh2 = new THREE.Mesh(line2, material)
-scene.add(mesh2)
+// const line2 = new MeshLine()
+// line2.setPoints([vectorize({x: 0, y: 0, z: 15}), vectorize({x: 0, y: 0, z: -15})])
+// let mesh2 = new THREE.Mesh(line2, material)
+// scene.add(mesh2)
 
 
 function equalsVector(v1, v2) {
@@ -418,20 +418,104 @@ function onMouseMove(event) {
     render()
 }
 const es = createEdgeStrands()
+console.log(es.length)
+const mps = createAdjacentEdgeMap()
+const staples = generateStapleStrands(mps[0], mps[1])
+// const adjMap = mps[0]
+// const stringMap = mps[1]
+// for (let i = 0; i < es.length; i++) {
+//     console.log(edgeToString(es[i]))
+// }
+// console.log(quicktest())
+function quicktest() {
+    const quickmap = doShit()
+    let keys = Object.keys(quickmap)
+    for (let i = 0; i < keys.length; i++){
+        if (quickmap[keys[i]].length != 2) {
+            return "fuck"
+        }
+    } 
+    return "amazing"
+}
+function checkNotContain(arr, e) {
+    // console.log(e)
+    for (let i = 0; i < arr.length; i++) {
+        if (equalsVector(arr[i].v1, e.v1) || equalsVector(arr[i].v1, e.v2) || equalsVector(arr[i].v2, e.v1) || equalsVector(arr[i].v2, e.v2)) {
+            return false
+        }
+    }
+    return true
+}
 
-const mps = createAdjacentEdgeMap(es)
-console.log(mps)
-// console.log(elolz)
+function createAdjacentEdgeMap() {
+    let edgeMap = {}
+    let stringMap = {}
+    
+    for (let i = 0; i < es.length; i++) {
+        let arr = []
+        let arr2 = []
+        for (let j = 0; j < es.length; j++) {
+            if (i == j) continue
+            // if (Math.abs(i - j) < 2) continue
+            if (equalsVector(es[i].v2, es[j].v1)) {
+                if (Math.abs(i - j) < 2) {
+ 
+                    if (isOutgoerEdge(es[i])) {
+                        if (checkNotContain(arr, es[j])) {
+                            arr.push(es[j])
+                            arr2.push(edgeToString(es[j]))
+                        }
+                        
+                    }
+                } else if (!isStraightLine(es[i].v1, es[j].v2)){
+                    if (checkNotContain(arr, es[j])) {
+                        arr.push(es[j])
+                        arr2.push(edgeToString(es[j]))
+                    }
+                }
+            } 
+            if (equalsVector(es[i].v1, es[j].v2)) {
+                if (Math.abs(i - j) < 2) {
+                    if (isOutgoerEdge(es[j])) {
+                        if (checkNotContain(arr, es[j])) {
+                            arr.push(es[j])
+                            arr2.push(edgeToString(es[j]))
+                        }
+                    }
+                } else if (!isStraightLine(es[i].v2, es[j].v1)){
+                    if (checkNotContain(arr, es[j])) {
+                        arr.push(es[j])
+                        arr2.push(edgeToString(es[j]))
+                    }
+                }
+            }
+        }
+        edgeMap[edgeToString(es[i])] = arr
+        stringMap[edgeToString(es[i])] = es[i]
+    }
+    return [edgeMap, stringMap]
+}
+
+function isOutgoerEdge(e1) {
+    if ((e1.v1.x % segments == 0 && e1.v1.y % segments == 0) ||
+        (e1.v1.x % segments == 0 && e1.v1.z % segments == 0) ||
+        (e1.v1.y % segments == 0 && e1.v1.z % segments == 0) ||
+        (e1.v2.x % segments == 0 && e1.v2.y % segments == 0) ||
+        (e1.v2.x % segments == 0 && e1.v2.z % segments == 0) ||
+        (e1.v2.y % segments == 0 && e1.v2.z % segments == 0))  {
+        return true
+        }
+        return false
+}
+
 //create edges with strands
 function createEdgeStrands() {
-    let e 
     let edgeSequence
     let edges = []
     const edgeLength = Math.floor((dimension / segments) / 0.332)
     for (let i = 0; i < sets.length -1; i++) {
-        e = sets[i]
         
-        if (i == edgeLength.length - 1) {
+        if (i == sets.length - 1) {
             edgeSequence = scaffoldSequence.slice(i * edgeLength)
             edges.push(new Edge(sets[i], sets[0], edgeSequence, edgeLength, null))
         } else {
@@ -443,43 +527,51 @@ function createEdgeStrands() {
     return edges
 }
 
-function createAdjacentEdgeMap(edges) {
+function createAdjacentEdgeMap2() {
     let edgeMap = {}
+    let stringMap = {}
     let edge
     let adjacentEdgeList
-    for (let i = 0; i < edges.length; i++) {
-        edge = edges[i]
-        adjacentEdgeList = findAdjacentEdges(edge, edges, i)
-        edgeMap[edge.sequence] = adjacentEdgeList
+    for (let i = 0; i < es.length; i++) {
+        edge = es[i]
+        // console.log(es)
+        adjacentEdgeList = findAdjacentEdges(edge, i)
+        edgeMap[edgeToString(edge)] = adjacentEdgeList
+        stringMap[edgeToString(edge)] = edge
     }
-    return edgeMap
+    return [edgeMap, stringMap]
 }
 
-function findAdjacentEdges(edge, edges, index) {
-    let startArr = []
-    let endArr = []
+function findAdjacentEdges(edge, index) {
+    // let startArr = []
+    // let endArr = []
+    let start 
+    let end
     
-    for (let i = 0; i < edges.length; i++) {
+    for (let i = 0; i < es.length; i++) {
         if (i != index) {
 
-            if (equalsVector(edges[i].v2, edge.v1)) {
-                if (!isStraightLine(edges[i].v1, edge.v2)) {
-                    if (!isNextOrPrevEdge(edges[i], edges, index)) {
-                        startArr.push(edges[i])
+            if (equalsVector(es[i].v2, edge.v1)) {
+                if (!isStraightLine(es[i].v1, edge.v2)) {
+                    if (!isNextOrPrevEdge(i, index, edge.v1)) {
+                        // console.log(es[i])
+                        // startArr.push(es[i])
+                        start = es[i]
                     }                        
                 }                    
             }
             
-            if (equalsVector(edges[i].v1, edge.v2)) {
-                if (!isStraightLine(edges[i].v2, edge.v1)) {
-                    if (!isNextOrPrevEdge(edges[i], edges, index)) {
-                        endArr.push(edges[i])
+            if (equalsVector(es[i].v1, edge.v2)) {
+                if (!isStraightLine(es[i].v2, edge.v1)) {
+                    if (!isNextOrPrevEdge(i, index, edge.v2)) {
+                        // endArr.push(es[i])
+                        end = es[i]
                     }
                 }
             }
         }
     }
-    return [startArr, endArr]
+    return [start, end]
 }
 
 
@@ -500,26 +592,31 @@ function isStraightLine(v1, v2) {
     return false
 }
 
-function isNextOrPrevEdge(e1, edges, index) {
-    const e2 = index - 1 < 0 ? edges[edges.length - 1] : edges[index - 1] // previous edge
-    const e3 = edges[(index + 1) % edges.length] // next edge
-    if ((e1.v1.x % segments == 0 && e1.v1.y % segments == 0) ||
-        (e1.v1.x % segments == 0 && e1.v1.z % segments == 0) ||
-        (e1.v1.y % segments == 0 && e1.v1.z % segments == 0) ||
-        (e1.v2.x % segments == 0 && e1.v2.y % segments == 0) ||
-        (e1.v2.x % segments == 0 && e1.v2.z % segments == 0) ||
-        (e1.v2.y % segments == 0 && e1.v2.z % segments == 0))  {
-
-        return false
-    }
-
-    return (e1 == e2 || e1 == e3)
+function isNextOrPrevEdge(i, index, v) {
+    // const e2 = index - 1 < 0 ? es[es.length - 1] : es[index - 1] // previous edge
+    // const e3 = es[(index + 1) % es.length] // next edge
+    let e1 = es[index]
+    // if ((e1.v1.x % segments == 0 && e1.v1.y % segments == 0) ||
+    //     (e1.v1.x % segments == 0 && e1.v1.z % segments == 0) ||
+    //     (e1.v1.y % segments == 0 && e1.v1.z % segments == 0) ||
+    //     (e1.v2.x % segments == 0 && e1.v2.y % segments == 0) ||
+    //     (e1.v2.x % segments == 0 && e1.v2.z % segments == 0) ||
+    //     (e1.v2.y % segments == 0 && e1.v2.z % segments == 0))  {
+    //         if (edgeToString(e1) == "(4 3 0)->(4 3 -1)") console.log("vax")
+    //     return false
+    // }
+    if ((v.x % segments == 0 && v.y % segments == 0) ||
+    (v.x % segments == 0 && v.z % segments == 0) ||
+    (v.y % segments == 0 && v.z % segments == 0))  {
+        if (edgeToString(e1) == "(4 3 0)->(4 3 -1)") console.log("vax")
+    return false
+}
+    return !(Math.abs(i - index) > 1)
 }
 
-
-function generateStapleStrands(edgeMap) {
+function generateStapleStrands(edgeMap, stringMap) {
     const edgeKeys = Object.keys(edgeMap)
-    let keyLength
+    let key
     let front
     let back
     let neighbors
@@ -527,15 +624,23 @@ function generateStapleStrands(edgeMap) {
     let mergeBack
     let staples = []
     for (let i = 0; i < edgeKeys.length; i++) {
-        keyLength = edgeKeys[i].length
+        key = edgeKeys[i]
         neighbors = edgeMap[edgeKeys[i]]
+        // console.log(neighbors)
+        front = stringMap[key].front
+        mergeFront = neighbors[0].back + front
+        const mergeFront2 = front + neighbors[0].back
+        if (!(staples.includes(mergeFront) && !staples.includes(mergeFront2))) {
+            staples.push(mergeFront)
+        }
+        
+        back = stringMap[key].back
         console.log(neighbors)
-        front = edgeKeys[0, keyLength / 2]
-        mergeFront = neighbors[0][0].back + front
-        staples.push(mergeFront)
-        back = edgeKeys[keyLength / 2]
-        mergeBack = back + neighbors[1][0].front
-        staples.push(mergeBack)
+        mergeBack = back + neighbors[1].front
+        const mergeBack2 = neighbors[1].front + back
+        if (!(staples.includes(mergeBack) && !staples.includes(mergeBack2))) {
+            staples.push(mergeBack)
+        }
 
         // remove 
     }
@@ -609,7 +714,7 @@ function render(time) {
         cubeGroup.rotation.z = time * 0.1
 
 
-        camera2.position.set(camera2Object.position.x , camera2Object.position.y + 60, camera2Object.position.z)
+        camera2.position.set(camera2Object.position.x , camera2Object.position.y + 100, camera2Object.position.z)
         camera2.quaternion.copy(camera.quaternion)
 
         renderer.render( scene, camera2 )
@@ -670,3 +775,17 @@ document.getElementById("left-key-button").addEventListener("click", () => {
     // addRoutings()
     scene.add(currPlane)
 })
+
+
+
+let t = "";
+for (var i = 0; i < Math.min(240, staples.length); i++){
+      var tr = "<tr>"
+      tr += "<td>"+(i + 1) +"</td>"
+      tr += "<td>"+staples[i]+"</td>"
+      tr += "<td>"+staples[i].length+"</td>"
+      tr += "</tr>"
+      t += tr
+}
+document.getElementById("staples_table").innerHTML += t;
+

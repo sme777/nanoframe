@@ -99,7 +99,6 @@ function mergePlaneEdges() {
     return arr
 }
 
-
 function mergeSets() {
     let arr = []
     for (let i = 0; i < planeRoutings.length; i++) {
@@ -161,6 +160,7 @@ function findNextSet(sets, lastVertex) {
 function getEdgesFromSet(set) {
 
     let vectors = []
+    // let edges = []
     const edges = set.edges
     let lastVertex
     // console.log(set)
@@ -172,6 +172,7 @@ function getEdgesFromSet(set) {
         if (!includesVector(vectors, edges[i].v2)) {
             vectors.push(vectorize(edges[i].v2))
         }
+        // edges.push()
     }
     // console.log(edges)
     lastVertex = edges[0].v2
@@ -491,5 +492,5 @@ function render() {
 //     httpRequest.send();
 // })
 
-let link = document.getElementById("routing-btn").href + "?sets=" + JSON.stringify(simpleObjectSets)
-document.getElementById("routing-btn").href=link
+console.log(simpleObjectSets.length)
+document.getElementById("set-values").value = JSON.stringify(simpleObjectSets)

@@ -48,13 +48,18 @@
     <div class="row outer-menu-container">
         <div class="col-md-6">
             <div class="back-container">
-                <a class="generator-arrow backbtn" href="/nanobot">&larr; Back</a>
+                <a class="generator-arrow btn btn-link backbtn" href="/nanobot">&larr; Back</a>
             </div>
         </div>
 
         <div class="col-md-6">
             <div class="forward-container">
-                <a id="routing-btn" class="route-arrow" href="/nanobot/<%= @generator.id%>/routing">Routing &rarr;</a>
+                <form action="/nanobot/<%= @generator.id%>/routing" method="POST">
+                    <input type="hidden" name="authenticity_token" value="<%=form_authenticity_token%>">
+                    <input type="hidden" id="set-values" name="vertices" value="">
+                    <button type="submit" id="routing-btn" class="btn btn-link route-arrow">Routing &rarr;</button>
+                </form>
+                
             </div>
         </div>
     </div>

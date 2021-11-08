@@ -28,7 +28,7 @@
 
 <body>
     <input type="hidden" id="generator-container" value="<%= @generator.to_json %>">
-    <input type="hidden" id="sets-container" value="<%= @sets %>">
+    <input type="hidden" id="sets-container" value="<%= @vertices %>">
     <input type="hidden" id="scaffold-container" value="<%= @scaffold %>">
 
 
@@ -49,13 +49,13 @@
     <div class="row outer-menu-container">
         <div class="col-md-6">
             <div class="back-container">
-                <a class="generator-arrow backbtn" href="/nanobot/<%= @generator.id%>/visualize">&larr; Visualize</a>
+                <a class="generator-arrow backbtn btn btn-link" href="/nanobot/<%= @generator.id%>/visualize">&larr; Visualize</a>
             </div>
         </div>
 
         <div class="col-md-6">
             <div class="forward-container">
-                <a class="route-arrow" href="/nanobot/<%= @generator.id%>/synthesize">Synthesize &rarr;</a>
+                <a class="route-arrow btn btn-link" href="/nanobot/<%= @generator.id%>/synthesize">Synthesize &rarr;</a>
             </div>
         </div>
     </div>
@@ -103,6 +103,22 @@
         <div class="col-md-4">
         </div>
     </div>
+    <div class="table-container">
+    
+        <h2>Staple Strands Sequences</h2>
+        <table class="table table-striped col-md-12" id="staples_table">
+        <thead>
+        <tr>
+            <th>Staple #</th>
+            <th>Sequence</th>
+            <th>Length (bp)</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+  </div>
 
     <div value="2" class="container" id="footer">
         <hr class="my-4">
@@ -113,6 +129,7 @@
             </div>
         </div>
     </div>
+
 
     <%= javascript_pack_tag 'routing', 'data-turbolinks-track': 'reload'%>
 

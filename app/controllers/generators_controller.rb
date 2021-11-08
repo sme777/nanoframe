@@ -31,7 +31,12 @@ class GeneratorsController < ApplicationController
 
   def routing
     # @routing = @generator.route
-    @sets = params[:sets]
+    # @strands_set = false
+    @vertices = params[:vertices] || Generator.find(generator_id).vertices
+    if Generator.find(generator_id).vertices.nil?
+      Generator.find(generator_id).update(vertices: @vertices)
+    end
+    # session[:sets] = @sets unless @sets.nil?
     @scaffold = Generator.m13_scaffold
     if @generator.to_json == nil
       flash[:danger] = "No routing found"

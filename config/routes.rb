@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   post '/nanobot' => 'generators#create', as: 'generators'
 
   get '/nanobot/:id/synthesize' => 'generators#synthesize'
+  post '/nanobot/:id/routing' => 'generators#routing'
   get '/nanobot/:id/routing' => 'generators#routing'
   get '/nanobot/:id/visualize' => 'generators#visualize'
   get '/nanobot/:id/compile' => 'generators#compile'
