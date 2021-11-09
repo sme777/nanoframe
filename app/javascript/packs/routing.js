@@ -496,7 +496,7 @@ function createAdjacentEdgeMap() {
     return [edgeMap, stringMap]
 }
 
-function isOutgoerEdge(e1) {
+function isOutgoerEdge(e1) { 
     if ((e1.v1.x % segments == 0 && e1.v1.y % segments == 0) ||
         (e1.v1.x % segments == 0 && e1.v1.z % segments == 0) ||
         (e1.v1.y % segments == 0 && e1.v1.z % segments == 0) ||
