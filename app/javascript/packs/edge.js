@@ -3,13 +3,13 @@ export class Edge {
     // sequence is the portion of the scaffold from which strands will be generated
     // length is the the length of the edge
     // side is the side of the cube which is needed for B-type Refractions
-    constructor(start, end, sequence, length, side) {
+    constructor(start, end, sequence, length, outgoer) {
         this.start = start
         this.end = end
         this.sequenceOriginal = sequence
         this.sequence = sequence
         this.strandLength = length
-        this.side = side
+        this.outgoer = outgoer
         this.front = sequence.slice(0, length / 2)
         this.back = sequence.slice(length / 2)
         // this.reflection = this.computeReflection()

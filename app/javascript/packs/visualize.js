@@ -58,9 +58,7 @@ const positions = []
 const colors = []
 
 // will need to replace with another function
-console.log(segments)
 const planeRoutings = segments == 2 ? RoutingSamples.planeRoutings1x1x1 : graph_json["planes"] // RoutingSamples.planeRoutings1x1x1
-console.log(planeRoutings)
 let takenEdges = []
 let totalEdges = 0
 let prevVertex
@@ -87,10 +85,8 @@ function normalize(vectors) {
 
 function mergePlaneEdges() {
     let arr = []
-    // console.log(planeRoutings)
     for (let i = 0; i < planeRoutings.length; i++) {
         const planeSets = planeRoutings[i].sets
-        // console.log(planeSets[0].edges)
         for (let j = 0; j < planeSets.length; j++) {
             arr = arr.concat(planeSets[j].edges)
             totalEdges += planeSets[j].edges.length
@@ -105,7 +101,6 @@ function mergeSets() {
         for (let j = 0; j < planeRoutings[i].sets.length; j++)
         arr.push(planeRoutings[i].sets[j])
     }
-    // console.log(arr)
     return arr
 }
 
@@ -163,7 +158,6 @@ function getEdgesFromSet(set) {
     // let edges = []
     const edges = set.edges
     let lastVertex
-    // console.log(set)
     for (let i = edges.length - 1; i >= 0; i--) {
         
         if (!includesVector(vectors, edges[i].v1)) {
@@ -172,17 +166,13 @@ function getEdgesFromSet(set) {
         if (!includesVector(vectors, edges[i].v2)) {
             vectors.push(vectorize(edges[i].v2))
         }
-        // edges.push()
     }
-    // console.log(edges)
     lastVertex = edges[0].v2
-    // console.log("here", lastVertex)
     if (equalsVector(lastVertex, prevVertex)) {
         lastVertex = edges[edges.length - 1].v1
         vectors = reverseArray(vectors)
     }
     prevVertex = lastVertex
-    // console.log(lastVertex)
     return [vectors.slice(0, -1), lastVertex]
 }
 
@@ -205,7 +195,6 @@ function reverseArray(v) {
 
 
 function sortPlaneEdges(arr) {
-    // console.log(arr)
     let next = arr[0]
     takenEdges.push(next)
     let sortedArray = [vectorize(next.v1)]
@@ -213,13 +202,11 @@ function sortPlaneEdges(arr) {
     let edge
     while (counter != arr.length - 1) {
         edge = findNextEdge(arr, next)
-        console.log(edge)
         takenEdges.push(edge)
         sortedArray.push(vectorize(edge.v1))
         next = edge
         counter += 1
     }
-    console.log(sortedArray)
     return sortedArray
 }
 
@@ -231,8 +218,6 @@ function findNextEdge(edges, prev) {
         const curr = edges[i]
         if (equalsVector(curr.v1, prev.v2) && !takenEdge(curr)) {
             if (!straightPath(curr, prev) && !prematureLoop(curr)) {
-                // console.log("fuck")
-                // console.log(curr)
                 return curr
             }
             
@@ -241,7 +226,6 @@ function findNextEdge(edges, prev) {
 
     for (let i = 0; i < edges.length; i++) {
         const curr = edges[i]
-        // console.log("called", i)
         if (equalsVector(curr.v2, prev.v2) && !takenEdge(curr)) {
             if (!straightPath(curr, prev) && !prematureLoop(curr)) {
                 return reverseEdge(curr)
@@ -251,7 +235,6 @@ function findNextEdge(edges, prev) {
 
     for (let i = 0; i < edges.length; i++) {
         const curr = edges[i]
-        // console.log("called", i)
         if (equalsVector(curr.v2, prev.v1) && !takenEdge(curr)) {
             if (!straightPath(curr, prev) && !prematureLoop(curr)) {
                 return reverseEdge(curr)
@@ -261,7 +244,6 @@ function findNextEdge(edges, prev) {
 
     for (let i = 0; i < edges.length; i++) {
         const curr = edges[i]
-        // console.log("called", i)
         if (equalsVector(curr.v1, prev.v2) && !takenEdge(curr)) {
             if (!straightPath(curr, prev) && !prematureLoop(curr)) {
                 return curr
@@ -278,7 +260,6 @@ function prematureLoop(edgeToAdd) {
     }
     let startContained = false
     let endContained = false
-    console.log(takenEdges)
     for (let i = 0; i < takenEdges.length; i++) {
         if (equalsVector(edgeToAdd.v1, takenEdges[i].v1) || equalsVector(edgeToAdd.v1, takenEdges[i].v2)) {
             startContained = true
@@ -319,7 +300,6 @@ function takenEdge(edge) {
 function straightPath(curr, prev) {
     const currVertices = [curr.v1, curr.v2]
     const prevVertices = [prev.v1, prev.v2]
-    // console.log(currVertices, prevVertices)
     for (let i = 0; i < 2; i++) {
         for (let j = 0; j < 2; j++) {
             if (isStraighPath(currVertices[i], prevVertices[j])) {
@@ -473,24 +453,4 @@ function render() {
 
 }
 
-// document.getElementById("routing-btn").addEventListener("click", (e) => {
-//     e.preventDefault()
-//     let httpRequest
-//     if (window.XMLHttpRequest) { // Mozilla, Safari, IE7+ ...
-//         httpRequest = new XMLHttpRequest();
-//         console.log("FINE")
-//     } else if (window.ActiveXObject) { // IE 6 and older
-//         httpRequest = new ActiveXObject("Microsoft.XMLHTTP");
-//         console.log("ok?")
-//     }
-//     console.log("lol")
-//     httpRequest.onreadystatechange = () => {
-
-//     }
-
-//     httpRequest.open('GET', '/nanobot/visualize_update', true);
-//     httpRequest.send();
-// })
-
-console.log(simpleObjectSets.length)
 document.getElementById("set-values").value = JSON.stringify(simpleObjectSets)

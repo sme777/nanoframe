@@ -344,12 +344,9 @@ $(document).ready(function() {
 })
 
 $(document).ready(function() {
-  // console.log("hi")
     $(".synthesizer-btn").click(function(e) {
       e.preventDefault()
       if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
-        // console.log("whatat")
-
         const widthSeg = $(".ws-input").val()
         const heightSeg = $(".hs-input").val()
         const depthSeg = $(".ds-input").val()

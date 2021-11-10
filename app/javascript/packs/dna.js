@@ -29,7 +29,6 @@ export class DNA {
     }
 
     generateFromFile(scaffold) {
-        //console.log(file)
         let arr = []
         for (let i = 0; i < scaffold.length; i++) {
             if (scaffold[i] === "A") {
@@ -53,8 +52,6 @@ export class DNA {
             curve = this.getCurve()
         }
         this.positions = curve.getPoints(this.length - 1)
-
-        console.log(this.length)
     }
 
     parsePositions(arr=this.positions) {
