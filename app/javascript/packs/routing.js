@@ -409,10 +409,10 @@ function onMouseMove(event) {
 }
 let sequenceDivison = []
 const es = createEdgeStrands()
-console.log(es)
+// console.log(es)
 const mps = createAdjacentEdgeMap()
 const staples = generateStapleStrands(mps[0], mps[1])
-
+const descriptions = generateStapleDescriptions(mps[0], mps[1])
 // console.log(quicktest())
 function quicktest() {
     const quickmap = doShit()
@@ -441,57 +441,22 @@ function createAdjacentEdgeMap() {
     for (let i = 0; i < es.length; i++) {
         let arr = []
         let arr2 = []
-        if (edgeToString(es[i]) == "(0 1 0)->(0 1 0)") {
-            // console.log("wtf")
-        }
+
         for (let j = 0; j < es.length; j++) {
             if (!(i == j || es[i] == es[j])) {
                 if (equalsVector(es[i].v2, es[j].v1)) {
                     if (Math.abs(i - j) < 2) {
-                        if (edgeToString(es[j]) == "(1 2 0)->(2 2 0)") {
-                            // console.log("jaj tam berant")
-                        }
                         if (isOutgoerEdge(es[i].v2)) {
-                            // if (checkNotContain(arr, es[j])) {
-                                if (edgeToString(es[i]) == "(1 2 0)->(2 2 0)") {
-                                    // console.log("jaj tam berant", edgeToString(es[j]))
-                                }
-                                arr.push(es[j])
-                                arr2.push(edgeToString(es[j]))
-                                // break
-                            // }
+                            arr.push(es[j])
+                            arr2.push(edgeToString(es[j]))
                             
                         }
                     } else if (!isStraightLine(es[i].v1, es[j].v2)){
-                        // if (checkNotContain(arr, es[j])) {
-                            if (edgeToString(es[i]) == "(1 2 0)->(2 2 0)") {
-                                // console.log("jaj tam berant", edgeToString(es[j]))
-                                // console.log(i, j)
-                            }
                             arr.push(es[j])
                             arr2.push(edgeToString(es[j]))
-                            // break
-                        // }
                     }
                 } 
             }
-            // if (Math.abs(i - j) < 2) continue
-
-            // if (equalsVector(es[i].v1, es[j].v2)) {
-            //     if (Math.abs(i - j) < 2) {
-            //         if (isOutgoerEdge(es[j])) {
-            //             // if (checkNotContain(arr, es[j])) {
-            //                 arr.push(es[j])
-            //                 arr2.push(edgeToString(es[j]))
-            //             // }
-            //         }
-            //     } else if (!isStraightLine(es[i].v2, es[j].v1)){
-            //         if (checkNotContain(arr, es[j])) {
-            //             arr.push(es[j])
-            //             arr2.push(edgeToString(es[j]))
-            //         }
-            //     }
-            // }
         }
         if (arr.length != 0) {
             edgeMap[edgeToString(es[i])] = arr
@@ -525,23 +490,11 @@ function createEdgeStrands() {
             edgeSequence = scaffoldSequence.slice(i * edgeLength)
             sequenceDivison.push(edgeSequence)
             newEdge = new Edge(sets[i], sets[0], edgeSequence, edgeLength, null)
-            // if (isOutgoerEdge(newEdge)) {
-            //     extraBase = findExtraBase(newEdge.front, newEdge.back)
-            //     newEdge.sequence = newEdge.front + extraBase + newEdge.back
-            //     console.log("weird")
-            // }
             edges.push(newEdge)
         } else {
             edgeSequence = scaffoldSequence.slice(i * edgeLength, i * edgeLength + edgeLength)
             sequenceDivison.push(edgeSequence)
             newEdge = new Edge(sets[i], sets[i+1], edgeSequence, edgeLength, null)
-            // if (isOutgoerEdge(newEdge)) {
-            //     extraBase = findExtraBase(newEdge.front, newEdge.back)
-            //     newEdge.sequence = newEdge.front + extraBase + newEdge.back
-            //     console.log(newEdge.front, "\n")
-            //     console.log(extraBase, "\n")
-            //     console.log(newEdge.back, "\n")
-            // }
             edges.push(newEdge)
         }
     }
@@ -562,8 +515,8 @@ function findExtraBase(front, back) {
     return null
 }
 
-// console.log(sets)
-// console.log(sequenceDivison)
+console.log(sets)
+console.log(sequenceDivison)
 
 function createAdjacentEdgeMap2() {
     let edgeMap = {}
@@ -657,8 +610,6 @@ function generateStapleStrands(edgeMap, stringMap) {
     let mergeFront
     let mergeBack
     let staples = []
-    // console.log(edgeMap)
-            // console.log(stringMap[0], "here")
 
     for (let i = 0; i < edgeKeys.length; i++) {
         key = edgeKeys[i]
@@ -669,13 +620,6 @@ function generateStapleStrands(edgeMap, stringMap) {
         } else {
             back = stringMap[key].back
         }
-        // console.log(neighbors)
-        // front = stringMap[key].front
-        // mergeFront = neighbors[0].back + front
-        // const mergeFront2 = front + neighbors[0].back
-        // if (!(staples.includes(mergeFront) && !staples.includes(mergeFront2))) {
-        //     staples.push(mergeFront)
-        // }
         
         let extraBases = findExtraBase(back, neighbors[0].front)
         // console.log(stringMap)
@@ -685,15 +629,19 @@ function generateStapleStrands(edgeMap, stringMap) {
         }
         mergeBack = translate(back) + extraBases + translate(neighbors[0].front)
         console.log("staple for: ", edgeKeys[i], edgeToString(edgeMap[edgeKeys[i]][0]))
-        // const mergeBack2 = neighbors[1].front + back
-        // if (!(staples.includes(mergeBack) && !staples.includes(mergeBack2))) {
-        //     staples.push(mergeBack)
-        // }
-        staples.push(mergeBack)
 
-        // remove 
+        staples.push(mergeBack)
     }
     return staples
+}
+
+function generateStapleDescriptions(edgeMap, stringMap) {
+    const edgeKeys = Object.keys(edgeMap)
+    let descriptions = []
+    for (let i = 0; i < edgeKeys.length; i++) {
+        descriptions.push(i.toString())
+    }
+    return descriptions
 }
 
 function translate(seq) {
@@ -848,5 +796,7 @@ for (var i = 0; i < staples.length; i++){
       t += tr
 }
 console.log(staples)
+document.getElementById("staples_field").value = JSON.stringify(staples)
+document.getElementById("staples_descriptions_field").value = JSON.stringify(descriptions)
 document.getElementById("staples_table").innerHTML += t;
 

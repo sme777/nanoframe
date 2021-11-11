@@ -77,6 +77,19 @@ class Generator < ApplicationRecord
     end
   end
 
+  def make_staples_file(staples, descriptions)
+    filename = "#{width.to_s}x#{height.to_s}x#{depth.to_s}-#{width_segment.to_s}"
+    file = File.open('app/assets/results/' + filename + '.csv', 'w')
+    count = 0
+    staples.each_with_index do |staple, idx|
+      file.write("#{descriptions[idx] } , #{staple}")
+      file.write("\n")
+      count += 1
+    end
+    file.close
+    filename
+  end
+
   def feedback_control(_coordinates)
     shape_coordinates = silhouette
   end

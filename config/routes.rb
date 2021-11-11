@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   get '/checkusername' => 'users#check_username', :defaults => { format: :json }
 
   # downloading files
+  post '/nanobot/:id/staples' => 'generators#download_staples', as: "download_staples"
   get '/nanobot/:id/pdb' => 'generators#download_pdb'
   get '/nanobot/:id/oxdna' => 'generators#download_oxdna'
   get '/nanobot/:id/txt' => 'generators#download_txt'

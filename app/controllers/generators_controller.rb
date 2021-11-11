@@ -57,6 +57,17 @@ class GeneratorsController < ApplicationController
     end
   end
 
+  def download_staples
+    staples = JSON.parse(params[:staples])
+    descriptions = JSON.parse(params[:descriptions])
+    byebug
+    filename = @generator.make_staples_file(staples, descriptions)
+    file = File.open('app/assets/results/' + filename + '.csv')
+    contents = file.read
+    file.close
+    send_data contents, filename: filename + '.csv'
+  end
+
   def download_pdb
     file = File.open('app/assets/results/' + session[:filename] + '.pdb')
     contents = file.read
