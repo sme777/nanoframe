@@ -12,5 +12,5 @@ before_script:
   - bundle exec rake db:create
   - bundle exec rake db:schema:load
 script:
-  - bundle exec rake test
-  - bundle exec rake test:system
+  - bundle exec rspec
+  - bundle exec cucumber
