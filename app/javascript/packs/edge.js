@@ -6,10 +6,11 @@ export class Edge {
     constructor(start, end, sequence, length, outgoer) {
         this.start = start
         this.end = end
-        this.sequenceOriginal = sequence
         this.sequence = sequence
         this.strandLength = length
         this.outgoer = outgoer
+        this.next = null
+        this.prev = null
         this.front = sequence.slice(0, length / 2)
         this.back = sequence.slice(length / 2)
         // this.reflection = this.computeReflection()

@@ -4,7 +4,6 @@ class GeneratorsController < ApplicationController
   before_action :set_generator, except: [:create]
 
   def index
-    # byebug
     # @options = @generator.get_shapes
     @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
   end
@@ -22,7 +21,6 @@ class GeneratorsController < ApplicationController
     coordinates = json_obj['coordinates']
     
     @generator.scaffold(sequence, coordinates)
-    # byebug
     @generator.route
     # @generator.feedback_control(coordinates)
     session[:filename] = @generator.pdb
@@ -60,7 +58,6 @@ class GeneratorsController < ApplicationController
   def download_staples
     staples = JSON.parse(params[:staples])
     descriptions = JSON.parse(params[:descriptions])
-    byebug
     filename = @generator.make_staples_file(staples, descriptions)
     file = File.open('app/assets/results/' + filename + '.csv')
     contents = file.read
@@ -129,7 +126,6 @@ class GeneratorsController < ApplicationController
   def create
     
     @generator = Generator.new(generator_params)
-    # byebug
 
     if @generator.save
       session['id'] = @generator.id
@@ -142,7 +138,6 @@ class GeneratorsController < ApplicationController
 
   def generator
     @returned_results = false
-    # byebug
     if (!params[:step_size].nil? && params[:step_size] != "" && !params[:loopout_length].nil? && params[:loopout_length] != "")
 
       @step_size = params[:step_size]
@@ -206,7 +201,6 @@ class GeneratorsController < ApplicationController
   end
 
   def is_active_generator?
-    # byebug
     session[:id]
   end
 

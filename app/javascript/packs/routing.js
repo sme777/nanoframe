@@ -411,8 +411,11 @@ let sequenceDivison = []
 const es = createEdgeStrands()
 // console.log(es)
 const mps = createAdjacentEdgeMap()
-const staples = generateStapleStrands(mps[0], mps[1])
-const descriptions = generateStapleDescriptions(mps[0], mps[1])
+const [staples, descriptions] = generateStapleStrands(mps[0], mps[1])
+console.log(staples)
+console.log(descriptions)
+// const staples = bundle[0]
+// const descriptions = generateStapleDescriptions(mps[0], mps[1])
 // console.log(quicktest())
 function quicktest() {
     const quickmap = doShit()
@@ -498,7 +501,26 @@ function createEdgeStrands() {
             edges.push(newEdge)
         }
     }
-    
+    edges = setNextAndPrev(edges)
+    return edges
+}
+
+function setNextAndPrev(edges) {
+    let curr
+    for (let i = 0; i < edges.length; i++) {
+        curr = edges[i]
+        if (i == 0) {
+            curr.next = edges[i+1]
+            curr.prev = edges[edges.length - 1]
+        } else if (i == edges.length - 1) {
+            curr.next = edges[0]
+            curr.prev = edges[i-1]
+        } else {
+            curr.next = edges[i+1]
+            curr.prev = edges[i-1]
+        }
+        
+    }
     return edges
 }
 
@@ -604,41 +626,248 @@ function isNextOrPrevEdge(i, index, v) {
 function generateStapleStrands(edgeMap, stringMap) {
     const edgeKeys = Object.keys(edgeMap)
     let key
-    let front
     let back
     let neighbors
-    let mergeFront
+    let isOutgoer
     let mergeBack
     let staples = []
+    let stringBuilder = ""
+    let start
+    let end 
+    let side
+    let descriptions = []
+    let descriptionMap = {}
 
     for (let i = 0; i < edgeKeys.length; i++) {
+        stringBuilder = ""
         key = edgeKeys[i]
         neighbors = edgeMap[edgeKeys[i]]
         if (i == edgeKeys.length - 1) {
-            console.log(stringMap[key].sequence.length)
+            // console.log(stringMap[key].sequence.length)
             back = stringMap[key].sequence.slice(15)
         } else {
             back = stringMap[key].back
         }
-        
-        let extraBases = findExtraBase(back, neighbors[0].front)
-        // console.log(stringMap)
-        if (isOutgoerEdge(stringMap[edgeKeys[i]].v2)) {
-            
-            extraBases += findExtraBase(back, neighbors[0].front)
+        if (i == edgeKeys.length - 1) {
+            mergeBack = translate(back) + translate(stringMap[edgeKeys[0]].front)
+        } else {
+            let extraBases = findExtraBase(back, neighbors[0].front)
+            // console.log(stringMap)
+            isOutgoer = isOutgoerEdge(stringMap[edgeKeys[i]].v2)
+            if (isOutgoer) {
+                extraBases += findExtraBase(back, neighbors[0].front)
+            }
+            mergeBack = translate(back) + extraBases + translate(neighbors[0].front)
         }
-        mergeBack = translate(back) + extraBases + translate(neighbors[0].front)
-        console.log("staple for: ", edgeKeys[i], edgeToString(edgeMap[edgeKeys[i]][0]))
 
+        
+        if (isOutgoer) {
+            stringBuilder += "Refr-"
+            // console.log("refraction staple for: ", edgeKeys[i], edgeToString(edgeMap[edgeKeys[i]][0]))
+        } else {
+            stringBuilder += "Refl-"
+            // console.log("refelction staple for: ", edgeKeys[i], edgeToString(edgeMap[edgeKeys[i]][0]))
+        }
+        
+        // check sides
+        start = stringMap[edgeKeys[i]].v1
+        end = stringMap[edgeKeys[i]].v2
+        if (start.z == 0 && end.z == 0) {
+            side = "S1"
+            stringBuilder +="S1-"
+        } else if (start.z == -segments && end.z == -segments) {
+            side = "S2"
+            stringBuilder +="S2-"
+        } else if (start.x == 0 && end.x == 0) {
+            side = "S6"
+            stringBuilder +="S6-"
+        } else if (start.x == segments && end.x == segments) {
+            side = "S5"
+            stringBuilder += "S5-"
+        } else if (start.y == 0 && end.y == 0) {
+            side = "S4"
+            stringBuilder += "S4-"
+        } else if (start.y == segments && end.y == segments) {
+            side = "S3"
+            stringBuilder += "S3-"
+        }
+        const [row, col] = findRowAndCol(stringMap[edgeKeys[i]], side)
+        
+        stringBuilder += "R" + row + "-" + "C" + col
+        if (!isOutgoer) {
+            if (descriptionMap[stringBuilder] == undefined) {
+                descriptionMap[stringBuilder] = 1
+                stringBuilder += "-1"
+            } else {
+                descriptionMap[stringBuilder] += 1
+                stringBuilder += "-" + descriptionMap[stringBuilder].toString()
+            }
+        }
+
+        descriptions.push(stringBuilder)
         staples.push(mergeBack)
     }
-    return staples
+    return [staples, descriptions]
+}
+
+function findRowAndCol(edge, side) {
+    let edgeRow 
+    let edgeCol
+    let col
+    let row
+    if (side == "S1" || side == "S2") {
+
+        edgeRow = segments - Math.abs(edge.v1.y)  + 1 
+        edgeCol = edge.v1.x + 1 
+
+        if (edge.v1.x - edge.v2.x > 0) {
+            if (edge.next.v2.y  > edge.v2.y) {
+                col = edgeCol - 1
+                row = edgeRow
+            } else {
+                col = edgeCol - 1
+                row = edgeRow - 1
+            }
+        } else if (edge.v1.x - edge.v2.x < 0) {
+            if (edge.next.v2.y  > edge.v2.y) {
+                col = edgeCol
+                row = edgeRow
+            } else {
+                col = edgeCol 
+                row = edgeRow - 1
+            }
+        } else if (edge.v1.y - edge.v2.y > 0) {
+            if (edge.next.v2.x  > edge.v2.x) {
+                col = edgeCol 
+                row = edgeRow - 1
+            } else {
+                col = edgeCol 
+                row = edgeRow
+            }
+        } else {
+            if (edge.next.v2.x  > edge.v2.x) {
+                col = edgeCol - 1
+                row = edgeRow
+            } else {
+                col = edgeCol 
+                row = edgeRow - 1
+            }
+        }
+    } else if (side == "S3" || side == "S4") {
+        edgeRow = segments - Math.abs(edge.v1.z)  + 1 
+        edgeCol = edge.v1.x + 1 
+
+        if (edge.v1.x - edge.v2.x > 0) {
+            if (edge.next.v2.z  > edge.v2.z) {
+                col = edgeCol - 1
+                row = edgeRow
+            } else {
+                col = edgeCol - 1
+                row = edgeRow - 1
+            }
+        } else if (edge.v1.x - edge.v2.x < 0) {
+            if (edge.next.v2.z  > edge.v2.z) {
+                col = edgeCol
+                row = edgeRow
+            } else {
+                col = edgeCol 
+                row = edgeRow - 1
+            }
+        } else if (edge.v1.z - edge.v2.z > 0) {
+            if (edge.next.v2.x  > edge.v2.x) {
+                col = edgeCol 
+                row = edgeRow
+            } else {
+                col = edgeCol 
+                row = edgeRow - 1
+            }
+        } else {
+            if (edge.next.v2.z  > edge.v2.z) {
+                col = edgeCol - 1
+                row = edgeRow
+            } else {
+                col = edgeCol 
+                row = edgeRow 
+            }
+        }
+        // edgeRow = (segments - Math.abs(edge.v1.z)) 
+        // edgeCol = edge.v1.x 
+
+        // if (edge.next.v1.x > edge.v2.x) {
+        //     col = edgeCol - 1 < 0 ? 0 : edgeCol - 1
+        // } else {
+        //     col = edgeCol
+        // }
+
+        // if (edge.next.v1.z > edge.v2.z) {
+        //     row = edgeRow + 1 > segments ? segments : edgeRow + 1 
+        // } else {
+        //     row = edgeRow
+        // }
+    } else if (side == "S5" || side == "S6") {
+        edgeRow = segments - Math.abs(edge.v1.y)  + 1
+        edgeCol = segments - Math.abs(edge.v1.z) + 1 
+
+        if (edge.v1.z - edge.v2.z > 0) {
+            if (edge.next.v2.y  > edge.v2.y) {
+                col = edgeCol - 1
+                row = edgeRow
+            } else {
+                col = edgeCol - 1
+                row = edgeRow - 1
+            }
+        } else if (edge.v1.z - edge.v2.z < 0) {
+            if (edge.next.v2.y  > edge.v2.y) {
+                col = edgeCol
+                row = edgeRow
+            } else {
+                col = edgeCol 
+                row = edgeRow - 1
+            }
+        } else if (edge.v1.y - edge.v2.y > 0) {
+            if (edge.next.v2.z  > edge.v2.z) {
+                col = edgeCol 
+                row = edgeRow
+            } else {
+                col = edgeCol 
+                row = edgeRow - 1
+            }
+        } else {
+            if (edge.next.v2.z  > edge.v2.z) {
+                col = edgeCol - 1
+                row = edgeRow
+            } else {
+                col = edgeCol 
+                row = edgeRow - 1
+            }
+        }
+        // edgeRow = (segments - Math.abs(edge.v1.z))
+        // edgeCol = edge.v1.y 
+        // if (edge.next.v1.z > edge.v2.z) {
+        //     col = edgeCol - 1 < 0 ? 0 : edgeCol - 1
+        // } else {
+        //     col = edgeCol
+        // }
+
+        // if (edge.next.v1.y > edge.v2.y) {
+        //     row = edgeRow + 1 > segments ? segments : edgeRow + 1 
+        // } else {
+        //     row = edgeRow
+        // }
+    }
+
+    return [row, col]
+
+
+
 }
 
 function generateStapleDescriptions(edgeMap, stringMap) {
     const edgeKeys = Object.keys(edgeMap)
+    let stapleName
     let descriptions = []
     for (let i = 0; i < edgeKeys.length; i++) {
+        // stringMap[key]
         descriptions.push(i.toString())
     }
     return descriptions
@@ -790,12 +1019,13 @@ let t = "";
 for (var i = 0; i < staples.length; i++){
       var tr = "<tr>"
       tr += "<td>"+(i + 1) +"</td>"
+      tr += "<td>"+descriptions[i] + "</td>"
       tr += "<td>"+staples[i]+"</td>"
       tr += "<td>"+staples[i].length+"</td>"
       tr += "</tr>"
       t += tr
 }
-console.log(staples)
+// console.log(staples)
 document.getElementById("staples_field").value = JSON.stringify(staples)
 document.getElementById("staples_descriptions_field").value = JSON.stringify(descriptions)
 document.getElementById("staples_table").innerHTML += t;
