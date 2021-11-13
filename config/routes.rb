@@ -12,6 +12,10 @@ Rails.application.routes.draw do
   post '/nanobot' => 'generators#create', as: 'generator'
   post '/nanobot' => 'generators#create', as: 'generators'
 
+  #oauth
+  get '/auth/google_oauth2/callback', to: 'users#google_oauth2', as: :google_oauth2_callback
+  get '/auth/github/callback', to: 'users#github', as: :github_callback
+
   get '/nanobot/:id/synthesize' => 'generators#synthesize'
   post '/nanobot/:id/routing' => 'generators#routing'
   get '/nanobot/:id/routing' => 'generators#routing'

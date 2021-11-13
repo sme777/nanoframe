@@ -263,7 +263,18 @@ $(document).ready(function() {
     });
 });
 
+$(document).ready(function() {
+    const googleSignIn = $("#google-auth-form")
+    const githubSignIn = $("#github-auth-form")
 
+    $("#google-button").click(() => {
+        googleSignIn.submit()
+    })
+
+    $("#github-button").click(() => {
+        githubSignIn.submit()
+    })
+})
 
 function validateEmail(email) {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

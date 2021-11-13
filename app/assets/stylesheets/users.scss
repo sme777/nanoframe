@@ -6,13 +6,9 @@
  *= require_tree .
  *= require_self
  */
-//body {
-//background-image: linear-gradient(#dddddd, #f9f3f3);
-//}
-
-//  body {
-//      background-color: #F8F8F8;
-//  }
+ $white: #fff;
+ $google-blue: #4285f4;
+ $button-active-blue: #1669F2;
 
 .sign-up-outer-container {
     display: none;
@@ -102,7 +98,6 @@
 .logged-in-profile-image {
     margin-top: 15px;
     margin-left: 50px;
-    //float: left;
 }
 
 .menu-items {
@@ -120,37 +115,18 @@ a {
 
 .transparent-layer {
     z-index: 2;
-    //background-color: rgba(255, 255, 255, 0.8);
-    //width: max-content;
-    //padding-top: 30px;
-    //padding-bottom: 30px;
-    //margin-top: 10%;
-    //margin-right: 5%;
-    //float: right;
     margin-left: 30%;
     margin-right: 5%;
-    margin-top: 10%; //20
-    padding-left: 30%; //10
-    //padding-right: 30%;
+    margin-top: 10%; 
+    padding-left: 30%; 
 }
 
-// canvas {
-//     //padding-top: 2%;
-//     width: 200px;
-//     height: 200px;
-//     //background-color: #000000 ;
-// }
-
 #artifactCanvas {
-    //width: 100%;
     margin-top: 5%;
     z-index: -1;
     position: absolute;
 }
 
-.profile-contents {
-    //display: inline;
-}
 
 .forgot-password-container {
     text-align: center;
@@ -194,8 +170,6 @@ a {
     display: flex;
     margin-bottom: 36px;
     justify-content: center;
-    //text-align: center;
-    //overflow: hidden;
 }
 
 .radio-label {
@@ -254,22 +228,12 @@ a {
 }
 
 .user-portrait {
-    //margin: 10% 0 3% 0;
-    //max-width: 100%;
-    //max-height: 240px;
     width: 15%;
-    //height: auto;
     border-radius: 50%;
-    //cursor: pointer;
-    //border: 8px solid rgba(240, 240, 240, 0.7);
-    //overflow: hidden;
 }
 
 .user-portrait-mask {
     margin: 5% 0;
-    // width: 200px;
-    // height: 200px;
-    // overflow: hidden;
 }
 
 .landscape {
@@ -377,3 +341,49 @@ a {
     position: absolute;
     top: 10%;
 }
+
+.google-btn {
+    width: 184px;
+    height: 42px;
+    background-color: $google-blue;
+    border-radius: 2px;
+    box-shadow: 0 3px 4px 0 rgba(0,0,0,.25);
+    .google-icon-wrapper {
+      position: absolute;
+      margin-top: 1px;
+      margin-left: 1px;
+      width: 40px;
+      height: 40px;
+      border-radius: 2px;
+      background-color: $white;
+    }
+    .google-icon {
+      position: absolute;
+      margin-top: 11px;
+      margin-left: 11px;
+      width: 18px;
+      height: 18px;
+    }
+    .btn-text {
+      float: right;
+      margin: 11px 11px 0 0;
+      color: $white;
+      font-size: 14px;
+      letter-spacing: 0.2px;
+      font-family: "Roboto";
+    }
+    &:hover {
+      box-shadow: 0 0 6px $google-blue;
+    }
+    &:active {
+      background: $button-active-blue;
+    }
+  }
+
+  .github-sign-in-container {
+      text-align: center;
+  }
+
+  .log-in-container {
+      text-align: center;
+  }
