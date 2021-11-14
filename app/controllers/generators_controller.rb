@@ -4,7 +4,6 @@ class GeneratorsController < ApplicationController
   before_action :set_generator, except: [:create]
 
   def index
-    # @options = @generator.get_shapes
     @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
   end
 
@@ -125,15 +124,16 @@ class GeneratorsController < ApplicationController
 
   def create
     
-    @generator = Generator.new(generator_params)
+      @generator = Generator.new(generator_params)
 
-    if @generator.save
-      session['id'] = @generator.id
-      redirect_to '/nanobot/' + @generator.id.to_s + '/visualize'
-    else
-      flash[:message] = "Could Not Complete Request"
-      redirect_to "/nanobot"
-    end
+      if @generator.save
+        session['id'] = @generator.id
+        redirect_to '/nanobot/' + @generator.id.to_s + '/visualize'
+      else
+        flash[:message] = "Could Not Complete Request"
+        redirect_to "/nanobot"
+      end
+    
   end
 
   def generator
@@ -178,7 +178,7 @@ class GeneratorsController < ApplicationController
   private
 
   def generator_params
-    params.require(:generator).permit(:height, :width, :depth, :option, :depth_segment,
+    params.require(:generator).permit(:height, :width, :depth, :option, :depth_segment, :continue,
                                       :radius, :radial_segment, :radius_top, :radius_bottom, :width_segment, :detail,
                                       :height_segment, :tube_radius, :tubular_radius, :p, :q, :scaffold_length, :shape, :json)
   end

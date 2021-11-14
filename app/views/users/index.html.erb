@@ -118,7 +118,7 @@
           </div>
           <div>
             <div class="log-in-container">
-              <button class="btn btn-lg btn-dark w-50 p-2" type="submit">Log In</button>
+              <button class="btn btn-lg btn-dark w-100 p-2" type="submit">Log In</button>
             </div>
             <div class="forgot-password-container">
               <a href="">Forgot Password?</a>
@@ -133,7 +133,7 @@
         </form>
         <%= form_tag "auth/google_oauth2", method: :post, id: "google-auth-form" do %>
         <div class="github-sign-in-container">
-          <a id="google-button" class="btn btn-lg btn-block btn-social btn-google w-50">
+          <a id="google-button" class="btn btn-lg btn-block btn-social btn-google w-100 text-align-center">
             <i class="fa fa-google"></i> Sign in with Google
           </a>
         </div>
@@ -142,7 +142,7 @@
 
         <%= form_tag "auth/github", method: :post, id: "github-auth-form" do %>
         <div class="github-sign-in-container">
-          <a id="github-button" class="btn btn-lg btn-block btn-social btn-github w-50">
+          <a id="github-button" class="btn btn-lg btn-block btn-social btn-github w-100  text-align-center">
             <i class="fa fa-github"></i> Sign in with GitHub
           </a>
         </div>

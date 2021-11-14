@@ -66,9 +66,7 @@
       <div class="synthesizer-header">
         <h3>Select Synthesizing Options</h3>
       </div>
-      <%# puts @generator%>
-      <%= form_with(model: @generator, method: :post, class: "synthesize-form") do |f| %>
-      <%# <form action="/nanobot/new" method="GET"> %>
+      <%= form_with(model: @generator, method: :post, id: "synthesize-form", class: "synthesize-form") do |f| %>
       <div class="shape-dropdown">
         <select id="synthesizer-shape" class="form-select" name="generator[shape]">
           <option value="0" disabled selected>Select Shape</option>
@@ -115,7 +113,7 @@
           <input class="form-control" id="sequenceUpload" type="file" accept=".txt">
         </div>
       </div>
-
+      <%= f.hidden_field "scaffold_length" ""%>
       <%# Add hidden field for JSON data %>
 
       <div class="dimension-picker">
@@ -231,7 +229,7 @@
         </div>
       </div>
       <div class="synthesizer-btn-container">
-        <%= f.submit "Synthesize", class: "synthesizer-btn btn btn-secondary btn-lg w-50", disabled: true%>
+        <%= f.submit "Synthesize", id: "synthesize-btn", class: "synthesizer-btn btn btn-secondary btn-lg w-50", disabled: true%>
         <%# <button type="submit" class="synthesizer-btn btn btn-secondary btn-lg w-50" disabled>Synthesize</button> %>
       </div>
       <% end %>

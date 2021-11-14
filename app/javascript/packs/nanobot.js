@@ -347,25 +347,30 @@ $(document).ready(function() {
     $(".synthesizer-btn").click(function(e) {
       e.preventDefault()
       if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
-        const widthSeg = $(".ws-input").val()
-        const heightSeg = $(".hs-input").val()
-        const depthSeg = $(".ds-input").val()
-        const width = $(".width-input").val()
-        const totalStripes = heightSeg * 4 + depthSeg * 4 + widthSeg *4
-        let maxStripes
+        const height = parseInt($(".height-input").val())
+        const depth = parseInt($(".depth-input").val())
+        const width = parseInt($(".width-input").val())
+        const segments = parseInt($(".ws-input").val())
+        const scaffold_length = Math.floor(parseInt($("#generator_scaffold_length").val()) * 0.332)
+        const used = width * segments * 4 + height * segments * 4 + depth * segments * 4
 
-        if ($("#8064-radiobtn").prop("checked")) {
-          maxStripes =  computeMaxStripes(8064, width)
-        } else {
-          maxStripes = computeMaxStripes(7249, width)
-        }
-
-        if (totalStripes > maxStripes) {
-          alert("Specified dimensions are greater than scaffold length!")
+        console.log(scaffold_length - used )
+        if (scaffold_length - used < 0) {
+          $(".message-container").html('<div class="alert alert-danger alert-dismissible fade show" role="alert">Specified dimensions are greater than scaffold length!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>')
+        } else if (scaffold_length - used > 200) {
+          $(".message-container").html('<div class="alert alert-warning alert-dismissible fade show" role="alert">The Loopout length is over 200 bp (' + (scaffold_length - used).toString() + '). <a href="#" onclick="event.preventDefault()" id="continue_anchor">Continue?</a> See <a href="nanobot/generator">generator page</a> for iteractive examples. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>')
         } else {
           $(".synthesize-form").submit()
         }
       }
+  })
+})
+
+$(document).ready(function() {
+  $("#continue_anchor").click(function(e) {
+    console.log("boob")
+    e.preventDefault()
+    $(".synthesize-form").submit()
   })
 })
 
