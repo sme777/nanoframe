@@ -1,10 +1,14 @@
 class Nucleotide
-  attr_accessor :atoms
+  attr_accessor :atoms, :base, :x, :y, :z
 
   def initialize(base, start_pos, chain_num)
     # @atom_number = 0
+    @base = base
     @chain_num = chain_num
     @start_pos = start_pos
+    @x = start_pos[0]
+    @y = start_pos[1]
+    @z = start_pos[2]
     @atoms = if base == 'A'
                generate_adenine
              elsif base == 'G'

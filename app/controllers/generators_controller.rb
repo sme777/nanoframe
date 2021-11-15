@@ -73,6 +73,7 @@ class GeneratorsController < ApplicationController
   end
 
   def download_pdb
+    
     file = File.open('app/assets/results/' + session[:filename] + '.pdb')
     contents = file.read
     file.close
@@ -81,6 +82,10 @@ class GeneratorsController < ApplicationController
   end
 
   def download_oxdna
+    json_obj = JSON.parse(@generator.json)
+    sequence = json_obj['sequence']
+    coordinates = json_obj['positions']
+    @generator.scaffold(sequence, coordinates)
     filename = @generator.oxdna
     file = File.open('app/assets/results/' + filename + '.oxview')
     contents = file.read
