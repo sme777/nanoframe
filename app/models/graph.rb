@@ -3,10 +3,10 @@ require 'json'
 class Graph
     attr_accessor :vertices, :edges, :sets, :route, :planes
     
-    def initialize(segments)
+    def initialize(segments, scaff_length)
         # each segment gets 4 sides 
         @segments = segments.to_i
-             
+        @scaff_length = scaff_length
         v_and_e = create_vertices_and_edges
         @vertices = v_and_e[0]
         @edges = v_and_e[1]
@@ -766,7 +766,7 @@ class Graph
             plane_arr.append(p.to_hash)
         end
 
-        hash = {"segments": @segments,  "planes": plane_arr}
+        hash = {"segments": @segments, "scaffold_length": 7249, "planes": plane_arr}
 
         JSON.generate(hash)
     end

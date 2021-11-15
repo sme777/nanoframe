@@ -2,6 +2,7 @@ require 'json'
 
 class GeneratorsController < ApplicationController
   before_action :set_generator, except: [:create]
+  skip_before_action :verify_authenticity_token
 
   def index
     @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
@@ -17,10 +18,9 @@ class GeneratorsController < ApplicationController
     # @generator = Generator.find(params[:id])
     json_obj = JSON.parse(@generator.json)
     sequence = json_obj['sequence']
-    coordinates = json_obj['coordinates']
-    
+    coordinates = json_obj['positions']
     @generator.scaffold(sequence, coordinates)
-    @generator.route
+    # @generator.route
     # @generator.feedback_control(coordinates)
     session[:filename] = @generator.pdb
     render :synthesize
@@ -45,6 +45,14 @@ class GeneratorsController < ApplicationController
 
   def visualize
     @routing = @generator.route
+  end
+
+  def routing_position_update
+    generator = Generator.find(generator_id)
+    oldJSON = JSON.parse(generator.json)
+    positions = JSON.parse(params[:data])["positions"]
+    newJSON = JSON.generate({"positions": positions, "sequence": oldJSON["sequence"]})
+    generator.update(json: newJSON)  
   end
 
 
@@ -74,10 +82,10 @@ class GeneratorsController < ApplicationController
 
   def download_oxdna
     filename = @generator.oxdna
-    file = File.open('app/assets/results/' + filename + '.oxdna')
+    file = File.open('app/assets/results/' + filename + '.oxview')
     contents = file.read
     file.close
-    send_data contents, filename: filename + '.oxdna'
+    send_data contents, filename: filename + '.oxview'
   end
 
   def download_csv

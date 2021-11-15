@@ -13,7 +13,7 @@ import * as dat from 'dat.gui'
 
 const graph_json = JSON.parse(document.getElementById("generator-container").value)
 const segments = graph_json["segments"]
-
+const scaffold_length = graph_json["scaffold_length"]
 // const set = graph_json["sets"][0]
 
 const canvas = document.getElementById("visualize-webgl")
@@ -340,13 +340,18 @@ for ( let i = 0, l = divisions; i < l; i ++ ) {
 
     spline.getPoint( t, point )
     positions.push( point.x, point.y, point.z )
-
-    // color.setHSL( t, 1.0, 0.5 )
     colors.push( t, t, t )
 
 }
 
+let routingPositions = []
+for (let i = 0; i < scaffold_length; i++) {
+    const t = i / scaffold_length
+    spline.getPoint( t, point )
+    routingPositions.push( point.x, point.y, point.z )
 
+}
+document.getElementById("routing-positions").value = JSON.stringify({"positions": routingPositions})
 // Line2 ( LineGeometry, LineMaterial )
 
 const geometry = new LineGeometry()

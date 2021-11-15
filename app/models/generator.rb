@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'zip'
+require 'date'
+
 
 class Generator < ApplicationRecord
   attr_accessor :atom_count
@@ -72,7 +74,7 @@ class Generator < ApplicationRecord
 
   def route
     if shape == "1"
-      @graph = Graph.new(width_segment + 1)
+      @graph = Graph.new(width_segment + 1, scaffold_length)
       # @plane = Plane.new(@graph)
     end
   end
@@ -229,7 +231,100 @@ class Generator < ApplicationRecord
     filename
   end
 
-  def oxdna; end
+  def oxdna
+    byebug
+    strands = []
+    filename = __id__.to_s
+    file = File.open('app/assets/results/' + filename + '.oxview', 'w')
+    dateNow = DateTime.now().strftime("%FT%T%:z")
+    date = '"date":' + '"' + dateNow + '"'
+    box = '"box": [1000, 1000, 1000]'
+    systemsStart = '"systems": [{'
+    systemsEnd = "}]"
+    strandsStart = '"strands": ['
+    strandsEnd = ']'
+    forces = '"forces": []'
+    
+    
+    file.write("{")
+    file.write(date + ",")
+    file.write(box + ",")
+    file.write(systemsStart)
+    file.write('"id": 0,')
+    file.write(strandsStart)
+    # loop for all strands
+    strands.each do |s|
+
+    end
+
+
+    file.write(strandsEnd)
+    file.write(systemsEnd+ ",")
+    file.write(forces)
+    file.write("}")
+    # file.write("MODEL        1\n")
+    # @dna.each do |nucleotide|
+    #   nucleotide.atoms.each do |atom|
+    #     file.write('ATOM' + ' ' * (7 - count.to_s.length))
+    #     # file.write("\t")
+    #     file.write(count.to_s)
+    #     if atom.element.length == 4
+    #       file.write(' ')
+    #     else
+    #       file.write('  ')
+    #     end
+    #     file.write(atom.element)
+
+    #     if atom.element.length == 1
+    #       file.write(' ' * 4)
+    #     elsif atom.element.length == 2
+    #       file.write(' ' * 3)
+    #     else
+    #       file.write(' ' * 2)
+    #     end
+
+    #     file.write(atom.base + ' ')
+    #     file.write('A' + ' ' * 3 + base_count.to_s)
+    #     # file.write("\n")
+    #     if atom.x.negative?
+    #       file.write(' ' * 5)
+    #     else
+    #       file.write(' ' * 6)
+    #     end
+    #     file.write('%0.03f' % atom.x)
+    #     if atom.y.negative?
+    #       file.write(' ' * 2)
+    #     else
+    #       file.write(' ' * 3)
+    #     end
+    #     # file.write(sprintf("%0.03f", atom.x) + "\t")
+    #     file.write('%0.03f' % atom.y)
+
+    #     if atom.z.negative?
+    #       file.write(' ' * 2)
+    #     else
+    #       file.write(' ' * 3)
+    #     end
+
+    #     file.write('%0.03f' % atom.z)
+    #     file.write(' ' * 2)
+    #     # if atom.z.negative?
+    #     #     file.write(" " * 2)
+    #     # else
+    #     #     file.write(" " * 3)
+    #     # end
+    #     file.write('1.00 0.00')
+    #     file.write(' ' * 11)
+    #     file.write(atom.element.first)
+    #     file.write("\n")
+    #     count += 1
+    #   end
+    #   base_count += 1
+    # end
+    # file.write('ENDMDL')
+    file.close
+    filename
+  end
 
   def csv; end
 

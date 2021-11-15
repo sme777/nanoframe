@@ -27,8 +27,9 @@
 </head>
 
 <body>
-    <input type="hidden" id="generator-container" value="<%= @generator.to_json %>"></div>
-
+    <input type="hidden" id="generator-container" value="<%= @generator.to_json %>">
+    <input type="hidden" id="generator-id-container" value="<%= @generator.id %>">
+    <input type="hidden" id="routing-positions" value="">
 
 
     <div class="menu-items">
@@ -90,7 +91,7 @@
 
     <input type="text" id="ply-value">
 
-    <%= javascript_pack_tag 'visualize', 'data-turbolinks-track': 'reload'%>
+    <%= javascript_pack_tag 'visualize', 'routingPositionUpdate', 'data-turbolinks-track': 'reload'%>
 </body>
 
 </html>

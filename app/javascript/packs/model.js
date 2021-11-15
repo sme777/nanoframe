@@ -307,7 +307,7 @@ document.querySelector(".synthesizer-btn").onclick = () => {
         dnaSequence = sequence
     }
     let dnaPositions = dna.parsePositions()
-    let jsonObj = {"sequence": dnaSequence, "coordinates": dnaPositions}
+    let jsonObj = {"sequence": dnaSequence}
     //console.log(jsonObj)
     document.querySelector(".json-input").value = JSON.stringify(jsonObj)
 }
