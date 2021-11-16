@@ -19,7 +19,7 @@ Rails.application.routes.draw do
   post '/nanobot/:id/routing_position_update' => 'generators#routing_position_update'
   get '/nanobot/:id/synthesize' => 'generators#synthesize'
   post '/nanobot/:id/routing' => 'generators#routing'
-  get '/nanobot/:id/routing' => 'generators#routing'
+  post '/nanobot/:id/visualize' => 'generators#visualize', as: 'generate_routing'
   get '/nanobot/:id/visualize' => 'generators#visualize'
   get '/nanobot/:id/compile' => 'generators#compile'
   post '/nanobot/:id/compile' => 'generators#signup_and_save'

@@ -9,7 +9,7 @@ import * as dat from 'dat.gui'
 
 
 
-
+console.log(document.getElementById("generator-container").value)
 const graph_json = JSON.parse(document.getElementById("generator-container").value)
 const segments = graph_json["segments"]
 const scaffold_length = graph_json["scaffold_length"]
@@ -74,7 +74,7 @@ function normalize(vectors) {
         vectors[i].x *= segmentLength
         vectors[i].y *= segmentLength
         vectors[i].z *= segmentLength
-        vectors[i].y -= 2*segmentLength
+        vectors[i].y -= 3.5*segmentLength
     }
     return vectors
 }

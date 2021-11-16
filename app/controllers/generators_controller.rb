@@ -27,24 +27,30 @@ class GeneratorsController < ApplicationController
   end
 
   def routing
-    # @routing = @generator.route
-    # @strands_set = false
+    generator = Generator.find(generator_id)
+    @graph_json = generator.routing 
     @vertices = params[:vertices] || Generator.find(generator_id).vertices
-    if Generator.find(generator_id).vertices.nil?
-      Generator.find(generator_id).update(vertices: @vertices)
+    if generator.vertices.nil?
+      generator.update(vertices: @vertices)
     end
-    # session[:sets] = @sets unless @sets.nil?
     @scaffold = Generator.m13_scaffold
     if @generator.to_json == nil
       flash[:danger] = "No routing found"
       redirect_to '/nanobot'
-    # else
-    #   render json: @generator.to_json
     end
   end
 
   def visualize
-    @routing = @generator.route
+    if params[:regenerate] 
+      @graph_json = @generator.route
+      Generator.find(@generator.id).update(routing: @graph_json.to_json)
+      redirect_to "/nanobot/#{@generator.id}/visualize"
+    elsif @generator.routing.nil?
+      @graph_json = @generator.route
+      Generator.find(@generator.id).update(routing: @graph_json.to_json)
+    else
+      @graph_json = @generator.routing
+    end 
   end
 
   def routing_position_update

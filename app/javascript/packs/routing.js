@@ -10,9 +10,11 @@ const context = Object.freeze({
     objectMode: Symbol("object"),
 })
 
+const graph = JSON.parse(document.getElementById("generator-container").value)
 const sets = JSON.parse(document.getElementById("sets-container").value)
 const scaffoldSequence = document.getElementById("scaffold-container").value
-const segments = 5 //graph_json["segments"]
+const segments = 5
+console.log(graph)
 const dimension = 50 // setup from user choice
 
 const cubeGroup = RoutingHelpers.makeCubeGroup(dimension, segments)

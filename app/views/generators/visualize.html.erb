@@ -27,7 +27,7 @@
 </head>
 
 <body>
-    <input type="hidden" id="generator-container" value="<%= @generator.to_json %>">
+    <input type="hidden" id="generator-container" value="<%= @graph_json %>">
     <input type="hidden" id="generator-id-container" value="<%= @generator.id %>">
     <input type="hidden" id="routing-positions" value="">
 
@@ -63,6 +63,10 @@
                 
             </div>
         </div>
+    </div>
+
+    <div class="regenerate-container">
+        <%= link_to "Regenerate Routing", generate_routing_path({regenerate: true}), class: "btn btn-outline-secondary" %>
     </div>
 
     <div class="row">
