@@ -200,183 +200,14 @@ window.addEventListener( 'pointermove', onMouseMove )
 onWindowResize()
 
 // DNA scaffold
-let scaffoldObjects = []
 const material = new MeshLineMaterial();
 material.color.setHex(viewParams.scaffold_color)
 material.lineWidth = 0.2
 material.color = new THREE.Color(0x29f4a2)
 
-// for (let i = 0; i < planeRoutings.length; i++) {
-//     const plane = planeRoutings[i]
-//     for (let j = 0; j < plane.sets.length; j++) {
-//         let set = plane.sets[j]
-//         let next = set[0]
-//         let e
-//         let points = []
-//         let line
-//         let mesh 
-//         for (let w = 0; w < set.edges.length; w++) {
-//             e = find_next_edge(next)
-//             // draw edge starting with next
-//             line = new MeshLine()
-//             line.setPoints(points)
-//             mesh = new THREE.Mesh(line, material)
-//             scene.add(mesh)
-//             // reassign next
-//             next = e.v2 
-//         }
-//     }
-// }
-
-const planeRoutings = [
-    {
-        sets: [
-            {
-                edges: [
-                    {
-                        v1: {
-                            x: 5,
-                            y: 0,
-                            z: 5
-                        }, 
-                        v2: {
-                            x: 0,
-                            y: 0,
-                            z: 5
-                        }
-                    }
-                ]
-            }
-        ]
-    },
-    {
-        sets: [
-            {
-                edges: [
-                    {
-                        v1: {
-                            x: -5,
-                            y: 0,
-                            z: 5
-                        }, 
-                        v2: {
-                            x: -5,
-                            y: 0,
-                            z: 0
-                        }
-                    },
-                    {
-                        v1: {
-                            x: -5,
-                            y: 0,
-                            z: 0
-                        }, 
-                        v2: {
-                            x: 0,
-                            y: 0,
-                            z: 0
-                        }
-                    }
-                ]
-            }
-        ]
-    }
-]
-
-
-
-
-
-let routingGroup = new THREE.Group() 
-let currIndex = 0
-let prevIndex = currIndex
-
-function addRoutings() {
-    if (currIndex != prevIndex) {
-        scene.remove(routingGroup)
-        routingGroup = new THREE.Group() 
-        generateRoutings()
-        scene.add(routingGroup)
-        prevIndex = currIndex
-    } else {
-        generateRoutings()
-        scene.add(routingGroup)
-    }
-}
-function generateRoutings() {
-    const plane = planeRoutings[currIndex]
-    
-    for (let j = 0; j < plane.sets.length; j++) {
-        let set = plane.sets[j]
-        let next = set.edges[0].v1
-        let e
-        let line
-        let mesh 
-        for (let w = 0; w < set.edges.length; w++) {
-            e = find_next_edge(set.edges, next)
-            // draw edge starting with next
-            line = new MeshLine()
-            line.setPoints([vectorize(e.v1), vectorize(e.v2)])
-            mesh = new THREE.Mesh(line, material)
-            // mesh.raycast = MeshLineRaycast
-            scaffoldObjects.push(mesh)
-            routingGroup.add(mesh)
-            next = e.v2 
-        }
-    }
-}
-// addRoutings()
-// scaffoldObjects.push(routingGroup)
-// scene.add(routingGroup)
-
-function find_next_edge(edges, start) {
-
-    for (let i = 0; i < edges.length; i++) {
-        const curr = edges[i]
-        if (equalsVector(curr.v1, start)) {
-            return curr
-        } 
-    }
-    return null
-}
-
 function vectorize(vertex) {
     return new THREE.Vector3(vertex.x, vertex.y, vertex.z)
 }
-
-
-
-// const trialPoints = []
-// for (let z = 1; z < 2; z += 0.01) {
-//     trialPoints.push(5-z, 0, -3/z+5)
-
-// }
-
-
-
-// const trialLine = new MeshLine()
-// trialLine.setPoints(trialPoints)
-// const trialMesh = new THREE.Mesh(trialLine, material)
-// scene.add(trialMesh) 
-// const scaff_length = 7249 * 0.34
-// // let poss_arr = []
-// for (let a = 10; a < 240; a += 10) {
-//     for (let b = 10; b < 240; b += 10) {
-//         for (let c = 10; c < 250; c += 10) {
-//             for (let d = 1; d < 10; d++) {
-//                 const res = a * d * 4 + b * d * 4 + c * d * 4 
-//                 if (0 < (scaff_length - res) &&  (scaff_length - res) < 40) {
-//                     console.log("Width: ", a, " Height: ", b, " Depth: ", c, "Segments: ", d, "Looparound: ", scaff_length-res)
-//                 }
-//             }
-//         }
-//     }
-// }
-
-// const line = new MeshLine()
-// line.setPoints([vectorize({x: -15, y: 0, z: 0}), vectorize({x: 15, y: 0, z: 0})])
-// let mesh1 = new THREE.Mesh(line, material)
-// scene.add(mesh1)
 
 const line2 = new MeshLine()
 line2.setPoints([vectorize({x: -5, y: 0, z: 25}), vectorize({x: -5, y: 0, z: 15})], p => 2)
@@ -496,14 +327,6 @@ line26.setPoints([vectorize({x: -5.5, y: 0, z: -5}), vectorize({x: -5.5, y: 0, z
 let mesh26 = new THREE.Mesh(line26, material2)
 scene.add(mesh26)
 
-// const line25 = new MeshLine()
-// line25.setPoints([vectorize({x: -5.5, y: 0, z: -5}), vectorize({x: -10.5, y: 0, z: -5})],  p => 2)
-// let mesh25 = new THREE.Mesh(line25, material2)
-// scene.add(mesh25)
-// const line26 = new MeshLine()
-// line26.setPoints([vectorize({x: -5.5, y: 0, z: -5}), vectorize({x: -5.5, y: 0, z: 0})],  p => 2)
-// let mesh26 = new THREE.Mesh(line26, material2)
-// scene.add(mesh26)
 
 const material3 = new MeshLineMaterial()
 material3.color = new THREE.Color(0x373aa3)
@@ -544,33 +367,10 @@ function onMouseMove(event) {
 }
 let sequenceDivison = []
 const es = createEdgeStrands()
-// console.log(es)
 const mps = createAdjacentEdgeMap()
 const [staples, descriptions] = generateStapleStrands(mps[0], mps[1])
 console.log(staples)
 console.log(descriptions)
-// const staples = bundle[0]
-// const descriptions = generateStapleDescriptions(mps[0], mps[1])
-// console.log(quicktest())
-function quicktest() {
-    const quickmap = doShit()
-    let keys = Object.keys(quickmap)
-    for (let i = 0; i < keys.length; i++){
-        if (quickmap[keys[i]].length != 2) {
-            return "fuck"
-        }
-    } 
-    return "amazing"
-}
-function checkNotContain(arr, e) {
-    // console.log(e)
-    for (let i = 0; i < arr.length; i++) {
-        if (equalsVector(arr[i].v1, e.v1) || equalsVector(arr[i].v1, e.v2) || equalsVector(arr[i].v2, e.v1) || equalsVector(arr[i].v2, e.v2)) {
-            return false
-        }
-    }
-    return true
-}
 
 function createAdjacentEdgeMap() {
     let edgeMap = {}
@@ -620,7 +420,6 @@ function createEdgeStrands() {
     let edges = []
     const edgeLength = Math.floor((dimension / segments) / 0.332)
     let newEdge 
-    let extraBase
     for (let i = 0; i < sets.length ; i++) {
         
         if (i == sets.length - 1) {
@@ -738,18 +537,6 @@ function isStraightLine(v1, v2) {
 }
 
 function isNextOrPrevEdge(i, index, v) {
-    // const e2 = index - 1 < 0 ? es[es.length - 1] : es[index - 1] // previous edge
-    // const e3 = es[(index + 1) % es.length] // next edge
-    let e1 = es[index]
-    // if ((e1.v1.x % segments == 0 && e1.v1.y % segments == 0) ||
-    //     (e1.v1.x % segments == 0 && e1.v1.z % segments == 0) ||
-    //     (e1.v1.y % segments == 0 && e1.v1.z % segments == 0) ||
-    //     (e1.v2.x % segments == 0 && e1.v2.y % segments == 0) ||
-    //     (e1.v2.x % segments == 0 && e1.v2.z % segments == 0) ||
-    //     (e1.v2.y % segments == 0 && e1.v2.z % segments == 0))  {
-    //         if (edgeToString(e1) == "(4 3 0)->(4 3 -1)") console.log("vax")
-    //     return false
-    // }
     if ((v.x % segments == 0 && v.y % segments == 0) ||
     (v.x % segments == 0 && v.z % segments == 0) ||
     (v.y % segments == 0 && v.z % segments == 0))  {
@@ -798,10 +585,8 @@ function generateStapleStrands(edgeMap, stringMap) {
         
         if (isOutgoer) {
             stringBuilder += "Refr-"
-            // console.log("refraction staple for: ", edgeKeys[i], edgeToString(edgeMap[edgeKeys[i]][0]))
         } else {
             stringBuilder += "Refl-"
-            // console.log("refelction staple for: ", edgeKeys[i], edgeToString(edgeMap[edgeKeys[i]][0]))
         }
         
         // check sides
@@ -925,20 +710,6 @@ function findRowAndCol(edge, side) {
                 row = edgeRow 
             }
         }
-        // edgeRow = (segments - Math.abs(edge.v1.z)) 
-        // edgeCol = edge.v1.x 
-
-        // if (edge.next.v1.x > edge.v2.x) {
-        //     col = edgeCol - 1 < 0 ? 0 : edgeCol - 1
-        // } else {
-        //     col = edgeCol
-        // }
-
-        // if (edge.next.v1.z > edge.v2.z) {
-        //     row = edgeRow + 1 > segments ? segments : edgeRow + 1 
-        // } else {
-        //     row = edgeRow
-        // }
     } else if (side == "S5" || side == "S6") {
         edgeRow = segments - Math.abs(edge.v1.y)  + 1
         edgeCol = segments - Math.abs(edge.v1.z) + 1 
@@ -976,19 +747,6 @@ function findRowAndCol(edge, side) {
                 row = edgeRow - 1
             }
         }
-        // edgeRow = (segments - Math.abs(edge.v1.z))
-        // edgeCol = edge.v1.y 
-        // if (edge.next.v1.z > edge.v2.z) {
-        //     col = edgeCol - 1 < 0 ? 0 : edgeCol - 1
-        // } else {
-        //     col = edgeCol
-        // }
-
-        // if (edge.next.v1.y > edge.v2.y) {
-        //     row = edgeRow + 1 > segments ? segments : edgeRow + 1 
-        // } else {
-        //     row = edgeRow
-        // }
     }
 
     return [row, col]

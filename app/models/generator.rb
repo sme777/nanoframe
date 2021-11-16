@@ -6,8 +6,6 @@ require 'date'
 class Generator < ApplicationRecord
   attr_accessor :atom_count
 
-  # attr_accessor :filename
-
   def scaffold(sequence, coordinates)
     @dna = []
     # byebug
@@ -36,12 +34,8 @@ class Generator < ApplicationRecord
     scaff_length = scaff_length.to_i * 0.332
     step_size = step_size.to_i
     loopout_length = loopout_length.to_i
-    # byebug
     seg = 1
     object3Ds = []
-    # min_len ||=  10
-    # max_len ||= 240
-    # scaff_length ||= 7249 * 0.34
     hs = min_len
     ws = min_len
     ds = min_len
@@ -56,7 +50,6 @@ class Generator < ApplicationRecord
             count += 1
             res = hs * seg * 4 + ws * seg * 4 + ds * seg * 4
             if (((scaff_length - res) > 0) && ((scaff_length - res) < loopout_length))
-              # byebug
               object3Ds.push(Object3D.new(hs, ws, ds, seg, (scaff_length - res) / 0.332))
             end
             seg += 1
@@ -67,7 +60,6 @@ class Generator < ApplicationRecord
       end
       hs += step_size
     end
-    # byebug
     object3Ds
   end
 
