@@ -4,5 +4,4 @@
 //= link_tree ../images .svg
 //= link_tree ../stylesheets .css
 //= link_tree ../models .pdb
-//= link_tree ../results .pdb
-//= link_tree ../results .txt
+//= link_tree ../models .oxview
