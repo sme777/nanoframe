@@ -3,7 +3,6 @@ import oc from 'three-orbit-controls'
 import {Line2} from './threejs/Line2'
 import { LineMaterial } from './threejs/LineMaterial'
 import { LineGeometry } from './threejs/LineGeometry'
-import * as GeometryUtils from './threejs/GeometryUtils'
 import { PLYExporter } from './threejs/PLYExporter'
 import * as RoutingSamples from './routingSamples'
 import * as dat from 'dat.gui'
@@ -59,14 +58,11 @@ const colors = []
 
 // will need to replace with another function
 const planeRoutings = segments == 2 ? RoutingSamples.planeRoutings1x1x1 : graph_json["planes"] // RoutingSamples.planeRoutings1x1x1
-let takenEdges = []
-let totalEdges = 0
 let prevVertex
 // let objectEdges = sortPlaneEdges(mergePlaneEdges())
 
 // for sets
 let takenSets = []
-let visitedVertices = []
 let objectSets = sortSets(mergeSets())
 const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
 objectSets = normalize(objectSets)
@@ -81,18 +77,6 @@ function normalize(vectors) {
         vectors[i].y -= 2*segmentLength
     }
     return vectors
-}
-
-function mergePlaneEdges() {
-    let arr = []
-    for (let i = 0; i < planeRoutings.length; i++) {
-        const planeSets = planeRoutings[i].sets
-        for (let j = 0; j < planeSets.length; j++) {
-            arr = arr.concat(planeSets[j].edges)
-            totalEdges += planeSets[j].edges.length
-        }
-    }
-    return arr
 }
 
 function mergeSets() {
@@ -118,9 +102,7 @@ function sortSets(sets) {
     while (sets.length -1 != counter) {
       
         next = findNextSet(sets, lastVertex)
-
         takenSets.push(next)
-        
         edgesAndLastVertex = getEdgesFromSet(next)
         edgeArr = edgeArr.concat(edgesAndLastVertex[0])
         lastVertex = edgesAndLastVertex[1]
@@ -194,132 +176,6 @@ function reverseArray(v) {
 }
 
 
-function sortPlaneEdges(arr) {
-    let next = arr[0]
-    takenEdges.push(next)
-    let sortedArray = [vectorize(next.v1)]
-    let counter = 0
-    let edge
-    while (counter != arr.length - 1) {
-        edge = findNextEdge(arr, next)
-        takenEdges.push(edge)
-        sortedArray.push(vectorize(edge.v1))
-        next = edge
-        counter += 1
-    }
-    return sortedArray
-}
-
-
-// returns next edge based on the end vertex of start edge
-function findNextEdge(edges, prev) {
-    // let edges_copy = JSON.parse(JSON.stringify(edges))
-    for (let i = 0; i < edges.length; i++) {
-        const curr = edges[i]
-        if (equalsVector(curr.v1, prev.v2) && !takenEdge(curr)) {
-            if (!straightPath(curr, prev) && !prematureLoop(curr)) {
-                return curr
-            }
-            
-        } 
-    }
-
-    for (let i = 0; i < edges.length; i++) {
-        const curr = edges[i]
-        if (equalsVector(curr.v2, prev.v2) && !takenEdge(curr)) {
-            if (!straightPath(curr, prev) && !prematureLoop(curr)) {
-                return reverseEdge(curr)
-            } 
-        } 
-    }
-
-    for (let i = 0; i < edges.length; i++) {
-        const curr = edges[i]
-        if (equalsVector(curr.v2, prev.v1) && !takenEdge(curr)) {
-            if (!straightPath(curr, prev) && !prematureLoop(curr)) {
-                return reverseEdge(curr)
-            } 
-        } 
-    }
-
-    for (let i = 0; i < edges.length; i++) {
-        const curr = edges[i]
-        if (equalsVector(curr.v1, prev.v2) && !takenEdge(curr)) {
-            if (!straightPath(curr, prev) && !prematureLoop(curr)) {
-                return curr
-            } 
-        } 
-    }
-    return null
-}
-
-function prematureLoop(edgeToAdd) {
-    
-    if (takenEdges.length == totalEdges) {
-        return false
-    }
-    let startContained = false
-    let endContained = false
-    for (let i = 0; i < takenEdges.length; i++) {
-        if (equalsVector(edgeToAdd.v1, takenEdges[i].v1) || equalsVector(edgeToAdd.v1, takenEdges[i].v2)) {
-            startContained = true
-        }
-        if (equalsVector(edgeToAdd.v2, takenEdges[i].v1) || equalsVector(edgeToAdd.v2, takenEdges[i].v2)) {
-            endContained = true
-        }
-    }
-    return startContained && endContained
-}
-
-function reverseEdge(edge) {
-    const v1 = {
-        x: edge.v2.x,
-        y: edge.v2.y,
-        z: edge.v2.z
-    }
-    const v2 = {
-        x: edge.v1.x,
-        y: edge.v1.y,
-        z: edge.v1.z
-    }
-
-    return {v1: v1, v2: v2}
-
-}
-
-function takenEdge(edge) {
-    for (let i = 0; i < takenEdges.length; i++) {
-        let edge2Compare = takenEdges[i]
-        if ((edge2Compare.v1 == edge.v1 && edge2Compare.v2 == edge.v2) || (edge2Compare.v2 == edge.v1 && edge2Compare.v1 == edge.v2)) {
-            return true
-        } 
-    }
-    return false
-}
-
-function straightPath(curr, prev) {
-    const currVertices = [curr.v1, curr.v2]
-    const prevVertices = [prev.v1, prev.v2]
-    for (let i = 0; i < 2; i++) {
-        for (let j = 0; j < 2; j++) {
-            if (isStraighPath(currVertices[i], prevVertices[j])) {
-                return true
-            }
-        }
-    }
-    return false
-}
-
-function isStraighPath(v1, v2) {
-    let xDiff = Math.abs(v1.x - v2.x)
-    let yDiff = Math.abs(v1.y - v2.y)
-    let zDiff = Math.abs(v1.z - v2.z) 
-    return (xDiff == dimensions) && (yDiff == 0) && (zDiff == 0)
-    || (xDiff == 0) && (yDiff == dimensions) && (zDiff == 0)
-    || (xDiff == 0) && (yDiff == 0) && (zDiff == dimensions)
-
-}
-
 function equalsVector(v1, v2) {
     if (v1 == undefined || v2 == undefined) return false
     return (v1.x == v2.x && v1.y == v2.y && v1.z == v2.z)
@@ -375,15 +231,6 @@ line.computeLineDistances()
 line.scale.set( 1, 1, 1 )
 scene.add( line )
 
-// exporter
-const exporter = new PLYExporter()
-const data = exporter.parse(line)
-document.getElementById("ply-value").value = data
-
-// middle coordinates
-// let pos = new THREE.Vector3()
-// geometry.boundingBox.getCenter(pos)
-// camera.position.set(pos.x*2 , pos.y*2, pos.z*2)
 const geo = new THREE.BufferGeometry()
 geo.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) )
 geo.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) )

@@ -22,7 +22,7 @@ class GeneratorsController < ApplicationController
     @generator.scaffold(sequence, coordinates)
     # @generator.route
     # @generator.feedback_control(coordinates)
-    session[:filename] = @generator.pdb
+    session[:filename] = @generator.filename(logged_in?)
     render :synthesize
   end
 
@@ -86,7 +86,7 @@ class GeneratorsController < ApplicationController
     sequence = json_obj['sequence']
     coordinates = json_obj['positions']
     @generator.scaffold(sequence, coordinates)
-    filename = @generator.oxdna
+    filename = @generator.oxdna(session[:filename])
     file = File.open('app/assets/results/' + filename + '.oxview')
     contents = file.read
     file.close

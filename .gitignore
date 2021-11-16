@@ -29,6 +29,9 @@
 /config/master.key
 /config/credentials.yml.enc
 
+# Ignore local results in assets
+/app/assets/results
+
 /public/packs
 /public/packs-test
 /node_modules

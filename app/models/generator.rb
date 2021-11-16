@@ -92,68 +92,6 @@ class Generator < ApplicationRecord
     filename
   end
 
-  def feedback_control(_coordinates)
-    shape_coordinates = silhouette
-  end
-
-  def silhouette
-    coordinates = []
-    # if @shape == "1"
-    #     coordinates = cube_silhouette
-    # byebug
-    case shape
-
-    when '1'
-      cube_silhouette
-    when '2'
-      sphere_silhoutte
-    when '3'
-      cylinder_silhoutte
-    when '4'
-      cone_silhoutte
-    when '5'
-      polyhedron_silhoutte
-    when '6'
-      tetrahedron_silhoutte
-    when '7'
-      octahedron_silhoutte
-    when '8'
-      icosahedron_silhoutte
-    when '9'
-      dodecahedron_silhoutte
-    when '10'
-      torus_silhoutte
-    when '11'
-      torus_knot_silhoutte
-    else
-      custom_silhoutte
-    end
-  end
-
-  def cube_silhouette; end
-
-  def sphere_silhoutte; end
-
-  def cylinder_silhoutte; end
-
-  def cone_silhoutte; end
-
-  def polyhedron_silhoutte; end
-
-  def tetrahedron_silhoutte; end
-
-  def octahedron_silhoutte; end
-
-  def icosahedron_silhoutte; end
-
-  def dodecahedron_silhoutte; end
-
-  def torus_silhoutte; end
-
-  def torus_knot_silhoutte; end
-
-  def custom_silhoutte; end
-
   def to_json
     @graph.to_json
   end
@@ -178,8 +116,17 @@ class Generator < ApplicationRecord
     [start] + arr
   end
   
-  def pdb
-    filename = __id__.to_s
+  def filename(logged)
+    if logged
+      curr_user = User.find(session[:user_id])
+      filename = "#{curr_user.username}_#{__id__.to_s}"
+    else
+      filename = "guest_#{__id__.to_s}"
+    end
+    filename
+  end
+
+  def pdb(filename)
     file = File.open('app/assets/results/' + filename + '.pdb', 'w')
     count = 1
     base_count = 1
@@ -247,7 +194,7 @@ class Generator < ApplicationRecord
     filename
   end
 
-  def oxdna
+  def oxdna(filename)
     # byebug
     filename = __id__.to_s
     file = File.open('app/assets/results/' + filename + '.oxview', 'w')
