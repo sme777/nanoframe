@@ -16,8 +16,8 @@ class Graph
             @template_planes = find_four_planes
         end
         
-        # @planes = @template_planes
-        @planes = find_plane_combination(@template_planes) 
+        # @planes = @template_planes 
+        (@planes, @raw_planes) = find_plane_combination(@template_planes) 
     end
 
     def create_vertices_and_edges
@@ -565,6 +565,16 @@ class Graph
         end
         arr
     end
+
+    def reverse_transform_arr(arr)
+        new_arr = [arr[0]]
+        i = 1
+        while i < arr.length
+            new_arr[i] = reverse_deep_clone_and_transform_plane(arr[i], i - 1)
+            i += 1
+        end
+        new_arr
+    end
     #top - swap y and z and set y = dimension 
     #bottom - swap y and z and set y = 0
     #right - swap x and z and set x = dimension
@@ -618,6 +628,70 @@ class Graph
         res
     end
 
+    def reverse_deep_clone_and_transform_plane(obj, num)
+        res = []
+        edges_covered = []
+        obj.each do |set|
+            v_arr = []
+            set.v.each do |v|
+                case num
+                when 0
+                    recover_x = v.x
+                    recover_y = v.y
+                    recover_z = v.z + @segments
+                    v_arr.append(Vertex.new(recover_x, recover_y, recover_z))
+                when 1
+                    recover_x = v.x
+                    recover_y = -v.z
+                    recover_z = v.y - @segments
+                    v_arr.append(Vertex.new(recover_x, recover_y, recover_z))
+                when 2
+                    recover_x = v.x
+                    recover_y = -v.z
+                    recover_z = v.y
+                    v_arr.append(Vertex.new(recover_x, recover_y, recover_z))
+                when 3
+                    recover_x = -v.z
+                    recover_y = v.y
+                    recover_z = v.x - @segments
+                    v_arr.append(Vertex.new(recover_x, recover_y, recover_z))
+                else 
+                    recover_x = -v.z
+                    recover_y = v.y
+                    recover_z = v.x
+                    v_arr.append(Vertex.new(recover_x, recover_y, recover_z))
+                end
+            end
+            new_set = Set.new(v_arr.first)
+            new_set.add_node(v_arr.last)
+            
+            
+            set.e.each do |e|
+                case num
+                when 0
+                    v1 = Vertex.new(e.v1.x, e.v1.y, e.v1.z + @segments)
+                    v2 = Vertex.new(e.v2.x, e.v2.y, e.v2.z + @segments)
+                when 1
+                    v1 = Vertex.new(e.v1.x, -e.v1.z, e.v1.y - @segments)
+                    v2 = Vertex.new(e.v2.x, -e.v2.z, e.v2.y - @segments)
+                when 2
+                    v1 = Vertex.new(e.v1.x, -e.v1.z, e.v1.y)
+                    v2 = Vertex.new(e.v2.x, -e.v2.z, e.v2.y)
+                when 3
+                    v1 = Vertex.new(-e.v1.z, e.v1.y, e.v1.x - @segments)
+                    v2 = Vertex.new(-e.v2.z, e.v2.y, e.v2.x - @segments)
+                else
+                    v1 = Vertex.new(-e.v1.z, e.v1.y, e.v1.x)
+                    v2 = Vertex.new(-e.v2.z, e.v2.y, e.v2.x)
+                end
+                new_edge = Edge.new(v1, v2)
+                new_set.add_edge(new_edge)        
+            end
+            res.append(new_set)
+        end
+        res
+    end
+
     def plane_rotations(plane)
         [rotate(plane, 1), rotate(plane, 2), rotate(plane, 3)]
     end
@@ -656,7 +730,9 @@ class Graph
             
             if has_one_loop(arr)
                 found = true
-                return arr
+                # byebug
+                reverse_arr = reverse_transform_arr(arr)
+                return [arr, reverse_arr]
             end
             i += 1
         end
@@ -767,6 +843,21 @@ class Graph
         end
 
         hash = {"segments": @segments, "scaffold_length": 7249, "planes": plane_arr}
+
+        JSON.generate(hash)
+    end
+
+    def raw_to_json
+        if @raw_planes == nil 
+            return nil
+        end
+        raw_plane_arr = []        
+        @raw_planes.each do |plane|
+            p = Plane.new(plane)
+            raw_plane_arr.append(p.to_hash)
+        end
+
+        hash = {"segments": @segments, "scaffold_length": 7249, "planes": raw_plane_arr}
 
         JSON.generate(hash)
     end

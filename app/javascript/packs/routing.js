@@ -9,19 +9,15 @@ const context = Object.freeze({
     planeMode: Symbol("plane"),
     objectMode: Symbol("object"),
 })
-
-const graph = JSON.parse(document.getElementById("generator-container").value)
+const rawGraph = JSON.parse(document.getElementById("raw-graph-container").value) 
+const graph = JSON.parse(document.getElementById("graph-container").value)
 const sets = JSON.parse(document.getElementById("sets-container").value)
 const scaffoldSequence = document.getElementById("scaffold-container").value
-const segments = 5
-console.log(graph)
+const segments = graph["segments"]
 const dimension = 50 // setup from user choice
-
 const cubeGroup = RoutingHelpers.makeCubeGroup(dimension, segments)
 let planes = RoutingHelpers.makePlanes(dimension, segments)
-
 const planeNeighbors = RoutingHelpers.planeNeighbors(planes)
-
 
 let current = "front"
 let switchContext = context.planeMode
@@ -35,7 +31,8 @@ let canvasContainerHeight = canvasContainer.offsetHeight
 
 const scene = new THREE.Scene()
 let camera = new THREE.PerspectiveCamera(70, canvasContainerWidth / canvasContainerHeight, 0.01, 8000)
-camera.position.y = 40
+let initialCameraHeightPosition = 40
+camera.position.y = initialCameraHeightPosition
 // camera.position.z = 25
 const light = new THREE.DirectionalLight(0xffffff, 0.8)
 light.position.set(0, 0, 0)
@@ -81,13 +78,13 @@ const viewParams = {
     switchView: () => {
         if (switchContext == context.objectMode) {
         
-            controls.enableRotate = false
             cubeGroup.position.z = 2000
             currPlane.position.set(0, 0, 0)
             camera = prevCamera
             controls = new OrbitControls(camera, renderer.domElement)
+            // controls.enableRotate = false
             switchContext = context.planeMode
-            camera.position.y = 25
+            camera.position.y = initialCameraHeightPosition
             scene.add(camera2)    
             
         } else {
@@ -191,7 +188,8 @@ let controls = new OrbitControls(camera, renderer.domElement)
 if (switchContext == context.planeMode) {
     controls.enableRotate = false
 }
-let currPlane = planes[0] 
+let currIndex = 0
+let currPlane = planes[currIndex] 
 cubeGroup.position.z = 2000
 scene.add(cubeGroup)
 scene.add(currPlane)
@@ -211,137 +209,111 @@ function vectorize(vertex) {
     return new THREE.Vector3(vertex.x, vertex.y, vertex.z)
 }
 
-const line2 = new MeshLine()
-line2.setPoints([vectorize({x: -5, y: 0, z: 25}), vectorize({x: -5, y: 0, z: 15})], p => 2)
-let mesh2 = new THREE.Mesh(line2, material)
-// line2.lineWidth = 10
-scene.add(mesh2)
-const line3 = new MeshLine()
-line3.setPoints([vectorize({x: -5, y: 0, z: 15}), vectorize({x: 5, y: 0, z: 15})],  p => 2)
-let mesh3 = new THREE.Mesh(line3, material)
-scene.add(mesh3)
-const line4 = new MeshLine()
-line4.setPoints([vectorize({x: 5, y: 0, z: 15}), vectorize({x: 5, y: 0, z: 5})],  p => 2)
-let mesh4 = new THREE.Mesh(line4, material)
-scene.add(mesh4)
-const line5 = new MeshLine()
-line5.setPoints([vectorize({x: 5, y: 0, z: 5}), vectorize({x: -5, y: 0, z: 5})],  p => 2)
-let mesh5 = new THREE.Mesh(line5, material)
-scene.add(mesh5)
-const line6 = new MeshLine()
-line6.setPoints([vectorize({x: -5, y: 0, z: 5}), vectorize({x: -5, y: 0, z: -5})],  p => 2)
-let mesh6 = new THREE.Mesh(line6, material)
-scene.add(mesh6)
-const line7 = new MeshLine()
-line7.setPoints([vectorize({x: -5, y: 0, z: -5}), vectorize({x: 5, y: 0, z: -5})],  p => 2)
-let mesh7 = new THREE.Mesh(line7, material)
-scene.add(mesh7)
-const line8 = new MeshLine()
-line8.setPoints([vectorize({x: 5, y: 0, z: -5}), vectorize({x: 5, y: 0, z: -15})],  p => 2)
-let mesh8 = new THREE.Mesh(line8, material)
-scene.add(mesh8)
-const line9 = new MeshLine()
-line9.setPoints([vectorize({x: 5, y: 0, z: -15}), vectorize({x: 15, y: 0, z: -15})],  p => 2)
-let mesh9 = new THREE.Mesh(line9, material)
-scene.add(mesh9)
-const line10 = new MeshLine()
-line10.setPoints([vectorize({x: 15, y: 0, z: -15}), vectorize({x: 15, y: 0, z: -25})],  p => 2)
-let mesh10 = new THREE.Mesh(line10, material)
-scene.add(mesh10)
+function amplify(vertex, volume=dimension/segments) {
+    vertex.x *= volume
+    vertex.x += -dimension/2 
+    vertex.y *= volume
+    vertex.z *= volume
+    vertex.z += dimension/2 
+    return vertex
+}
 
-// staples
-const material2 = new MeshLineMaterial()
-material2.color = new THREE.Color(0xff4588)
-material2.lineWidth = 0.2
+function transform(vertex) {
+    let temp = vertex.y 
+    vertex.y = vertex.z
+    vertex.z = -temp
+    return vertex
+}
 
-const line11 = new MeshLine()
-line11.setPoints([vectorize({x: 15.5, y: 0, z: -15}), vectorize({x: 15.5, y: 0, z: -20})],  p => 2)
-let mesh11 = new THREE.Mesh(line11, material2)
-scene.add(mesh11)
-const line12 = new MeshLine()
-line12.setPoints([vectorize({x: 15.5, y: 0, z: -15}), vectorize({x: 20.5, y: 0, z: -15})],  p => 2)
-let mesh12 = new THREE.Mesh(line12, material2)
-scene.add(mesh12)
+function findArrowVectors(vertex) {
+    const first = new THREE.Vector3(vertex.x + 1, vertex.y, vertex.z)
+    const second = new THREE.Vector3(vertex.x - 1, vertex.y, vertex.z)
+    const third = new THREE.Vector3(vertex.x, vertex.y, vertex.z + 1)
+    return [first, second, third]
+}
 
+// start adding mesh lines for scaffold
+function generatePlaneScaffoldRouting(index) {
+    const planeSets = JSON.parse(JSON.stringify(rawGraph.planes[index].sets))
+    let red
+    let green
+    let blue
+    const greenStepSize = Math.floor(155 / planeSets.length)
+    let setGroups = []
+    for (let i = 0; i < planeSets.length; i++){ 
+        red = Math.floor(Math.random() * 60)
+        green = 100 + i * greenStepSize 
+        blue = Math.floor(Math.random() * 60)
+        // setColors.push([red, green, blue])
+        let setEdges = planeSets[i].edges
+        let setMaterial = new MeshLineMaterial()
+        setMaterial.color = new THREE.Color("rgb(" + red + ", " + green + ", " + blue +")")
+        // setMaterial.color = new THREE.Color(0x29f4a2)
+        setMaterial.lineWidth = 0.5
+        let setEdgesGroup = new THREE.Group()
+        let lineMesh
+        // let endTriangle
+        let startSquare
+        for (let j = 0; j < setEdges.length; j++) {
+            let line = new MeshLine()
+            let start = amplify(transform(setEdges[j].v1))
+            let end = amplify(transform(setEdges[j].v2))
+            // let end2 = vectorize({x: })
+            line.setPoints([vectorize(start), vectorize(end)])
+            lineMesh = new THREE.Mesh(line, setMaterial)
+            if (j == 0) {
 
-const line13 = new MeshLine()
-line13.setPoints([vectorize({x: 4.5, y: 0, z: -15}), vectorize({x: 4.5, y: 0, z: -20})],  p => 2)
-let mesh13 = new THREE.Mesh(line13, material2)
-scene.add(mesh13)
-const line14 = new MeshLine()
-line14.setPoints([vectorize({x: 4.5, y: 0, z: -15}), vectorize({x: -0.5, y: 0, z: -15})],  p => 2)
-let mesh14 = new THREE.Mesh(line14, material2)
-scene.add(mesh14)
+            }
 
+            if (j == setEdges.length - 1) {
+                // let [v1, v2, v3] = findArrowVectors(end)
+                
+                // // let endTriangle = new THREE.Triangle(v1, v2, v3)
+                // // let endTriangleMaterial = new THREE.MeshBasicMaterial( {color: 0xff0000} )
+                // // let arrowMesh = new THREE.Mesh(endTriangle, endTriangleMaterial)
+                // // scene.add(arrowMesh)
 
-const line15 = new MeshLine()
-line15.setPoints([vectorize({x: 5.5, y: 0, z: 0}), vectorize({x: 5.5, y: 0, z: -5})],  p => 2)
-let mesh15 = new THREE.Mesh(line15, material2)
-scene.add(mesh15)
-const line16 = new MeshLine()
-line16.setPoints([vectorize({x: 5.5, y: 0, z: -5}), vectorize({x: 10.5, y: 0, z: -5})],  p => 2)
-let mesh16 = new THREE.Mesh(line16, material2)
-scene.add(mesh16)
+                // var geometry = new THREE.Geometry();
+                // geometry.vertices.push(v1);
+                // geometry.vertices.push(v2);
+                // geometry.vertices.push(v3);
+                // geometry.vertices.push(v1);
+                
+                // var liner = new THREE.Line(
+                //   geometry,
+                //   new THREE.LineBasicMaterial({ color: 0x00ff00 })
+                // );
+                let arrowGeo = new THREE.TetrahedronGeometry(1.0, 0.0)
+                let endTriangleMaterial = new THREE.MeshBasicMaterial( {color: 0xff0000} )
+                let arrowMesh = new THREE.LineSegments(arrowGeo, setMaterial)
+                
+                scene.add(arrowMesh)
+                arrowMesh.position.set(end.x, end.y+1, end.z);
+                // console.log(endTriangle)
+                // scene.add(endTriangle)
+                // let arrowHelper = new THREE.ArrowHelper( end, end, 1, 0xff0000 );
+                // scene.add( arrowHelper );
+            }
+            setEdgesGroup.add(lineMesh)
+        }
+        setGroups.push(setEdgesGroup)
+    }
+    let planeRoutes = new THREE.Group()
+    for (let i = 0; i < setGroups.length; i++) {
+        planeRoutes.add(setGroups[i])
+    }
+    return planeRoutes
+}
+// console.log(graph.planes[3])
+// console.log(rawGraph.planes[3])
 
-const line17 = new MeshLine()
-line17.setPoints([vectorize({x: 5.5, y: 0, z: 5}), vectorize({x: 5.5, y: 0, z: 0})],  p => 2)
-let mesh17 = new THREE.Mesh(line17, material2)
-scene.add(mesh17)
-const line18 = new MeshLine()
-line18.setPoints([vectorize({x: 5.5, y: 0, z: 5}), vectorize({x: 10.5, y: 0, z: 5})],  p => 2)
-let mesh18 = new THREE.Mesh(line18, material2)
-scene.add(mesh18)
+// console.log(rawGraph.planes[4])
+// console.log(graph.planes[4])
 
-
-const line19 = new MeshLine()
-line19.setPoints([vectorize({x: 5.5, y: 0, z: 20}), vectorize({x: 5.5, y: 0, z: 15})],  p => 2)
-let mesh19 = new THREE.Mesh(line19, material2)
-scene.add(mesh19)
-const line20 = new MeshLine()
-line20.setPoints([vectorize({x: 5.5, y: 0, z: 15}), vectorize({x: 10.5, y: 0, z: 15})],  p => 2)
-let mesh20 = new THREE.Mesh(line20, material2)
-scene.add(mesh20)
-
-const line21 = new MeshLine()
-line21.setPoints([vectorize({x: -5.5, y: 0, z: 15}), vectorize({x: -10.5, y: 0, z: 15})],  p => 2)
-let mesh21 = new THREE.Mesh(line21, material2)
-scene.add(mesh21)
-const line22 = new MeshLine()
-line22.setPoints([vectorize({x: -5.5, y: 0, z: 15}), vectorize({x: -5.5, y: 0, z: 20})],  p => 2)
-let mesh22 = new THREE.Mesh(line22, material2)
-scene.add(mesh22)
-
-const line23 = new MeshLine()
-line23.setPoints([vectorize({x: -5.5, y: 0, z: 5}), vectorize({x: -10.5, y: 0, z: 5})],  p => 2)
-let mesh23 = new THREE.Mesh(line23, material2)
-scene.add(mesh23)
-const line24 = new MeshLine()
-line24.setPoints([vectorize({x: -5.5, y: 0, z: 5}), vectorize({x: -5.5, y: 0, z: 0})],  p => 2)
-let mesh24 = new THREE.Mesh(line24, material2)
-scene.add(mesh24)
-
-const line25 = new MeshLine()
-line25.setPoints([vectorize({x: -5.5, y: 0, z: -5}), vectorize({x: -10.5, y: 0, z: -5})],  p => 2)
-let mesh25 = new THREE.Mesh(line25, material2)
-scene.add(mesh25)
-const line26 = new MeshLine()
-line26.setPoints([vectorize({x: -5.5, y: 0, z: -5}), vectorize({x: -5.5, y: 0, z: 0})],  p => 2)
-let mesh26 = new THREE.Mesh(line26, material2)
-scene.add(mesh26)
-
-
-const material3 = new MeshLineMaterial()
-material3.color = new THREE.Color(0x373aa3)
-material3.lineWidth = 0.2
-
-const line27 = new MeshLine()
-line27.setPoints([vectorize({x: -5.5, y: 0, z: 20}), vectorize({x: -5.5, y: 0, z: 25})],  p => 2)
-let mesh27 = new THREE.Mesh(line27, material3)
-scene.add(mesh27)
-const line28 = new MeshLine()
-line28.setPoints([vectorize({x: 15.5, y: 0, z: -20}), vectorize({x: 15.5, y: 0, z: -25})],  p => 2)
-let mesh28 = new THREE.Mesh(line28, material3)
-scene.add(mesh28)
+let planeRoutes = generatePlaneScaffoldRouting(currIndex)
+scene.add(planeRoutes)
+// scene.add(generatePlaneScaffoldRouting(currIndex + 1))
+// scene.add(generatePlaneScaffoldRouting(currIndex+ 2))
 
 function equalsVector(v1, v2) {
     return (v1.x == v2.x && v1.y == v2.y && v1.z == v2.z)
@@ -371,8 +343,8 @@ let sequenceDivison = []
 const es = createEdgeStrands()
 const mps = createAdjacentEdgeMap()
 const [staples, descriptions] = generateStapleStrands(mps[0], mps[1])
-console.log(staples)
-console.log(descriptions)
+// console.log(staples)
+// console.log(descriptions)
 
 function createAdjacentEdgeMap() {
     let edgeMap = {}
@@ -473,8 +445,8 @@ function findExtraBase(front, back) {
     return null
 }
 
-console.log(sets)
-console.log(sequenceDivison)
+// console.log(sets)
+// console.log(sequenceDivison)
 
 function createAdjacentEdgeMap2() {
     let edgeMap = {}
@@ -866,48 +838,65 @@ requestAnimationFrame(render)
 renderer.render(scene, camera)
 
 // DOM modifiers
+/*
+    Plane Numbers
+    Front -> 0
+    Back -> 1
+    Top -> 2
+    Bottom -> 3
+    Left -> 4
+    Right -> 5
+*/
 document.getElementById("up-key-button").addEventListener("click", () => {
-    scene.remove(currPlane)
+    scene.remove(planeRoutes)
     const res = planeNeighbors[current]["up"]
     current = res[0]
-    currPlane = res[1]
+    // currPlane = res[1]
     currIndex = res[2]
+    planeRoutes = generatePlaneScaffoldRouting(currIndex)
+    scene.add(planeRoutes)
     // addRoutings()
-    scene.add(currPlane)
+    // scene.add(currPlane)
 })
 
 
 document.getElementById("down-key-button").addEventListener("click", () => {
     console.log("down")
-    scene.remove(currPlane)
+    scene.remove(planeRoutes)
     const res = planeNeighbors[current]["down"]
     current = res[0]
-    currPlane = res[1]
+    // currPlane = res[1]
     currIndex = res[2]
     // addRoutings()
-    scene.add(currPlane)
+    planeRoutes = generatePlaneScaffoldRouting(currIndex)
+    scene.add(planeRoutes)
+    // scene.add(currPlane)
 })
 
 
 document.getElementById("right-key-button").addEventListener("click", () => {
-    scene.remove(currPlane)
+    scene.remove(planeRoutes)
     const res = planeNeighbors[current]["right"]
     current = res[0]
-    currPlane = res[1]
+    // currPlane = res[1]
     currIndex = res[2]
+    planeRoutes = generatePlaneScaffoldRouting(currIndex)
+    scene.add(planeRoutes)
     // addRoutings()
-    scene.add(currPlane)
+    // scene.add(currPlane)
 })
 
 
 document.getElementById("left-key-button").addEventListener("click", () => {
-    scene.remove(currPlane)
+    scene.remove(planeRoutes)
     const res = planeNeighbors[current]["left"]
     current = res[0]
-    currPlane = res[1]
+    // currPlane = res[1]
     currIndex = res[2]
+    planeRoutes = generatePlaneScaffoldRouting(currIndex)
+    scene.add(planeRoutes)
     // addRoutings()
-    scene.add(currPlane)
+    // scene.add(currPlane)
 })
 
 let t = "";

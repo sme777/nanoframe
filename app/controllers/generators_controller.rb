@@ -28,7 +28,8 @@ class GeneratorsController < ApplicationController
 
   def routing
     generator = Generator.find(generator_id)
-    @graph_json = generator.routing 
+    @graph_json = generator.routing
+    @raw_graph_json = generator.raw_routing 
     @vertices = params[:vertices] || Generator.find(generator_id).vertices
     if generator.vertices.nil?
       generator.update(vertices: @vertices)
@@ -42,14 +43,19 @@ class GeneratorsController < ApplicationController
 
   def visualize
     if params[:regenerate] 
-      @graph_json = @generator.route
-      Generator.find(@generator.id).update(routing: @graph_json.to_json)
+      @graph = @generator.route
+      @graph_json = @graph.to_json
+      @raw_graph_json = @graph.raw_to_json
+      Generator.find(@generator.id).update(routing: @graph_json, raw_routing: @graph.raw_to_json)
       redirect_to "/nanobot/#{@generator.id}/visualize"
     elsif @generator.routing.nil?
-      @graph_json = @generator.route
-      Generator.find(@generator.id).update(routing: @graph_json.to_json)
+      @graph = @generator.route
+      @graph_json = @graph.to_json
+      @raw_graph_json = @graph.raw_to_json
+      Generator.find(@generator.id).update(routing: @graph_json, raw_routing: @graph.raw_to_json)
     else
       @graph_json = @generator.routing
+      @raw_graph_json = @generator.raw_routing
     end 
   end
 
