@@ -26,6 +26,8 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
     </script>
+    <script src="https://kit.fontawesome.com/5a425d24f2.js" crossorigin="anonymous"></script>
+
     <%= stylesheet_link_tag 'application', media: 'all' %>
 </head>
 
@@ -48,7 +50,7 @@
     <div class="row outer-menu-container">
         <div class="col-md-6">
             <div class="back-container">
-                <a class="generator-arrow backbtn" href="/nanobot/<%= @generator.id%>/synthesize">&larr; Synthesize</a>
+                <a class="generator-arrow backbtn btn btn-link" href="/nanobot/<%= @generator.id%>/synthesize">&larr; Synthesize</a>
             </div>
         </div>
     </div>
@@ -97,10 +99,33 @@
                         placeholder="Password" name="user[password]">
                 </div>
                 <div class="sign-up-btn-container">
-                    <button id="signUpSubmit" class="btn btn-dark w-50" type="submit">Sign Up</button>
+                    <button id="signUpSubmit" class="btn btn-lg btn-dark w-50" type="submit">Sign Up</button>
                 </div>
-
             </form>
+                            <div class="guest-form">
+                  <div class="guest-from-label">
+                    <div class="separator">or</div>
+                  </div>
+                 
+                </div>
+                
+            <%= form_tag "auth/google_oauth2", method: :post, id: "google-auth-form" do %>
+                <div class="github-sign-in-container">
+                <a id="google-button" class="btn btn-lg btn-block btn-social btn-google w-50 text-align-center-compile">
+                    <i class="fa fa-google"></i> Sign in with Google
+                </a>
+                </div>
+                <%= submit_tag "", class: "invisible", id: "google-sign-in"%>
+                <% end %>
+
+                <%= form_tag "auth/facebook", method: :post, id: "facebook-auth-form" do %>
+                <div class="github-sign-in-container">
+                <a id="github-button" class="btn btn-lg btn-block btn-social btn-facebook w-50  text-align-center-compile">
+                    <i class="fa fa-facebook"></i> Sign in with Facebook
+                </a>
+                </div>
+                <%= submit_tag "", class: "invisible", id: "github-sign-in" %>
+            <% end %>
         </div>
     </div>
 

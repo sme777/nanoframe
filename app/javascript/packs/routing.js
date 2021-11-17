@@ -342,9 +342,13 @@ function onMouseMove(event) {
 let sequenceDivison = []
 const es = createEdgeStrands()
 const mps = createAdjacentEdgeMap()
-const [staples, descriptions] = generateStapleStrands(mps[0], mps[1])
+const [staples, descriptions, positions] = generateStapleStrands(mps[0], mps[1])
 // console.log(staples)
 // console.log(descriptions)
+
+function generatePlaneStapleRouting(currIndex, positions) {
+    
+}
 
 function createAdjacentEdgeMap() {
     let edgeMap = {}
@@ -533,11 +537,12 @@ function generateStapleStrands(edgeMap, stringMap) {
     let side
     let descriptions = []
     let descriptionMap = {}
-
+    let positions = []
     for (let i = 0; i < edgeKeys.length; i++) {
         stringBuilder = ""
         key = edgeKeys[i]
-        neighbors = edgeMap[edgeKeys[i]]
+        let curr = stringMap[key]
+        neighbors = edgeMap[edgeKeys[i]][0]
         if (i == edgeKeys.length - 1) {
             // console.log(stringMap[key].sequence.length)
             back = stringMap[key].sequence.slice(15)
@@ -547,14 +552,34 @@ function generateStapleStrands(edgeMap, stringMap) {
         if (i == edgeKeys.length - 1) {
             mergeBack = translate(back) + translate(stringMap[edgeKeys[0]].front)
         } else {
-            let extraBases = findExtraBase(back, neighbors[0].front)
+            let extraBases = findExtraBase(back, neighbors.front)
             // console.log(stringMap)
             isOutgoer = isOutgoerEdge(stringMap[edgeKeys[i]].v2)
             if (isOutgoer) {
-                extraBases += findExtraBase(back, neighbors[0].front)
+                extraBases += findExtraBase(back, neighbors.front)
             }
-            mergeBack = translate(back) + extraBases + translate(neighbors[0].front)
+            mergeBack = translate(back) + extraBases + translate(neighbors.front)
         }
+
+        // check the direction of flow
+        let first
+        let last 
+        if (curr.start.x - curr.end.x != 0) {
+            first = {x : (curr.end.x - curr.start.x) / 2, y: curr.start.y, z: curr.start.z}
+        } else if (curr.start.y -curr.end.y != 0) {
+            first = {x : curr.start.x, y: (curr.end.y - curr.start.y) / 2, z: curr.start.z}
+        } else {
+            first = {x : curr.start.x, y: curr.start.y, z: (curr.end.z - curr.start.z) / 2}
+        }
+
+        if (curr.end.x - neighbors.end.x != 0) {
+            last = {x : (curr.end.x - neighbors.end.x) / 2, y: curr.end.y, z: curr.end.z}
+        } else if (curr.end.y - neighbors.end.y != 0) {
+            last = {x : curr.end.x, y: (curr.end.y - neighbors.end.y) / 2, z: curr.end.z}
+        } else {
+            last = {x : curr.end.x, y: curr.end.y, z: (curr.end.z - neighbors.end.z) / 2}
+        }
+        positions.push([first, stringMap[key].end, last])
 
         
         if (isOutgoer) {
@@ -601,7 +626,7 @@ function generateStapleStrands(edgeMap, stringMap) {
         descriptions.push(stringBuilder)
         staples.push(mergeBack)
     }
-    return [staples, descriptions]
+    return [staples, descriptions, positions]
 }
 
 function findRowAndCol(edge, side) {
