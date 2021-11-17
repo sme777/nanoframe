@@ -84,6 +84,31 @@ class GeneratorsController < ApplicationController
     send_data contents, filename: filename + '.csv'
   end
 
+  # def check_shape_params
+  #   shape = params[:shape]
+  #   if shape == "cube"
+  #     height = params[:height].to_i
+  #     width = params[:width].to_i
+  #     depth = params[:depth].to_i
+  #     segments = params[:segments].to_i
+  #     scaffold_length = params[:scaffold_length].to_i
+  #     used = width * segments * 4 + height * segments * 4 + depth * segments * 4
+  #     if scaffold_length - used < 0
+  #       flash[:danger] = "Specified dimensions are greater than scaffold length!"
+  #     elsif scaffold_length - used > 200
+  #       flash[:warning] = "The Loopout length is over 200 bp ( #{scaffold_length - used})."
+  #     end
+  #   end
+  #   render 'index'
+  # end
+      # // if (scaffold_length - used < 0) {
+      #   //   $(".message-container").html('<div class="alert alert-danger alert-dismissible fade show" role="alert"><button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>')
+      #   // } else if (scaffold_length - used > 200) {
+      #   //   $(".message-container").html('<div class="alert alert-warning alert-dismissible fade show" role="alert">The Loopout length is over 200 bp (' + (scaffold_length - used).toString() + '). <a id="continue_anchor">Continue?</a> See <a href="nanobot/generator">generator page</a> for iteractive examples. <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>')
+      #   // } else {
+      #   //   $(".synthesize-form").submit()
+      #   // }
+
   def download_pdb
     
     file = File.open('app/assets/results/' + session[:filename] + '.pdb')

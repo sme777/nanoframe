@@ -25,9 +25,11 @@ Rails.application.routes.draw do
   get '/nanobot/:id/compile' => 'generators#compile'
   post '/nanobot/:id/compile' => 'generators#signup_and_save'
   get '/contact/new' => 'users#get_contact'
+ 
+  # ajax requests
   get '/checkemail' => 'users#check_email', :defaults => { format: :json }
   get '/checkusername' => 'users#check_username', :defaults => { format: :json }
-
+  # get '/nanobot/check_shape_params' => 'generators#check_shape_params'
   # downloading files
   post '/nanobot/:id/staples' => 'generators#download_staples', as: "download_staples"
   get '/nanobot/:id/pdb' => 'generators#download_pdb'
