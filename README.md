@@ -16,12 +16,12 @@ Consider citing the associated paper if you find the project useful.
 # Contents
 - [Control Flow](#control-flow)
 - [**Video Tutorials**](https://www.youtube.com/playlist?list=PLJfZub7t7u3IMP3gVfIM1P1G8e6bqCVK2)
-- [Staple Generation](#staple-generation)
+- [Shape Picker](#shape-picker)
 - [DNA Routing](#dna-routing)
 - [Atomic Synthesization](#atomic-synthesization)
-- [File Formats](#file-formats)
 - [Saving Work](#saving-work)
-- [Reporting Issues](#reporting-issues)
+- [Suggestions and Reporting Issues](#suggestions-and-reporting-issues)
+- [Working Locally](#working-locally)
 - [Contributions](#contributions)
 
 # Control Flow
@@ -157,6 +157,11 @@ A list of video tutorial on how to use each tool of NanoFrame could be found her
 
 # Shape Picker
 
+In **Nanobot** tab the user gets to choose a shape from given selection or make their own through _custom shape_ to syntheszie a DNA object. We provide interactive display such that the user can have an approximate idea of what the final object will look like. In following pages, more detail is added until the most granual `oxdna` or `pdb` version is generated. Currently only cuboids are supported, but there is active work in regards to other general shapes. Nanobot will give a warning if the selected shape has greater than 200 leftover base pairs and will propt the user to either continue with the current design or check out dimension generator page. 
+
+<p align="center">
+  <img src="https://github.com/tilabberkeley/nanoframe/blob/master/readme_files/shape-maker.gif">
+</p>
 
 # Dimension Generator
 
@@ -164,21 +169,34 @@ We provide a tool for fidning the desired shape with minimum leftover base pairs
 
 # DNA Routing
 
+Once an initial design has been chose, the next step is to run the routing algorithm. The routing for cuboids is found by identifying 4 unique routings for a single plane, and then taking product of these planes to generate all possible choice combination (4096). Then each of these is checked to have a single loop (corresponding to the scaffold) and when one is found it's returned as the routing solution. For large number of stripes, the routing are not unique, and can be regnerated as shown in the illustration below. 
+
+For finding plane routing we model the plane as a graph and use randomized depth first search to find a routing. The current algorithms in place are not complexity efficient and can be vastly optimized. The prerelease rather serves as a proof-of-concept. The algorithm slow down when the number of stripes exceeds 7. In future work, these methods will be optimized to yield higher space and time complexities and generate shapes with much larger number of sripes in short period of time. 
+
 ### 3D View and Regeneration
+
+<p align="center">
+  <img src="https://github.com/tilabberkeley/nanoframe/blob/master/readme_files/shape_routing.gif">
+</p>
 
 ### Manual Editing
 
 # Atomic Synthesization
-One of the features of NanoFrame is the level fine grain detail. After selecting and editing DNA routing, atomic level visualization is made available either through Mol* which uses the default `pdb` format, or through [oxView](https://sulcgroup.github.io/oxdna-viewer/) which uses the `oxdna` file format. Both of these tool are embedded in the webpage and user can shift through each seemlessly. 
+One of the features of NanoFrame is the level fine grain detail. After selecting and editing DNA routing, atomic level visualization is made available either through Mol* which uses the default `pdb` format, or through [oxView](https://sulcgroup.github.io/oxdna-viewer/) which uses the `oxview` file format. Both of these tool are embedded in the webpage and user can shift through each seemlessly. 
 
-File - by defualt - are generated in `pdb` format. To generate these complex structures, we start off by taking the positions generate through routing. As each nucleotide has a different `pdb` structure we make a map of relative positions of atoms (compared to some base atom) for each of the base bairs. The algorithm, then, starts going through each of the nucleotides in the scaffold adding atoms as neccessary and then applying some twist corresponding to DNA helix structure. 
+To generate `pdb` files we start off by taking the positions generate through routing. As each nucleotide has a different `pdb` structure we make a map of relative positions of atoms (compared to some base atom) for each of the base bairs. The algorithm, then, starts going through each of the nucleotides in the scaffold adding atoms as neccessary and then applying some twist corresponding to DNA helix structure. For `oxview`, we just take the positions generated through routing as the center mass of the nucleobase. 
 
-Once the `pdb` file is generated, the transformation to other formats can be acheived by tools like [tacoxDNA](http://tacoxdna.sissa.it/) or [popDNA](https://github.com/tilabberkeley/popDNA.git) which is tool being developed by the authors of this project. With popDNA, it would be possible to make API calls directly instead of relying on selenium driver for fetching files generated by tacoxDNA. The currently supported formats are `oxDNA` or`json`.
-# File Formats
+<p align="center">
+  <img src="https://github.com/tilabberkeley/nanoframe/blob/master/readme_files/cube.png">
+</p>
+
+Once the `pdb` and `oxview` files are generated, the transformation to other formats can be acheived by tools like [tacoxDNA](http://tacoxdna.sissa.it/) or [popDNA](https://github.com/tilabberkeley/popDNA.git) which is tool being developed by the authors of this project. With popDNA, it would be possible to make API calls directly instead of relying on selenium driver for fetching files generated by tacoxDNA. 
 
 # Saving Work
 
-# Suggestion and Reporting Issues
+All NanoFrame's features are available to any user, but only authenticated users can save their work. Authentication can be done either through signing up with NanoFrame and claiming a username, or through Google/Facebook authentication. Other third-party authentications will be added on demand. In addition, users can also view work of peers that are made public. This will be a feed type of page where users can view, share, and comment on designs generated by others. We also provide the option of saving work in private mode (that is - not visible to anyone but creator).  
+
+# Suggestions and Reporting Issues
 
 To suggestion or reporting issues in NanoFrame, simply go to [Issues](https://github.com/tilabberkeley/nanoframe/issues) and click on **New Issue**. Provide a title and description. Please write as much detail in description as possible, including the browser and it's version. While NanoFrame is architecture independent, often broswers lag behind in JavaScript and WebGL updates, so simply changing the broswer may resolve the issue. Regardless, still open an issue so the authors are aware of possible bugs.
 
