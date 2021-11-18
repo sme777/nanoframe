@@ -345,9 +345,34 @@ const mps = createAdjacentEdgeMap()
 const [staples, descriptions, positions] = generateStapleStrands(mps[0], mps[1])
 // console.log(staples)
 // console.log(descriptions)
+const staplesGroup = generatePlaneStapleRouting(currIndex)
+scene.add(staplesGroup)
 
-function generatePlaneStapleRouting(currIndex, positions) {
-    
+function generatePlaneStapleRouting(currIndex) {
+    const staplePositions = JSON.parse(JSON.stringify(positions))
+    let red
+    let green
+    let blue
+    const blueStepSize = Math.floor(155 / positions.length)
+    let edgeGroups = new THREE.Group()
+    for (let i = 0; i < staplePositions.length; i++){ 
+        red = Math.floor(Math.random() * 60)
+        green =  Math.floor(Math.random() * 60)
+        blue = 100 + i * blueStepSize 
+        let edge = staplePositions[i]
+        let edgeMaterial = new MeshLineMaterial()
+        edgeMaterial.color = new THREE.Color("rgb(" + red + ", " + green + ", " + blue +")")
+        edgeMaterial.lineWidth = 0.5
+        let line = new MeshLine()
+        let start1 = amplify(transform(edge[0]))
+        let end1 = amplify(transform(edge[1]))
+        line.setPoints([vectorize(start1), vectorize(end1)])
+        // let endTriangle
+        let lineMesh = new THREE.Mesh(line, edgeMaterial)
+        edgeGroups.add(lineMesh)
+        // setGroups.push(setEdgesGroup)
+    }
+    return edgeGroups
 }
 
 function createAdjacentEdgeMap() {
