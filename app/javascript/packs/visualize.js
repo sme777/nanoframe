@@ -7,9 +7,6 @@ import { PLYExporter } from './threejs/PLYExporter'
 import * as RoutingSamples from './routingSamples'
 import * as dat from 'dat.gui'
 
-
-
-console.log(document.getElementById("generator-container").value)
 const graph_json = JSON.parse(document.getElementById("generator-container").value)
 const segments = graph_json["segments"]
 const scaffold_length = graph_json["scaffold_length"]

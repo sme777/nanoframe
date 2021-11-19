@@ -187,6 +187,7 @@ export function planeStringToNum() {
         "S3": 2,
         "S4": 3,
         "S5": 4,
+        "S6": 5
     }
 }
 
