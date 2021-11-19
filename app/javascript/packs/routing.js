@@ -4,6 +4,7 @@ import * as dat from 'dat.gui'
 import * as RoutingHelpers from './routingHelpers' 
 import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline'
 import { Edge } from './edge'
+import { Line2 } from './threejs/Line2'
 
 const context = Object.freeze({
     planeMode: Symbol("plane"),
@@ -241,15 +242,15 @@ function generatePlaneScaffoldRouting(index) {
     const greenStepSize = Math.floor(155 / planeSets.length)
     let setGroups = []
     for (let i = 0; i < planeSets.length; i++){ 
-        red = Math.floor(Math.random() * 60)
+        red = Math.floor(Math.random() * 100)
         green = 100 + i * greenStepSize 
-        blue = Math.floor(Math.random() * 60)
+        blue = Math.floor(Math.random() * 100)
         // setColors.push([red, green, blue])
         let setEdges = planeSets[i].edges
         let setMaterial = new MeshLineMaterial()
         setMaterial.color = new THREE.Color("rgb(" + red + ", " + green + ", " + blue +")")
         // setMaterial.color = new THREE.Color(0x29f4a2)
-        setMaterial.lineWidth = 0.5
+        setMaterial.lineWidth = 0.75
         let setEdgesGroup = new THREE.Group()
         let lineMesh
         // let endTriangle
@@ -345,34 +346,154 @@ const mps = createAdjacentEdgeMap()
 const [staples, descriptions, positions] = generateStapleStrands(mps[0], mps[1])
 // console.log(staples)
 // console.log(descriptions)
-const staplesGroup = generatePlaneStapleRouting(currIndex)
+let staplesGroup = generatePlaneStapleRouting(currIndex)
 scene.add(staplesGroup)
 
 function generatePlaneStapleRouting(currIndex) {
+    const map = RoutingHelpers.planeStringToNum()
     const staplePositions = JSON.parse(JSON.stringify(positions))
     let red
     let green
     let blue
-    const blueStepSize = Math.floor(155 / positions.length)
+    const blueStepSize = Math.floor(155 / staplePositions.length)
     let edgeGroups = new THREE.Group()
     for (let i = 0; i < staplePositions.length; i++){ 
-        red = Math.floor(Math.random() * 60)
-        green =  Math.floor(Math.random() * 60)
-        blue = 100 + i * blueStepSize 
-        let edge = staplePositions[i]
-        let edgeMaterial = new MeshLineMaterial()
-        edgeMaterial.color = new THREE.Color("rgb(" + red + ", " + green + ", " + blue +")")
-        edgeMaterial.lineWidth = 0.5
-        let line = new MeshLine()
-        let start1 = amplify(transform(edge[0]))
-        let end1 = amplify(transform(edge[1]))
-        line.setPoints([vectorize(start1), vectorize(end1)])
-        // let endTriangle
-        let lineMesh = new THREE.Mesh(line, edgeMaterial)
-        edgeGroups.add(lineMesh)
+        if (map[staplePositions[i].side] == currIndex) {
+            red = Math.floor(Math.random() * 60)
+            green =  Math.floor(Math.random() * 60)
+            blue = Math.floor(Math.random() * 60)
+            let edge = staplePositions[i].positions
+            let type = staplePositions[i].type
+            
+            let edgeMaterial = new MeshLineMaterial()
+            edgeMaterial.color = type == "Refl" ? new THREE.Color("rgb(" + 255 + ", " + 105 + ", " + 180 +")") : new THREE.Color("rgb(" + 20 + ", " + 20 + ", " + 255 +")")
+            edgeMaterial.lineWidth = 0.5
+            let line1 = new MeshLine()
+            let line2 = new MeshLine()
+            // console.log(positions[i].positions)
+            let start1 = amplify(transform(edge[0]))
+            // console.log(start1)
+            let end1 = amplify(transform(edge[1]))
+            let end2 = amplify(transform(edge[2]))
+            let [xCh1, zCh1, xCh2, zCh2] = findDirectionalChange(edge)
+            const results = adjustStaplePositions(xCh1, zCh1, xCh2, zCh2, [start1, end1, end2])
+            start1 = results[0]
+            end1 = results[1]
+            end2 = results[2]
+
+            line1.setPoints([vectorize(start1), vectorize(end1)])
+            if (type == "Refl") {
+                line2.setPoints([vectorize(end1), vectorize(end2)])
+            }
+            let lineMesh1 = new THREE.Mesh(line1, edgeMaterial)
+            let lineMesh2 = new THREE.Mesh(line2, edgeMaterial)
+            edgeGroups.add(lineMesh1)
+            edgeGroups.add(lineMesh2)
+        }
         // setGroups.push(setEdgesGroup)
     }
     return edgeGroups
+}
+
+function adjustStaplePositions(xCh1, zCh1, xCh2, zCh2, arr) {
+    let start1 = arr[0]
+    let end1 = arr[1]
+    let end2 = arr[2]
+
+    if (xCh1 > 0 && zCh2 > 0) {
+        end1.z += 0.5
+        start1.z += 0.5
+        end2.x -= 0.5
+        end1.x -= 0.5
+    } else if (xCh1 > 0 && zCh2 < 0) {
+        start1.z -= 0.5
+        end1.z -= 0.5
+        end1.x -= 0.5
+        end2.x -= 0.5
+    } else if (xCh1 < 0 && zCh2 > 0) {
+        start1.z += 0.5
+        end1.z += 0.5
+        end1.x += 0.5
+        end2.x += 0.5
+
+    } else if (xCh1 < 0 && zCh2 < 0) {
+        start1.z -= 0.5
+        end1.z -= 0.5
+        end1.x += 0.5
+        end2.x += 0.5
+    } else if (zCh1 > 0 && xCh2 < 0) {
+        start1.x -= 0.5
+        end1.x -= 0.5
+        end1.z -= 0.5
+        end2.z -= 0.5
+    } else if (zCh1 > 0 && xCh2 > 0) {
+        start1.x += 0.5
+        end1.x += 0.5
+        end1.z -= 0.5
+        end2.z -= 0.5
+    } else if (zCh1 < 0 && xCh2 > 0) {
+        end1.x += 0.5
+        start1.x += 0.5
+        end2.z += 0.5
+        end1.z += 0.5
+    } else if (zCh1 < 0 && xCh2 < 0) {
+        end1.x -= 0.5
+        start1.x -= 0.5
+        end2.z += 0.5
+        end1.z += 0.5
+    } else if (xCh1 > 0) {
+        start1.z -= 0.5
+        end1.z -= 0.5
+    } else if (xCh1 < 0) {
+        start1.z += 0.5
+        end1.z += 0.5
+    } else if (zCh1 > 0) {
+        start1.x += 0.5
+        end1.x += 0.5
+    } else if (zCh1 < 0) {
+        start1.x += 0.5
+        end1.x += 0.5
+    } else if (xCh2 > 0) {
+        start1.z += 0.5
+        end1.z += 0.5
+    } else if (xCh2 < 0) {
+        start1.z -= 0.5
+        end1.z -= 0.5
+    } else if (zCh2 > 0) {
+        start1.x += 0.5
+        end1.x += 0.5
+    } else if (zCh2 < 0) {
+        start1.x -= 0.5
+        end1.x -= 0.5
+    }
+    return [start1, end1, end2]
+}
+
+function convertToStandardForm(e, s) {
+    let newEdge = {x: e.x, y: e.y, z: e.z}
+    if (s == "S2") {
+
+    } else if (s == "S3") {
+
+    } else if (s == "S4") {
+
+    } else if (s == "S5") {
+
+    } else if (s == "S6") {
+
+    }
+    return newEdge
+}
+
+function findDirectionalChange(es) {
+    const [first, middle, last] = [es[0], es[1], es[2]]
+
+    const xCh1 = middle.x - first.x
+    const zCh1 = middle.z - first.z
+    const xCh2 = last.x - middle.x
+    const zCh2 = last.z - middle.z
+
+    return [xCh1, zCh1, xCh2, zCh2]
 }
 
 function createAdjacentEdgeMap() {
@@ -474,54 +595,6 @@ function findExtraBase(front, back) {
     return null
 }
 
-// console.log(sets)
-// console.log(sequenceDivison)
-
-function createAdjacentEdgeMap2() {
-    let edgeMap = {}
-    let stringMap = {}
-    let edge
-    let adjacentEdgeList
-    for (let i = 0; i < es.length; i++) {
-        edge = es[i]
-        adjacentEdgeList = findAdjacentEdges(edge, i)
-        edgeMap[edgeToString(edge)] = adjacentEdgeList
-        stringMap[edgeToString(edge)] = edge
-    }
-    return [edgeMap, stringMap]
-}
-
-function findAdjacentEdges(edge, index) {
-    // let startArr = []
-    // let endArr = []
-    let start 
-    let end
-    
-    for (let i = 0; i < es.length; i++) {
-        if (i != index) {
-
-            if (equalsVector(es[i].v2, edge.v1)) {
-                if (!isStraightLine(es[i].v1, edge.v2)) {
-                    if (!isNextOrPrevEdge(i, index, edge.v1)) {
-                        // startArr.push(es[i])
-                        start = es[i]
-                    }                        
-                }                    
-            }
-            
-            if (equalsVector(es[i].v1, edge.v2)) {
-                if (!isStraightLine(es[i].v2, edge.v1)) {
-                    if (!isNextOrPrevEdge(i, index, edge.v2)) {
-                        // endArr.push(es[i])
-                        end = es[i]
-                    }
-                }
-            }
-        }
-    }
-    return [start, end]
-}
-
 function isStraightLine(v1, v2) {
     const xDist = Math.abs(v1.x - v2.x)
     const yDist = Math.abs(v1.y - v2.y)
@@ -539,14 +612,6 @@ function isStraightLine(v1, v2) {
     return false
 }
 
-function isNextOrPrevEdge(i, index, v) {
-    if ((v.x % segments == 0 && v.y % segments == 0) ||
-    (v.x % segments == 0 && v.z % segments == 0) ||
-    (v.y % segments == 0 && v.z % segments == 0))  {
-        return false
-    }
-    return !(Math.abs(i - index) > 1)
-}
 
 function generateStapleStrands(edgeMap, stringMap) {
     const edgeKeys = Object.keys(edgeMap)
@@ -563,6 +628,7 @@ function generateStapleStrands(edgeMap, stringMap) {
     let descriptions = []
     let descriptionMap = {}
     let positions = []
+    let type
     for (let i = 0; i < edgeKeys.length; i++) {
         stringBuilder = ""
         key = edgeKeys[i]
@@ -586,30 +652,12 @@ function generateStapleStrands(edgeMap, stringMap) {
             mergeBack = translate(back) + extraBases + translate(neighbors.front)
         }
 
-        // check the direction of flow
-        let first
-        let last 
-        if (curr.start.x - curr.end.x != 0) {
-            first = {x : (curr.end.x - curr.start.x) / 2, y: curr.start.y, z: curr.start.z}
-        } else if (curr.start.y -curr.end.y != 0) {
-            first = {x : curr.start.x, y: (curr.end.y - curr.start.y) / 2, z: curr.start.z}
-        } else {
-            first = {x : curr.start.x, y: curr.start.y, z: (curr.end.z - curr.start.z) / 2}
-        }
-
-        if (curr.end.x - neighbors.end.x != 0) {
-            last = {x : (curr.end.x - neighbors.end.x) / 2, y: curr.end.y, z: curr.end.z}
-        } else if (curr.end.y - neighbors.end.y != 0) {
-            last = {x : curr.end.x, y: (curr.end.y - neighbors.end.y) / 2, z: curr.end.z}
-        } else {
-            last = {x : curr.end.x, y: curr.end.y, z: (curr.end.z - neighbors.end.z) / 2}
-        }
-        positions.push([first, stringMap[key].end, last])
-
         
         if (isOutgoer) {
+            type = "Refr"
             stringBuilder += "Refr-"
         } else {
+            type = "Refl"
             stringBuilder += "Refl-"
         }
         
@@ -623,11 +671,11 @@ function generateStapleStrands(edgeMap, stringMap) {
             side = "S2"
             stringBuilder +="S2-"
         } else if (start.x == 0 && end.x == 0) {
-            side = "S6"
-            stringBuilder +="S6-"
-        } else if (start.x == segments && end.x == segments) {
             side = "S5"
-            stringBuilder += "S5-"
+            stringBuilder +="S5-"
+        } else if (start.x == segments && end.x == segments) {
+            side = "S6"
+            stringBuilder += "S6-"
         } else if (start.y == 0 && end.y == 0) {
             side = "S4"
             stringBuilder += "S4-"
@@ -650,6 +698,31 @@ function generateStapleStrands(edgeMap, stringMap) {
 
         descriptions.push(stringBuilder)
         staples.push(mergeBack)
+        let arr
+ 
+        let first
+        let last 
+        if (curr.start.x - curr.end.x != 0) {
+            first = {x : (curr.end.x + curr.start.x) / 2, y: curr.start.y, z: curr.start.z}
+        } else if (curr.start.y -curr.end.y != 0) {
+            first = {x : curr.start.x, y: (curr.end.y + curr.start.y) / 2, z: curr.start.z}
+        } else {
+            first = {x : curr.start.x, y: curr.start.y, z: (curr.end.z + curr.start.z) / 2}
+        }
+        if (i == 0) {
+            console.log(neighbors)
+        }
+        if (curr.end.x - neighbors.end.x != 0) {
+            last = {x : (neighbors.end.x + curr.end.x) / 2, y: curr.end.y, z: curr.end.z}
+        } else if (neighbors.end.y - curr.end.y != 0) {
+            last = {x : curr.end.x, y: (neighbors.end.y + curr.end.y) / 2, z: curr.end.z}
+        } else {
+            last = {x : curr.end.x, y: curr.end.y, z: (neighbors.end.z + curr.end.z) / 2}
+        }
+
+
+        positions.push({"positions": [first, stringMap[key].end, last], "side": side, "type": type})
+ 
     }
     return [staples, descriptions, positions]
 }
@@ -779,16 +852,6 @@ function findRowAndCol(edge, side) {
 
 }
 
-function generateStapleDescriptions(edgeMap, stringMap) {
-    const edgeKeys = Object.keys(edgeMap)
-    let stapleName
-    let descriptions = []
-    for (let i = 0; i < edgeKeys.length; i++) {
-        // stringMap[key]
-        descriptions.push(i.toString())
-    }
-    return descriptions
-}
 
 function translate(seq) {
     tr = ""
@@ -899,12 +962,15 @@ renderer.render(scene, camera)
 */
 document.getElementById("up-key-button").addEventListener("click", () => {
     scene.remove(planeRoutes)
+    scene.remove(staplesGroup)
     const res = planeNeighbors[current]["up"]
     current = res[0]
     // currPlane = res[1]
     currIndex = res[2]
     planeRoutes = generatePlaneScaffoldRouting(currIndex)
+    staplesGroup = generatePlaneStapleRouting(currIndex)
     scene.add(planeRoutes)
+    scene.add(staplesGroup)
     // addRoutings()
     // scene.add(currPlane)
 })
@@ -913,25 +979,32 @@ document.getElementById("up-key-button").addEventListener("click", () => {
 document.getElementById("down-key-button").addEventListener("click", () => {
     console.log("down")
     scene.remove(planeRoutes)
+    scene.remove(staplesGroup)
     const res = planeNeighbors[current]["down"]
     current = res[0]
     // currPlane = res[1]
     currIndex = res[2]
     // addRoutings()
     planeRoutes = generatePlaneScaffoldRouting(currIndex)
+    staplesGroup = generatePlaneStapleRouting(currIndex)
+    console.log(staplesGroup)
     scene.add(planeRoutes)
+    scene.add(staplesGroup)
     // scene.add(currPlane)
 })
 
 
 document.getElementById("right-key-button").addEventListener("click", () => {
     scene.remove(planeRoutes)
+    scene.remove(staplesGroup)
     const res = planeNeighbors[current]["right"]
     current = res[0]
     // currPlane = res[1]
     currIndex = res[2]
     planeRoutes = generatePlaneScaffoldRouting(currIndex)
+    staplesGroup = generatePlaneStapleRouting(currIndex)
     scene.add(planeRoutes)
+    scene.add(staplesGroup)
     // addRoutings()
     // scene.add(currPlane)
 })
@@ -939,12 +1012,15 @@ document.getElementById("right-key-button").addEventListener("click", () => {
 
 document.getElementById("left-key-button").addEventListener("click", () => {
     scene.remove(planeRoutes)
+    scene.remove(staplesGroup)
     const res = planeNeighbors[current]["left"]
     current = res[0]
     // currPlane = res[1]
     currIndex = res[2]
     planeRoutes = generatePlaneScaffoldRouting(currIndex)
+    staplesGroup = generatePlaneStapleRouting(currIndex)
     scene.add(planeRoutes)
+    scene.add(staplesGroup)
     // addRoutings()
     // scene.add(currPlane)
 })
