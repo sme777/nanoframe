@@ -312,11 +312,5 @@ document.querySelector(".synthesizer-btn").onclick = () => {
     document.querySelector(".json-input").value = JSON.stringify(jsonObj)
 }
 
-if (document.getElementById("8064-radiobtn").checked) {
-  document.querySelector("#generator_scaffold_length").value = "8064"
-} else if (document.getElementById("7249-radiobtn").checked) {
-  document.querySelector("#generator_scaffold_length").value = "7249"
-} else {
-  document.querySelector("#generator_scaffold_length").value = ""
-}
+
 

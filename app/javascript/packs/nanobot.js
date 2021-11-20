@@ -252,10 +252,10 @@ $(document).ready(function() {
           evt.preventDefault();
         } 
 
-        if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
-            $(".width-input").val(self.val());
-            $(".depth-input").val(self.val());
-        }
+        // if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
+        //     $(".width-input").val(self.val());
+        //     $(".depth-input").val(self.val());
+        // }
         checkIfDone();
       });
 
@@ -267,10 +267,10 @@ $(document).ready(function() {
           evt.preventDefault();
         } 
 
-        if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
-            $(".height-input").val(self.val());
-            $(".depth-input").val(self.val());
-        }
+        // if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
+        //     $(".height-input").val(self.val());
+        //     $(".depth-input").val(self.val());
+        // }
         checkIfDone();
       });
 
@@ -281,10 +281,10 @@ $(document).ready(function() {
         {
           evt.preventDefault();
         } 
-        if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
-            $(".width-input").val(self.val());
-            $(".height-input").val(self.val());
-        }
+        // if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
+        //     $(".width-input").val(self.val());
+        //     $(".height-input").val(self.val());
+        // }
         checkIfDone();
       });
 
@@ -351,24 +351,24 @@ $(document).ready(function() {
         const depth = parseInt($(".depth-input").val())
         const width = parseInt($(".width-input").val())
         const segments = parseInt($(".ws-input").val())
-        const scaffold_length = Math.floor(parseInt($("#generator_scaffold_length").val()) * 0.332)
-        const used = width * segments * 4 + height * segments * 4 + depth * segments * 4
+        let scaffold_length
+        const used = (width * segments * 4 + height * segments * 4 + depth * segments * 4) / 0.332
 
-        // $.get("/nanobot/check_shape_params",
-        //   {
-        //     shape: "cube",
-        //     height: height,
-        //     width: width,
-        //     depth: depth,
-        //     segments: segments,
-        //     scaffold_length: scaffold_length
-        //   }
-        // )
-        // console.log(scaffold_length - used )
+        if ($("#8064-radiobtn").is(':checked')) {
+          scaffold_length = 8064
+        } else if ($("#7249-radiobtn").is(':checked')) {
+          scaffold_length = 7249
+        } else {
+          scaffold_length = 0
+        }
+        
+        // find a better way to replace error messages
+
         if (scaffold_length - used < 0) {
-          $(".message-container").html('<div class="alert alert-danger alert-dismissible fade show" role="alert">Specified dimensions are greater than scaffold length!<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>')
+          $(".message-container").html('<div class="alert alert-danger alert-dismissible fade show" role="alert">Specified dimensions are greater than scaffold length!</div>')
         } else if (scaffold_length - used > 200) {
-          const textToShow = "(" + (scaffold_length - used).toString() + ")."
+          $(".message-container").html('<div class="alert alert-warning alert-dismissible fade show warning-container" role="alert"><p class="warning-text">The Loopout length is over 200 base pairs </p><a href="#" id="continue_anchor">Continue?</a> See <a href="nanobot/generator">generator page</a> for iteractive examples. </div></div>')
+          const textToShow = "(" + (Math.floor(scaffold_length - used)).toString() + ")."
           $(".warning-text").append(textToShow)
           $(".warning-container").show()
         } else {
