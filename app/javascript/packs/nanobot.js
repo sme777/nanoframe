@@ -295,6 +295,8 @@ $(document).ready(function() {
         {
           evt.preventDefault();
         } 
+        $(".hs-input").val(self.val())
+        $(".ds-input").val(self.val())
         checkIfDone();
       });
 
@@ -305,6 +307,8 @@ $(document).ready(function() {
         {
           evt.preventDefault();
         } 
+        $(".ws-input").val(self.val())
+        $(".ds-input").val(self.val())
         checkIfDone();
       });
 
@@ -315,6 +319,8 @@ $(document).ready(function() {
         {
           evt.preventDefault();
         } 
+        $(".hs-input").val(self.val())
+        $(".ws-input").val(self.val())
         checkIfDone();
       });
 
@@ -361,36 +367,32 @@ $(document).ready(function() {
         } else {
           scaffold_length = 0
         }
-        
+        const remaining = scaffold_length - used
         // find a better way to replace error messages
-
+        console.log(remaining)
         if (scaffold_length - used < 0) {
-          $(".message-container").html('<div class="alert alert-danger alert-dismissible fade show" role="alert">Specified dimensions are greater than scaffold length!</div>')
+          $(".danger-container").show()
+          $(".warning-container").hide()
+
         } else if (scaffold_length - used > 200) {
-          $(".message-container").html('<div class="alert alert-warning alert-dismissible fade show warning-container" role="alert"><p class="warning-text">The Loopout length is over 200 base pairs </p><a href="#" id="continue_anchor">Continue?</a> See <a href="nanobot/generator">generator page</a> for iteractive examples. </div></div>')
           const textToShow = "(" + (Math.floor(scaffold_length - used)).toString() + ")."
           $(".warning-text").append(textToShow)
           $(".warning-container").show()
+          $(".danger-container").hide()
+
         } else {
           $(".synthesize-form").submit()
         }
       }
   })
-    $("#continue_anchor").click(function(e) {
-      e.preventDefault()
-      $("#synthesize-form").submit()
-    })
 })
 
-// $(document).ready(function() {
-//   $("#continue_anchor").click(function(e) {
-//     console.log("boob")
-//     e.preventDefault()
-//     $("#synthesize-form").submit()
-//   })
-// })
+$(document).ready(function() {
+  $("#continue_anchor").click(function(e) {
+    console.log("fucks")
+    e.preventDefault()
+    $("#synthesize-form").submit()
+  })
+})
 
-// function computeMaxStripes(length, width) {
-//   return Math.floor(length * 0.34 / width)
-// }
 

@@ -66,7 +66,7 @@ class Generator < ApplicationRecord
 
   def route
     if shape == "1"
-      @graph = Graph.new(width_segment + 1, scaffold_length)
+      @graph = Graph.new([width, height, depth], width_segment + 1, scaffold_length)
       # @plane = Plane.new(@graph)
     end
   end

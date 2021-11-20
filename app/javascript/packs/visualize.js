@@ -10,22 +10,23 @@ import * as dat from 'dat.gui'
 const graph_json = JSON.parse(document.getElementById("generator-container").value)
 const segments = graph_json["segments"]
 const scaffold_length = graph_json["scaffold_length"]
-// const set = graph_json["sets"][0]
-
 const canvas = document.getElementById("visualize-webgl")
+// setup the dimensions of the shape
+const width = graph_json["width"]
+const height = graph_json["height"]
+const depth = graph_json["depth"]
+const widthSegmentLenth = width / segments
+const heightSegmentLength = height / segments
+const depthSegmentLength = depth / segments
 
 let line, renderer, scene, camera, camera2, controls
 let line1
 let matLine, matLineBasic, matLineDashed
-// let stats, gpuPanel;
-// let gui = new dat.GUI()
+
 
 // viewport
 let insetWidth
 let insetHeight
-let dimensions = 30
-let segmentLength = dimensions / segments
-// init()
 
 let canvasContainer = document.querySelector(".visualizer-container")
 let canvasContainerWidth = canvasContainer.offsetWidth
@@ -38,7 +39,7 @@ renderer.setSize( canvasContainerWidth, canvasContainerHeight )
 scene = new THREE.Scene()
 
 camera = new THREE.PerspectiveCamera( 40, canvasContainerWidth / canvasContainerHeight, 1, 1000 )
-camera.position.set( -40, 30, 60 )
+camera.position.set( -40, 60, 90 )
 
 camera2 = new THREE.PerspectiveCamera( 40, 1, 1, 1000 )
 camera2.position.copy( camera.position )
@@ -54,25 +55,31 @@ const positions = []
 const colors = []
 
 // will need to replace with another function
-const planeRoutings = segments == 2 ? RoutingSamples.planeRoutings1x1x1 : graph_json["planes"] // RoutingSamples.planeRoutings1x1x1
+const planeRoutings = segments == 2 ? RoutingSamples.planeRoutings1x1x1 : graph_json["planes"]
 let prevVertex
-// let objectEdges = sortPlaneEdges(mergePlaneEdges())
 
 // for sets
 let takenSets = []
 let objectSets = sortSets(mergeSets())
 const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
 objectSets = normalize(objectSets)
-
-
+// camera.lookAt(objectSets.position)
+/*
+    Normalize the coordinates retireved fromn graph
+    Width corresponds to X
+    Height corresponds to Y
+    Depth corresponds to Z
+*/
 function normalize(vectors) {
 
     for (let i = 0; i < vectors.length; i++) {
-        vectors[i].x *= segmentLength
-        vectors[i].y *= segmentLength
-        vectors[i].z *= segmentLength
-        vectors[i].y -= 3.5*segmentLength
+        vectors[i].x *= widthSegmentLenth
+        vectors[i].y *= heightSegmentLength
+        vectors[i].z *= depthSegmentLength
+        // vectors[i].y -= (2 * widthSegmentLenth / heightSegmentLength) * depthSegmentLength
+        // vectors[i].y -= heightSegmentLength / widthSegmentLenth * depthSegmentLength
     }
+    
     return vectors
 }
 
@@ -93,7 +100,6 @@ function sortSets(sets) {
     edgeArr = edgeArr.concat(edgesAndLastVertex[0])
     let counter = 0
     let lastVertex = edgesAndLastVertex[1]
-    // let prevVertex = lastVertex
     takenSets.push(sets[0])
 
     while (sets.length -1 != counter) {
@@ -103,7 +109,6 @@ function sortSets(sets) {
         edgesAndLastVertex = getEdgesFromSet(next)
         edgeArr = edgeArr.concat(edgesAndLastVertex[0])
         lastVertex = edgesAndLastVertex[1]
-        // prevVertex = lastVertex
         counter += 1
     }
     edgeArr.push(new THREE.Vector3(prevVertex.x, prevVertex.y, prevVertex.z))
@@ -116,16 +121,13 @@ function findNextSet(sets, lastVertex) {
 
     for (let s = 0; s < sets.length; s++) {
         let set = sets[s]
-        
         for (let e = 0; e < set.edges.length; e++) {
             let edge = set.edges[e]
-            
             if (equalsVector(lastVertex, edge.v1) || equalsVector(lastVertex, edge.v2)) {
                 if (!takenSets.includes(set)) {
                     return set
                 }
             }
-
         }
     }
     return null
@@ -227,7 +229,6 @@ line = new Line2( geometry, matLine )
 line.computeLineDistances()
 line.scale.set( 1, 1, 1 )
 scene.add( line )
-
 const geo = new THREE.BufferGeometry()
 geo.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) )
 geo.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) )
@@ -239,8 +240,8 @@ line1 = new THREE.Line( geo, matLineBasic )
 line1.computeLineDistances()
 line1.visible = false
 scene.add( line1 )
-
-//
+camera.lookAt(line.position)
+line.geometry.center()
 
 window.addEventListener( 'resize', onWindowResize )
 onWindowResize()
