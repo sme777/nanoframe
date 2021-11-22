@@ -251,11 +251,6 @@ $(document).ready(function() {
         {
           evt.preventDefault();
         } 
-
-        // if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
-        //     $(".width-input").val(self.val());
-        //     $(".depth-input").val(self.val());
-        // }
         checkIfDone();
       });
 
@@ -267,10 +262,6 @@ $(document).ready(function() {
           evt.preventDefault();
         } 
 
-        // if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
-        //     $(".height-input").val(self.val());
-        //     $(".depth-input").val(self.val());
-        // }
         checkIfDone();
       });
 
@@ -281,10 +272,6 @@ $(document).ready(function() {
         {
           evt.preventDefault();
         } 
-        // if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
-        //     $(".width-input").val(self.val());
-        //     $(".height-input").val(self.val());
-        // }
         checkIfDone();
       });
 

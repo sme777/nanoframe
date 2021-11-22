@@ -1,27 +1,30 @@
 import * as THREE from 'three'
 
 // returns a cube group object
-export function makeCubeGroup(dimension, segments) {
+export function makeCubeGroup(dimensions, segments) {
     const cubeGroup = new THREE.Group()
+    const width = dimensions[0]
+    const height = dimensions[1]
+    const depth = dimensions[2]
 
     let widthLength = 1
 
-    for (let j = 0; j < 2; j++) {
-        const gridHelper = new THREE.GridHelper(dimension, segments, 0xD3D3D3, 0xD3D3D3)
-        j % 2 == 1 ? gridHelper.position.set(0, dimension/2, 0) : gridHelper.position.set(0, -dimension/2, 0)
-        cubeGroup.add(gridHelper)
-    }
+    // for (let j = 0; j < 2; j++) {
+    //     const gridHelper = new THREE.GridHelper(width, segments, 0xD3D3D3, 0xD3D3D3)
+    //     j % 2 == 1 ? gridHelper.position.set(0, width/2, 0) : gridHelper.position.set(0, -width/2, 0)
+    //     cubeGroup.add(gridHelper)
+    // }
     
     for (let i = 1; i < segments ; i++) {
-        const g1 = createGrid({height: dimension / 2, width: widthLength, linesHeight: Math.floor(dimension / 0.34), linesWidth: 3, color: 0x000000})
-        const g2 = createGrid({height: widthLength, width: dimension / 2, linesHeight: 3, linesWidth: Math.floor(dimension / 0.34), color: 0x000000})
-        const g3 = createGrid({height: dimension / 2, width: widthLength, linesHeight: Math.floor(dimension / 0.34), linesWidth: 3, color: 0x000000})
-        const g4 = createGrid({height: widthLength, width: dimension / 2, linesHeight: 3, linesWidth: Math.floor(dimension / 0.34), color: 0x000000})
-        g1.position.set(0, -dimension/2 + (i * dimension / segments), dimension /2 )
-        g2.position.set(-dimension/2 + (i * dimension / segments), 0, dimension /2 )
+        const g1 = createGrid({height: width / 2, width: widthLength, linesHeight: Math.floor(depth / 0.34), linesWidth: 3, color: 0x000000})
+        const g2 = createGrid({height: widthLength, width: height / 2, linesHeight: 3, linesWidth: Math.floor(width / 0.34), color: 0x000000})
+        const g3 = createGrid({height: width / 2, width: widthLength, linesHeight: Math.floor(depth / 0.34), linesWidth: 3, color: 0x000000})
+        const g4 = createGrid({height: widthLength, width: height / 2, linesHeight: 3, linesWidth: Math.floor(width / 0.34), color: 0x000000})
+        g1.position.set(0, -width/2 + (i * height / segments), depth /2 )
+        // g2.position.set(-width/2 + (i * width / segments), 0, depth /2 )
     
-        g3.position.set(0, -dimension/2 + (i * dimension / segments), - dimension /2 )
-        g4.position.set(-dimension/2 + (i * dimension / segments), 0, - dimension /2 )
+        g3.position.set(0, -width/2 + (i * height / segments), -depth /2 )
+        // g4.position.set(-width/2 + (i * width / segments), 0, -depth /2 )
     
         cubeGroup.add(g1)
         cubeGroup.add(g2)
@@ -31,57 +34,57 @@ export function makeCubeGroup(dimension, segments) {
     }
     
     
-    for (let j = 0; j < 2; j++) {
-        const gridHelper = new THREE.GridHelper(dimension, segments, 0xD3D3D3, 0xD3D3D3)
-        gridHelper.geometry.rotateZ( Math.PI / 2 );
-        j % 2 == 1 ? gridHelper.position.set(dimension / 2, 0, 0) : gridHelper.position.set(-dimension / 2, 0, 0) 
-        cubeGroup.add(gridHelper)
-    }
+    // for (let j = 0; j < 2; j++) {
+    //     const gridHelper = new THREE.GridHelper(height, segments, 0xD3D3D3, 0xD3D3D3)
+    //     gridHelper.geometry.rotateZ( Math.PI / 2 );
+    //     j % 2 == 1 ? gridHelper.position.set(height / 2, 0, 0) : gridHelper.position.set(-height / 2, 0, 0) 
+    //     cubeGroup.add(gridHelper)
+    // }
     
-    for (let i = 1; i < segments ; i++) {
-        const g1 = createGrid({height: dimension / 2, width: widthLength, linesHeight: Math.floor(dimension / 0.34), linesWidth: 3, color: 0x000000}, Math.PI / 2)
-        const g2 = createGrid({height: widthLength, width: dimension / 2, linesHeight: 3, linesWidth: Math.floor(dimension / 0.34), color: 0x000000},  Math.PI / 2)
-        const g3 = createGrid({height: dimension / 2, width: widthLength, linesHeight: Math.floor(dimension / 0.34), linesWidth: 3, color: 0x000000},  Math.PI / 2)
-        const g4 = createGrid({height: widthLength, width: dimension / 2, linesHeight: 3, linesWidth: Math.floor(dimension / 0.34), color: 0x000000},  Math.PI / 2)
-        // g2.geometry.rotateX(Math.PI / 2) , 0, 0,  Math.PI / 2
-        g1.position.set(0, dimension /2, -dimension/2 + (i * dimension / segments))
-        g2.position.set(-dimension/2 + (i * dimension / segments), dimension /2 , 0)
-        g3.position.set(0, - dimension /2, -dimension/2 + (i * dimension / segments) )
-        g4.position.set(-dimension/2 + (i * dimension / segments), - dimension /2 , 0)
+    // for (let i = 1; i < segments ; i++) {
+    //     const g1 = createGrid({height: width / 2, width: widthLength, linesHeight: Math.floor(height / 0.34), linesWidth: 3, color: 0x000000}, Math.PI / 2)
+    //     const g2 = createGrid({height: widthLength, width: depth / 2, linesHeight: 3, linesWidth: Math.floor(height / 0.34), color: 0x000000},  Math.PI / 2)
+    //     const g3 = createGrid({height: width / 2, width: widthLength, linesHeight: Math.floor(height / 0.34), linesWidth: 3, color: 0x000000},  Math.PI / 2)
+    //     const g4 = createGrid({height: widthLength, width: depth / 2, linesHeight: 3, linesWidth: Math.floor(height / 0.34), color: 0x000000},  Math.PI / 2)
+    //     // g2.geometry.rotateX(Math.PI / 2) , 0, 0,  Math.PI / 2
+    //     g1.position.set(0, height /2, -depth/2 + (i * depth / segments))
+    //     g2.position.set(-height/2 + (i * width / segments), height /2 , 0)
+    //     g3.position.set(0, - height /2, -depth/2 + (i * depth / segments) )
+    //     g4.position.set(-height/2 + (i * width / segments), - height /2 , 0)
     
         
-        cubeGroup.add(g1)
-        cubeGroup.add(g2)
-        cubeGroup.add(g3)
-        cubeGroup.add(g4)    
+    //     cubeGroup.add(g1)
+    //     cubeGroup.add(g2)
+    //     cubeGroup.add(g3)
+    //     cubeGroup.add(g4)    
     
-    }
+    // }
     
-    for (let j = 0; j < 2; j++) {
-        const gridHelper = new THREE.GridHelper(dimension, segments, 0xD3D3D3, 0xD3D3D3)
-        gridHelper.geometry.rotateX( Math.PI / 2 );
-        j % 2 == 1 ? gridHelper.position.set(0, 0, dimension /2 ) : gridHelper.position.set(0, 0, -dimension / 2) 
-        cubeGroup.add(gridHelper)
+    // // for (let j = 0; j < 2; j++) {
+    // //     const gridHelper = new THREE.GridHelper(depth, segments, 0xD3D3D3, 0xD3D3D3)
+    // //     gridHelper.geometry.rotateX( Math.PI / 2 );
+    // //     j % 2 == 1 ? gridHelper.position.set(0, 0, depth /2 ) : gridHelper.position.set(0, 0, -depth / 2) 
+    // //     cubeGroup.add(gridHelper)
     
-    }
+    // // }
     
-    for (let i = 1; i < segments ; i++) {
-        const g1 = createGrid({height: dimension / 2, width: widthLength, linesHeight: Math.floor(dimension / 0.34), linesWidth: 3, color: 0x000000}, Math.PI / 2, 0, Math.PI / 2)
-        const g2 = createGrid({height: widthLength, width: dimension / 2, linesHeight: 3, linesWidth: Math.floor(dimension / 0.34), color: 0x000000}, Math.PI / 2, 0, Math.PI / 2)
-        const g3 = createGrid({height: dimension / 2, width: widthLength, linesHeight: Math.floor(dimension / 0.34), linesWidth: 3, color: 0x000000}, Math.PI / 2, 0, Math.PI / 2)
-        const g4 = createGrid({height: widthLength, width: dimension / 2, linesHeight: 3, linesWidth: Math.floor(dimension / 0.34), color: 0x000000}, Math.PI / 2, 0, Math.PI / 2)
-        g1.position.set(dimension /2, 0, -dimension/2 + (i * dimension / segments))
-        g2.position.set(dimension /2 , -dimension/2 + (i * dimension / segments),  0)
-        g3.position.set(- dimension /2, 0, -dimension/2 + (i * dimension / segments))
-        g4.position.set(- dimension /2 , -dimension/2 + (i * dimension / segments),  0)
+    // for (let i = 1; i < segments ; i++) {
+    //     const g1 = createGrid({height: height / 2, width: widthLength, linesHeight: Math.floor(depth / 0.34), linesWidth: 3, color: 0x000000}, Math.PI / 2, 0, Math.PI / 2)
+    //     const g2 = createGrid({height: widthLength, width: depth / 2, linesHeight: 3, linesWidth: Math.floor(depth / 0.34), color: 0x000000}, Math.PI / 2, 0, Math.PI / 2)
+    //     const g3 = createGrid({height: height / 2, width: widthLength, linesHeight: Math.floor(depth / 0.34), linesWidth: 3, color: 0x000000}, Math.PI / 2, 0, Math.PI / 2)
+    //     const g4 = createGrid({height: widthLength, width: depth / 2, linesHeight: 3, linesWidth: Math.floor(depth / 0.34), color: 0x000000}, Math.PI / 2, 0, Math.PI / 2)
+    //     g1.position.set(width /2, 0, -depth/2 + (i * depth / segments))
+    //     g2.position.set(width /2 , -height/2 + (i * height / segments),  0)
+    //     g3.position.set(- width /2, 0, -depth/2 + (i * depth / segments))
+    //     g4.position.set(- width /2 , -height/2 + (i * height / segments),  0)
     
-        cubeGroup.add(g1)
-        cubeGroup.add(g2)
-        cubeGroup.add(g3)
-        cubeGroup.add(g4)   
-    }
+    //     cubeGroup.add(g1)
+    //     cubeGroup.add(g2)
+    //     cubeGroup.add(g3)
+    //     cubeGroup.add(g4)   
+    // }
     // neeed to change for rectangles
-    const geometry = new THREE.BoxGeometry( dimension, dimension, dimension)
+    const geometry = new THREE.BoxGeometry( width, height, depth)
     const edges = new THREE.EdgesGeometry( geometry )
     const mesh = new THREE.LineSegments( edges, new THREE.LineBasicMaterial({ color: 0xD3D3D3 }))
     cubeGroup.add(mesh)

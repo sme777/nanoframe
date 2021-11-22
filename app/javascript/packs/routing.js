@@ -15,8 +15,13 @@ const graph = JSON.parse(document.getElementById("graph-container").value)
 const sets = JSON.parse(document.getElementById("sets-container").value)
 const scaffoldSequence = document.getElementById("scaffold-container").value
 const segments = graph["segments"]
-const dimension = 50 // setup from user choice
-const cubeGroup = RoutingHelpers.makeCubeGroup(dimension, segments)
+
+// unpack dimensions
+const width = graph["width"]
+const height = graph["height"]
+const depth = graph["depth"]
+const dimension = 50
+const cubeGroup = RoutingHelpers.makeCubeGroup([width, height, depth], segments)
 let planes = RoutingHelpers.makePlanes(dimension, segments)
 const planeNeighbors = RoutingHelpers.planeNeighbors(planes)
 const resolution = new THREE.Vector2( window.innerWidth, window.innerHeight )
