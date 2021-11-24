@@ -1,10 +1,16 @@
 import * as THREE from 'three'
 import oc from 'three-orbit-controls'
-import {Line2} from './threejs/Line2'
-import { LineMaterial } from './threejs/LineMaterial'
-import { LineGeometry } from './threejs/LineGeometry'
-import { PLYExporter } from './threejs/PLYExporter'
+import {
+    Line2
+} from './threejs/Line2'
+import {
+    LineMaterial
+} from './threejs/LineMaterial'
+import {
+    LineGeometry
+} from './threejs/LineGeometry'
 import * as RoutingSamples from './routingSamples'
+import * as Algorithms from "./algorithms"
 import * as dat from 'dat.gui'
 
 const graph_json = JSON.parse(document.getElementById("generator-container").value)
@@ -20,39 +26,48 @@ const heightSegmentLength = height / segments
 const depthSegmentLength = depth / segments
 
 let line, renderer, scene, camera, camera2, controls
-let line1
-let matLine, matLineBasic, matLineDashed
+let line1, line2, line3
+// let matLine, matLineBasic, matLineDashed
+let matLine = new LineMaterial({
+    color: 0xffffff,
+    linewidth: 10, // in world units with size attenuation, pixels otherwise
+    vertexColors: true,
+    dashed: false,
+    alphaToCoverage: true,
 
+})
 
+let matLineBasic = new THREE.LineBasicMaterial({
+    vertexColors: true
+})   
 // viewport
 let insetWidth
 let insetHeight
-
+let routingColors
 let canvasContainer = document.querySelector(".visualizer-container")
 let canvasContainerWidth = canvasContainer.offsetWidth
 let canvasContainerHeight = canvasContainer.offsetHeight
 
-renderer = new THREE.WebGLRenderer( { canvas: canvas, alpha: true, antialias: true } )
-renderer.setPixelRatio( window.devicePixelRatio )
-renderer.setSize( canvasContainerWidth, canvasContainerHeight )
+renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
+    alpha: true,
+    antialias: true
+})
+renderer.setPixelRatio(window.devicePixelRatio)
+renderer.setSize(canvasContainerWidth, canvasContainerHeight)
 
 scene = new THREE.Scene()
 
-camera = new THREE.PerspectiveCamera( 40, canvasContainerWidth / canvasContainerHeight, 1, 1000 )
-camera.position.set( -40, 60, 90 )
+camera = new THREE.PerspectiveCamera(40, canvasContainerWidth / canvasContainerHeight, 1, 1000)
+camera.position.set(-40, 60, 90)
 
-camera2 = new THREE.PerspectiveCamera( 40, 1, 1, 1000 )
-camera2.position.copy( camera.position )
+camera2 = new THREE.PerspectiveCamera(40, 1, 1, 1000)
+camera2.position.copy(camera.position)
 
 const OrbitControls = oc(THREE)
-controls = new OrbitControls( camera, renderer.domElement )
+controls = new OrbitControls(camera, renderer.domElement)
 controls.minDistance = 10
 controls.maxDistance = 500
-
-// Position and THREE.Color Data
-
-const positions = []
-const colors = []
 
 // will need to replace with another function
 const planeRoutings = segments == 2 ? RoutingSamples.planeRoutings1x1x1 : graph_json["planes"]
@@ -61,8 +76,18 @@ let prevVertex
 // for sets
 let takenSets = []
 let objectSets = sortSets(mergeSets())
+
+const start = performance.now()
+let scp = Algorithms.findStrongestConnectedComponents(objectSets, 1 / 3, [width, height, depth])
+const end = performance.now()
+
 const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
 objectSets = normalize(objectSets)
+generateDisplay(objectSets)
+
+
+
+
 /*
     Normalize the coordinates retireved fromn graph
     Width corresponds to X
@@ -76,7 +101,7 @@ function normalize(vectors) {
         vectors[i].y *= heightSegmentLength
         vectors[i].z *= depthSegmentLength
     }
-    
+
     return vectors
 }
 
@@ -84,7 +109,7 @@ function mergeSets() {
     let arr = []
     for (let i = 0; i < planeRoutings.length; i++) {
         for (let j = 0; j < planeRoutings[i].sets.length; j++)
-        arr.push(planeRoutings[i].sets[j])
+            arr.push(planeRoutings[i].sets[j])
     }
     return arr
 }
@@ -99,8 +124,8 @@ function sortSets(sets) {
     let lastVertex = edgesAndLastVertex[1]
     takenSets.push(sets[0])
 
-    while (sets.length -1 != counter) {
-      
+    while (sets.length - 1 != counter) {
+
         next = findNextSet(sets, lastVertex)
         takenSets.push(next)
         edgesAndLastVertex = getEdgesFromSet(next)
@@ -136,7 +161,7 @@ function getEdgesFromSet(set) {
     const edges = set.edges
     let lastVertex
     for (let i = edges.length - 1; i >= 0; i--) {
-        
+
         if (!includesVector(vectors, edges[i].v1)) {
             vectors.push(vectorize(edges[i].v1))
         }
@@ -180,64 +205,127 @@ function vectorize(vertex) {
     return new THREE.Vector3(vertex.x, vertex.y, vertex.z)
 }
 
-const spline = new THREE.CatmullRomCurve3( objectSets )
-const divisions = Math.round( 12 * objectSets.length )
-const point = new THREE.Vector3()
+function generateDisplay(edges, residualEdges=false, fullDisplay=true, start=0) {
+    const positions = []
+    let colors = []
+    const spline = new THREE.CatmullRomCurve3(edges)
+    const divisions = Math.round(12 * edges.length)
+    const point = new THREE.Vector3()
 
-for ( let i = 0, l = divisions; i < l; i ++ ) {
+    for (let i = 0, l = divisions; i < l; i++) {
 
-    const t = i / l
+        const t = i / l
 
-    spline.getPoint( t, point )
-    positions.push( point.x, point.y, point.z )
-    colors.push( 0.5, 0.5, t )
+        spline.getPoint(t, point)
+        if (residualEdges) {
+            positions.push(point.x - 30, point.y - 70, point.z + 60)
+            
+        } else {
+            positions.push(point.x, point.y, point.z)
+        }
+        if (fullDisplay) {
+            colors.push(0.5, 0.5, t)
+        }
+    }
+    if (fullDisplay) {
+        routingColors = colors
+    } else {
+        colors = findColorSequnece(start, positions.length, divisions)
+    }
+    let routingPositions = []
+    for (let i = 0; i < scaffold_length; i++) {
+        const t = i / scaffold_length
+        spline.getPoint(t, point)
+        routingPositions.push(point.x, point.y, point.z)
 
+    }
+    document.getElementById("routing-positions").value = JSON.stringify({
+        "positions": routingPositions
+    })
+
+    const geometry = new LineGeometry()
+    geometry.setPositions(positions)
+    geometry.setColors(colors)
+
+    if (!residualEdges) {
+        line = new Line2(geometry, matLine)
+        line.computeLineDistances()
+        line.scale.set(1, 1, 1)
+        scene.add(line)
+        const geo = new THREE.BufferGeometry()
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+        geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
+        line1 = new THREE.Line(geo, matLineBasic)
+        line1.computeLineDistances()
+        line1.visible = false
+        scene.add(line1)
+        camera.lookAt(line.position)
+        line.geometry.center()
+        camera.lookAt(line.position)
+        
+
+    } else {
+        line2 = new Line2(geometry, matLine)
+        line2.computeLineDistances()
+        line2.scale.set(1, 1, 1)
+        scene.add(line2)
+        const geo = new THREE.BufferGeometry()
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+        geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
+        line3 = new THREE.Line(geo, matLineBasic)
+        line3.computeLineDistances()
+        line3.visible = false
+        scene.add(line3)
+
+        // let lineGroup = new THREE.Group()
+        // lineGroup.add(line)
+        // lineGroup.add(line2)
+        // scene.add(new THREE.Box3().setFromObject( lineGroup ).getCenter( lineGroup.position ).multiplyScalar( - 1 ))
+        // camera.lookAt(line2.position)
+        // line2.geometry.center()
+    }
 }
 
-let routingPositions = []
-for (let i = 0; i < scaffold_length; i++) {
-    const t = i / scaffold_length
-    spline.getPoint( t, point )
-    routingPositions.push( point.x, point.y, point.z )
-
+function findColorSequnece(start, length) {
+    let count = 0
+    let modIndex
+    let subarray = []
+    let adjStart = start * 12 * 3
+    let adjLength = length * 12 * 3
+    for (let i = adjStart; count < adjLength; i++, count++) {
+        modIndex = i % routingColors.length
+        subarray.push(routingColors[modIndex])
+    }
+    return subarray
 }
-document.getElementById("routing-positions").value = JSON.stringify({"positions": routingPositions})
 
-const geometry = new LineGeometry()
-geometry.setPositions( positions )
-geometry.setColors( colors )
 
-matLine = new LineMaterial( {
+function clearDisplay() {
+    if (line != undefined) {
+        line.geometry.dispose()
+        line.material.dispose()
+        scene.remove(line)
+    }
 
-    color: 0xffffff,
-    linewidth: 10, // in world units with size attenuation, pixels otherwise
-    vertexColors: true,
-    
-    //resolution:  // to be set by renderer, eventually
-    dashed: false,
-    alphaToCoverage: true,
+    if (line1 != undefined) {
+        line1.geometry.dispose()
+        line1.material.dispose()
+        scene.remove(line1)
+    }
 
-} )
+    if (line2 != undefined) {
+        line2.geometry.dispose()
+        line2.material.dispose()
+        scene.remove(line2)
+    }
 
-line = new Line2( geometry, matLine )
-line.computeLineDistances()
-line.scale.set( 1, 1, 1 )
-scene.add( line )
-const geo = new THREE.BufferGeometry()
-geo.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) )
-geo.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) )
-
-matLineBasic = new THREE.LineBasicMaterial( { vertexColors: true } )
-matLineDashed = new THREE.LineDashedMaterial( { vertexColors: true, scale: 2, dashSize: 1, gapSize: 1 } )
-
-line1 = new THREE.Line( geo, matLineBasic )
-line1.computeLineDistances()
-line1.visible = false
-scene.add( line1 )
-camera.lookAt(line.position)
-line.geometry.center()
-
-window.addEventListener( 'resize', onWindowResize )
+    if (line3 != undefined) {
+        line3.geometry.dispose()
+        line3.material.dispose()
+        scene.remove(line3)
+    }
+}
+window.addEventListener('resize', onWindowResize)
 onWindowResize()
 
 requestAnimationFrame(render)
@@ -247,7 +335,7 @@ function onWindowResize() {
     camera.aspect = canvasContainerWidth / canvasContainerHeight;
     camera.updateProjectionMatrix();
 
-    renderer.setSize( canvasContainerWidth, canvasContainerHeight );
+    renderer.setSize(canvasContainerWidth, canvasContainerHeight);
 
     insetWidth = canvasContainerHeight / 4; // square
     insetHeight = canvasContainerHeight / 4;
@@ -261,40 +349,63 @@ function render() {
 
     // main scene
 
-    renderer.setClearColor( 0x000000, 0 );
+    renderer.setClearColor(0x000000, 0);
 
-    renderer.setViewport( 0, 0, canvasContainerWidth, canvasContainerHeight );
+    renderer.setViewport(0, 0, canvasContainerWidth, canvasContainerHeight);
 
     // renderer will set this eventually
-    matLine.resolution.set( canvasContainerWidth, canvasContainerHeight ); // resolution of the viewport
+    matLine.resolution.set(canvasContainerWidth, canvasContainerHeight); // resolution of the viewport
 
     // gpuPanel.startQuery();
-    renderer.render( scene, camera );
+    renderer.render(scene, camera);
     // gpuPanel.endQuery();
 
     // inset scene
 
-    renderer.setClearColor( 0xf5f5f5, 1 );
+    renderer.setClearColor(0xf5f5f5, 1);
 
     renderer.clearDepth(); // important!
 
-    renderer.setScissorTest( true );
+    renderer.setScissorTest(true);
 
-    renderer.setScissor( 20, 20, insetWidth, insetHeight );
+    renderer.setScissor(20, 20, insetWidth, insetHeight);
 
-    renderer.setViewport( 20, 20, insetWidth, insetHeight );
+    renderer.setViewport(20, 20, insetWidth, insetHeight);
 
-    camera2.position.copy( camera.position );
-    camera2.quaternion.copy( camera.quaternion );
+    camera2.position.copy(camera.position);
+    camera2.quaternion.copy(camera.quaternion);
 
     // renderer will set this eventually
-    matLine.resolution.set( insetWidth, insetHeight ); // resolution of the inset viewport
+    matLine.resolution.set(insetWidth, insetHeight); // resolution of the inset viewport
 
-    renderer.render( scene, camera2 );
+    renderer.render(scene, camera2);
 
-    renderer.setScissorTest( false );
-    requestAnimationFrame( render )
+    renderer.setScissorTest(false);
+    requestAnimationFrame(render)
 
 }
 
 document.getElementById("set-values").value = JSON.stringify(simpleObjectSets)
+
+
+
+const box = document.getElementById("box-state")
+const boxLabel = document.getElementById("box-state-label")
+
+box.addEventListener("click", () => {
+    if (box.checked) {
+        boxLabel.innerHTML = "Close Form"
+        clearDisplay()
+        generateDisplay(scp[0], false, false, scp[2])
+        generateDisplay(scp[1], true, false, scp[3])
+        // generateDisplay(scp[1], true)
+    } else {
+        boxLabel.innerHTML = "Open Form"
+        clearDisplay()
+        generateDisplay(objectSets, false, true, 0)
+    }
+})
+
+
+
+console.log(`Finding Strongest Components took ${end-start} milliseconds.`)

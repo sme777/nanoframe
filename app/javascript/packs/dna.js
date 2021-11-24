@@ -1,7 +1,4 @@
 import * as THREE from 'three'
-import { Base } from "./nucleotide"
-import { Scaffolds } from "./scaffolds"
-import { ScaffoldType } from "./scaffolds"
 
 export class DNA {
 
