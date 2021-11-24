@@ -218,7 +218,7 @@ function generateDisplay(edges, residualEdges=false, fullDisplay=true, start=0) 
 
         spline.getPoint(t, point)
         if (residualEdges) {
-            positions.push(point.x - 30, point.y - 70, point.z + 60)
+            positions.push(point.x - 30, point.y - 50, point.z + 60)
             
         } else {
             positions.push(point.x, point.y, point.z)
