@@ -40,9 +40,9 @@
             <li class="nav-item">
                 <a class="nav-link active nanofont" href="/nanobot">The NanoBot</a>
             </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/miscellaneous">Miscellaneous</a>
-        </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/miscellaneous">Miscellaneous</a>
+            </li>
         </ul>
     </div>
 
@@ -60,13 +60,55 @@
                     <input type="hidden" id="set-values" name="vertices" value="">
                     <button type="submit" id="routing-btn" class="btn btn-link route-arrow">Routing &rarr;</button>
                 </form>
-                
+
             </div>
         </div>
     </div>
 
     <div class="regenerate-container">
-        <%= link_to "Regenerate Routing", generate_routing_path({regenerate: true}), class: "btn btn-outline-secondary" %>
+        <div class="row">
+            <%= link_to "Regenerate Routing", generate_routing_path({regenerate: true}), class: "btn btn-outline-secondary" %>
+        </div>
+        <div class="row box-state-container">
+            <input id="box-state" type="checkbox" class="btn-check" autocomplete="off">
+            <label id="box-state-label" class="btn btn-outline-secondary" for="box-state">Open Form</label><br>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <label for="color-slider" class="form-label">Red Start</label>
+                <input type="range" class="form-range" id="red-color-slider">
+            </div>
+            <div class="col-md-4 ">
+                <div class="rgb-gradient">
+                    <input class="form-check-input" type="checkbox" value="" id="red-gradient-box" checked>
+                    <label class="form-check-label" for="red-gradient-box">Gradient</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <label for="color-slider" class="form-label">Green Start</label>
+                <input type="range" class="form-range" id="green-color-slider">
+            </div>
+            <div class="col-md-4 ">
+                <div class="rgb-gradient">
+                    <input class="form-check-input" type="checkbox" value="" id="green-gradient-box" checked>
+                    <label class="form-check-label" for="green-gradient-box">Gradient</label>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <label for="color-slider" class="form-label">Blue Start</label>
+                <input type="range" class="form-range" id="blue-color-slider">
+            </div>
+            <div class="col-md-4 ">
+                <div class="rgb-gradient">
+                    <input class="form-check-input" type="checkbox" value="" id="blue-gradient-box" checked>
+                    <label class="form-check-label" for="blue-gradient-box">Gradient</label>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row">
@@ -93,7 +135,7 @@
         </div>
     </div>
 
-    <%= javascript_pack_tag 'visualize', 'routingPositionUpdate', 'data-turbolinks-track': 'reload'%>
+    <%= javascript_pack_tag 'visualize', 'routingPositionUpdate', 'nanoviz', 'data-turbolinks-track': 'reload'%>
 </body>
 
 </html>

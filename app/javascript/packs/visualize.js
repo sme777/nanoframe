@@ -63,7 +63,6 @@ let takenSets = []
 let objectSets = sortSets(mergeSets())
 const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
 objectSets = normalize(objectSets)
-// camera.lookAt(objectSets.position)
 /*
     Normalize the coordinates retireved fromn graph
     Width corresponds to X
@@ -76,8 +75,6 @@ function normalize(vectors) {
         vectors[i].x *= widthSegmentLenth
         vectors[i].y *= heightSegmentLength
         vectors[i].z *= depthSegmentLength
-        // vectors[i].y -= (2 * widthSegmentLenth / heightSegmentLength) * depthSegmentLength
-        // vectors[i].y -= heightSegmentLength / widthSegmentLenth * depthSegmentLength
     }
     
     return vectors
@@ -136,7 +133,6 @@ function findNextSet(sets, lastVertex) {
 function getEdgesFromSet(set) {
 
     let vectors = []
-    // let edges = []
     const edges = set.edges
     let lastVertex
     for (let i = edges.length - 1; i >= 0; i--) {
@@ -187,7 +183,6 @@ function vectorize(vertex) {
 const spline = new THREE.CatmullRomCurve3( objectSets )
 const divisions = Math.round( 12 * objectSets.length )
 const point = new THREE.Vector3()
-// const color = new THREE.Color()
 
 for ( let i = 0, l = divisions; i < l; i ++ ) {
 
@@ -195,7 +190,7 @@ for ( let i = 0, l = divisions; i < l; i ++ ) {
 
     spline.getPoint( t, point )
     positions.push( point.x, point.y, point.z )
-    colors.push( t, t, t )
+    colors.push( 0.5, 0.5, t )
 
 }
 
@@ -207,7 +202,6 @@ for (let i = 0; i < scaffold_length; i++) {
 
 }
 document.getElementById("routing-positions").value = JSON.stringify({"positions": routingPositions})
-// Line2 ( LineGeometry, LineMaterial )
 
 const geometry = new LineGeometry()
 geometry.setPositions( positions )

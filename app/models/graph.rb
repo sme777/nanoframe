@@ -313,227 +313,6 @@ class Graph
         end
         n
     end
-
-    def find_plane_routing
-        sets = initialize_sets
-        singeltons = singeltons(sets)
-        outgoers = outgoers(sets)
-        edges = []
-        queue = []
-        i = 0
-        while !connected(sets) && !full(sets)
-             
-            while !singeltons.empty?
-                if queue.empty?
-                    queue.append(singeltons.first) 
-                elsif queue.first.e.length > 3
-                    queue.delete_at(0)
-                    singeltons.delete_at(0)
-                else             
-                    # singelton needs to have two vertices added
-                    curr = queue.first
-                    next_outgoer = find_next_closest_outgoer(outgoers, curr)
-                    
-                    outgoers.delete(next_outgoer)
-                    
-                    edge = nil
-                    result = distance(next_outgoer, curr)
-                    if result[0]  == 1
-                        edge = connect_direct(result[1], curr)
-                    else 
-                        edge = connect_through_singeltons(next_outgoer, curr)
-                    end
-                    next_outgoer.add_edge(edge)
-                    curr.add_edge(edge)
-
-                    if curr.e == 2
-                        new_set = merge_sets(curr.e.first[0], curr.e.last[0])
-                        # new_edge = Edge.new()
-                        outgoers.append(new_set)
-                        
-                    end
-                end
-            end 
-
-
-            # if !s1.singelton && !s2.singelton
-            #     sets[i] = merge_sets(s1, s2)
-            #     sets.delete(s2)
-            #     i += 1
-            # elsif !s1.singelton
-
-            # else
-
-            # end
-
-            # add remove vertices to sets as neccessary
-        end
-        # outgoers = (@segments - 1) * 4
-        # loopers = loopers(sets)
-
-        # if loop_set_num(sets) >= outgoers / 2
-        #     for i in 0..(loopers.length - 1)
-        #         for j in 0..(loopers.length - 1)
-        #             if share_singelton(loopers[i], loopers[j]) && i != j
-        #                 # implement adding or pruning edges
-        #                 s = merge_loop_sets(loopers[i], loopers[j])
-        #                 sets.delete(loopers[i])
-        #                 sets.delete(loopers[j])
-        #                 sets.append(s)
-        #             end
-        #         end
-        #     end
-        # end
-        # implement a while loop if the number of looper is still greater than half of ourgoers
-        [edges, sets]
-    end
-
-    # Finds the nex closest outgoing set from the given singelton
-    def find_next_closest_outgoer(outgoers, singleton)
-        s_x = singleton.v.first.x
-        s_y = singleton.v.first.y
-        s_z = singleton.v.first.z
-
-        min = Float::INFINITY
-        closest = nil
-
-        outgoers.each do |outgoer|
-            outgoer.v.each do |vertex|
-                o_x = vertex.x
-                o_y = vertex.y
-                o_z = vertex.z
-                
-                d = Math.sqrt((s_x - o_x) ** 2 + (s_y - o_y) ** 2 + (s_z - o_z) ** 2)
-                if d < min
-                    closest = outgoer
-                end
-            end
-        end
-        closest
-    end
-
-    # Computes the distance between singelton and the outgoer set
-    # Return true if the singelton is adjacent to the outgoer set and 
-    # false otherwise  
-    def distance(outgoer, singleton)
-        s_x = singleton.v.first.x
-        s_y = singleton.v.first.y
-        s_z = singleton.v.first.z
-
-        outgoer.v.each do |vertex|
-            dist = 0
-            o_x = vertex.x
-            o_y = vertex.y
-            o_z = vertex.z
-            
-            dist += (s_x - o_x) + (s_y - o_y) + (s_z - o_z)
-            if dist.abs() == 1
-                return [1, vertex]
-            end
-        end
-        [-1, nil] 
-    end
-
-
-    def connect_through_singeltons(outgoer, singelton)
-
-    end
-
-    def connect_direct(outgoer, singelton)
-        edge = Edge.new(outgoer, singelton)
-    end
-
-    def initialize_sets
-        sets = []
-        @vertices.each do |v|
-            set = nil
-            if (v.x % @segments == 0 || v.y % @segments == 0)
-                set = Set.new(v, false)
-            else
-                set = Set.new(v, true)
-            end
-            sets.push(set)
-        end
-        sets
-    end
-
-    def connected(sets)
-        sets.each do |set|
-            if !set.singelton && set.v.length < 2
-                return false
-            end
-        end
-        return true
-    end
-
-
-    def full(sets)
-        sets = singeltons(sets)
-        sets.each do |s|
-            if s.e.length < 2
-                return false
-            end
-        end
-        return true
-    end
-
-
-
-    def singeltons(sets)
-        s = []
-        sets.each do |set|
-            if set.singelton
-                s.append(set)
-            end
-        end
-        s
-    end
-
-    def outgoers(sets)
-        s = []
-        sets.each do |set|
-            if !set.singelton
-                s.append(set)
-            end
-        end
-        s
-    end
-
-    def loopers(sets)
-        s = []
-        sets.each do |set|
-            if set.is_loop_set?
-                s.append(set)
-            end
-        end
-        s
-    end
-
-    def merge_sets(s1, s2)
-        s2.v.each do |v|
-            s1.add_node(v)
-        end
-        s1
-    end
-
-
-    def merge_loop_sets(s1, s2, share)
-        if share
-
-        else
-
-        end
-
-    end
-
-    def loop_set_num(sets)
-        count = 0
-        sets.each do |s|
-            if s.is_loop_set?
-                count += 1
-            end
-        end
-    end
     
     # Generates plane routings for other faces of the cube
     # back -> 0
@@ -695,14 +474,6 @@ class Graph
             res.append(new_set)
         end
         res
-    end
-
-    def plane_rotations(plane)
-        [rotate(plane, 1), rotate(plane, 2), rotate(plane, 3)]
-    end
-
-    def rotate(plane, angle)
-        find_reverse_step_plane_routing
     end
 
     # find 4 unique plane routings
@@ -883,6 +654,7 @@ class Graph
         result
     end
 
+    # Vertex object corresponding to a position in a 3D grid
     class Vertex
         attr_accessor :x, :y, :z
 
@@ -910,6 +682,7 @@ class Graph
 
     end
 
+    # Set object corresponding to a list of Edges 
     class Set
         attr_accessor :v, :singelton, :e
 
@@ -917,9 +690,6 @@ class Graph
             @v = [vertex]
             @singelton = singelton
             @e = []
-            # *vertices.each do |v|
-            #     @vertices.push(v)
-            # end
         end
 
         def add_node(vertex)
@@ -974,6 +744,7 @@ class Graph
         
     end
 
+    # Edge object corresponding to a connection between two vertices
     class Edge
 
         attr_accessor :v1, :v2

@@ -480,3 +480,36 @@ $btn-hover-border-color:  #111;
 #signUpForm {
     padding-bottom: 2%;
 }
+
+.box-state-container {
+    padding: 2% 0;
+}
+
+#red-color-slider::-webkit-slider-thumb  {
+    background: red;
+}
+
+#red-color-slider::-moz-range-thumb  {
+    background: red;
+}
+
+#blue-color-slider::-webkit-slider-thumb  {
+    background: blue;
+}
+
+#blue-color-slider::-moz-range-thumb  {
+    background: blue;
+}
+
+#green-color-slider::-webkit-slider-thumb  {
+    background: green;
+}
+
+#green-color-slider::-moz-range-thumb  {
+    background: green;
+}
+
+
+.rgb-gradient {
+    padding: 25% 0;
+}
