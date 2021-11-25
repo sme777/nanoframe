@@ -5,20 +5,7 @@
 </head>
 
 <body>
-
-    <div class="menu-items">
-        <ul class="nav nav-tabs justify-content-end">
-            <li class="nav-item">
-                <a class="nav-link" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active nanofont" href="/nanobot">The NanoBot</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="/miscellaneous">Miscellaneous</a>
-            </li>
-        </ul>
-    </div>
+    <%= render partial: "layouts/nav", locals: {tab: "bot"}%>
     <div class="shape-generator-container">
         <%= form_tag shape_generator_path, method: :get, id: 'cube_generator_form' do %>
         <div class="row">

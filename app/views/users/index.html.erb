@@ -1,41 +1,13 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-
 <head>
-  <meta charset="utf-8">
-  <title>Project Nanoframe</title>
+  <title>NanoFrame</title>
 
-  <!-- Stylesheet Links -->
   <%= render "layouts/scripts" %>
   <%= stylesheet_link_tag 'application', media: 'all' %>
 
 </head>
 
 <body>
-
-
-  <!-- Start of Spinning Cube-->
-
-  <!-- End of Spinning Cube-->
-
-  <!-- Flash message display -->
-
-
-  <!-- Start of NAVBAR-->
-  <div>
-    <div class="menu-items">
-      <ul class="nav nav-tabs justify-content-end">
-        <li class="nav-item">
-          <a class="nav-link active nanofont" aria-current="page" href="/">Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/nanobot">The NanoBot</a>
-        <li class="nav-item">
-          <a class="nav-link" href="/miscellaneous">Miscellaneous</a>
-        </li>
-      </ul>
-    </div>
-  </div>
+  <%= render partial: "layouts/nav", locals: {tab: "home"}%>
   <% if logged_in? %>
   <!-- Body of a Logged In User -->
   <div class="profile-container">
@@ -206,5 +178,3 @@
   <!-- End of FOOTER-->
   <%= javascript_pack_tag 'main', 'data-turbolinks-track': 'reload' %>
 </body>
-
-</html>
