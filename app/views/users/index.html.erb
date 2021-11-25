@@ -160,86 +160,11 @@
   <% end %>
 
   <% if !@current_user.nil? %>
-  <% @generators.each do |g| %>
-  Hello
-
+    <input type="hidden" id="generator-size" value="<%= @generators.size %>">
+    <% @generators.each_with_index do |g, index| %>
+    <%= render partial: "layouts/item", locals: {generator: g, index: index}%>
+    <% end %>
   <% end %>
-
-  <div class="card design-container" onclick="location.href=''">
-    <div class="row">
-      <div class="col-md-7 px-3">
-        <canvas id="webgl-public-1"></canvas>
-      </div>
-      <div class="col-md-5">
-        <div class="row">
-          Shape: Cube
-        </div>
-        <div class="row">
-          Width: 50nm
-        </div>
-        <div class="row">
-          Height: 50nm
-        </div>
-        <div class="row">
-          Depth: 50nm
-        </div>
-        <div class="row downloads-container">
-          <%
-=begin%>
-          <div class="col-md-3">
-            <a href="" class="btn btn-outline-primary">
-              <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-              oxview
-              <a>
-          </div>
-          <div class="col-md-3">
-            <a href="" class="btn btn-outline-primary">
-              <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-              pdb
-              <a>
-          </div>
-          <div class="col-md-3">
-            <a href="" class="btn btn-outline-primary">
-              <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-              staples
-              <a>
-          </div>
-          <div class="col-md-3">
-            <a href="" class="btn btn-outline-primary">
-              <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-              bundle
-              <a>
-          </div>
-          <%
-=end%>
-            <div class="col-md-3">
-            <a href="#home" class="btn btn-outline-primary w-100">
-            <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-            nfr</a>
-            </div>
-            <div class="col-md-3">
-            <a href="#news" class="btn btn-outline-secondary w-100">
-            <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-            oxview</a>
-            </div>
-            <div class="col-md-3">
-            <a href="#contact" class="btn btn-outline-danger w-100">
-            <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-            staples</a>
-            </div>
-            <div class="col-md-3">
-            <a href="#about" class="btn btn-outline-success w-100">
-            <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-            bundle</a>
-            </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <% end %>
-
   <%= render "layouts/footer"%>
-  <%= javascript_pack_tag 'main', 'data-turbolinks-track': 'reload' %>
+  <%= javascript_pack_tag 'main', 'items', 'data-turbolinks-track': 'reload' %>
 </body>

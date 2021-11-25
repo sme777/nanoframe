@@ -2,10 +2,11 @@ require 'json'
 
 class GeneratorsController < ApplicationController
   before_action :set_generator, except: [:create]
+  before_action :set_user
   skip_before_action :verify_authenticity_token
 
   def index
-    @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
+    
   end
 
   def shaper; end
@@ -80,6 +81,10 @@ class GeneratorsController < ApplicationController
     send_data contents, filename: filename + '.csv'
   end
 
+  def download_nfr
+
+  end
+
   def download_pdb
     
     file = File.open('app/assets/results/' + session[:filename] + '.pdb')
@@ -99,6 +104,9 @@ class GeneratorsController < ApplicationController
     contents = file.read
     file.close
     send_data contents, filename: filename + '.oxview'
+    # if params[:home]
+    #   redirect_to '/'
+    # end
   end
 
   def download_csv
@@ -145,6 +153,9 @@ class GeneratorsController < ApplicationController
 
   def create
       @generator = Generator.new(generator_params)
+      if !@current_user.nil?
+        @generator.user_id = @current_user.id
+      end
 
       if @generator.save
         session['id'] = @generator.id
@@ -218,6 +229,10 @@ class GeneratorsController < ApplicationController
     else
       @generator = Generator.new
     end
+  end
+
+  def set_user
+    @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
   end
 
   def is_active_generator?

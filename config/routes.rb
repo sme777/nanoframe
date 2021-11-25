@@ -32,6 +32,7 @@ Rails.application.routes.draw do
   # get '/nanobot/check_shape_params' => 'generators#check_shape_params'
   # downloading files
   post '/nanobot/:id/staples' => 'generators#download_staples', as: "download_staples"
+  get '/nanobot/:id/nfr' => 'generators#download_nfr'
   get '/nanobot/:id/pdb' => 'generators#download_pdb'
   get '/nanobot/:id/oxdna' => 'generators#download_oxdna'
   get '/nanobot/:id/txt' => 'generators#download_txt'
