@@ -209,6 +209,7 @@ function vectorize(vertex) {
 }
 
 function generateDisplay(edges, residualEdges=false, fullDisplay=true, start=0) {
+    console.log(edges.length)
     const positions = []
     let colors = []
     console.log(edges)
