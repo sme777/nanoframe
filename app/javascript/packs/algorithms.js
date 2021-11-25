@@ -13,9 +13,7 @@ export function findStrongestConnectedComponents(edges, ratio, dims) {
     for (let j = ratio; j < edges.length; j++) {
         for (let i = 0; i < edges.length; i++) {
             subarray = findSubArray(edges, i, j)
-            // console.log(subarray)
             subarrayStrength = findSubArrayStrength(subarray, dims)
-            // console.log(subarrayStrength)
             if (subarrayStrength > maxStrength) {
                 maxStrength = subarrayStrength
                 edgeStart = i
