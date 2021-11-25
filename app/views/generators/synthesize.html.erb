@@ -32,15 +32,18 @@
 
             <div class="generator-download-container">
                 <a href="/nanobot/<%= @generator.id %>/pdb" class="btn btn-outline-warning">
-                    <%= image_tag("download", class: "generate-download-txt") %> .pdb
+                    <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+                    .pdb
                 </a>
 
 
                 <a href="/nanobot/<%= @generator.id %>/oxdna" class="btn btn-outline-secondary">
-                    <%= image_tag("download", class: "generate-download-txt") %> .oxDNA
+                    <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+                    .oxview
                 </a>
                 <a href="/nanobot/<%= @generator.id %>/txt" class="btn btn-outline-danger">
-                    <%= image_tag("download", class: "generate-download-txt") %> Staples (.txt)
+                    <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+                    staples (.csv)
                 </a>
                 <div class="btn-group dropend">
                     <button type="button" class="btn btn-outline-dark">
@@ -66,7 +69,8 @@
 
                 <h5>or download all</h5>
                 <a href="/nanobot/<%= @generator.id %>/bundle" class="btn btn-outline-success">
-                    <%= image_tag("download", class: "generate-download-txt") %> bundle
+                    <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+                    bundle
                 </a>
             </div>
         </div>

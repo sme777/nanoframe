@@ -8,7 +8,7 @@
 
 <body>
   <%= render partial: "layouts/nav", locals: {tab: "home"}%>
-  <% if logged_in? %>
+  <% if !@current_user.nil? %>
   <!-- Body of a Logged In User -->
   <div class="profile-container">
     <div class="user-portrait-mask">
@@ -48,7 +48,7 @@
 
 
   <!-- Start of SIGN UP-->
-  <% if !logged_in?%>
+  <% if @current_user.nil?%>
   <div class="sign-in-outer-container">
 
     <div class="transparent-layer">
@@ -111,7 +111,7 @@
   </div>
   <% end%>
 
-  <% if !logged_in?%>
+  <% if @current_user.nil? %>
   <div class="sign-up-outer-container">
     <div class="sign-up-form">
 
@@ -159,22 +159,87 @@
   </div>
   <% end %>
 
+  <% if !@current_user.nil? %>
+  <% @generators.each do |g| %>
+  Hello
 
-  <div>
-    <canvas id="background-webgl"></canvas>
-  </div>
+  <% end %>
 
-  <!-- Start of FOOTER-->
+  <div class="card design-container" onclick="location.href=''">
+    <div class="row">
+      <div class="col-md-7 px-3">
+        <canvas id="webgl-public-1"></canvas>
+      </div>
+      <div class="col-md-5">
+        <div class="row">
+          Shape: Cube
+        </div>
+        <div class="row">
+          Width: 50nm
+        </div>
+        <div class="row">
+          Height: 50nm
+        </div>
+        <div class="row">
+          Depth: 50nm
+        </div>
+        <div class="row downloads-container">
+          <%
+=begin%>
+          <div class="col-md-3">
+            <a href="" class="btn btn-outline-primary">
+              <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+              oxview
+              <a>
+          </div>
+          <div class="col-md-3">
+            <a href="" class="btn btn-outline-primary">
+              <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+              pdb
+              <a>
+          </div>
+          <div class="col-md-3">
+            <a href="" class="btn btn-outline-primary">
+              <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+              staples
+              <a>
+          </div>
+          <div class="col-md-3">
+            <a href="" class="btn btn-outline-primary">
+              <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+              bundle
+              <a>
+          </div>
+          <%
+=end%>
+            <div class="col-md-3">
+            <a href="#home" class="btn btn-outline-primary w-100">
+            <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+            nfr</a>
+            </div>
+            <div class="col-md-3">
+            <a href="#news" class="btn btn-outline-secondary w-100">
+            <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+            oxview</a>
+            </div>
+            <div class="col-md-3">
+            <a href="#contact" class="btn btn-outline-danger w-100">
+            <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+            staples</a>
+            </div>
+            <div class="col-md-3">
+            <a href="#about" class="btn btn-outline-success w-100">
+            <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+            bundle</a>
+            </div>
 
-  <div class="container" id="footer">
-    <hr class="my-4">
-
-    <div class="footer-copyright text-center py-3">
-      <div class="copyright">
-        <p>© 2021 <a href="https://tilabberkeley.com/">Ti Lab</a> @ Berkeley</p>
+        </div>
       </div>
     </div>
   </div>
-  <!-- End of FOOTER-->
+
+  <% end %>
+
+  <%= render "layouts/footer"%>
   <%= javascript_pack_tag 'main', 'data-turbolinks-track': 'reload' %>
 </body>

@@ -18,7 +18,7 @@ class GeneratorsController < ApplicationController
     @generator.scaffold(sequence, coordinates)
     # @generator.route
     # @generator.feedback_control(coordinates)
-    session[:filename] = @generator.filename(logged_in?)
+    session[:filename] = @generator.filename(logged_in?, session[:user_id])
     render :synthesize
   end
 
@@ -144,7 +144,6 @@ class GeneratorsController < ApplicationController
   end
 
   def create
-    
       @generator = Generator.new(generator_params)
 
       if @generator.save

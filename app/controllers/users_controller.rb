@@ -1,6 +1,9 @@
 class UsersController < ApplicationController
   def index
     @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
+    if !@current_user.nil?
+      @generators = @current_user.generators
+    end
   end
 
   def miscellaneous; end

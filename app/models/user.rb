@@ -5,4 +5,5 @@ class User < ApplicationRecord
   #associations
   has_many :generators
 
+
 end

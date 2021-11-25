@@ -4,8 +4,9 @@ require 'date'
 
 
 class Generator < ApplicationRecord
+  
   attr_accessor :atom_count
-
+  
   def scaffold(sequence, coordinates)
     @dna = []
     # byebug
@@ -108,9 +109,9 @@ class Generator < ApplicationRecord
     [start] + arr
   end
   
-  def filename(logged)
+  def filename(logged, user_id)
     if logged
-      curr_user = User.find(session[:user_id])
+      curr_user = User.find(user_id)
       filename = "#{curr_user.username}_#{__id__.to_s}"
     else
       filename = "guest_#{__id__.to_s}"
