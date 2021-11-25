@@ -209,10 +209,8 @@ function vectorize(vertex) {
 }
 
 function generateDisplay(edges, residualEdges=false, fullDisplay=true, start=0) {
-    console.log(edges.length)
-    const positions = []
+    let positions = []
     let colors = []
-    console.log(edges)
     const spline = new THREE.CatmullRomCurve3(edges)
     const divisions = Math.round(12 * edges.length)
     const point = new THREE.Vector3()
@@ -230,7 +228,6 @@ function generateDisplay(edges, residualEdges=false, fullDisplay=true, start=0) 
             colors.push(0.5, 0.5, t)
         }
     }
-
     // set up first and last points
     if (!fullDisplay) {
         if (!residualEdges) {
@@ -294,23 +291,15 @@ function generateDisplay(edges, residualEdges=false, fullDisplay=true, start=0) 
         line3.computeLineDistances()
         line3.visible = false
         scene.add(line3)
-
-        // let lineGroup = new THREE.Group()
-        // lineGroup.add(line)
-        // lineGroup.add(line2)
-        // scene.add(new THREE.Box3().setFromObject( lineGroup ).getCenter( lineGroup.position ).multiplyScalar( - 1 ))
-        // camera.lookAt(line2.position)
-        // line2.geometry.center()
     }
 }
 
-function findColorSequnece(start, length) {
+function findColorSequnece(start, length, divs) {
     let count = 0
     let modIndex
     let subarray = []
     let adjStart = start * 12 * 3
-    let adjLength = length * 12 * 3
-    for (let i = adjStart; count < adjLength; i++, count++) {
+    for (let i = adjStart; count < length; i++, count++) {
         modIndex = i % routingColors.length
         subarray.push(routingColors[modIndex])
     }
@@ -323,8 +312,6 @@ function connectEnds() {
     let geometry = new LineGeometry()
     geometry.setPositions(positions)
     geometry.setColors(colors)
-    // console.log(positions)
-
     line4 = new Line2(geometry, matLine)
     line4.computeLineDistances()
     line4.scale.set(1, 1, 1)
