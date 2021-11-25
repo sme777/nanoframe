@@ -6,26 +6,7 @@
   <title>Project Nanoframe</title>
 
   <!-- Stylesheet Links -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
-  <!-- Script Links-->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous">
-  </script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
-  </script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
-  </script>
-  <script src="https://kit.fontawesome.com/5a425d24f2.js" crossorigin="anonymous"></script>
+  <%= render "layouts/scripts" %>
   <%= stylesheet_link_tag 'application', media: 'all' %>
 
 </head>
@@ -76,11 +57,14 @@
   <div class="feed-container">
     <div class="switch-field">
       <input type="radio" id="radio-one" name="switch-one" value="public" checked />
-      <label for="radio-one" class="radio-label"><%= image_tag("public", class: "public-png")%> Public</label>
+      <label for="radio-one" class="radio-label"><img class="public-png"
+          src="https://nanoframe.s3.us-west-1.amazonaws.com/public.png"> Public</label>
       <input type="radio" id="radio-two" name="switch-one" value="private" />
-      <label for="radio-two" class="radio-label"><%= image_tag("private", class: "private-png")%> Private</label>
+      <label for="radio-two" class="radio-label"><img class="private-png"
+          src="https://nanoframe.s3.us-west-1.amazonaws.com/private.png"> Private</label>
       <input type="radio" id="radio-three" name="switch-one" value="history" />
-      <label for="radio-three" class="radio-label"><%= image_tag("history", class: "history-png")%> History</label>
+      <label for="radio-three" class="radio-label"><img class="history-png"
+          src="https://nanoframe.s3.us-west-1.amazonaws.com/history.png"> History</label>
     </div>
   </div>
 
@@ -127,7 +111,7 @@
                   <div class="guest-from-label">
                     <div class="separator">or</div>
                   </div>
-                 
+
                 </div>
               </div>
         </form>
@@ -148,7 +132,7 @@
         </div>
         <%= submit_tag "", class: "invisible", id: "github-sign-in" %>
         <% end %>
-         <a id="signup-btn" class="btn btn-lg btn-outline-dark w-50">Sign Up</a>
+        <a id="signup-btn" class="btn btn-lg btn-outline-dark w-50">Sign Up</a>
       </div>
     </div>
 

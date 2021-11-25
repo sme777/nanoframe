@@ -8,10 +8,6 @@ class GeneratorsController < ApplicationController
     @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
   end
 
-  def new
-    # @generator = Generator.new
-  end
-
   def shaper; end
 
   def synthesize

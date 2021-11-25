@@ -1,28 +1,6 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-
 <head>
-  <meta charset="utf-8">
-  <title>Project Nanoframe</title>
-
-  <!-- Stylesheet Links -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
-  <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne+Mono&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap" rel="stylesheet">
-  <!-- Script Links-->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous">
-  </script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-    integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-    integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
-  </script>
+  <title>NanoFrame</title>
+  <%= render "layouts/scripts"%>
   <%= stylesheet_link_tag 'application', media: 'all' %>
 </head>
 
@@ -33,32 +11,33 @@
   <div class="menu-items">
     <ul class="nav nav-tabs justify-content-end">
       <li class="nav-item">
-          <a class="nav-link" href="/">Home</a>
+        <a class="nav-link" href="/">Home</a>
       </li>
       <li class="nav-item">
-          <a class="nav-link active nanofont" href="/nanobot">The NanoBot</a>
+        <a class="nav-link active nanofont" href="/nanobot">The NanoBot</a>
       </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/miscellaneous">Miscellaneous</a>
-        </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/miscellaneous">Miscellaneous</a>
+      </li>
     </ul>
   </div>
 
-<div class="message-container">
-<% flash.each do |key, value| %>
-  <div class="alert alert-<%= key %> alert-dismissible fade show" role="alert">
-    <span class="mesage-value"><%= value %></span>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  <div class="message-container">
+    <% flash.each do |key, value| %>
+    <div class="alert alert-<%= key %> alert-dismissible fade show" role="alert">
+      <span class="mesage-value"><%= value %></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <% end %>
+    <div class="alert alert-warning alert-dismissible fade show warning-container" role="alert">
+      <p class="warning-text">The Loopout length is over 200 base pairs </p><a href="#"
+        id="continue_anchor">Continue?</a> See <a href="nanobot/generator">generator page</a>
+      for iteractive examples.
+    </div>
+    <div class="alert alert-danger alert-dismissible fade show danger-container" role="alert">
+      Specified dimensions are greater than scaffold length!
+    </div>
   </div>
-<% end %>
-  <div class="alert alert-warning alert-dismissible fade show warning-container" role="alert">
-  <p class="warning-text">The Loopout length is over 200 base pairs </p><a href="#" id="continue_anchor">Continue?</a> See <a href="nanobot/generator">generator page</a> 
-  for iteractive examples. 
-  </div>
-  <div class="alert alert-danger alert-dismissible fade show danger-container" role="alert">
-  Specified dimensions are greater than scaffold length!
-  </div>
-</div>
 
 
   <!-- End of NAVBAR-->
@@ -78,20 +57,20 @@
       <div class="shape-dropdown">
         <select id="synthesizer-shape" class="form-select" name="generator[shape]">
           <option value="0" disabled selected>Select Shape</option>
-          <option value="1" >Cube</option>
-          <option value="2" >Sphere</option>
-          <option value="3" >Cylinder</option>
-          <option value="4" >Cone</option>
-          <option value="5" >Polyhedron</option>
-          <option value="6" >Tetrahedron</option>
-          <option value="7" >Octahedron</option>
-          <option value="8" >Icosahedron</option>
-          <option value="9" >Dodecahedron</option>
+          <option value="1">Cube</option>
+          <option value="2">Sphere</option>
+          <option value="3">Cylinder</option>
+          <option value="4">Cone</option>
+          <option value="5">Polyhedron</option>
+          <option value="6">Tetrahedron</option>
+          <option value="7">Octahedron</option>
+          <option value="8">Icosahedron</option>
+          <option value="9">Dodecahedron</option>
           <option value="10 ">Torus</option>
-          <option value="11" >Torus Knot</option>
+          <option value="11">Torus Knot</option>
           <option value="/shaper">Custom</option>
         </select>
-        <%# <%= select_tag(:shape,  options_for_select(@options, :select => "2", :disabled => "0"), id: "synthesizer-shape", class: "form-select")%> 
+        <%# <%= select_tag(:shape,  options_for_select(@options, :select => "2", :disabled => "0"), id: "synthesizer-shape", class: "form-select")%>
       </div>
       <div class="color-scaffold-select">
         <div class="scaffold-select">
@@ -111,10 +90,10 @@
       <%# Erbify %>
       <div class="row sequence-container">
         <div class="col-md-6 random-sequence-container">
-            <input class="form-check-input" type="checkbox" value="" id="sequenceCheckbox" checked autocomplete="off">
-            <label class="form-check-label" for="sequenceCheckbox">
-              Random Sequence
-            </label>
+          <input class="form-check-input" type="checkbox" value="" id="sequenceCheckbox" checked autocomplete="off">
+          <label class="form-check-label" for="sequenceCheckbox">
+            Random Sequence
+          </label>
         </div>
 
         <div class="col-md-6 input-container">
@@ -125,82 +104,94 @@
       <%# Add hidden field for JSON data %>
 
       <div class="dimension-picker">
-        <div class="width-container dimension-wrapper-container <%= 'dimension-container' if @generator.width == nil %>">
+        <div
+          class="width-container dimension-wrapper-container <%= 'dimension-container' if @generator.width == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Width</span>
             <%= f.text_field :width, type: "text", class: "dimension-input width-input form-control", placeholder: "30 nm" %>
           </div>
         </div>
 
-        <div class="height-container dimension-wrapper-container <%= 'dimension-container' if @generator.height == nil %>">
+        <div
+          class="height-container dimension-wrapper-container <%= 'dimension-container' if @generator.height == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Height</span>
             <%= f.text_field :height, type: "text", class: "dimension-input height-input form-control", placeholder: "30 nm" %>
           </div>
         </div>
 
-        <div class="depth-container dimension-wrapper-container <%= 'dimension-container' if @generator.depth == nil %>">
+        <div
+          class="depth-container dimension-wrapper-container <%= 'dimension-container' if @generator.depth == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Depth</span>
             <%= f.text_field :depth, type: "text", class: "dimension-input depth-input form-control", placeholder: "30 nm" %>
           </div>
         </div>
-        <div class="radius-container dimension-wrapper-container <%= 'dimension-container' if @generator.radius == nil %>">
+        <div
+          class="radius-container dimension-wrapper-container <%= 'dimension-container' if @generator.radius == nil %>">
           <div data-bs-toggle="tooltip" data-bs-placement="left" title="Radius of the chosen object."
             class="input-group dimension-input-container">
             <span class="input-group-text w-25">Radius</span>
             <%= f.text_field :radius, type: "text", class: "dimension-input radius-input form-control", placeholder: "20 nm" %>
           </div>
         </div>
-        <div class="rs-container dimension-wrapper-container <%= 'dimension-container' if @generator.radial_segment == nil %>">
+        <div
+          class="rs-container dimension-wrapper-container <%= 'dimension-container' if @generator.radial_segment == nil %>">
           <div data-bs-toggle="tooltip" data-bs-placement="left"
             title="Number of segmented faces around the circumference." class="input-group dimension-input-container">
             <span class="input-group-text w-25">Radial Segment</span>
             <%= f.text_field :radial_segment, type: "text", class: "dimension-input rs-input form-control", placeholder: "10 nm" %>
           </div>
         </div>
-        <div class="rt-container dimension-wrapper-container <%= 'dimension-container' if @generator.radius_top == nil %>">
+        <div
+          class="rt-container dimension-wrapper-container <%= 'dimension-container' if @generator.radius_top == nil %>">
           <div data-bs-toggle="tooltip" data-bs-placement="left" title="Radius of the chosen object at the top"
             class="input-group dimension-input-container">
             <span class="input-group-text w-25">Radius Top</span>
             <%= f.text_field :radius_top, type: "text", class: "dimension-input rst-input form-control", placeholder: "20 nm" %>
           </div>
         </div>
-        <div class="rb-container dimension-wrapper-container <%= 'dimension-container' if @generator.radius_bottom == nil %>">
+        <div
+          class="rb-container dimension-wrapper-container <%= 'dimension-container' if @generator.radius_bottom == nil %>">
           <div data-bs-toggle="tooltip" data-bs-placement="left" title="Radius of the object at the bottom"
             class="input-group dimension-input-container">
             <span class="input-group-text w-25">Radius Bottom</span>
             <%= f.text_field :radius_bottom, type: "text", class: "dimension-input rsb-input form-control", placeholder: "15 nm" %>
           </div>
         </div>
-        <div class="detail-container dimension-wrapper-container <%= 'dimension-container' if @generator.detail == nil %>">
+        <div
+          class="detail-container dimension-wrapper-container <%= 'dimension-container' if @generator.detail == nil %>">
           <div title="Setting this to a value greater than 0 adds vertices making it no longer a chosen hedron."
             class="input-group dimension-input-container">
             <span class="input-group-text w-25">Detail</span>
             <%= f.text_field :detail, type: "text", class: "dimension-input detail-input form-control", placeholder: "0" %>
           </div>
         </div>
-        <div class="ws-container dimension-wrapper-container <%= 'dimension-container' if @generator.width_segment == nil %>">
+        <div
+          class="ws-container dimension-wrapper-container <%= 'dimension-container' if @generator.width_segment == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Width Stripes</span>
             <%= f.text_field :width_segment, type: "text", class: "dimension-input ws-input form-control", placeholder: "3" %>
           </div>
         </div>
-        <div class="hs-container dimension-wrapper-container <%= 'dimension-container' if @generator.height_segment == nil %>">
+        <div
+          class="hs-container dimension-wrapper-container <%= 'dimension-container' if @generator.height_segment == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Height Stripes</span>
             <%= f.text_field :height_segment, type: "text", class: "dimension-input hs-input form-control", placeholder: "3" %>
           </div>
         </div>
 
-        <div class="ds-container dimension-wrapper-container <%= 'dimension-container' if @generator.depth_segment == nil %>">
+        <div
+          class="ds-container dimension-wrapper-container <%= 'dimension-container' if @generator.depth_segment == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Depth Stripes</span>
             <%= f.text_field :depth_segment, type: "text", class: "dimension-input ds-input form-control", placeholder: "3" %>
           </div>
         </div>
 
-        <div class="tube-container dimension-wrapper-container <%= 'dimension-container' if @generator.tube_radius == nil %>">
+        <div
+          class="tube-container dimension-wrapper-container <%= 'dimension-container' if @generator.tube_radius == nil %>">
           <div data-bs-toggle="tooltip" data-bs-placement="left" title="Radius of the tube."
             class="input-group dimension-input-container">
             <span class="input-group-text w-25">Tube Radius</span>
@@ -208,7 +199,8 @@
           </div>
         </div>
 
-        <div class="tubular-container dimension-wrapper-container <%= 'dimension-container' if @generator.tubular_radius == nil %>">
+        <div
+          class="tubular-container dimension-wrapper-container <%= 'dimension-container' if @generator.tubular_radius == nil %>">
           <div class="input-group dimension-input-container">
             <span class="input-group-text w-25">Tubular Segment</span>
             <%= f.text_field :tubular_radius, type: "text", class: "dimension-input tubular-input form-control", placeholder: "10 nm" %>
@@ -259,10 +251,4 @@
   </div>
   <!-- End of FOOTER-->
   <%= javascript_pack_tag 'dna', 'model', 'nanobot', 'data-turbolinks-track': 'reload'%>
-
-  <!-- Start of Generator Script -->
-
-  <!-- End of Generator Script -->
 </body>
-
-</html>
