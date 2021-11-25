@@ -24,8 +24,8 @@ export function findStrongestConnectedComponents(edges, ratio, dims) {
             }
         }
     }
-    const remainingArray = findSubArray(edges, (edgeStart + finalArray.length) % edgesLength, edgesLength - finalArray.length)
-    return [finalArray, remainingArray, edgeStart, (edgeStart + finalArray.length) % edgesLength]
+    const remainingArray = findSubArray(edges, (edgeStart + finalArray.length - 1) % edgesLength, edgesLength - finalArray.length)
+    return [finalArray, remainingArray, edgeStart, (edgeStart + finalArray.length- 1) % edgesLength]
     
 }
 
@@ -33,7 +33,7 @@ function findSubArray(edges, start, length) {
     let count = 0
     let modIndex
     let subarray = []
-    for (let i = start; count < length; i++, count++) {
+    for (let i = start; count < length + 1; i++, count++) {
         modIndex = i % edges.length
         subarray.push(edges[modIndex])
     }

@@ -27,6 +27,8 @@ const depthSegmentLength = depth / segments
 
 let line, renderer, scene, camera, camera2, controls
 let line1, line2, line3
+let firstStartPoint, firstEndPoint
+let lastStartPoint, lastEndPoint
 // let matLine, matLineBasic, matLineDashed
 let matLine = new LineMaterial({
     color: 0xffffff,
@@ -47,6 +49,7 @@ let routingColors
 let canvasContainer = document.querySelector(".visualizer-container")
 let canvasContainerWidth = canvasContainer.offsetWidth
 let canvasContainerHeight = canvasContainer.offsetHeight
+
 
 renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -208,17 +211,16 @@ function vectorize(vertex) {
 function generateDisplay(edges, residualEdges=false, fullDisplay=true, start=0) {
     const positions = []
     let colors = []
+    console.log(edges)
     const spline = new THREE.CatmullRomCurve3(edges)
     const divisions = Math.round(12 * edges.length)
     const point = new THREE.Vector3()
 
     for (let i = 0, l = divisions; i < l; i++) {
-
         const t = i / l
-
         spline.getPoint(t, point)
         if (residualEdges) {
-            positions.push(point.x - 30, point.y - 50, point.z + 60)
+            positions.push(point.x - 30, point.y - 30, point.z + 60)
             
         } else {
             positions.push(point.x, point.y, point.z)
@@ -227,6 +229,18 @@ function generateDisplay(edges, residualEdges=false, fullDisplay=true, start=0) 
             colors.push(0.5, 0.5, t)
         }
     }
+
+    // set up first and last points
+    if (!fullDisplay) {
+        if (!residualEdges) {
+            firstStartPoint = positions.slice(0, 3)
+            firstEndPoint = positions.slice(-3)
+        } else {
+            lastStartPoint = positions.slice(0, 3)
+            lastEndPoint = positions.slice(-3)
+        }
+    }
+
     if (fullDisplay) {
         routingColors = colors
     } else {
@@ -260,7 +274,7 @@ function generateDisplay(edges, residualEdges=false, fullDisplay=true, start=0) 
         line1.visible = false
         scene.add(line1)
         camera.lookAt(line.position)
-        line.geometry.center()
+        // line.geometry.center()
         camera.lookAt(line.position)
         
 
@@ -299,6 +313,55 @@ function findColorSequnece(start, length) {
     return subarray
 }
 
+function connectEnds() {
+    let [positions, colors] = getCurvePoints(lastStartPoint, firstEndPoint)
+    // let colors = Array(30).fill(0.5)
+    let geometry = new LineGeometry()
+    geometry.setPositions(positions)
+    geometry.setColors(colors)
+    // console.log(positions)
+
+    let line4 = new Line2(geometry, matLine)
+    line4.computeLineDistances()
+    line4.scale.set(1, 1, 1)
+    scene.add(line4)
+    let geo = new THREE.BufferGeometry()
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
+    let line5  = new THREE.Line(geo, matLineBasic)
+    scene.add(line5)
+
+    let [positions2, colors2] = getCurvePoints(lastEndPoint, firstStartPoint)
+    geometry = new LineGeometry()
+    geometry.setPositions(positions2)
+    geometry.setColors(colors2)
+
+    let line6 = new Line2(geometry, matLine)
+    line6.computeLineDistances()
+    line6.scale.set(1, 1, 1)
+    scene.add(line6)
+    geo = new THREE.BufferGeometry()
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions2, 3))
+    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors2, 3))
+    let line7  = new THREE.Line(geo, matLineBasic)
+    scene.add(line7)
+}
+
+function getCurvePoints(start, end) {
+    let positions = []
+    let colors = []
+    const divisions = 96
+    const point = new THREE.Vector3()
+    const spline = new THREE.CatmullRomCurve3([new THREE.Vector3(start[0], start[1], start[2]), new THREE.Vector3(end[0], end[1], end[2])])
+    for (let i = 0, l = divisions; i < l; i++) {
+        const t = i / l
+        spline.getPoint(t, point)
+        positions.push(point.x + (Math.random() - 0.5), point.y + (Math.random() - 0.5), point.z + (Math.random() - 0.5))
+        colors.push(t, 0.5, t)
+    }
+
+    return [positions, colors]
+}
 
 function clearDisplay() {
     if (line != undefined) {
@@ -398,6 +461,7 @@ box.addEventListener("click", () => {
         clearDisplay()
         generateDisplay(scp[0], false, false, scp[2])
         generateDisplay(scp[1], true, false, scp[3])
+        connectEnds()
         // generateDisplay(scp[1], true)
     } else {
         boxLabel.innerHTML = "Open Form"
