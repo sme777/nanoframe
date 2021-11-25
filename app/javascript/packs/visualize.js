@@ -26,7 +26,7 @@ const heightSegmentLength = height / segments
 const depthSegmentLength = depth / segments
 
 let line, renderer, scene, camera, camera2, controls
-let line1, line2, line3
+let line1, line2, line3, line4, line5, line6, line7
 let firstStartPoint, firstEndPoint
 let lastStartPoint, lastEndPoint
 // let matLine, matLineBasic, matLineDashed
@@ -274,7 +274,10 @@ function generateDisplay(edges, residualEdges=false, fullDisplay=true, start=0) 
         line1.visible = false
         scene.add(line1)
         camera.lookAt(line.position)
-        // line.geometry.center()
+        if (fullDisplay) {
+            line.geometry.center()
+        }
+        
         camera.lookAt(line.position)
         
 
@@ -321,14 +324,14 @@ function connectEnds() {
     geometry.setColors(colors)
     // console.log(positions)
 
-    let line4 = new Line2(geometry, matLine)
+    line4 = new Line2(geometry, matLine)
     line4.computeLineDistances()
     line4.scale.set(1, 1, 1)
     scene.add(line4)
     let geo = new THREE.BufferGeometry()
     geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
     geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
-    let line5  = new THREE.Line(geo, matLineBasic)
+    line5  = new THREE.Line(geo, matLineBasic)
     scene.add(line5)
 
     let [positions2, colors2] = getCurvePoints(lastEndPoint, firstStartPoint)
@@ -336,14 +339,14 @@ function connectEnds() {
     geometry.setPositions(positions2)
     geometry.setColors(colors2)
 
-    let line6 = new Line2(geometry, matLine)
+    line6 = new Line2(geometry, matLine)
     line6.computeLineDistances()
     line6.scale.set(1, 1, 1)
     scene.add(line6)
     geo = new THREE.BufferGeometry()
     geo.setAttribute('position', new THREE.Float32BufferAttribute(positions2, 3))
     geo.setAttribute('color', new THREE.Float32BufferAttribute(colors2, 3))
-    let line7  = new THREE.Line(geo, matLineBasic)
+    line7  = new THREE.Line(geo, matLineBasic)
     scene.add(line7)
 }
 
@@ -387,6 +390,34 @@ function clearDisplay() {
         line3.material.dispose()
         scene.remove(line3)
     }
+
+    if (line4 != undefined) {
+        line4.geometry.dispose()
+        line4.material.dispose()
+        scene.remove(line4)
+    }
+
+    if (line5 != undefined) {
+        line5.geometry.dispose()
+        line5.material.dispose()
+        scene.remove(line5)
+    }
+
+
+    if (line6 != undefined) {
+        line6.geometry.dispose()
+        line6.material.dispose()
+        scene.remove(line6)
+    }
+
+
+    if (line7 != undefined) {
+        line7.geometry.dispose()
+        line7.material.dispose()
+        scene.remove(line7)
+    }
+
+
 }
 window.addEventListener('resize', onWindowResize)
 onWindowResize()
