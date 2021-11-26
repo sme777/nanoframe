@@ -152,6 +152,7 @@ class GeneratorsController < ApplicationController
   end
 
   def create
+    # byebug
       @generator = Generator.new(generator_params)
       if !@current_user.nil?
         @generator.user_id = @current_user.id
@@ -209,7 +210,7 @@ class GeneratorsController < ApplicationController
   private
 
   def generator_params
-    params.require(:generator).permit(:height, :width, :depth, :option, :depth_segment, :continue,
+    params.require(:generator).permit(:height, :width, :depth, :option, :depth_segment, :continue, :visibility,
                                       :radius, :radial_segment, :radius_top, :radius_bottom, :width_segment, :detail,
                                       :height_segment, :tube_radius, :tubular_radius, :p, :q, :scaffold_length, :shape, :json)
   end

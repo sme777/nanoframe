@@ -382,4 +382,14 @@ $(document).ready(function() {
   })
 })
 
+$(document).ready(function() {
+  $("#visibility-input").click(() => {
+    if ($("#visibility-input").prop("checked")) {
+      $("#visibility-label").text("Public")
+    } else {
+      $("#visibility-label").text("Private")
+    }
+  })
+})
+
 

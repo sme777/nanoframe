@@ -90,7 +90,14 @@
       </div>
       <%= f.hidden_field "scaffold_length" ""%>
       <%# Add hidden field for JSON data %>
-
+      <% if @current_user %>
+      <div class="visibility-container">
+        <div class="form-check form-switch">
+          <%= f.check_box :visibility, class: "form-check-input", id: "visibility-input", checked: true%>
+          <label class="form-check-label" id="visibility-label" for="visibility-input">Public</label>
+        </div>
+      </div>
+      <% end %>
       <div class="dimension-picker">
         <div
           class="width-container dimension-wrapper-container <%= 'dimension-container' if @generator.width == nil %>">
