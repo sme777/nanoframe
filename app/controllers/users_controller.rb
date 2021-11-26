@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   def index
     @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
     if !@current_user.nil?
-      @generators = @current_user.generators
+      @generators = @current_user.generators.order(created_at: :desc)
     end
   end
 

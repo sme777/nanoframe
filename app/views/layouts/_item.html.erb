@@ -1,54 +1,64 @@
   <div class="card design-container">
-    <input type="hidden" id="index-<%= index %>" value="<%= generator.id%>">
-    <input type="hidden" id="generator-container-<%= generator.id%>" value="<%= generator.routing%>">
-    <div class="row">
-      <div class="col-md-7 px-3 canvas-container">
-        <canvas id="webgl-public-<%= generator.id %>"></canvas>
-      </div>
-      <div class="col-md-5">
-        <div class="row first">
-            <div class="col-md-6">
-                <p class="item-description">Shape: <%= "Cube" if generator.shape == "1" %></p>
-            </div>
-            <div class="col-md-6 change-visibility">
-                <a href="">Make Private</a>
-            </div>
-        </div>
-        <div class="row">
-          <p class="item-description">Width: <%= generator.width %> nm</p>
-        </div>
-        <div class="row">
-          <p class="item-description">Height: <%= generator.height %> nm</p>
-        </div>
-        <div class="row">
-          <p class="item-description">Depth: <%= generator.depth %> nm</p>
-        </div>
-        <div class="row">
-          <p class="date-description">Created: <i><%= generator.created_at.strftime("%A, %B %e, %Y") %></i></p>
-        </div>
-        <div class="row downloads-container">
-            <div class="col-md-3">
-            <a href="nanobot/<%= generator.id %>/nfr" class="btn btn-outline-primary w-100">
-            <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-            nfr</a>
-            </div>
-            <div class="col-md-3">
-            <a href="nanobot/<%= generator.id %>/oxdna" class="btn btn-outline-secondary w-100">
-            <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-            oxview</a>
-            </div>
-            <div class="col-md-3">
-            <a href="nanobot/<%= generator.id %>/staples" class="btn btn-outline-danger w-100">
-            <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-            staples</a>
-            </div>
-            <div class="col-md-3">
-            <a href="nanobot/<%= generator.id %>/bundle" class="btn btn-outline-success w-100">
-            <img class="generate-download-txt" src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-            bundle</a>
-            </div>
+      <input type="hidden" id="index-<%= index %>" value="<%= generator.id%>">
+      <input type="hidden" id="generator-container-<%= generator.id%>" value="<%= generator.routing%>">
+      <div class="row">
+          <div class="col-md-7 px-3 canvas-container">
+              <canvas id="webgl-public-<%= generator.id %>"></canvas>
+          </div>
+          <div class="col-md-5">
+              <div class="row first">
+                  <div class="col-md-6">
+                      <p class="item-description">Shape: <%= "Cube" if generator.shape == "1" %></p>
+                  </div>
+                  <div class="col-md-6 edit-toolkit">
+                      <a href="">Make Private</a>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-6">
+                      <p class="item-description">Width: <%= generator.width %> nm</p>
+                  </div>
 
-        </div>
+                  <div class="col-md-6 edit-toolkit">
+                      <a href="/nanobot/<%= generator.id%>/visualize">Edit</a>
+                  </div>
+              </div>
+              <div class="row">
+                  <p class="item-description">Height: <%= generator.height %> nm</p>
+              </div>
+              <div class="row">
+                  <p class="item-description">Depth: <%= generator.depth %> nm</p>
+              </div>
+              <div class="row">
+                  <p class="date-description">Created: <i><%= generator.created_at.strftime("%A, %B %e, %Y") %></i></p>
+              </div>
+              <div class="row downloads-container">
+                  <div class="col-md-3">
+                      <a href="nanobot/<%= generator.id %>/nfr" class="btn btn-outline-primary w-100">
+                          <img class="generate-download-txt"
+                              src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+                          nfr</a>
+                  </div>
+                  <div class="col-md-3">
+                      <a href="nanobot/<%= generator.id %>/oxdna" class="btn btn-outline-secondary w-100">
+                          <img class="generate-download-txt"
+                              src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+                          oxview</a>
+                  </div>
+                  <div class="col-md-3">
+                      <a href="nanobot/<%= generator.id %>/staples" class="btn btn-outline-danger w-100">
+                          <img class="generate-download-txt"
+                              src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+                          staples</a>
+                  </div>
+                  <div class="col-md-3">
+                      <a href="nanobot/<%= generator.id %>/bundle" class="btn btn-outline-success w-100">
+                          <img class="generate-download-txt"
+                              src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
+                          bundle</a>
+                  </div>
+
+              </div>
+          </div>
       </div>
-    </div>
   </div>
