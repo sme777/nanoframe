@@ -89,7 +89,13 @@ objectSets = normalize(objectSets)
 generateDisplay(objectSets)
 
 
-
+// const boxGeo = new THREE.BoxGeometry(45, 45, 45)
+// const boxMaterial = new THREE.MeshPhongMaterial({color: 0xDCDCDC,  polygonOffset: true})
+// const boxMesh = new THREE.Mesh(boxGeo, boxMaterial)
+// let light = new THREE.DirectionalLight( 0xffffff );
+// light.position.set( 1, 3, 2 ).normalize();
+// scene.add(light);
+// scene.add(boxMesh)
 
 /*
     Normalize the coordinates retireved fromn graph

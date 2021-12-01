@@ -78,7 +78,7 @@ if (document.getElementById("signOutButton") != null) {
 
         objectSets = normalize(objectSets)
         generateDisplay(objectSets)
-        
+
         let controls = new OrbitControls(camera, renderer.domElement)
         controls.minDistance = 10
         controls.maxDistance = 500
@@ -216,7 +216,12 @@ if (document.getElementById("signOutButton") != null) {
                     positions.push(point.x, point.y, point.z)
                 }
                 if (fullDisplay) {
-                    colors.push(0.5, 0.5, t)
+                    if (i == 0) {
+                        colors.push(0.5, 0.5, t)
+                    } else {
+                        colors.push(t, 0.5, 0.5)
+                    }
+                    
                 }
             }
             // set up first and last points

@@ -5,7 +5,72 @@
 </head>
 
 <body>
-  
+
   <%= render partial: "layouts/nav", locals: {tab: "other"}%>
+  <div class="content-container">
+    <div class="tutorials-container">
+      <h1 id="tutorials">Tutorials</h1>
+      <ol class="list-group list-group-numbered">
+  <li class="list-group-item d-flex justify-content-between align-items-start">
+    <div class="ms-2 me-auto">
+      <div class="fw-bold">Video Tutorials</div>
+      <a href="#">YouTube playlist of NanoFrame services</a> 
+    </div>
+    <span class="badge bg-info rounded-pill">6</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-start">
+    <div class="ms-2 me-auto">
+      <div class="fw-bold">Docs</div>
+        <a href="#">Overview of NanoFrame and services</a>
+    </div>
+    <span class="badge bg-info rounded-pill">10</span>
+  </li>
+  <li class="list-group-item d-flex justify-content-between align-items-start">
+    <div class="ms-2 me-auto">
+      <div class="fw-bold">Issues</div>
+      Reporting issues through GitHub
+    </div>
+    <span class="badge bg-danger rounded-pill">0</span>
+  </li>
+</ol>
+      <hr>
+    </div>
+    <div class="api-container">
+      <h1 id="api">API</h1>
+      
+      <h3>Getting familiar with <code>nfr</code> format</h3>
+      
+      <code>
+      </code>
+     
+      <h3>Scripting with <code>nfr</code> in NanoFrame</h3>
+      <hr>
+    </div>
+    <div class="methods-container">
+      <h1>Methods</h1>
+
+      <h3>DNA Routing</h3>
+
+      <h3>Staples Breaking</h3>
+
+      <h3>Cage Opening</h3>
+      <hr>
+    </div>
+    <div class="results-container">
+      <h1>Results</h1>
+      <hr>
+    </div>
+    <div class="contributing-container">
+      <h1>Contributing</h1>
+      <p>NanoFrame is an open-source project and will remains as such in perpetuity. We welcome contributions, please visit out GitHub 
+      <a href="https://github.com/tilabberkeley/nanoframe/blob/master/CONTRIBUTING.md">page</a> for guides and details on setting up your local enviornment. 
+      NanoFrame is a Ruby on Rails + Three.js application and follows the MVC architecture. If you have never worked with <img src="https://nanoframe.s3.us-west-1.amazonaws.com/ruby.jpg" class="small"> 
+      Ruby you are up for some jam! Ruby does all the hard work of finding a routing, generating staples, and opening the cage, so any contributions in the back end will need to be scripted in Ruby.
+      JavaScript (for Three.js) beautifies the results from the back end. <img src="https://nanoframe.s3.us-west-1.amazonaws.com/three.png" class="small"> Three.js is a powerful 3D graphics library based of 
+      WebGL. We use Three.js methods in conjuction with our own custom shaders (as some shapes cannot be realized by Three.js alone). If you would like to make contributions to the front end, you will need a 
+      profound understanding of either Three.js or how vertex shaders and fragment shaders work.
+      </p>
+    </div>
+  </div>
   <%= render "layouts/footer"%>
 </body>

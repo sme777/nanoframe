@@ -152,7 +152,6 @@ class GeneratorsController < ApplicationController
   end
 
   def create
-    # byebug
       @generator = Generator.new(generator_params)
       if !@current_user.nil?
         @generator.user_id = @current_user.id
