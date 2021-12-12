@@ -11,7 +11,7 @@ Supported wireframes include cube, sphere, cone, tetrahedron, and many more.
 Consider citing the associated paper if you find the project useful.
 > <ins>NanoFrame: A web-based DNA wireframe design tool for 3D structures</ins>.  
 > Samson Petrosyan, Grigory Tikhomirov  
-> [paper](https://google.com) | [arXiv](https://arxiv.org) 
+> [paper](https://google.com) | [arXiv](https://arxiv.org/abs/2111.13992) 
  
 # Contents
 - [Control Flow](#control-flow)
