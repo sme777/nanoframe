@@ -9,7 +9,6 @@ class Generator < ApplicationRecord
   
   def scaffold(sequence, coordinates)
     @dna = []
-    # byebug
     @atom_count = 0
     @graph = nil
     index = 0
@@ -192,7 +191,6 @@ class Generator < ApplicationRecord
   end
 
   def oxdna(filename)
-    # byebug
     filename = __id__.to_s
     file = File.open('app/assets/results/' + filename + '.oxview', 'w')
     dateNow = DateTime.now().strftime("%FT%T%:z")
@@ -211,7 +209,6 @@ class Generator < ApplicationRecord
     rip1 = 0.012972598874543932.to_s
     rip2 = 0.8444614293366373
     rip3 = 0.5355880438590741.to_s
-    byebug
     for i in 0..dna_len
       if i % 20 == 0
         dir = -dir
