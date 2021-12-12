@@ -29,6 +29,10 @@ class Generator < ApplicationRecord
     end
   end
 
+  def staples(sequence, coordinates)
+
+  end
+
   def self.generate_objects(step_size, loopout_length, min_len, max_len, scaff_length)
     min_len = min_len.to_i
     max_len = max_len.to_i
@@ -192,7 +196,7 @@ class Generator < ApplicationRecord
     filename = __id__.to_s
     file = File.open('app/assets/results/' + filename + '.oxview', 'w')
     dateNow = DateTime.now().strftime("%FT%T%:z")
-    date = '"date":' + '"' + dateNow + '"'
+    date = `"date": "#{dateNow}"`
     file.write("{")
     file.write('"box": [1000, 1000, 1000],')
     file.write('"systems": [{')
@@ -207,6 +211,7 @@ class Generator < ApplicationRecord
     rip1 = 0.012972598874543932.to_s
     rip2 = 0.8444614293366373
     rip3 = 0.5355880438590741.to_s
+    byebug
     for i in 0..dna_len
       if i % 20 == 0
         dir = -dir
@@ -228,15 +233,18 @@ class Generator < ApplicationRecord
       rot1 = rot1.to_s
       rot2 = rot2.to_s
       file.write('"a1": [' + rot1 + ', ' + rot2 +', ' + rot3 + '],')
-      file.write('"a3": [' +rip1+ ', ' + (-dir*rip2).to_s+ ', ' + rip3 + '],')
-      # file.write('"a3": [0, 0, 1],')
+      file.write('"a3": [' + rip1+ ', ' + (-dir*rip2).to_s+ ', ' + rip3 + '],')
       # end backbone and sstacking vectors
-      # file.write('"n3": ' + (dna_len-i).to_s + ',')
-      # if i == 0
-      #   file.write('"n5": ' + 0.to_s + ',')
-      # else
-      #   file.write('"n5": ' + (dna_len-i+1).to_s + ',')
-      # end
+      if i == dna_len
+        file.write('"n3": ' + -1.to_s + ',')
+      else
+        file.write('"n3": ' + (dna_len-i-1).to_s + ',')
+      end
+      if i == 0
+        file.write('"n5": ' + 0.to_s + ',')
+      else
+        file.write('"n5": ' + (dna_len-i+1).to_s + ',')
+      end
       file.write('"cluster": ' + 3.to_s + ',')
       file.write('"bp": ' + (dna_len+1-i).to_s)
       if i == dna_len
@@ -247,7 +255,7 @@ class Generator < ApplicationRecord
     end
     file.write('],')
     file.write('"end3": 0,')
-    file.write('"end5": 300,')
+    file.write(`"end5": #{dna_len} ,`)
     file.write('"class": "NucleicAcidStrand"')
     file.write('}]')
     file.write('}],')

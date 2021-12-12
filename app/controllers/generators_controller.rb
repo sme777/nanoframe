@@ -95,10 +95,14 @@ class GeneratorsController < ApplicationController
   end
 
   def download_oxdna
+    byebug
     json_obj = JSON.parse(@generator.json)
-    sequence = json_obj['sequence']
-    coordinates = json_obj['positions']
-    @generator.scaffold(sequence, coordinates)
+    scaffold_sequence = json_obj['sequence']
+    scaffold_coordinates = json_obj['positions']
+    staple_sequence = json_obj['sSequence']
+    staple_coordinates = json_obj['sPositions']
+    @generator.scaffold(scaffold_sequence, scaffold_coordinates)
+    @generator.staples(staple_sequence, staple_coordinates)
     filename = @generator.oxdna(session[:filename])
     file = File.open('app/assets/results/' + filename + '.oxview')
     contents = file.read
