@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
@@ -39,16 +41,19 @@ gem 'bootsnap', '>= 1.4.4', require: false
 # File zipper
 gem 'rubyzip'
 # Loggers
+gem 'oink'
 gem 'unicorn'
-gem "oink"
 # gem 'rack-timeout'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
   gem 'cucumber-rails', require: false
-  gem 'rspec-rails', '~> 5.0.0'
   gem 'jasmine'
+  gem 'rspec-rails', '~> 5.0.0'
+  gem 'rubocop', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
   gem 'simplecov', require: false
   # database_cleaner is not required, but highly recommended
   gem 'database_cleaner'

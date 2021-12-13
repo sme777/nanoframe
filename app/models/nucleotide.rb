@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Nucleotide
   attr_accessor :atoms, :base, :x, :y, :z
 
@@ -9,13 +11,14 @@ class Nucleotide
     @x = start_pos[0]
     @y = start_pos[1]
     @z = start_pos[2]
-    @atoms = if base == 'A'
+    @atoms = case base
+             when 'A'
                generate_adenine
-             elsif base == 'G'
+             when 'G'
                generate_guanine
-             elsif base == 'T'
+             when 'T'
                generate_thymine
-             elsif base == 'C'
+             when 'C'
                generate_cytosine
              end
   end

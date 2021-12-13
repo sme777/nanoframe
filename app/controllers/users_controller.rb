@@ -1,9 +1,9 @@
+# frozen_string_literal: true
+
 class UsersController < ApplicationController
   def index
     @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
-    if !@current_user.nil?
-      @generators = @current_user.generators.order(created_at: :desc)
-    end
+    @generators = @current_user.generators.order(created_at: :desc) unless @current_user.nil?
   end
 
   def miscellaneous; end
@@ -20,21 +20,20 @@ class UsersController < ApplicationController
     first = user_params[:first]
     last = user_params[:last]
 
-    name = first + ' ' + last
+    name = "#{first} #{last}"
 
     email_first = user_params[:email_first]
     email_last = user_params[:email_last]
 
-    email = email_first + '@' + email_last
+    email = "#{email_first}@#{email_last}"
     username = user_params[:username]
     user = User.new({ name: name, username: username, email: email, password: user_params[:password] })
     if user.save
       session[:user_id] = user.id
-      redirect_to '/'
     else
       flash[:register_errors] = user.errors.full_messages
-      redirect_to '/'
     end
+    redirect_to '/'
   end
 
   def google_oauth2
@@ -57,8 +56,8 @@ class UsersController < ApplicationController
   def find_or_create_user(user_info, create_if_not_exists)
     provider_sym = user_info['provider'].to_sym
     user = User.find_by(
-        provider: User.providers[provider_sym],
-        uid:      user_info['uid']
+      provider: User.providers[provider_sym],
+      uid: user_info['uid']
     )
     return user unless user.nil?
 
@@ -67,41 +66,40 @@ class UsersController < ApplicationController
 
   def create_google_user(user_info)
     User.create(
-        uid:        user_info['uid'],
-        provider:   User.providers[:google_oauth2],
-        first_name: user_info['info']['first_name'],
-        last_name:  user_info['info']['last_name'],
-        email:      user_info['info']['email']
+      uid: user_info['uid'],
+      provider: User.providers[:google_oauth2],
+      first_name: user_info['info']['first_name'],
+      last_name: user_info['info']['last_name'],
+      email: user_info['info']['email']
     )
   end
 
   def create_github_user(user_info)
-      # Unfortunately, Github doesn't provide first_name, last_name as separate entries.
-      name = user_info['info']['name']
-      if name.nil?
-          first_name = 'Anon'
-          last_name = 'User'
-      else
-          first_name, last_name = user_info['info']['name'].strip.split(/\s+/, 2)
-      end
-      User.create(
-          uid:        user_info['uid'],
-          provider:   User.providers[:github],
-          first_name: first_name,
-          last_name:  last_name,
-          email:      user_info['info']['email']
-      )
+    # Unfortunately, Github doesn't provide first_name, last_name as separate entries.
+    name = user_info['info']['name']
+    if name.nil?
+      first_name = 'Anon'
+      last_name = 'User'
+    else
+      first_name, last_name = user_info['info']['name'].strip.split(/\s+/, 2)
+    end
+    User.create(
+      uid: user_info['uid'],
+      provider: User.providers[:github],
+      first_name: first_name,
+      last_name: last_name,
+      email: user_info['info']['email']
+    )
   end
 
   def sign_in
     user = User.find_by(username: login_params[:login_username])
-    if user && user.authenticate(login_params[:login_password])
+    if user&.authenticate(login_params[:login_password])
       session[:user_id] = user.id
-      redirect_to '/'
     else
       flash[:danger] = 'Invalid Login Credentials'
-      redirect_to '/'
     end
+    redirect_to '/'
   end
 
   def sign_out
@@ -127,10 +125,7 @@ class UsersController < ApplicationController
     redirect_to '/'
   end
 
-  def add_generator(g)
-
-
-  end
+  def add_generator(g); end
 
   private
 

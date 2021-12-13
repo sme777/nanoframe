@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Shape
   attr_accessor :shape, :value, :disabled, :selected
 
