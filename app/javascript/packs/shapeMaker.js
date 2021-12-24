@@ -122,7 +122,12 @@ export function makeTorusKnot(obj=null) {
     Data.torusKnotData.p, 
     Data.torusKnotData.q
   )
+  // retrieveData()
   return obj ? regenerate(obj, geometry) : new THREE.LineSegments(geometry, wireframeMaterial)
+}
+
+function retrieveData(shapeName, ...arguments) {
+  console.log(arguments)
 }
 
 function regenerate(obj, geometry) {
