@@ -18,11 +18,11 @@ class Edge
     { "v1": @v1.to_hash, "v2": @v2.to_hash }
   end
 
-  def to_json()
+  def to_json(*_args)
     JSON.generate({ "v1": @v1.to_hash, "v2": @v2.to_hash })
   end
 
-  def self.string_of_edges(edges)
+  def self.string_of_edges(_edges)
     ''
   end
 
