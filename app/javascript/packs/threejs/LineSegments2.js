@@ -192,17 +192,15 @@ class LineSegments2 extends THREE.Mesh {
 
 			// trim the segment if it extends behind camera near
 			if ( _start4.z > near ) {
-
-				const deltaDist = _start4.z - _end4.z;
-				const t = ( _start4.z - near ) / deltaDist;
-				_start4.lerp( _end4, t );
-
+				deltaLerp(_start4, _end4)
 			} else if ( _end4.z > near ) {
-
-				const deltaDist = _end4.z - _start4.z;
-				const t = ( _end4.z - near ) / deltaDist;
-				_end4.lerp( _start4, t );
-
+				deltaLerp(_end4, _start4)
+			}
+			
+			function deltaLerp (v1, v2) { 
+				const deltaDist = v1 - v2
+				const t = (v1.z - near) / deltaDist
+				v1.lerp(v2, t)
 			}
 
 			// clip space

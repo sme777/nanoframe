@@ -61,25 +61,25 @@ shape.addEventListener("click", function() {
 
     guiElements.push(gui.add(meshData, 'width', 0, 240).name('Width').setValue(30).onChange(() => {
       
-      Maker.regenerateCube(mesh)
+      Maker.makeCube(mesh)
     }))
     guiElements.push(gui.add(meshData, 'height', 0, 240).name('Height').setValue(30).onChange(() => {
       
-      Maker.regenerateCube(mesh)
+      Maker.makeCube(mesh)
     }))
     guiElements.push(gui.add(meshData, 'depth', 0, 240).name('Depth').setValue(30).onChange(() => {
-      Maker.regenerateCube(mesh)
+      Maker.makeCube(mesh)
     }))
 
     guiElements.push(gui.add(meshData, 'widthSegments', 1, 15).step(1).name('Width Stripes').setValue(2).onChange(() => {
-      Maker.regenerateCube(mesh)
+      Maker.makeCube(mesh)
     }))
 
     guiElements.push(gui.add(meshData, 'heightSegments', 1, 15).step(1).name('Height Stripes').setValue(2).onChange(() => {
-      Maker.regenerateCube(mesh)
+      Maker.makeCube(mesh)
     }))
     guiElements.push(gui.add(meshData, 'depthSegments', 1, 15).step(1).name('Depth Stripes').setValue(2).onChange(() => {
-      Maker.regenerateCube(mesh)
+      Maker.makeCube(mesh)
     }))
     
   } else if (chosenShape == 2) {
@@ -88,13 +88,13 @@ shape.addEventListener("click", function() {
     meshData = Data.sphereData
 
     guiElements.push(gui.add(meshData, 'radius', 0, 50).name('Radius').setValue(22).onChange(() => {
-      Maker.regenerateSphere(mesh)
+      Maker.makeSphere(mesh)
     }))
     guiElements.push(gui.add(meshData, 'widthSegments', 0, 25).step(1).name('Width Segment').setValue(10).onChange(() => {
-      Maker.regenerateSphere(mesh)
+      Maker.makeSphere(mesh)
     }))
     guiElements.push(gui.add(meshData, 'heightSegments', 0, 25).step(1).name('Height Segment').setValue(8).onChange(() => {
-      Maker.regenerateSphere(mesh)
+      Maker.makeSphere(mesh)
     }))
 
   } else if (chosenShape == 3) {
@@ -103,17 +103,17 @@ shape.addEventListener("click", function() {
     meshData = Data.cylinderData
 
     guiElements.push(gui.add(meshData, 'height', 0, 50).name('Height').setValue(33).onChange(() => {
-      Maker.regenerateCylinder(mesh)
+      Maker.makeCylinder(mesh)
     }))
     guiElements.push(gui.add(meshData, 'radialSegments', 2, 25).name('Radial Segment').setValue(12).onChange(() => {
-      Maker.regenerateCylinder(mesh)
+      Maker.makeCylinder(mesh)
     }))
 
     guiElements.push(gui.add(meshData, 'radiusTop', 0, 30).name('Radius Top').setValue(18).onChange(() => {
-      Maker.regenerateCylinder(mesh)
+      Maker.makeCylinder(mesh)
     }))
     guiElements.push(gui.add(meshData, 'radiusBottom', 0, 30).name('Radius Bottom').setValue(10).onChange(() => {
-      Maker.regenerateCylinder(mesh)
+      Maker.makeCylinder(mesh)
     }))
 
 
@@ -123,15 +123,15 @@ shape.addEventListener("click", function() {
     meshData = Data.coneData
 
     guiElements.push(gui.add(meshData, 'height', 0, 50).name('Height').setValue(33).onChange(() => {
-      Maker.regenerateCone(mesh)
+      Maker.makeCone(mesh)
     }))
 
     guiElements.push(gui.add(meshData, 'radius', 0, 40).name('Radius').setValue(20).onChange(() => {
-      Maker.regenerateCone(mesh)
+      Maker.makeCone(mesh)
     }))
 
     guiElements.push(gui.add(meshData, 'radialSegments', 2, 40).step(1).name('Radial Segment').setValue(20).onChange(() => {
-      Maker.regenerateCone(mesh)
+      Maker.makeCone(mesh)
     }))
 
   } else if (chosenShape == 5) {
@@ -140,10 +140,10 @@ shape.addEventListener("click", function() {
     meshData = Data.polyhedronData
 
     guiElements.push(gui.add(meshData, 'radius', 0, 40).name('Radius').setValue(22).onChange(() => {
-      Maker.regeneratePolyhedron(mesh)
+      Maker.makePolyhedron(mesh)
     }))
     guiElements.push(gui.add(meshData, 'detail', 0, 10).name('Detail').step(1).setValue(0).onChange(() => {
-      Maker.regeneratePolyhedron(mesh)
+      Maker.makePolyhedron(mesh)
     }))
   } else if (chosenShape == 6) {
     clearGUIElemens()
@@ -151,10 +151,10 @@ shape.addEventListener("click", function() {
     meshData = Data.tetrahedronData
 
     guiElements.push(gui.add(meshData, 'radius', 0, 40).name('Radius').setValue(22).onChange(() => {
-      Maker.regenerateTetrahedron(mesh)
+      Maker.makeTetrahedron(mesh)
     }))
     guiElements.push(gui.add(meshData, 'detail', 0, 10).name('Detail').step(1).setValue(0).onChange(() => {
-      Maker.regenerateTetrahedron(mesh)
+      Maker.makeTetrahedron(mesh)
     }))
   } else if (chosenShape == 7) {
     clearGUIElemens()
@@ -162,10 +162,10 @@ shape.addEventListener("click", function() {
     meshData = Data.octahedronData
 
     guiElements.push(gui.add(meshData, 'radius', 0, 40).name('Radius').setValue(22).onChange(() => {
-      Maker.regenerateOctahedron(mesh)
+      Maker.makeOctahedron(mesh)
     }))
     guiElements.push(gui.add(meshData, 'detail', 0, 10).name('Detail').step(1).setValue(0).onChange(() => {
-      Maker.regenerateOctahedron(mesh)
+      Maker.makeOctahedron(mesh)
     }))
   } else if (chosenShape == 8) {
     clearGUIElemens()
@@ -173,10 +173,10 @@ shape.addEventListener("click", function() {
     meshData = Data.icosahedronData
 
     guiElements.push(gui.add(meshData, 'radius', 0, 40).name('Radius').setValue(22).onChange(() => {
-      Maker.regenerateIcosahedron(mesh)
+      Maker.makeIcosahedron(mesh)
     }))
     guiElements.push(gui.add(meshData, 'detail', 0, 10).name('Detail').step(1).setValue(0).onChange(() => {
-      Maker.regenerateIcosahedron(mesh)
+      Maker.makeIcosahedron(mesh)
     }))
   } else if (chosenShape == 9){
     clearGUIElemens()
@@ -184,10 +184,10 @@ shape.addEventListener("click", function() {
     meshData = Data.dodecahedronData
 
     guiElements.push(gui.add(meshData, 'radius', 0, 40).name('Radius').setValue(22).onChange(() => {
-      Maker.regenerateDodecahedron(mesh)
+      Maker.makeDodecahedron(mesh)
     }))
     guiElements.push(gui.add(meshData, 'detail', 0, 10).name('Detail').step(1).setValue(0).onChange(() => {
-      Maker.regenerateDodecahedron(mesh)
+      Maker.makeDodecahedron(mesh)
     }))
   } else if (chosenShape == 10) {
     clearGUIElemens()
@@ -195,17 +195,17 @@ shape.addEventListener("click", function() {
     meshData = Data.torusData
 
     guiElements.push(gui.add(meshData, 'radius', 0, 40).name('Radius').setValue(22).onChange(() => {
-      Maker.regenerateTorus(mesh)
+      Maker.makeTorus(mesh)
     }))
     guiElements.push(gui.add(meshData, 'radialSegments', 2, 30).name('Radial Segment').step(1).setValue(8).onChange(() => {
-      Maker.regenerateTorus(mesh)
+      Maker.makeTorus(mesh)
     }))
 
     guiElements.push(gui.add(meshData, 'tubeRadius', 0, 15).name('Tube Radius').setValue(2).onChange(() => {
-      Maker.regenerateTorus(mesh)
+      Maker.makeTorus(mesh)
     }))
     guiElements.push(gui.add(meshData, 'tubularSegments', 2, 50).name('Tubular Segment').step(1).setValue(24).onChange(() => {
-      Maker.regenerateTorus(mesh)
+      Maker.makeTorus(mesh)
     }))
   } else {
     clearGUIElemens()
@@ -213,27 +213,26 @@ shape.addEventListener("click", function() {
     meshData = Data.torusKnotData
 
     guiElements.push(gui.add(meshData, 'radius', 0, 40).name('Radius').setValue(15).onChange(() => {
-      Maker.regenerateTorusKnot(mesh)
+      Maker.makeTorusKnot(mesh)
     }))
 
     guiElements.push(gui.add(meshData, 'radialSegments', 2, 30).name('Radial Segment').step(1).setValue(8).onChange(() => {
-      Maker.regenerateTorusKnot(mesh)
+      Maker.makeTorusKnot(mesh)
     }))
 
     guiElements.push(gui.add(meshData, 'tubeRadius', 0, 20).name('Tube Radius').setValue(4).onChange(() => {
-      Maker.regenerateTorusKnot(mesh)
+      Maker.makeTorusKnot(mesh)
     }))
 
-
     guiElements.push(gui.add(meshData, 'tubularSegments', 2, 100).name('Tubular Segment').step(1).setValue(64).onChange(() => {
-      Maker.regenerateTorusKnot(mesh)
+      Maker.makeTorusKnot(mesh)
     }))
 
     guiElements.push(gui.add(meshData, 'p', 0.1, 10).name('P').setValue(2).onChange(() => {
-      Maker.regenerateTorusKnot(mesh)
+      Maker.makeTorusKnot(mesh)
     }))
     guiElements.push(gui.add(meshData, 'q', 0.1, 10).name('Q').setValue(3).onChange(() => {
-      Maker.regenerateTorusKnot(mesh)
+      Maker.makeTorusKnot(mesh)
     }))
   }
 
