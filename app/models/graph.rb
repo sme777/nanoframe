@@ -90,7 +90,7 @@ class Graph
       next if is_contained?(vertex, plane_sets)
 
       i = 0
-      outgoer_set = Set.new(vertex)
+      outgoer_set = GraphSet.new(vertex)
       curr = vertex
       while outgoer_set.v.length != 2
 
@@ -138,7 +138,7 @@ class Graph
       next if is_contained?(vertex, plane_sets)
 
       i = 0
-      outgoer_set = Set.new(vertex)
+      outgoer_set = GraphSet.new(vertex)
       curr = vertex
       while outgoer_set.v.length != 2
 
@@ -199,7 +199,7 @@ class Graph
         taken_outgoers << t
         taken_edges.concat(dfs_edges)
         # generate a new set
-        new_set = Set.new(s)
+        new_set = GraphSet.new(s)
         new_set.add_node(t)
         dfs_edges.each do |e|
           new_set.add_edge(e)
@@ -368,7 +368,7 @@ class Graph
           v_arr.append(Vertex.new(v.z, v.y, -v.x))
         end
       end
-      new_set = Set.new(v_arr.first)
+      new_set = GraphSet.new(v_arr.first)
       new_set.add_node(v_arr.last)
 
       set.e.each do |e|
@@ -427,7 +427,7 @@ class Graph
         end
         v_arr.append(Vertex.new(recover_x, recover_y, recover_z))
       end
-      new_set = Set.new(v_arr.first)
+      new_set = GraphSet.new(v_arr.first)
       new_set.add_node(v_arr.last)
 
       set.e.each do |e|
@@ -534,40 +534,6 @@ class Graph
     end
   end
 
-  def string_of_vertices
-    res = '('
-    @vertices.each do |v|
-      res += v.string
-      res += ', ' unless v == @vertices.last
-    end
-    res += ')'
-  end
-
-  def string_of_sets(sets)
-    res = '('
-    sets.each do |s|
-      res += s.string
-      res += ', ' unless s == sets.last
-    end
-    res += ')'
-  end
-
-  def string_of_edges
-    ''
-  end
-
-  def make_vertex(x, y)
-    Vertex.new(x, y)
-  end
-
-  def make_set(v, singelton = false)
-    Set.new(v, singelton)
-  end
-
-  def make_edge(v1, v2)
-    Edge.new(v1, v2)
-  end
-
   # Generates JSON file of the graph
   def to_json(*_args)
     return nil if @planes.nil?
@@ -596,127 +562,5 @@ class Graph
     hash = { "segments": @segments, "scaffold_length": 7249, "planes": raw_plane_arr }
 
     JSON.generate(hash)
-  end
-
-  def beautify_edges(edges = @edges)
-    result = ''
-    edges.each do |e|
-      result += "#{e.string}\n"
-    end
-    result
-  end
-
-  def beautify_vertices(vertices = @vertices)
-    result = ''
-    vertices.each do |v|
-      result += "#{v.string}\n"
-    end
-    result
-  end
-
-  # Vertex object corresponding to a position in a 3D grid
-  class Vertex
-    attr_accessor :x, :y, :z
-
-    def initialize(x, y, z = 0)
-      @x = x
-      @y = y
-      @z = z
-    end
-
-    def string
-      "(#{@x}, #{@y}, #{@z})"
-    end
-
-    def to_hash
-      { "x": @x, "y": @y, "z": @z }
-    end
-
-    def to_json(*_args)
-      JSON.generate({ "x": @x, "y": @y, "z": @z })
-    end
-
-    def hash
-      "#{x}#{y}#{z}"
-    end
-  end
-
-  # Set object corresponding to a list of Edges
-  class Set
-    attr_accessor :v, :singelton, :e
-
-    def initialize(vertex, singelton = false)
-      @v = [vertex]
-      @singelton = singelton
-      @e = []
-    end
-
-    def add_node(vertex)
-      @v.append(vertex)
-    end
-
-    def add_edge(edge)
-      @e.append(edge)
-    end
-
-    def is_loop_set?
-      @e.length == 2
-    end
-
-    def string
-      res = '{'
-      @v.each do |v|
-        res += v.string
-        res += ', ' if v != @v.last
-      end
-      res += '}'
-    end
-
-    def sort_edges
-      last_vertex = @v.first
-      sorted_edges = []
-      while sorted_edges != @e.length
-        e = find_edge_starting_with(last_vertex)
-        sort_edges.append(e)
-        last_vertex = e.v2
-      end
-      sort_edges
-    end
-
-    def find_edge_starting_with(v)
-      @e.each do |edge|
-        return edge if edge.v1 == v
-      end
-    end
-
-    def to_hash
-      hash = { "vertices": @v, "edges": sort_edges, "singelton": singelton }
-    end
-
-    def to_json(*_args)
-      JSON.generate(to_hash)
-    end
-  end
-
-  # Edge object corresponding to a connection between two vertices
-  class Edge
-    attr_accessor :v1, :v2
-
-    def initialize(v1, v2)
-      @v1 = v1
-      @v2 = v2
-    end
-
-    def string
-      "#{v1.string} -> #{v2.string}"
-    end
-
-    def to_hash
-      { "v1": @v1.to_hash, "v2": @v2.to_hash }
-    end
-
-    def to_json(*_args)
-      JSON.generate({ "v1": @v1.to_hash, "v2": @v2.to_hash })
-    end
   end
 end

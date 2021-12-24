@@ -79,10 +79,19 @@ class GeneratorsController < ApplicationController
   def download_nfr; end
 
   def download_pdb
-    file = File.open("app/assets/results/#{session[:filename]}.pdb")
+    json_obj = JSON.parse(@generator.json)
+    scaffold_sequence = json_obj['sequence']
+    scaffold_coordinates = json_obj['positions']
+    staple_sequence = json_obj['sSequence']
+    staple_coordinates = json_obj['sPositions']
+    @generator.scaffold(scaffold_sequence, scaffold_coordinates)
+    @generator.staples(staple_sequence, staple_coordinates)
+    filename = @generator.pdb(session[:filename])
+
+    file = File.open("app/assets/results/#{filename}.pdb")
     contents = file.read
     file.close
-    send_data contents, filename: "#{session[:filename]}.pdb"
+    send_data contents, filename: "#{filename}.pdb"
     # redirect_to '/nanobot/' + @generator.id.to_s
   end
 

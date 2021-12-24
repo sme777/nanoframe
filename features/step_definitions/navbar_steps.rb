@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-When /I navigate to the '(.*)' page/ do |tab|
+
+When(/I navigate to the '(.*)' page/) do |tab|
   route = tab.downcase
   if route == 'home'
     visit('/')
@@ -8,20 +9,16 @@ When /I navigate to the '(.*)' page/ do |tab|
   end
 end
 
-When /I do (not?) submit username and password/ do |auth|
-  if auth
-    @user = nil
-  else
-
-  end
+When(/I do (not?) submit username and password/) do |auth|
+  @user = nil if auth
 end
 
-Then /I should (not?) be logged in/ do |auth|
+Then(/I should (not?) be logged in/) do |_auth|
   expect(@user).to be(nil)
 end
 
-Given /^I am (not?) authenticated$/ do |auth|
-  if auth 
+Given(/^I am (not?) authenticated$/) do |auth|
+  if auth
     expect(@user).to be(nil)
   else
     expect(@user).not_to be(nil)

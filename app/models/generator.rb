@@ -126,11 +126,11 @@ class Generator < ApplicationRecord
     count = 1
     base_count = 1
     file.write("MODEL        1\n")
-    @dna.each do |nucleotide|
+    @dna.each_with_index do |nucleotide, i|
       nucleotide.atoms.each do |atom|
         file.write("ATOM#{' ' * (7 - count.to_s.length)}")
         # file.write("\t")
-        file.write(count.to_s)
+        file.write(count.to_s(16))
         if atom.element.length == 4
           file.write(' ')
         else
@@ -155,14 +155,14 @@ class Generator < ApplicationRecord
         else
           file.write(' ' * 6)
         end
-        file.write('%0.03f' % atom.x)
+        file.write(format('%0.03f', atom.x))
         if atom.y.negative?
           file.write(' ' * 2)
         else
           file.write(' ' * 3)
         end
         # file.write(sprintf("%0.03f", atom.x) + "\t")
-        file.write('%0.03f' % atom.y)
+        file.write(format('%0.03f', (atom.y + 5 * i)))
 
         if atom.z.negative?
           file.write(' ' * 2)
@@ -170,7 +170,7 @@ class Generator < ApplicationRecord
           file.write(' ' * 3)
         end
 
-        file.write('%0.03f' % atom.z)
+        file.write(format('%0.03f', atom.z))
         file.write(' ' * 2)
         # if atom.z.negative?
         #     file.write(" " * 2)
@@ -225,8 +225,8 @@ class Generator < ApplicationRecord
       rot1 = Math.sin(i * 36 * Math::PI / 180)
       rot2 = Math.cos(i * 36 * Math::PI / 180)
       leftover = (rot1 * rot1 + rot2 * rot2) > 1 ? 1 : (rot1 * rot1 + rot2 * rot2)
-      p_x = (2*nucleotide.x+nt_dist)/2
-      p_y = (2*nucleotide.y + rot1/rot2)/2
+      p_x = (2 * nucleotide.x + nt_dist) / 2
+      p_y = (2 * nucleotide.y + rot1 / rot2) / 2
       rot3 = Math.sqrt(leftover).to_s
       rot1 = rot1.to_s
       rot2 = rot2.to_s
