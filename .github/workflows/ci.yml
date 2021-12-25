@@ -24,7 +24,10 @@ jobs:
         image: postgres:11
         ports: ['5432:5432']
         env:
+          DB_HOST: localhost
+          POSTGRES_DB: postgres        
           POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -47,8 +50,9 @@ jobs:
           cmd: install
       - name: Build and run tests
         env:
+          DB_HOST: localhost
           POSTGRES_HOST: postgres
-          POSTGRES_PORT: 5432
+          POSTGRES_PORT: ${{ job.services.postgres.ports[5432] }}
           REDIS_URL: redis://localhost:6379/0
           RAILS_ENV: test
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
@@ -56,7 +60,24 @@ jobs:
           sudo apt-get -yqq install libpq-dev
           gem install bundler
           bundle install
-          bundle exec rails db:prepare
+          RAILS_ENV=test bundle exec rails db:prepare
           bundle exec rspec
           bundle exec cucumber
+  coverage:
+    needs: [ test ]
+    name: coverage
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@master
+      with:
+        node-version: '12'
+    - run: npm install -g yarn
+    - run: yarn install
+    - run: yarn build
+    - uses: paambaati/codeclimate-action@v2.2.4
+      env:
+        CC_TEST_REPORTER_ID: 01f3b317eaae42803f6fc26db8de551dab0aada715f31df05004aca212272773
+      with:
+        coverageCommand: yarn coverage
         
