@@ -3,25 +3,29 @@ import oc from 'three-orbit-controls'
 import * as dat from 'dat.gui'
 import gsap from 'gsap'
 import * as Maker from "./shapeMaker"
-import { DNA } from './dna'
+import {
+  DNA
+} from './dna'
 import * as Data from './shapeData'
-
-//console.log(dat)
 
 
 const OrbitControls = oc(THREE)
 const canvas = document.querySelector('#synthesizer')
-//canvas.height = $(".synthesizer-container").height()
-const renderer = new THREE.WebGLRenderer({alpha: true, canvas})
+const renderer = new THREE.WebGLRenderer({
+  alpha: true,
+  canvas
+})
 const fov = 25
-const aspect = 4  // the canvas default
+const aspect = 4
 const near = 0.1
 const far = 10000
 const camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
-const controls = new OrbitControls( camera, renderer.domElement )
+const controls = new OrbitControls(camera, renderer.domElement)
 let sequence
 controls.enableDamping = true
-const gui = new dat.GUI({ autoPlace: false })
+const gui = new dat.GUI({
+  autoPlace: false
+})
 document.querySelector('.datGUI').append(gui.domElement)
 
 camera.position.z = 120
@@ -34,18 +38,22 @@ let mesh
 let meshData
 let isGUISet = false
 let guiElements = []
-//window.addEventListener("wheel", onMouseDrag)
 let dna = new DNA(7249)
-const geometry = new THREE.BufferGeometry().setFromPoints( dna.positions )
-const material = new THREE.LineBasicMaterial( { color : 0xff0000 } )
-const curveObject = new THREE.Line( geometry, material )
-// scene.add(curveObject)
-
+const geometry = new THREE.BufferGeometry().setFromPoints(dna.positions)
+const material = new THREE.LineBasicMaterial({
+  color: 0xff0000
+})
+const curveObject = new THREE.Line(geometry, material)
 const axesHelper = new THREE.AxesHelper(15)
 scene.add(axesHelper)
 
-shape.addEventListener("click", function() {
+shape.addEventListener("click", function () {
   chosenShape = shape.value
+  let setGuiElement = (func, obj) => {
+    guiElements.push(gui.add(meshData, obj["property"], obj["min"], obj["max"]).step(obj["step"]).name(obj["title"]).setValue(obj["set"]).onChange(() => {
+     func(mesh)
+    }))
+  }
   if (mesh != null) {
     mesh.geometry.dispose()
     mesh.material.dispose()
@@ -59,29 +67,13 @@ shape.addEventListener("click", function() {
     mesh = Maker.makeCube()
     meshData = Data.cubeData
 
-    guiElements.push(gui.add(meshData, 'width', 0, 240).name('Width').setValue(30).onChange(() => {
-      
-      Maker.makeCube(mesh)
-    }))
-    guiElements.push(gui.add(meshData, 'height', 0, 240).name('Height').setValue(30).onChange(() => {
-      
-      Maker.makeCube(mesh)
-    }))
-    guiElements.push(gui.add(meshData, 'depth', 0, 240).name('Depth').setValue(30).onChange(() => {
-      Maker.makeCube(mesh)
-    }))
+    setGuiElement(Maker.makeCube, {shape: "Cube", min: 0, max: 240, set: 30, title: 'Width', property: 'width', step: 0.1})
+    setGuiElement(Maker.makeCube, {shape: "Cube", min: 0, max: 240, set: 30, title: 'Height', property: 'height', step: 0.1})
+    setGuiElement(Maker.makeCube, {shape: "Cube", min: 0, max: 240, set: 30, title: 'Depth', property: 'depth', step: 0.1})
+    setGuiElement(Maker.makeCube, {shape: "Cube", min: 1, max: 15, set: 2, title: 'Width Stripes', property: 'widthSegments', step: 1})
+    setGuiElement(Maker.makeCube, {shape: "Cube", min: 1, max: 15, set: 2, title: 'Height Stripes', property: 'heightSegments', step: 1})
+    setGuiElement(Maker.makeCube, {shape: "Cube", min: 1, max: 15, set: 2, title: 'Depth Stripes', property: 'depthSegments', step: 1})    
 
-    guiElements.push(gui.add(meshData, 'widthSegments', 1, 15).step(1).name('Width Stripes').setValue(2).onChange(() => {
-      Maker.makeCube(mesh)
-    }))
-
-    guiElements.push(gui.add(meshData, 'heightSegments', 1, 15).step(1).name('Height Stripes').setValue(2).onChange(() => {
-      Maker.makeCube(mesh)
-    }))
-    guiElements.push(gui.add(meshData, 'depthSegments', 1, 15).step(1).name('Depth Stripes').setValue(2).onChange(() => {
-      Maker.makeCube(mesh)
-    }))
-    
   } else if (chosenShape == 2) {
     clearGUIElemens()
     mesh = Maker.makeSphere()
@@ -178,7 +170,7 @@ shape.addEventListener("click", function() {
     guiElements.push(gui.add(meshData, 'detail', 0, 10).name('Detail').step(1).setValue(0).onChange(() => {
       Maker.makeIcosahedron(mesh)
     }))
-  } else if (chosenShape == 9){
+  } else if (chosenShape == 9) {
     clearGUIElemens()
     mesh = Maker.makeDodecahedron()
     meshData = Data.dodecahedronData
@@ -240,7 +232,7 @@ shape.addEventListener("click", function() {
     scene.add(mesh)
     requestAnimationFrame(render)
   }
-  
+
 })
 
 
@@ -252,64 +244,63 @@ function clearGUIElemens() {
 }
 
 function resizeRendererToDisplaySize(renderer) {
-    const canvas = renderer.domElement
-    const width = canvas.clientWidth
-    const height = canvas.clientHeight
-    const needResize = canvas.width !== width || canvas.height !== height
-    if (needResize) {
-      renderer.setSize(width, height, false)
-    }
-    return needResize
+  const canvas = renderer.domElement
+  const width = canvas.clientWidth
+  const height = canvas.clientHeight
+  const needResize = canvas.width !== width || canvas.height !== height
+  if (needResize) {
+    renderer.setSize(width, height, false)
+  }
+  return needResize
 }
 
 function render(time) {
-    if (chosenShape == undefined) {
-      return
-    }
+  if (chosenShape == undefined) {
+    return
+  }
 
-    time *= 0.001
+  time *= 0.001
 
-    if (resizeRendererToDisplaySize(renderer)) {
-        const canvas = renderer.domElement
-        camera.aspect = canvas.clientWidth / canvas.clientHeight
-        camera.updateProjectionMatrix()
-      }
+  if (resizeRendererToDisplaySize(renderer)) {
+    const canvas = renderer.domElement
+    camera.aspect = canvas.clientWidth / canvas.clientHeight
+    camera.updateProjectionMatrix()
+  }
 
 
-    const speed = .2
-    const rot = time * speed
-    // mesh.rotation.x = rot
-    curveObject.rotation.z = rot / 10
-    curveObject.rotation.x = rot / 10
-    mesh.rotation.y = rot
+  const speed = .2
+  const rot = time * speed
+  // mesh.rotation.x = rot
+  curveObject.rotation.z = rot / 10
+  curveObject.rotation.x = rot / 10
+  mesh.rotation.y = rot
 
-    renderer.render(scene, camera)
-    requestAnimationFrame(render)
+  renderer.render(scene, camera)
+  requestAnimationFrame(render)
 }
 
 requestAnimationFrame(render)
 
-document.querySelector('#sequenceUpload').onchange = function(){
-let file = this.files[0];
-let reader = new FileReader();
-reader.onload = function(progressEvent){
+document.querySelector('#sequenceUpload').onchange = function () {
+  let file = this.files[0];
+  let reader = new FileReader();
+  reader.onload = function (progressEvent) {
     sequence = dna.generateFromFile(this.result)
-};
-reader.readAsText(file);
+  };
+  reader.readAsText(file);
 };
 
 document.querySelector(".synthesizer-btn").onclick = () => {
-    let dnaSequence
-    if (document.querySelector("#sequenceCheckbox").checked) {
-        dnaSequence = dna.generateRandom()
-    } else {
-        dnaSequence = sequence
-    }
-    let dnaPositions = dna.parsePositions()
-    let jsonObj = {"sequence": dnaSequence}
-    //console.log(jsonObj)
-    document.querySelector(".json-input").value = JSON.stringify(jsonObj)
+  let dnaSequence
+  if (document.querySelector("#sequenceCheckbox").checked) {
+    dnaSequence = dna.generateRandom()
+  } else {
+    dnaSequence = sequence
+  }
+  let dnaPositions = dna.parsePositions()
+  let jsonObj = {
+    "sequence": dnaSequence
+  }
+  //console.log(jsonObj)
+  document.querySelector(".json-input").value = JSON.stringify(jsonObj)
 }
-
-
-
