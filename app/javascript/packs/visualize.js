@@ -280,7 +280,6 @@ if (signOutBtn != null || boxState != null) {
             line2 = new Line2(geometry, matLine)
             line2.computeLineDistances()
             line2.scale.set(1, 1, 1)
-            console.log(scene)
             scene.add(line2)
             const geo = new THREE.BufferGeometry()
             geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
@@ -302,7 +301,6 @@ if (signOutBtn != null || boxState != null) {
             if (temp == undefined) {
                 continue
             }
-            console.log(temp)
             temp.geometry.dispose()
             temp.material.dispose()
             scene.remove(temp)
@@ -488,7 +486,7 @@ if (signOutBtn != null || boxState != null) {
                     // generateDisplay(scp[1], true)
                 } else {
                     boxLabel.innerHTML = "Open Form"
-                    clearDisplay()
+                    clearDisplay(scene)
                     generateDisplay(objectSets, scene, camera, false, true, 0)
                 }
             })
