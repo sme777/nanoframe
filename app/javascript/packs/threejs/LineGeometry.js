@@ -1,87 +1,62 @@
-import { LineSegmentsGeometry } from './LineSegmentsGeometry.js';
+import {
+	LineSegmentsGeometry
+} from './LineSegmentsGeometry.js'
 
 class LineGeometry extends LineSegmentsGeometry {
 
 	constructor() {
+		super()
+		this.type = 'LineGeometry'
+	}
 
-		super();
-		this.type = 'LineGeometry';
+	setPositions(array) {
+		const points = this.setMeta(array)
+		super.setPositions(points)
+		return this
 
 	}
 
-	setPositions( array ) {
-
-		// converts [ x1, y1, z1,  x2, y2, z2, ... ] to pairs format
-
-		var length = array.length - 3;
-		var points = new Float32Array( 2 * length );
-
-		for ( var i = 0; i < length; i += 3 ) {
-
-			points[ 2 * i ] = array[ i ];
-			points[ 2 * i + 1 ] = array[ i + 1 ];
-			points[ 2 * i + 2 ] = array[ i + 2 ];
-
-			points[ 2 * i + 3 ] = array[ i + 3 ];
-			points[ 2 * i + 4 ] = array[ i + 4 ];
-			points[ 2 * i + 5 ] = array[ i + 5 ];
-
-		}
-
-		super.setPositions( points );
-
-		return this;
-
+	setColors(array) {
+		const colors = this.setMeta(array)
+		super.setColors(colors)
+		return this
 	}
 
-	setColors( array ) {
+	setMeta(array) {
+		let length = array.length - 3;
+		let meta = new Float32Array(2 * length)
 
-		// converts [ r1, g1, b1,  r2, g2, b2, ... ] to pairs format
+		for (let i = 0; i < length; i += 3) {
+			meta[2 * i] = array[i];
+			meta[2 * i + 1] = array[i + 1]
+			meta[2 * i + 2] = array[i + 2]
 
-		var length = array.length - 3;
-		var colors = new Float32Array( 2 * length );
-
-		for ( var i = 0; i < length; i += 3 ) {
-
-			colors[ 2 * i ] = array[ i ];
-			colors[ 2 * i + 1 ] = array[ i + 1 ];
-			colors[ 2 * i + 2 ] = array[ i + 2 ];
-
-			colors[ 2 * i + 3 ] = array[ i + 3 ];
-			colors[ 2 * i + 4 ] = array[ i + 4 ];
-			colors[ 2 * i + 5 ] = array[ i + 5 ];
-
+			meta[2 * i + 3] = array[i + 3]
+			meta[2 * i + 4] = array[i + 4]
+			meta[2 * i + 5] = array[i + 5]
 		}
-
-		super.setColors( colors );
-
-		return this;
-
+		return meta
 	}
 
-	fromLine( line ) {
+	fromLine(line) {
 
-		var geometry = line.geometry;
+		let geometry = line.geometry
 
-		if ( geometry.isGeometry ) {
+		if (geometry.isGeometry) {
+			console.error('THREE.LineGeometry no longer supports Geometry. Use THREE.BufferGeometry instead.')
+			return
 
-			console.error( 'THREE.LineGeometry no longer supports Geometry. Use THREE.BufferGeometry instead.' );
-			return;
-
-		} else if ( geometry.isBufferGeometry ) {
-
-			this.setPositions( geometry.attributes.position.array ); // assumes non-indexed
-
+		} else if (geometry.isBufferGeometry) {
+			this.setPositions(geometry.attributes.position.array)
 		}
-
-		// set colors, maybe
-
-		return this;
+		return this
 
 	}
 
 }
 
-LineGeometry.prototype.isLineGeometry = true;
+LineGeometry.prototype.isLineGeometry = true
 
-export { LineGeometry };
+export {
+	LineGeometry
+}
