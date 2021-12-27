@@ -14,4 +14,29 @@ class ApplicationController < ActionController::Base
   def logged_in?
     !!session[:user_id]
   end
+
+  def set_generator
+    if is_active_generator?
+      begin
+        @generator = Generator.find(generator_id)
+      rescue ActiveRecord::RecordNotFound
+        @generator = Generator.new
+      end
+
+    else
+      @generator = Generator.new
+    end
+  end
+
+  def set_user
+    @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
+  end
+
+  def is_active_generator?
+    session[:id]
+  end
+
+  def generator_id
+    params[:id] || session[:id]
+  end
 end

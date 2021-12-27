@@ -190,7 +190,7 @@ class Generator < ApplicationRecord
     filename
   end
 
-  def oxdna(filename)
+  def oxview(filename)
     filename = __id__.to_s
     file = File.open("app/assets/results/#{filename}.oxview", 'w')
     dateNow = DateTime.now.strftime('%FT%T%:z')
@@ -203,47 +203,31 @@ class Generator < ApplicationRecord
     file.write('"id": 0,')
     file.write('"monomers": [')
     # loop for all strands
-    nt_dist = 1
     dna = @dna
-    dna_len = 10
+    dna_len = dna.length - 1
     dir = 1
     rip1 = 0.012972598874543932.to_s
     rip2 = 0.8444614293366373
     rip3 = 0.5355880438590741.to_s
+
     (0..dna_len).each do |i|
       dir = -dir if (i % 20).zero?
       nucleotide = dna[i]
-
-      backbone_x = nucleotide.x + nt_dist
-      backbone_y = nucleotide.y + Math.tan(i * 18 * Math::PI / 180)
-      backbone_z = nucleotide.z
-
-      p_x = (backbone_x + nucleotide.x) / 2
-      p_y = (backbone_y + nucleotide.y) / 2
-      p_z = (backbone_z + nucleotide.z) / 2
-
-      rot1 = Math.sin(i * 36 * Math::PI / 180)
-      rot2 = Math.cos(i * 36 * Math::PI / 180)
-      leftover = (rot1 * rot1 + rot2 * rot2) > 1 ? 1 : (rot1 * rot1 + rot2 * rot2)
-      p_x = (2 * nucleotide.x + nt_dist) / 2
-      p_y = (2 * nucleotide.y + rot1 / rot2) / 2
-      rot3 = Math.sqrt(leftover).to_s
-      rot1 = rot1.to_s
-      rot2 = rot2.to_s
-
       file.write('{')
       file.write("\"id\": #{dna_len - i},")
       file.write("\"type\": \"#{nucleotide.base}\",")
       file.write('"class": "DNA",')
-
-      # file.write("\"p\": [#{p_x},#{p_y},#{nucleotide.z}],")
-      file.write("\"p\": [#{p_x},#{p_y},#{nucleotide.z}],")
-
+      file.write("\"p\": [#{nucleotide.x},#{nucleotide.y},#{nucleotide.z}],")
       # start backbone and stacking vectors
       # file.write('"a1": [' + (0.6*nucleotide.x).to_s + ',' + (0.6*nucleotide.y).to_s + ',' + nucleotide.z.to_s + '],')
       # file.write('"a1": [' + Math.sin(nucleotide.x).to_s + ',' + Math.cos(nucleotide.y).to_s + ',' + nucleotide.z.to_s + '],')
       # file.write('"a3": [' + (1.34*nucleotide.x).to_s + ',' + (1.34*nucleotide.y).to_s + ',' + (1.34*nucleotide.z).to_s + '],')
-
+      rot1 = Math.sin(i * 15 * Math::PI / 180)
+      rot2 = Math.cos(i * 15 * Math::PI / 180)
+      leftover = (rot1 * rot1 + rot2 * rot2) > 1 ? 1 : (rot1 * rot1 + rot2 * rot2)
+      rot3 = Math.sqrt(leftover).to_s
+      rot1 = rot1.to_s
+      rot2 = rot2.to_s
       file.write("\"a1\": [#{rot1}, #{rot2}, #{rot3}],")
       file.write("\"a3\": [#{rip1}, #{-dir * rip2}, #{rip3}],")
       # end backbone and sstacking vectors

@@ -214,8 +214,12 @@ $(document).ready(function() {
             $("#mailName").addClass("is-invalid");
             email_is_valid = false;
         }
-    });
-  });
+    })
+
+    function toggleValidToFields(...args) {
+
+    }
+  })
 
 $(document).ready(function() {
     $('#radio-one').click(function() {

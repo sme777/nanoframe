@@ -66,94 +66,6 @@ class GeneratorsController < ApplicationController
     redirect_to '/' if logged_in?
   end
 
-  def download_staples
-    staples = JSON.parse(params[:staples])
-    descriptions = JSON.parse(params[:descriptions])
-    filename = @generator.make_staples_file(staples, descriptions)
-    file = File.open("app/assets/results/#{filename}.csv")
-    contents = file.read
-    file.close
-    send_data contents, filename: "#{filename}.csv"
-  end
-
-  def download_nfr; end
-
-  def download_pdb
-    json_obj = JSON.parse(@generator.json)
-    scaffold_sequence = json_obj['sequence']
-    scaffold_coordinates = json_obj['positions']
-    staple_sequence = json_obj['sSequence']
-    staple_coordinates = json_obj['sPositions']
-    @generator.scaffold(scaffold_sequence, scaffold_coordinates)
-    @generator.staples(staple_sequence, staple_coordinates)
-    filename = @generator.pdb(session[:filename])
-
-    file = File.open("app/assets/results/#{filename}.pdb")
-    contents = file.read
-    file.close
-    send_data contents, filename: "#{filename}.pdb"
-    # redirect_to '/nanobot/' + @generator.id.to_s
-  end
-
-  def download_oxdna
-    json_obj = JSON.parse(@generator.json)
-    scaffold_sequence = json_obj['sequence']
-    scaffold_coordinates = json_obj['positions']
-    staple_sequence = json_obj['sSequence']
-    staple_coordinates = json_obj['sPositions']
-    @generator.scaffold(scaffold_sequence, scaffold_coordinates)
-    @generator.staples(staple_sequence, staple_coordinates)
-    filename = @generator.oxdna(session[:filename])
-    file = File.open("app/assets/results/#{filename}.oxview")
-    contents = file.read
-    file.close
-    send_data contents, filename: "#{filename}.oxview"
-    # if params[:home]
-    #   redirect_to '/'
-    # end
-  end
-
-  def download_csv
-    filename = @generator.csv
-    file = File.open("app/assets/results/#{filename}.csv")
-    contents = file.read
-    file.close
-    send_data contents, filename: "#{filename}.csv"
-  end
-
-  def download_fasta
-    filename = @generator.fasta
-    file = File.open("app/assets/results/#{filename}.fasta")
-    contents = file.read
-    file.close
-    send_data contents, filename: "#{filename}.fasta"
-  end
-
-  def download_txt
-    filename = @generator.txt
-    file = File.open("app/assets/results/#{filename}.txt")
-    contents = file.read
-    file.close
-    send_data contents, filename: "#{filename}.txt"
-  end
-
-  def download_cadnano
-    filename = @generator.cadnano
-    file = File.open("app/assets/results/#{filename}.json")
-    contents = file.read
-    file.close
-    send_data contents, filename: "#{filename}.json"
-  end
-
-  def download_bundle
-    # zip files
-    filename = @generator.bundle
-    files = File.open("app/assets/results/#{filename}.zip")
-    contents = file.read
-    file.close
-    send_data contents, filename: "#{filename}.zip"
-  end
-
   def create
     @generator = Generator.new(generator_params)
     @generator.user_id = @current_user.id unless @current_user.nil?
@@ -213,30 +125,5 @@ class GeneratorsController < ApplicationController
 
   def user_generator_params
     params.require(:user).permit(:first, :last, :username, :email_first, :email_last, :password, :generator)
-  end
-
-  def set_generator
-    if is_active_generator?
-      begin
-        @generator = Generator.find(generator_id)
-      rescue ActiveRecord::RecordNotFound
-        @generator = Generator.new
-      end
-
-    else
-      @generator = Generator.new
-    end
-  end
-
-  def set_user
-    @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
-  end
-
-  def is_active_generator?
-    session[:id]
-  end
-
-  def generator_id
-    params[:id] || session[:id]
   end
 end

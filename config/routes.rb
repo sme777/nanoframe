@@ -33,15 +33,15 @@ Rails.application.routes.draw do
   get '/checkusername' => 'users#check_username', :defaults => { format: :json }
   # get '/nanobot/check_shape_params' => 'generators#check_shape_params'
   # downloading files
-  post '/nanobot/:id/staples' => 'generators#download_staples', as: 'download_staples'
-  get '/nanobot/:id/nfr' => 'generators#download_nfr'
-  get '/nanobot/:id/pdb' => 'generators#download_pdb'
-  get '/nanobot/:id/oxdna' => 'generators#download_oxdna'
-  get '/nanobot/:id/txt' => 'generators#download_txt'
-  get '/nanobot/:id/cadnano' => 'generators#download_cadnano'
-  get '/nanobot/:id/csv' => 'generators#download_csv'
-  get '/nanobot/:id/fasta' => 'generators#download_fasta'
-  get '/nanobot/:id/bundle' => 'generators#download_bundle'
+  post '/nanobot/:id/staples' => 'downloads#download_staples', as: 'download_staples'
+  get '/nanobot/:id/nfr' => 'downloads#download_nfr'
+  get '/nanobot/:id/pdb' => 'downloads#download_pdb'
+  get '/nanobot/:id/oxview' => 'downloads#download_oxview'
+  get '/nanobot/:id/txt' => 'downloads#download_txt'
+  get '/nanobot/:id/cadnano' => 'downloads#download_cadnano'
+  get '/nanobot/:id/csv' => 'downloads#download_csv'
+  get '/nanobot/:id/fasta' => 'downloads#download_fasta'
+  get '/nanobot/:id/bundle' => 'downloads#download_bundle'
   # resources :generators
   get 'nanobot/generator' => 'generators#generator', as: 'shape_generator'
 end
