@@ -1,15 +1,13 @@
 import * as THREE from 'three'
 import oc from 'three-orbit-controls'
-import * as dat from 'dat.gui'
 import * as RoutingHelpers from './routingHelpers' 
+import * as RoutingControls from './routingControls'
+import * as VisualizeHelpers from './visualizeHelpers'
 import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline'
 import { Edge } from './edge'
 import { Line2 } from './threejs/Line2'
 
-const context = Object.freeze({
-    planeMode: Symbol("plane"),
-    objectMode: Symbol("object"),
-})
+
 const rawGraph = JSON.parse(document.getElementById("raw-graph-container").value) 
 const graph = JSON.parse(document.getElementById("graph-container").value)
 const sets = JSON.parse(document.getElementById("sets-container").value)
@@ -27,7 +25,7 @@ const planeNeighbors = RoutingHelpers.planeNeighbors(planes)
 const resolution = new THREE.Vector2( window.innerWidth, window.innerHeight )
 
 let current = "front"
-let switchContext = context.planeMode
+
 let insetWidth
 let insetHeight
 
@@ -65,134 +63,11 @@ renderer.setSize(canvasContainerWidth, canvasContainerHeight);
 scene.add(camera)
 scene.add(light)
 
-// configure dat.gui
 
-const gui = new dat.GUI({
-    autoPlace: false
-})
-
-// dat.GUI.toggleHide()
-const guiTag = document.querySelector('.datGUIRouting')
-if (guiTag.value == undefined) {
-    guiTag.append(gui.domElement)
-    guiTag.value = "added"
-}
-
-
-const viewParams = {
-    scaffold_color: 0xff0000,
-    staple_color: 0xffff00,
-    switchView: () => {
-        if (switchContext == context.objectMode) {
-        
-            cubeGroup.position.z = 2000
-            currPlane.position.set(0, 0, 0)
-            camera = prevCamera
-            controls = new OrbitControls(camera, renderer.domElement)
-            // controls.enableRotate = false
-            switchContext = context.planeMode
-            camera.position.y = initialCameraHeightPosition
-            scene.add(camera2)    
-            
-        } else {
-            controls.enableRotate = true
-            currPlane.position.set(0, 0, 2000)
-            cubeGroup.position.z = 0
-            prevCamera = camera.clone()
-            switchContext = context.objectMode
-            camera.position.y = 40
-            scene.remove(camera2)
-        }
-    }
-}
-
-const selectionParams = {
-    strand: () => {
-        isRaycastMode = !isRaycastMode
-        console.log("strand selected")
-    },
-
-    crossover: () => {
-        isRaycastMode = !isRaycastMode
-
-    },
-    loopout: () => {
-        isRaycastMode = !isRaycastMode
-
-    }
-}
-
-const fivePrimeParams = {
-    strand: () => {
-        isRaycastMode = !isRaycastMode
-
-    },
-    domain: () => {
-        isRaycastMode = !isRaycastMode
-
-    }
-}
-
-const threePrimeParams = {
-    strand: () => {
-        isRaycastMode = !isRaycastMode
-
-    },
-    domain: () => {
-        isRaycastMode = !isRaycastMode
-
-    }
-}
-
-const otherParams = {
-    pencil: () => {
-        // isRaycastMode = true
-
-    },
-
-    split: () => {
-
-    },
-
-    insertion: () => {
-
-    },
-
-    deletion: () => {
-
-    }
-}
-
-const viewFolder = gui.addFolder("view")
-viewFolder.addColor(viewParams, "scaffold_color").name("scaffold color").onChange(() => {material.color.setHex(viewParams.scaffold_color) })
-viewFolder.addColor(viewParams, "staple_color").name("staple color")
-viewFolder.add(viewParams, "switchView").name("switch view")
-viewFolder.closed = false
-const selectionFolder = gui.addFolder("selection")
-selectionFolder.add(selectionParams, "strand")
-
-selectionFolder.add(selectionParams, "crossover")
-selectionFolder.add(selectionParams, "loopout")
-selectionFolder.closed = false
-
-const fivePrimeFolder = selectionFolder.addFolder("5'")
-const threePrimeFolder = selectionFolder.addFolder("3'")
-fivePrimeFolder.add(fivePrimeParams, "strand")
-fivePrimeFolder.add(fivePrimeParams, "domain")
-
-threePrimeFolder.add(threePrimeParams, "strand")
-threePrimeFolder.add(threePrimeParams, "domain")
-
-const editFolder = gui.addFolder("edit")
-editFolder.add(otherParams, "pencil")
-editFolder.add(otherParams, "split")
-editFolder.add(otherParams, "insertion")
-editFolder.add(otherParams, "deletion")
-editFolder.closed = false
 const OrbitControls = oc(THREE)
 let controls = new OrbitControls(camera, renderer.domElement)
 
-if (switchContext == context.planeMode) {
+if (RoutingControls.getSwitchContext() == RoutingControls.getContext().planeMode) {
     controls.enableRotate = false
 }
 let currIndex = 0
@@ -208,16 +83,12 @@ onWindowResize()
 
 // DNA scaffold
 const material = new MeshLineMaterial();
-material.color.setHex(viewParams.scaffold_color)
+material.color.setHex(RoutingControls.viewParams.scaffold_color)
 material.lineWidth = 0.2
 material.color = new THREE.Color(0x29f4a2)
 material.resolution = resolution
 material.side = THREE.DoubleSide
 // material.blending = THREE.AdditiveBlending
-
-function vectorize(vertex) {
-    return new THREE.Vector3(vertex.x, vertex.y, vertex.z)
-}
 
 function amplify(vertex, volume=dimension/segments) {
     vertex.x *= volume
@@ -225,13 +96,6 @@ function amplify(vertex, volume=dimension/segments) {
     vertex.y *= volume
     vertex.z *= volume
     vertex.z += dimension/2 
-    return vertex
-}
-
-function transform(vertex) {
-    let temp = vertex.y 
-    vertex.y = vertex.z
-    vertex.z = -temp
     return vertex
 }
 
@@ -271,10 +135,10 @@ function generatePlaneScaffoldRouting(index) {
         let startSquare
         for (let j = 0; j < setEdges.length; j++) {
             let line = new MeshLine()
-            let start = amplify(transform(setEdges[j].v1))
-            let end = amplify(transform(setEdges[j].v2))
+            let start = amplify(RoutingHelpers.transform(setEdges[j].v1))
+            let end = amplify(RoutingHelpers.transform(setEdges[j].v2))
             // let end2 = vectorize({x: })
-            line.setPoints([vectorize(start), vectorize(end)])
+            line.setPoints([VisualizeHelpers.vectorize(start), VisualizeHelpers.vectorize(end)])
             lineMesh = new THREE.Mesh(line, setMaterial)
             if (j == 0) {
 
@@ -323,12 +187,7 @@ function generatePlaneScaffoldRouting(index) {
 
 let planeRoutes = generatePlaneScaffoldRouting(currIndex)
 scene.add(planeRoutes)
-// scene.add(generatePlaneScaffoldRouting(currIndex + 1))
-// scene.add(generatePlaneScaffoldRouting(currIndex+ 2))
 
-function equalsVector(v1, v2) {
-    return (v1.x == v2.x && v1.y == v2.y && v1.z == v2.z)
-}
 
 function onMouseMove(event) {
 
@@ -383,22 +242,22 @@ function generatePlaneStapleRouting(currIndex) {
             let line1 = new MeshLine()
             let line2 = new MeshLine()
 
-            let start1 = convertToStandardForm(edge[0], side)
-            let end1 = convertToStandardForm(edge[1], side)
-            let end2 = convertToStandardForm(edge[2], side)
+            let start1 = RoutingHelpers.convertToStandardForm(edge[0], side)
+            let end1 = RoutingHelpers.convertToStandardForm(edge[1], side)
+            let end2 = RoutingHelpers.convertToStandardForm(edge[2], side)
 
-            start1 = amplify(transform(start1))
-            end1 = amplify(transform(end1))
-            end2 = amplify(transform(end2))
-            let [xCh1, zCh1, xCh2, zCh2] = findDirectionalChange(edge)
+            start1 = amplify(RoutingHelpers.transform(start1))
+            end1 = amplify(RoutingHelpers.transform(end1))
+            end2 = amplify(RoutingHelpers.transform(end2))
+            let [xCh1, zCh1, xCh2, zCh2] = RoutingHelpers.findDirectionalChange(edge)
             const results = adjustStaplePositions(xCh1, zCh1, xCh2, zCh2, [start1, end1, end2])
             start1 = results[0]
             end1 = results[1]
             end2 = results[2]
 
-            line1.setPoints([vectorize(start1), vectorize(end1)])
+            line1.setPoints([VisualizeHelpers.vectorize(start1), VisualizeHelpers.vectorize(end1)])
             if (type == "Refl") {
-                line2.setPoints([vectorize(end1), vectorize(end2)])
+                line2.setPoints([VisualizeHelpers.vectorize(end1), VisualizeHelpers.vectorize(end2)])
             }
             let lineMesh1 = new THREE.Mesh(line1, edgeMaterial)
             let lineMesh2 = new THREE.Mesh(line2, edgeMaterial)
@@ -483,36 +342,6 @@ function adjustStaplePositions(xCh1, zCh1, xCh2, zCh2, arr) {
     return [start1, end1, end2]
 }
 
-function convertToStandardForm(e, s) {
-    // let newEdge = {x: e.x, y: e.y, z: e.z}
-    if (s == "S2") {
-        e.z = 0
-    } else if (s == "S3") {
-        e.y = -e.z
-        e.z = 0
-    } else if (s == "S4") {
-        e.y = -e.z
-        e.z = 0
-    } else if (s == "S5") {
-        e.x = -e.z
-        e.z = 0
-    } else if (s == "S6") {
-        e.x = -e.z
-        e.z = 0
-    }
-    return e
-}
-
-function findDirectionalChange(es) {
-    const [first, middle, last] = [es[0], es[1], es[2]]
-
-    const xCh1 = middle.x - first.x
-    const zCh1 = middle.z - first.z
-    const xCh2 = last.x - middle.x
-    const zCh2 = last.z - middle.z
-
-    return [xCh1, zCh1, xCh2, zCh2]
-}
 
 function createAdjacentEdgeMap() {
     let edgeMap = {}
@@ -524,37 +353,29 @@ function createAdjacentEdgeMap() {
 
         for (let j = 0; j < es.length; j++) {
             if (!(i == j || es[i] == es[j])) {
-                if (equalsVector(es[i].v2, es[j].v1)) {
+                if (VisualizeHelpers.equalsVector(es[i].v2, es[j].v1)) {
                     if (Math.abs(i - j) < 2) {
-                        if (isOutgoerEdge(es[i].v2)) {
+                        if (RoutingHelpers.isOutgoerEdge(es[i].v2, segments)) {
                             arr.push(es[j])
-                            arr2.push(edgeToString(es[j]))
+                            arr2.push(RoutingHelpers.edgeToString(es[j]))
                             
                         }
-                    } else if (!isStraightLine(es[i].v1, es[j].v2)){
+                    } else if (!RoutingHelpers.isStraightLine(es[i].v1, es[j].v2)){
                             arr.push(es[j])
-                            arr2.push(edgeToString(es[j]))
+                            arr2.push(RoutingHelpers.edgeToString(es[j]))
                     }
                 } 
             }
         }
         if (arr.length != 0) {
-            edgeMap[edgeToString(es[i])] = arr
-            stringMap[edgeToString(es[i])] = es[i]
+            edgeMap[RoutingHelpers.edgeToString(es[i])] = arr
+            stringMap[RoutingHelpers.edgeToString(es[i])] = es[i]
         }
     }
     return [edgeMap, stringMap]
 }
 
-function isOutgoerEdge(v) { 
-    if (v == undefined) return false
-    if ((v.x % segments == 0 && v.y % segments == 0) ||
-        (v.x % segments == 0 && v.z % segments == 0) ||
-        (v.y % segments == 0 && v.z % segments == 0))  {
-        return true
-        }
-        return false
-}
+
 
 //create edges with strands
 function createEdgeStrands() {
@@ -599,37 +420,6 @@ function setNextAndPrev(edges) {
     return edges
 }
 
-function findExtraBase(front, back) {
-    const frontLast = front.slice(-1)
-    const backFirst = back.slice(0, 1)
-
-    const bases = ["A", "T", "G", "C"]
-    for (let i = 0; i < bases.length; i++) {
-        if (bases[i] != frontLast && bases[i] != backFirst) {
-            return bases[i]
-        }
-    }
-    return null
-}
-
-function isStraightLine(v1, v2) {
-    const xDist = Math.abs(v1.x - v2.x)
-    const yDist = Math.abs(v1.y - v2.y)
-    const zDist = Math.abs(v1.z - v2.z)
-
-    if (xDist != 0 && yDist == 0 && zDist == 0) {
-        return true
-    }
-    if (xDist == 0 && yDist != 0 && zDist == 0) {
-        return true
-    }
-    if (xDist == 0 && yDist == 0 && zDist != 0) {
-        return true
-    }
-    return false
-}
-
-
 function generateStapleStrands(edgeMap, stringMap) {
     const edgeKeys = Object.keys(edgeMap)
     let key
@@ -657,14 +447,14 @@ function generateStapleStrands(edgeMap, stringMap) {
             back = stringMap[key].back
         }
         if (i == edgeKeys.length - 1) {
-            mergeBack = translate(back) + translate(stringMap[edgeKeys[0]].front)
+            mergeBack = RoutingHelpers.translate(back) + RoutingHelpers.translate(stringMap[edgeKeys[0]].front)
         } else {
-            let extraBases = findExtraBase(back, neighbors.front)
-            isOutgoer = isOutgoerEdge(stringMap[edgeKeys[i]].v2)
+            let extraBases = RoutingHelpers.findExtraBase(back, neighbors.front)
+            isOutgoer = RoutingHelpers.isOutgoerEdge(stringMap[edgeKeys[i]].v2, segments)
             if (isOutgoer) {
-                extraBases += findExtraBase(back, neighbors.front)
+                extraBases += RoutingHelpers.findExtraBase(back, neighbors.front)
             }
-            mergeBack = translate(back) + extraBases + translate(neighbors.front)
+            mergeBack = RoutingHelpers.translate(back) + extraBases + RoutingHelpers.translate(neighbors.front)
         }
 
         
@@ -861,37 +651,7 @@ function findRowAndCol(edge, side) {
 
     return [row, col]
 
-
-
 }
-
-
-function translate(seq) {
-    tr = ""
-    for (let i = 0; i < seq.length; i++) {
-        if (seq.charAt(i) == "A") {
-            tr += "T"
-        } else if (seq.charAt(i) == "T") {
-            tr += "A"
-        } else if (seq.charAt(i) == "G") {
-            tr += "C"
-        } else if (seq.charAt(i) == "C") {
-            tr += "G"
-        }
-    }
-    return tr
-}
-
-// let staples = generateStapleStrands(mps)
-
-function edgeToString(edge) {
-    let result =""
-    result += "(" + edge.v1.x + " " + edge.v1.y + " " + edge.v1.z +")"
-    result += "->"
-    result += "(" + edge.v2.x + " " + edge.v2.y + " " + edge.v2.z +")"
-    return result
-}
-
 
 function resizeRendererToDisplaySize(renderer) {
     const canvas = renderer.domElement
@@ -942,7 +702,7 @@ function render(time) {
 
     renderer.setViewport( 20, 20, insetWidth, insetHeight );
 
-    if (switchContext == context.planeMode) {
+    if (RoutingControls.getSwitchContext() == RoutingControls.getContext().planeMode) {
         cubeGroup.rotation.z = time * 0.1
 
 

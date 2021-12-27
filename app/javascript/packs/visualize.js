@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import * as RoutingSamples from './routingSamples'
 import * as Algorithms from "./algorithms"
+import * as Helpers from "./visualizeHelpers"
 import oc from 'three-orbit-controls'
 import {
     Line2
@@ -45,20 +46,6 @@ if (signOutBtn != null || boxState != null) {
         vertexColors: true
     })
     const OrbitControls = oc(THREE)
-
-    /**
-     * 
-     * @param {*} vectors 
-     * @returns 
-     */
-    function normalize(vectors) {
-        for (let i = 0; i < vectors.length; i++) {
-            vectors[i].x *= widthSegmentLenth
-            vectors[i].y *= heightSegmentLength
-            vectors[i].z *= depthSegmentLength
-        }
-        return vectors
-    }
 
     /**
      * 
@@ -113,7 +100,7 @@ if (signOutBtn != null || boxState != null) {
             let set = sets[s]
             for (let e = 0; e < set.edges.length; e++) {
                 let edge = set.edges[e]
-                if (equalsVector(lastVertex, edge.v1) || equalsVector(lastVertex, edge.v2)) {
+                if (Helpers.equalsVector(lastVertex, edge.v1) || Helpers.equalsVector(lastVertex, edge.v2)) {
                     if (!takenSets.includes(set)) {
                         return set
                     }
@@ -134,69 +121,24 @@ if (signOutBtn != null || boxState != null) {
         let lastVertex
         for (let i = edges.length - 1; i >= 0; i--) {
 
-            if (!includesVector(vectors, edges[i].v1)) {
-                vectors.push(vectorize(edges[i].v1))
+            if (!Helpers.includesVector(vectors, edges[i].v1)) {
+                vectors.push(Helpers.vectorize(edges[i].v1))
             }
-            if (!includesVector(vectors, edges[i].v2)) {
-                vectors.push(vectorize(edges[i].v2))
+            if (!Helpers.includesVector(vectors, edges[i].v2)) {
+                vectors.push(Helpers.vectorize(edges[i].v2))
             }
         }
         lastVertex = edges[0].v2
-        if (equalsVector(lastVertex, prevVertex)) {
+        if (Helpers.equalsVector(lastVertex, prevVertex)) {
             lastVertex = edges[edges.length - 1].v1
-            vectors = reverseArray(vectors)
+            vectors = Helpers.reverseArray(vectors)
         }
         prevVertex = lastVertex
         return [vectors.slice(0, -1), lastVertex]
     }
 
-    /**
-     * 
-     * @param {*} vectors 
-     * @param {*} v 
-     * @returns 
-     */
-    function includesVector(vectors, v) {
-        for (let i = 0; i < vectors.length; i++) {
-            if (v.x == vectors[i].x && v.y == vectors[i].y && v.z == vectors[i].z) {
-                return true
-            }
-        }
-        return false
-    }
 
-    /**
-     * 
-     * @param {*} v 
-     * @returns 
-     */
-    function reverseArray(v) {
-        let arr = []
-        for (let i = v.length - 1; i > -1; i--) {
-            arr.push(v[i])
-        }
-        return arr
-    }
 
-    /**
-     * 
-     * @param {*} v1 
-     * @param {*} v2 
-     * @returns 
-     */
-    function equalsVector(v1, v2) {
-        if (v1 == undefined || v2 == undefined) return false
-        return (v1.x == v2.x && v1.y == v2.y && v1.z == v2.z)
-    }
-
-    /**
-     * 
-     * @param {*} vertex 
-     * @returns 
-     */
-    function vectorize(vertex) {
-        return new THREE.Vector3(vertex.x, vertex.y, vertex.z)
-    }
 
     function generateDisplay(edges, scene, camera, residualEdges = false, fullDisplay = true, start = 0) {
         let positions = []
@@ -422,7 +364,7 @@ if (signOutBtn != null || boxState != null) {
         let takenSets = []
         let objectSets = sortSets(mergeSets(), takenSets)
         const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
-        objectSets = normalize(objectSets)
+        objectSets = Helpers.normalize(objectSets, widthSegmentLenth, heightSegmentLength, depthSegmentLength)
         generateDisplay(objectSets, scene, camera)
 
         let controls = new OrbitControls(camera, renderer.domElement)
