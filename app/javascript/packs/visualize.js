@@ -1,5 +1,4 @@
 import * as THREE from 'three'
-import * as RoutingSamples from './routingSamples'
 import * as Algorithms from "./algorithms"
 import * as Helpers from "./visualizeHelpers"
 import oc from 'three-orbit-controls'
@@ -360,7 +359,7 @@ if (signOutBtn != null || boxState != null) {
             camera2 = new THREE.PerspectiveCamera(40, 1, 1, 1000)
             camera2.position.copy(camera.position)
         }
-        planeRoutings = segments == 2 ? RoutingSamples.planeRoutings1x1x1 : graph_json["planes"]
+        planeRoutings = graph_json["planes"]
         let takenSets = []
         let objectSets = sortSets(mergeSets(), takenSets)
         const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))

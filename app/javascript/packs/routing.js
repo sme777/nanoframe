@@ -733,68 +733,21 @@ renderer.render(scene, camera)
     Left -> 4
     Right -> 5
 */
-document.getElementById("up-key-button").addEventListener("click", () => {
-    scene.remove(planeRoutes)
-    scene.remove(staplesGroup)
-    const res = planeNeighbors[current]["up"]
-    current = res[0]
-    // currPlane = res[1]
-    currIndex = res[2]
-    planeRoutes = generatePlaneScaffoldRouting(currIndex)
-    staplesGroup = generatePlaneStapleRouting(currIndex)
-    scene.add(planeRoutes)
-    scene.add(staplesGroup)
-    // addRoutings()
-    // scene.add(currPlane)
-})
 
-
-document.getElementById("down-key-button").addEventListener("click", () => {
-    scene.remove(planeRoutes)
-    scene.remove(staplesGroup)
-    const res = planeNeighbors[current]["down"]
-    current = res[0]
-    // currPlane = res[1]
-    currIndex = res[2]
-    // addRoutings()
-    planeRoutes = generatePlaneScaffoldRouting(currIndex)
-    staplesGroup = generatePlaneStapleRouting(currIndex)
-    scene.add(planeRoutes)
-    scene.add(staplesGroup)
-    // scene.add(currPlane)
-})
-
-
-document.getElementById("right-key-button").addEventListener("click", () => {
-    scene.remove(planeRoutes)
-    scene.remove(staplesGroup)
-    const res = planeNeighbors[current]["right"]
-    current = res[0]
-    // currPlane = res[1]
-    currIndex = res[2]
-    planeRoutes = generatePlaneScaffoldRouting(currIndex)
-    staplesGroup = generatePlaneStapleRouting(currIndex)
-    scene.add(planeRoutes)
-    scene.add(staplesGroup)
-    // addRoutings()
-    // scene.add(currPlane)
-})
-
-
-document.getElementById("left-key-button").addEventListener("click", () => {
-    scene.remove(planeRoutes)
-    scene.remove(staplesGroup)
-    const res = planeNeighbors[current]["left"]
-    current = res[0]
-    // currPlane = res[1]
-    currIndex = res[2]
-    planeRoutes = generatePlaneScaffoldRouting(currIndex)
-    staplesGroup = generatePlaneStapleRouting(currIndex)
-    scene.add(planeRoutes)
-    scene.add(staplesGroup)
-    // addRoutings()
-    // scene.add(currPlane)
-})
+const dirs = ["right", "left", "up", "down"]
+for (let i in dirs) {
+    document.getElementById(`${dirs[i]}-key-button`).addEventListener("click", () => {
+        scene.remove(planeRoutes)
+        scene.remove(staplesGroup)
+        const res = planeNeighbors[current][dirs[i]]
+        current = res[0]
+        currIndex = res[2]
+        planeRoutes = generatePlaneScaffoldRouting(currIndex)
+        staplesGroup = generatePlaneStapleRouting(currIndex)
+        scene.add(planeRoutes)
+        scene.add(staplesGroup)
+    })
+}
 
 let t = "";
 for (var i = 0; i < staples.length; i++){

@@ -17,13 +17,7 @@ class Graph
     v_and_e = create_vertices_and_edges
     @vertices = v_and_e[0]
     @edges = v_and_e[1]
-    @template_planes = if @segments == 2
-                         [find_step_plane_routing, find_reverse_step_plane_routing]
-                       else
-                         find_four_planes
-                       end
-
-    # @planes = @template_planes
+    @template_planes = find_four_planes
     (@planes, @raw_planes) = find_plane_combination(@template_planes)
   end
 
@@ -82,102 +76,6 @@ class Graph
     nil
   end
 
-  def find_step_plane_routing
-    outgoers = find_outgoers
-    plane_sets = []
-
-    outgoers.each do |vertex|
-      next if is_contained?(vertex, plane_sets)
-
-      i = 0
-      outgoer_set = GraphSet.new(vertex)
-      curr = vertex
-      while outgoer_set.v.length != 2
-
-        next_vertex = nil
-        if vertex.x.zero?
-          next_vertex = if i.even?
-                          # make right
-                          find_vertex(@vertices, curr.x + 1, curr.y, curr.z)
-                        else
-                          # make down
-                          find_vertex(@vertices, curr.x, curr.y - 1, curr.z)
-                        end
-          edge = Edge.new(curr, next_vertex)
-          curr = next_vertex
-          outgoer_set.add_edge(edge)
-          i += 1
-        elsif vertex.y == @segments
-          next_vertex = if i.even?
-                          # make down
-                          find_vertex(@vertices, curr.x, curr.y - 1, curr.z)
-                        else
-                          # make right
-                          find_vertex(@vertices, curr.x + 1, curr.y, curr.z)
-                        end
-          edge = Edge.new(curr, next_vertex)
-          curr = next_vertex
-          outgoer_set.add_edge(edge)
-          i += 1
-        else
-          next
-        end
-
-        outgoer_set.add_node(next_vertex) if outgoers.include? next_vertex
-      end
-      plane_sets.append(outgoer_set)
-    end
-    plane_sets
-  end
-
-  def find_reverse_step_plane_routing
-    outgoers = find_outgoers
-    plane_sets = []
-
-    outgoers.each do |vertex|
-      next if is_contained?(vertex, plane_sets)
-
-      i = 0
-      outgoer_set = GraphSet.new(vertex)
-      curr = vertex
-      while outgoer_set.v.length != 2
-
-        next_vertex = nil
-        if vertex.x.zero?
-          next_vertex = if i.even?
-                          # make right
-                          find_vertex(@vertices, curr.x + 1, curr.y, curr.z)
-                        else
-                          # make up
-                          find_vertex(@vertices, curr.x, curr.y + 1, curr.z)
-                        end
-          edge = Edge.new(curr, next_vertex)
-          curr = next_vertex
-          outgoer_set.add_edge(edge)
-          i += 1
-        elsif vertex.y.zero?
-          next_vertex = if i.even?
-                          # make up
-                          find_vertex(@vertices, curr.x, curr.y + 1, curr.z)
-                        else
-                          # make right
-                          find_vertex(@vertices, curr.x + 1, curr.y, curr.z)
-                        end
-          edge = Edge.new(curr, next_vertex)
-          curr = next_vertex
-          outgoer_set.add_edge(edge)
-          i += 1
-        else
-          next
-        end
-
-        outgoer_set.add_node(next_vertex) if outgoers.include? next_vertex
-      end
-      plane_sets.append(outgoer_set)
-    end
-    plane_sets
-  end
-
   # randomized algorithm that finds general plane routings
   # by selecting random start and end vertices
   def find_general_plane_routing
@@ -191,14 +89,11 @@ class Graph
       outgoers.delete(s)
       t = outgoers[rand(0..(outgoers.length - 1))]
       dfs_edges = dfs(s, t, taken_edges)
-      # first element of dfs_results tells whether s->t is
-      # accessible and the second return the list of edges
       if dfs_edges != []
         outgoers.delete(t)
         taken_outgoers << s
         taken_outgoers << t
         taken_edges.concat(dfs_edges)
-        # generate a new set
         new_set = GraphSet.new(s)
         new_set.add_node(t)
         dfs_edges.each do |e|
@@ -307,7 +202,6 @@ class Graph
   # right -> 4
   def transform(plane)
     plane_arr = [plane]
-    # back - subtract z=dimension from all vertices
     back = deep_clone_and_transform_plane(plane, 0)
     plane_arr.append(back)
 
@@ -325,144 +219,121 @@ class Graph
     plane_arr
   end
 
-  def transform_arr(arr)
-    new_arr = arr[1..arr.length - 1]
+  def transform_array(arr, rev="")
+    new_arr = rev == "" ? arr[1..arr.length-1] : [arr[0]]
     i = 1
     while i < arr.length
-      arr[i] = deep_clone_and_transform_plane(arr[i], i - 1)
-      i += 1
-    end
-    arr
-  end
-
-  def reverse_transform_arr(arr)
-    new_arr = [arr[0]]
-    i = 1
-    while i < arr.length
-      new_arr[i] = reverse_deep_clone_and_transform_plane(arr[i], i - 1)
+      new_arr[i] = send("#{rev}deep_clone_and_transform_plane", arr[i], i-1)
       i += 1
     end
     new_arr
   end
 
-  # top - swap y and z and set y = dimension
-  # bottom - swap y and z and set y = 0
-  # right - swap x and z and set x = dimension
-  # left - swap x and z and set x = 0
-  def deep_clone_and_transform_plane(obj, num)
-    res = []
-    edges_covered = []
-    obj.each do |set|
-      v_arr = []
-      set.v.each do |v|
-        case num
-        when 0
-          v_arr.append(Vertex.new(v.x, v.y, v.z - @segments))
-        when 1
-          v_arr.append(Vertex.new(v.x, v.z + @segments, -v.y))
-        when 2
-          v_arr.append(Vertex.new(v.x, v.z, -v.y))
-        when 3
-          v_arr.append(Vertex.new(v.z + @segments, v.y, -v.x))
-        else
-          v_arr.append(Vertex.new(v.z, v.y, -v.x))
-        end
+  def deep_clone(set, num)
+    v_arr = []
+    set.v.each do |v|
+      case num
+      when 0
+        v_arr.append(Vertex.new(v.x, v.y, v.z - @segments))
+      when 1
+        v_arr.append(Vertex.new(v.x, v.z + @segments, -v.y))
+      when 2
+        v_arr.append(Vertex.new(v.x, v.z, -v.y))
+      when 3
+        v_arr.append(Vertex.new(v.z + @segments, v.y, -v.x))
+      else
+        v_arr.append(Vertex.new(v.z, v.y, -v.x))
       end
-      new_set = GraphSet.new(v_arr.first)
-      new_set.add_node(v_arr.last)
-
-      set.e.each do |e|
-        case num
-        when 0
-          v1 = Vertex.new(e.v1.x, e.v1.y, e.v1.z - @segments)
-          v2 = Vertex.new(e.v2.x, e.v2.y, e.v2.z - @segments)
-        when 1
-          v1 = Vertex.new(e.v1.x, e.v1.z + @segments, -e.v1.y)
-          v2 = Vertex.new(e.v2.x, e.v2.z + @segments, -e.v2.y)
-        when 2
-          v1 = Vertex.new(e.v1.x, e.v1.z, -e.v1.y)
-          v2 = Vertex.new(e.v2.x, e.v2.z, -e.v2.y)
-        when 3
-          v1 = Vertex.new(e.v1.z + @segments, e.v1.y, -e.v1.x)
-          v2 = Vertex.new(e.v2.z + @segments, e.v2.y, -e.v2.x)
-        else
-          v1 = Vertex.new(e.v1.z, e.v1.y, -e.v1.x)
-          v2 = Vertex.new(e.v2.z, e.v2.y, -e.v2.x)
-        end
-        new_edge = Edge.new(v1, v2)
-        new_set.add_edge(new_edge)
-      end
-      res.append(new_set)
     end
-    res
+    new_set = GraphSet.new(v_arr.first)
+    new_set.add_node(v_arr.last)
+    new_set
   end
 
-  def reverse_deep_clone_and_transform_plane(obj, num)
-    res = []
-    edges_covered = []
-    obj.each do |set|
-      v_arr = []
-      set.v.each do |v|
-        case num
-        when 0
-          recover_x = v.x
-          recover_y = v.y
-          recover_z = v.z + @segments
-        when 1
-          recover_x = v.x
-          recover_y = -v.z
-          recover_z = v.y - @segments
-        when 2
-          recover_x = v.x
-          recover_y = -v.z
-          recover_z = v.y
-        when 3
-          recover_x = -v.z
-          recover_y = v.y
-          recover_z = v.x - @segments
-        else
-          recover_x = -v.z
-          recover_y = v.y
-          recover_z = v.x
-        end
-        v_arr.append(Vertex.new(recover_x, recover_y, recover_z))
+  def reverse_deep_clone(set, num)
+    v_arr = []
+    set.v.each do |v|
+      case num
+      when 0
+        recover_x = v.x
+        recover_y = v.y
+        recover_z = v.z + @segments
+      when 1
+        recover_x = v.x
+        recover_y = -v.z
+        recover_z = v.y - @segments
+      when 2
+        recover_x = v.x
+        recover_y = -v.z
+        recover_z = v.y
+      when 3
+        recover_x = -v.z
+        recover_y = v.y
+        recover_z = v.x - @segments
+      else
+        recover_x = -v.z
+        recover_y = v.y
+        recover_z = v.x
       end
-      new_set = GraphSet.new(v_arr.first)
-      new_set.add_node(v_arr.last)
-
-      set.e.each do |e|
-        case num
-        when 0
-          v1 = Vertex.new(e.v1.x, e.v1.y, e.v1.z + @segments)
-          v2 = Vertex.new(e.v2.x, e.v2.y, e.v2.z + @segments)
-        when 1
-          v1 = Vertex.new(e.v1.x, -e.v1.z, e.v1.y - @segments)
-          v2 = Vertex.new(e.v2.x, -e.v2.z, e.v2.y - @segments)
-        when 2
-          v1 = Vertex.new(e.v1.x, -e.v1.z, e.v1.y)
-          v2 = Vertex.new(e.v2.x, -e.v2.z, e.v2.y)
-        when 3
-          v1 = Vertex.new(-e.v1.z, e.v1.y, e.v1.x - @segments)
-          v2 = Vertex.new(-e.v2.z, e.v2.y, e.v2.x - @segments)
-        else
-          v1 = Vertex.new(-e.v1.z, e.v1.y, e.v1.x)
-          v2 = Vertex.new(-e.v2.z, e.v2.y, e.v2.x)
-        end
-        new_edge = Edge.new(v1, v2)
-        new_set.add_edge(new_edge)
-      end
-      res.append(new_set)
+      v_arr.append(Vertex.new(recover_x, recover_y, recover_z))
     end
-    res
+    new_set = GraphSet.new(v_arr.first)
+    new_set.add_node(v_arr.last)
+    new_set
   end
+
+
+  def self.define_transform_edge(dir)
+    define_method("#{dir}transform_edge") do |e, num|
+      straight = dir == :"" ? -1 : 1
+      to_add = dir == :"" ? @segments : 0
+      case num
+      when 0
+        v1 = Vertex.new(e.v1.x, e.v1.y, e.v1.z + straight * @segments)
+        v2 = Vertex.new(e.v2.x, e.v2.y, e.v2.z + straight * @segments)
+      when 1
+        v1 = Vertex.new(e.v1.x, -straight * e.v1.z + to_add, straight * e.v1.y - (@segments - to_add))
+        v2 = Vertex.new(e.v2.x, -straight * e.v2.z + to_add, straight * e.v2.y - (@segments - to_add))
+      when 2
+        v1 = Vertex.new(e.v1.x, -straight * e.v1.z, straight * e.v1.y)
+        v2 = Vertex.new(e.v2.x, -straight * e.v2.z, straight * e.v2.y)
+      when 3
+        v1 = Vertex.new(-straight * e.v1.z + to_add, e.v1.y, straight * e.v1.x - (@segments - to_add))
+        v2 = Vertex.new(-straight * e.v2.z + to_add, e.v2.y, straight * e.v2.x - (@segments - to_add))
+      else
+        v1 = Vertex.new(-straight * e.v1.z, e.v1.y, straight * e.v1.x)
+        v2 = Vertex.new(-straight * e.v2.z, e.v2.y, straight * e.v2.x)
+      end
+      new_edge = Edge.new(v1, v2)
+      new_edge
+    end
+  end
+
+  define_transform_edge :""
+  define_transform_edge :reverse_
+
+  def self.define_clone_and_transform(dir)
+    define_method("#{dir}deep_clone_and_transform_plane") do |obj, num|
+      res = []
+      edges_covered = []
+      obj.each do |set|
+        new_set = send("#{dir}deep_clone", set, num)
+        set.e.each do |e|
+          new_edge = send("#{dir}transform_edge", e, num)
+          new_set.add_edge(new_edge)
+        end
+        res.append(new_set)
+      end
+      res
+    end
+  end
+
+  define_clone_and_transform :""
+  define_clone_and_transform :reverse_
 
   # find 4 unique plane routings
   def find_four_planes
     planes = []
-    # new_plane = nil
-    # while new_plane == nil
-    #     new_plane = find_general_plane_routing
-    # end
     while planes.length != 4
       new_plane = find_general_plane_routing
       planes << new_plane unless includes_plane?(new_plane, planes)
@@ -479,12 +350,12 @@ class Graph
     found = false
     combinations = planes.product(planes, planes, planes, planes, planes)
     combinations.each do |c|
-      arr = transform_arr(c)
+      arr = transform_array(c)
 
       if has_one_loop(arr)
         found = true
         # byebug
-        reverse_arr = reverse_transform_arr(arr)
+        reverse_arr = transform_array(arr, "reverse_")
         return [arr, reverse_arr]
       end
       i += 1
