@@ -61,8 +61,7 @@ class Graph
 
   def is_contained?(o, sets)
     sets.each do |s|
-      if (o.x == s.v.first.x && o.y == s.v.first.y && o.z == s.v.first.z) ||
-         (o.x == s.v.last.x && o.y == s.v.last.y && o.z == s.v.last.z)
+      if (equals_vertex(o, s.v.first) || equals_vertex(o, s.v.last))
         return true
       end
     end
@@ -202,20 +201,7 @@ class Graph
   # right -> 4
   def transform(plane)
     plane_arr = [plane]
-    back = deep_clone_and_transform_plane(plane, 0)
-    plane_arr.append(back)
-
-    top = deep_clone_and_transform_plane(plane, 1)
-    plane_arr.append(top)
-
-    bottom = deep_clone_and_transform_plane(plane, 2)
-    plane_arr.append(back)
-
-    left = deep_clone_and_transform_plane(plane, 3)
-    plane_arr.append(left)
-
-    right = deep_clone_and_transform_plane(plane, 4)
-    plane_arr.append(right)
+    5.times {|i| plane_arr.append(deep_clone_and_transform_plane(plane, i))}
     plane_arr
   end
 
@@ -229,81 +215,46 @@ class Graph
     new_arr
   end
 
-  def deep_clone(set, num)
-    v_arr = []
-    set.v.each do |v|
-      case num
-      when 0
-        v_arr.append(Vertex.new(v.x, v.y, v.z - @segments))
-      when 1
-        v_arr.append(Vertex.new(v.x, v.z + @segments, -v.y))
-      when 2
-        v_arr.append(Vertex.new(v.x, v.z, -v.y))
-      when 3
-        v_arr.append(Vertex.new(v.z + @segments, v.y, -v.x))
-      else
-        v_arr.append(Vertex.new(v.z, v.y, -v.x))
-      end
+  def transform_vertex(v, straight, to_add, num)
+    vertex = nil
+    case num
+    when 0
+      vertex = Vertex.new(v.x, v.y, v.z + straight * @segments)
+    when 1
+      vertex = Vertex.new(v.x, -straight * v.z + to_add, straight * v.y - (@segments - to_add))
+    when 2
+      vertex = Vertex.new(v.x, -straight * v.z, straight * v.y)
+    when 3
+      vertex = Vertex.new(-straight * v.z + to_add, v.y, straight * v.x - (@segments - to_add))
+    else
+      vertex = Vertex.new(-straight * v.z, v.y, straight * v.x)
     end
-    new_set = GraphSet.new(v_arr.first)
-    new_set.add_node(v_arr.last)
-    new_set
+    vertex
   end
 
-  def reverse_deep_clone(set, num)
-    v_arr = []
-    set.v.each do |v|
-      case num
-      when 0
-        recover_x = v.x
-        recover_y = v.y
-        recover_z = v.z + @segments
-      when 1
-        recover_x = v.x
-        recover_y = -v.z
-        recover_z = v.y - @segments
-      when 2
-        recover_x = v.x
-        recover_y = -v.z
-        recover_z = v.y
-      when 3
-        recover_x = -v.z
-        recover_y = v.y
-        recover_z = v.x - @segments
-      else
-        recover_x = -v.z
-        recover_y = v.y
-        recover_z = v.x
+  def self.define_deep_clone(dir)
+    define_method("#{dir}deep_clone") do |set, num|
+      v_arr = []
+      straight = dir == :"" ? -1 : 1
+      to_add = dir == :"" ? @segments : 0
+      set.v.each do |v|
+        v_arr.append(transform_vertex(v, straight, to_add, num))
       end
-      v_arr.append(Vertex.new(recover_x, recover_y, recover_z))
+      new_set = GraphSet.new(v_arr.first)
+      new_set.add_node(v_arr.last)
+      new_set
     end
-    new_set = GraphSet.new(v_arr.first)
-    new_set.add_node(v_arr.last)
-    new_set
   end
 
+  define_deep_clone :""
+  define_deep_clone :reverse_
 
   def self.define_transform_edge(dir)
     define_method("#{dir}transform_edge") do |e, num|
       straight = dir == :"" ? -1 : 1
       to_add = dir == :"" ? @segments : 0
-      case num
-      when 0
-        v1 = Vertex.new(e.v1.x, e.v1.y, e.v1.z + straight * @segments)
-        v2 = Vertex.new(e.v2.x, e.v2.y, e.v2.z + straight * @segments)
-      when 1
-        v1 = Vertex.new(e.v1.x, -straight * e.v1.z + to_add, straight * e.v1.y - (@segments - to_add))
-        v2 = Vertex.new(e.v2.x, -straight * e.v2.z + to_add, straight * e.v2.y - (@segments - to_add))
-      when 2
-        v1 = Vertex.new(e.v1.x, -straight * e.v1.z, straight * e.v1.y)
-        v2 = Vertex.new(e.v2.x, -straight * e.v2.z, straight * e.v2.y)
-      when 3
-        v1 = Vertex.new(-straight * e.v1.z + to_add, e.v1.y, straight * e.v1.x - (@segments - to_add))
-        v2 = Vertex.new(-straight * e.v2.z + to_add, e.v2.y, straight * e.v2.x - (@segments - to_add))
-      else
-        v1 = Vertex.new(-straight * e.v1.z, e.v1.y, straight * e.v1.x)
-        v2 = Vertex.new(-straight * e.v2.z, e.v2.y, straight * e.v2.x)
-      end
+      v1 = transform_vertex(e.v1, straight, to_add, num)
+      v2 = transform_vertex(e.v2, straight, to_add, num)
       new_edge = Edge.new(v1, v2)
       new_edge
     end
@@ -354,7 +305,6 @@ class Graph
 
       if has_one_loop(arr)
         found = true
-        # byebug
         reverse_arr = transform_array(arr, "reverse_")
         return [arr, reverse_arr]
       end
@@ -406,7 +356,7 @@ class Graph
   end
 
   # Generates JSON file of the graph
-  def to_json(*_args)
+  def to_json
     return nil if @planes.nil?
 
     plane_arr = []
