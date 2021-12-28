@@ -3,7 +3,7 @@
 require 'json'
 
 class Graph
-  attr_accessor :vertices, :edges, :sets, :route, :planes
+  attr_accessor :vertices, :edges, :sets, :route, :planes, :vertices, :edges
 
   # dimension[0] -> width
   # dimension[1] -> height
@@ -61,9 +61,7 @@ class Graph
 
   def is_contained?(o, sets)
     sets.each do |s|
-      if (equals_vertex(o, s.v.first) || equals_vertex(o, s.v.last))
-        return true
-      end
+      return true if equals_vertex(o, s.v.first) || equals_vertex(o, s.v.last)
     end
     false
   end
@@ -121,11 +119,11 @@ class Graph
     @vertices.each do |v|
       visited[v.hash] = [] # empty array of edges
     end
-    visited = explore(k, t, prev, edges, visited)
+    visited = explore(k, prev, edges, visited)
     visited[t.hash]
   end
 
-  def explore(k, t, prev, edges, visited)
+  def explore(k, prev, edges, visited)
     neighbors = find_neighbors(k, prev, edges)
     return [] if neighbors.length.zero?
 
@@ -139,7 +137,7 @@ class Graph
           visited[neighbor.hash] << p
         end
       end
-      explore(neighbor, t, (prev - 1).abs, edges, visited)
+      explore(neighbor, (prev - 1).abs, edges, visited)
     end
     visited
   end
@@ -176,21 +174,19 @@ class Graph
   def find_neighbors(v, prev, edges)
     n = []
     edges.each do |e|
+      neighbor_vertex = nil
       if equals_vertex(v, e.v1)
-        if prev == 1 && (e.v2.y - v.y).abs == 1
-          n << e.v2
-        elsif prev.zero? && (e.v2.x - v.x).abs == 1
-          n << e.v2
-        end
+        neighbor_vertex = find_neighboring_vertex(v, e.v2, e.v1, prev)
       elsif equals_vertex(v, e.v2)
-        if prev == 1 && (e.v1.y - v.y).abs == 1
-          n << e.v1
-        elsif prev.zero? && (e.v1.x - v.x).abs == 1
-          n << e.v1
-        end
+        neighbor_vertex = find_neighboring_vertex(v, e.v1, e.v2, prev)
       end
+      n << neighbor_vertex unless neighbor_vertex.nil?
     end
     n
+  end
+
+  def find_neighboring_vertex(v1, v2, _v3, prev)
+    return v2 if (prev == 1 && (v2.y - v1.y).abs == 1) || (prev.zero? && (v2.x - v1.x).abs == 1)
   end
 
   # Generates plane routings for other faces of the cube
@@ -201,15 +197,15 @@ class Graph
   # right -> 4
   def transform(plane)
     plane_arr = [plane]
-    5.times {|i| plane_arr.append(deep_clone_and_transform_plane(plane, i))}
+    5.times { |i| plane_arr.append(deep_clone_and_transform_plane(plane, i)) }
     plane_arr
   end
 
-  def transform_array(arr, rev="")
-    new_arr = rev == "" ? arr[1..arr.length-1] : [arr[0]]
+  def transform_array(arr, rev = '')
+    new_arr = rev == '' ? arr[1..arr.length - 1] : [arr[0]]
     i = 1
     while i < arr.length
-      new_arr[i] = send("#{rev}deep_clone_and_transform_plane", arr[i], i-1)
+      new_arr[i] = send("#{rev}deep_clone_and_transform_plane", arr[i], i - 1)
       i += 1
     end
     new_arr
@@ -219,17 +215,16 @@ class Graph
     vertex = nil
     case num
     when 0
-      vertex = Vertex.new(v.x, v.y, v.z + straight * @segments)
+      Vertex.new(v.x, v.y, v.z + straight * @segments)
     when 1
-      vertex = Vertex.new(v.x, -straight * v.z + to_add, straight * v.y - (@segments - to_add))
+      Vertex.new(v.x, -straight * v.z + to_add, straight * v.y - (@segments - to_add))
     when 2
-      vertex = Vertex.new(v.x, -straight * v.z, straight * v.y)
+      Vertex.new(v.x, -straight * v.z, straight * v.y)
     when 3
-      vertex = Vertex.new(-straight * v.z + to_add, v.y, straight * v.x - (@segments - to_add))
+      Vertex.new(-straight * v.z + to_add, v.y, straight * v.x - (@segments - to_add))
     else
-      vertex = Vertex.new(-straight * v.z, v.y, straight * v.x)
+      Vertex.new(-straight * v.z, v.y, straight * v.x)
     end
-    vertex
   end
 
   def self.define_deep_clone(dir)
@@ -305,7 +300,7 @@ class Graph
 
       if has_one_loop(arr)
         found = true
-        reverse_arr = transform_array(arr, "reverse_")
+        reverse_arr = transform_array(arr, 'reverse_')
         return [arr, reverse_arr]
       end
       i += 1
@@ -356,7 +351,7 @@ class Graph
   end
 
   # Generates JSON file of the graph
-  def to_json
+  def to_json(*_args)
     return nil if @planes.nil?
 
     plane_arr = []
@@ -364,13 +359,12 @@ class Graph
       p = Plane.new(plane)
       plane_arr.append(p.to_hash)
     end
-
     hash = { "width": @width, "height": @height, "depth": @depth, "segments": @segments, "scaffold_length": 7249,
              "planes": plane_arr }
-
     JSON.generate(hash)
   end
 
+  # Generates JSON file for unscaled planes of the graph
   def raw_to_json
     return nil if @raw_planes.nil?
 
@@ -379,9 +373,7 @@ class Graph
       p = Plane.new(plane)
       raw_plane_arr.append(p.to_hash)
     end
-
     hash = { "segments": @segments, "scaffold_length": 7249, "planes": raw_plane_arr }
-
     JSON.generate(hash)
   end
 end
