@@ -38,13 +38,19 @@ NanoFrame relies on several API which were developed on par with the project. Th
 We define three types of staples: **refl**ection, **refr**action, and **ext**e**n**sion. Reflection strands connect two orthogonal parts of the scaffold and therefore connect to two non-sequential edges. Refractions can be thought of as projection onto another plane, meaning they are the staples that cross from one plane onto the other. These connect two sequential edges. Extension are staples that live in between the area leftover by reflactions and refractions. Extension staples attach to a single edge. We set up a linear program that yields the optimal choice of reflection, refraction and extension staple strands. The constraints are shown below:
 
 ```javascript
-refraction_count = 14 * (# of stripes) 
-reflection_count = 2 * (# of stripes) ^ 2
-extension_count >= 0
-20 bp <= refractions_length <= 60 bp
-20 bp <= reflections_length <= 60 bp
-20 bp <= extensions_length <= 60 bp
+max 4sx + 2ys^2 + 2sz_1 + 2sz_2 + s(s-1)z_3 + s(s-1)z_4
+s.t. x, y, z_1, z_2, z_3, z_4
+
+x, y, z_1, z_2, z_3, z_4 >= 20
+x, y <= 60
+x/2 + y/2 + z_1 = w
+x/2 + y/2 + z_2 = h
+y + z_5 = w
+y + z_6 = h
+4sx + 2ys^2 + 2sz_1 + 2sz_2 + s(s-1)z_3 + s(s-1)z_4 < d
 ```
+Here, `x` and `y` are the refraction and reflation strands, while `z_1`, `z_2`, `z_3`, `z_4` are the different types of extension strands. w and h are the width and height segments while s and d are the number of stripes and length of scaffold accordingly.
+
 The results will be given in a csv format where the first column will be the description of the staple with row and column positions and the id number in that position of the grid. For example the first reflection strand in row 3 and column 4 on side 1 will be named `Refl-S1-R3-C4-1`. The sides are numbered as follows:
 ```javascript
 front = 0
