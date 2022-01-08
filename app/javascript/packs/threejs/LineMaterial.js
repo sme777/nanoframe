@@ -255,6 +255,10 @@ THREE.ShaderLib[ 'line' ] = {
 
 class LineMaterial extends THREE.ShaderMaterial {
 
+	generateProperty(name) {
+
+	}
+
 	constructor( parameters ) {
 
 		super( {

@@ -3,8 +3,9 @@
 require 'json'
 
 class Graph
-  attr_accessor :vertices, :edges, :sets, :route, :planes, :vertices, :edges
 
+  attr_accessor :vertices, :edges, :sets, :route, :planes, :vertices, :edges
+  
   # dimension[0] -> width
   # dimension[1] -> height
   # dimension[2] -> depth
@@ -14,41 +15,86 @@ class Graph
     @depth = dimensions[2]
     @segments = segments.to_i
     @scaff_length = scaff_length
-    v_and_e = create_vertices_and_edges
+    v_and_e = create_vertices_and_edges(:cube)
     @vertices = v_and_e[0]
     @edges = v_and_e[1]
     @template_planes = find_four_planes
     (@planes, @raw_planes) = find_plane_combination(@template_planes)
   end
+  
 
-  def create_vertices_and_edges
+  def create_vertices_and_edges(shape)
     v = []
     e = []
     x = 0
     y = 0
 
-    while x <= @segments && y <= @segments
+    case shape
+    when :cube
+      while x <= @segments && y <= @segments
 
-      unless (x % @segments).zero? && (y % @segments).zero?
-        v.push(Vertex.new(x, y))
-        if x.zero?
-          e << Edge.new(Vertex.new(x, y), Vertex.new(x + 1, y))
-        elsif y.zero?
-          e << Edge.new(Vertex.new(x, y), Vertex.new(x, y + 1))
-        elsif x != @segments && y != @segments
-          e << Edge.new(Vertex.new(x, y), Vertex.new(x + 1, y))
-          e << Edge.new(Vertex.new(x, y), Vertex.new(x, y + 1))
+        unless (x % @segments).zero? && (y % @segments).zero?
+          v.push(Vertex.new(x, y))
+          if x.zero?
+            e << Edge.new(Vertex.new(x, y), Vertex.new(x + 1, y))
+          elsif y.zero?
+            e << Edge.new(Vertex.new(x, y), Vertex.new(x, y + 1))
+          elsif x != @segments && y != @segments
+            e << Edge.new(Vertex.new(x, y), Vertex.new(x + 1, y))
+            e << Edge.new(Vertex.new(x, y), Vertex.new(x, y + 1))
+          end
         end
-      end
-      y += 1
+        y += 1
 
-      if y > @segments
-        y = 0
-        x += 1
-      end
+        if y > @segments
+          y = 0
+          x += 1
+        end
 
+      end
+    when :triangle
+      v = get_vertices(:triangle)
+      stripes = connect_vertices(v)
+      e = get_edges(stripes)
     end
     [v, e]
+  end
+
+  def get_vertices(shape)
+    vertices = []
+    case shape
+    when :triangle
+      @segments.times do |i|
+        vertices << Vertex.new((i.to_f + 1) / 2, (Math.sqrt(3) / 2 * (i.to_f + 1)).round(3), 0)
+        vertices << Vertex.new(i.to_f + 1, 0, 0)
+        vertices << Vertex.new((@segments + 1.to_f) / 2 + (i.to_f + 1) / 2,
+                               (Math.sqrt(3) / 2 * (@segments + 1) - Math.sqrt(3) / 2 * (i + 1).to_f).round(3), 0)
+      end
+    end
+    vertices
+  end
+
+  def connect_vertices(vs)
+    disp_v = vs.clone
+    e = []
+    until disp_v.empty?
+      v1 = disp_v[rand(0..(disp_v.length - 1))]
+      disp_v.delete(v1)
+      v2 = disp_v[rand(0..(disp_v.length - 1))]
+      if !same_side?(v1, v2)
+        e << Edge.new(v1, v2)
+        disp_v.delete(v2)
+      else
+        disp_v << v1
+      end
+    end
+    e
+  end
+
+  def same_side?(v1, v2)
+    return (v1.y == v2.y && v1.y == 0) || (v1.y != 0 && v2.y != 0 &&
+    (v1.x < (@segments +1) / 2 && v2.x < (@segments +1) / 2 ||
+    v1.x > (@segments +1) / 2 && v2.x > (@segments +1) / 2))
   end
 
   def find_outgoers

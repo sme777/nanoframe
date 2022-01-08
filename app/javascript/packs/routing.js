@@ -5,8 +5,7 @@ import * as RoutingControls from './routingControls'
 import * as VisualizeHelpers from './visualizeHelpers'
 import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline'
 import { Edge } from './edge'
-import { Line2 } from './threejs/Line2'
-
+import { GenerateStaple } from './staple'
 
 const rawGraph = JSON.parse(document.getElementById("raw-graph-container").value) 
 const graph = JSON.parse(document.getElementById("graph-container").value)
@@ -47,6 +46,8 @@ let renderer = new THREE.WebGLRenderer({
     canvas: canvas
 })
 
+const greenHex = [0x50C878, 0x5F8575, 0x4F7942, 0x228B22, 0x7CFC00, 0x008000, 0x355E3B, 0x00A36C, 0x2AAA8A, 0x4CBB17, 0x93C572]
+
 let raycaster = new THREE.Raycaster()
 let mouse = new THREE.Vector2()
 // change this attribute when edit menu is selected
@@ -68,7 +69,7 @@ const OrbitControls = oc(THREE)
 let controls = new OrbitControls(camera, renderer.domElement)
 
 if (RoutingControls.getSwitchContext() == RoutingControls.getContext().planeMode) {
-    controls.enableRotate = false
+    // controls.enableRotate = false
 }
 let currIndex = 0
 let currPlane = planes[currIndex] 
@@ -106,82 +107,29 @@ function findArrowVectors(vertex) {
     return [first, second, third]
 }
 
+function standardizeAllPlanes(planeSets) {
+    for (let i = 0; i < planeSets.length; i++) {
+        for (let j = 0; j < planeSets[i].edges.length; j++) {
+            planeSets[i].edges[j].v1 = amplify(RoutingHelpers.transform(planeSets[i].edges[j].v1))
+            planeSets[i].edges[j].v2 = amplify(RoutingHelpers.transform(planeSets[i].edges[j].v2))
+        }
+    }
+    return planeSets
+}
+
 // start adding mesh lines for scaffold
 function generatePlaneScaffoldRouting(index) {
-    const planeSets = JSON.parse(JSON.stringify(rawGraph.planes[index].sets))
-    let red
-    let green
-    let blue
-    const greenStepSize = Math.floor(155 / planeSets.length)
-    let setGroups = []
-    for (let i = 0; i < planeSets.length; i++){ 
-        red = Math.floor(Math.random() * 100)
-        green = 100 + i * greenStepSize 
-        blue = Math.floor(Math.random() * 100)
-        // setColors.push([red, green, blue])
-        let setEdges = planeSets[i].edges
-        let setMaterial = new MeshLineMaterial()
-        setMaterial.color = new THREE.Color("rgb(" + red + ", " + green + ", " + blue +")")
-        // setMaterial.color = new THREE.Color(0x29f4a2)
-        setMaterial.lineWidth = 0.75
-        setMaterial.resolution = resolution
-        setMaterial.side = THREE.DoubleSide
+    const stanardizedPlaneSets = standardizeAllPlanes(JSON.parse(JSON.stringify(rawGraph.planes[index].sets))) 
+    // console.log(stanardizedPlaneSets)
+    let setGroups = new THREE.Group()
+    for (let i = 0; i < stanardizedPlaneSets.length; i++){ 
 
-        // setMaterial.blending = THREE.AdditiveBlending
-
-        let setEdgesGroup = new THREE.Group()
-        let lineMesh
-        // let endTriangle
-        let startSquare
-        for (let j = 0; j < setEdges.length; j++) {
-            let line = new MeshLine()
-            let start = amplify(RoutingHelpers.transform(setEdges[j].v1))
-            let end = amplify(RoutingHelpers.transform(setEdges[j].v2))
-            // let end2 = vectorize({x: })
-            line.setPoints([VisualizeHelpers.vectorize(start), VisualizeHelpers.vectorize(end)])
-            lineMesh = new THREE.Mesh(line, setMaterial)
-            if (j == 0) {
-
-            }
-
-            if (j == setEdges.length - 1) {
-                // let [v1, v2, v3] = findArrowVectors(end)
-                
-                // // let endTriangle = new THREE.Triangle(v1, v2, v3)
-                // // let endTriangleMaterial = new THREE.MeshBasicMaterial( {color: 0xff0000} )
-                // // let arrowMesh = new THREE.Mesh(endTriangle, endTriangleMaterial)
-                // // scene.add(arrowMesh)
-
-                // var geometry = new THREE.Geometry();
-                // geometry.vertices.push(v1);
-                // geometry.vertices.push(v2);
-                // geometry.vertices.push(v3);
-                // geometry.vertices.push(v1);
-                
-                // var liner = new THREE.Line(
-                //   geometry,
-                //   new THREE.LineBasicMaterial({ color: 0x00ff00 })
-                // );
-                let arrowGeo = new THREE.TetrahedronGeometry(1.0, 0.0)
-                let endTriangleMaterial = new THREE.MeshBasicMaterial( {color: 0xff0000} )
-                let arrowMesh = new THREE.LineSegments(arrowGeo, setMaterial)
-                
-                scene.add(arrowMesh)
-                arrowMesh.position.set(end.x, end.y+1, end.z);
-                // console.log(endTriangle)
-                // scene.add(endTriangle)
-                // let arrowHelper = new THREE.ArrowHelper( end, end, 1, 0xff0000 );
-                // scene.add( arrowHelper );
-            }
-            setEdgesGroup.add(lineMesh)
-        }
-        setGroups.push(setEdgesGroup)
+        let strand = GenerateStaple(stanardizedPlaneSets[i].edges, greenHex[i % greenHex.length])
+        setGroups.add(strand)
+        
     }
-    let planeRoutes = new THREE.Group()
-    for (let i = 0; i < setGroups.length; i++) {
-        planeRoutes.add(setGroups[i])
-    }
-    return planeRoutes
+    // console.log("final", setGroups)
+    return setGroups
 }
 
 
@@ -759,6 +707,9 @@ for (var i = 0; i < staples.length; i++){
       tr += "</tr>"
       t += tr
 }
+
+// const m = GenerateStaple([{v1: {x: 0, y: 0, z: 0}, v2: {x: 3, y: 0, z: 0}}, {v1: {x: 3, y: 0, z: 0}, v2: {x: 3, y: 0, z: 3}}, {v1: {x: 3, y: 0, z: 3}, v2: {x: 0, y: 0, z: 3}}], 0x29f4a2)
+// scene.add(m)
 
 document.getElementById("staples_field").value = JSON.stringify(staples)
 document.getElementById("staples_descriptions_field").value = JSON.stringify(descriptions)
