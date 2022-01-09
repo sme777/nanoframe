@@ -6630,6 +6630,11 @@
   "resolved" "https://registry.npmjs.org/three-css2drender/-/three-css2drender-1.0.0.tgz"
   "version" "1.0.0"
 
+"three-dragcontrols@^0.88.2":
+  "integrity" "sha512-Qqhbo7+K5TAeqlYlUiI0EBp14uI9nbgoLANas3p4v4kz3h5HmOlComV9UhLI2x3BtdCdcHSuiyDL7sTrtP772w=="
+  "resolved" "https://registry.npmjs.org/three-dragcontrols/-/three-dragcontrols-0.88.2.tgz"
+  "version" "0.88.2"
+
 "three-mtl-loader@^1.0.2":
   "integrity" "sha512-GqDrWC5rbi+0/gp999S4lpCSHroBEfe9NqmH165orG0QhXeknL/eSNVMJUWBNgg2sBW7vlqVNWD/P0kdHeGC9g=="
   "resolved" "https://registry.npmjs.org/three-mtl-loader/-/three-mtl-loader-1.0.2.tgz"

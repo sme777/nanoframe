@@ -20,12 +20,13 @@ export function GenerateStaple(edges, color, width=0.5) {
     lineMaterial.side = THREE.DoubleSide
     let line = new MeshLine()
     let points = []
+    let distance
+    let dir
     for (let i = 0; i < edges.length; i++) {
         let edge = edges[i]
         let start = edge.v2
         let end = edge.v1
-        let distance
-        let dir
+
         if (start.x - end.x != 0) {
             distance = end.x - start.x
             dir = "x"
@@ -57,7 +58,19 @@ export function GenerateStaple(edges, color, width=0.5) {
 
 function getArrowHead(tipPosition, dir, distance) {
     let arrowHeadGeometry = new THREE.BufferGeometry()
-    const arrowHeadPosition = [tipPosition.x + 0.4, tipPosition.y + 0.01, tipPosition.z + 0.4, tipPosition.x + 0.4, tipPosition.y + 0.01, tipPosition.z - 0.4, tipPosition.x - 0.8 + 0.4, tipPosition.y + 0.01, tipPosition.z]
+
+    let arrowHeadPosition
+    
+    // cons
+    if (dir == "x" && distance < 0) {
+        arrowHeadPosition = [tipPosition.x + 0.4, tipPosition.y + 0.01, tipPosition.z + 0.4, tipPosition.x + 0.4, tipPosition.y + 0.01, tipPosition.z - 0.4, tipPosition.x - 0.8 + 0.4, tipPosition.y + 0.01, tipPosition.z]
+    } else if (dir == "x" && distance > 0) {
+        arrowHeadPosition = [tipPosition.x + 0.4, tipPosition.y + 0.01, tipPosition.z + 0.4, tipPosition.x + 0.4, tipPosition.y + 0.01, tipPosition.z - 0.4, tipPosition.x + 0.8 - 0.4, tipPosition.y + 0.01, tipPosition.z]
+    } else if (dir == "z" && distance < 0) {
+        arrowHeadPosition = [tipPosition.x + 0.4, tipPosition.y + 0.01, tipPosition.z + 0.4, tipPosition.x - 0.4, tipPosition.y + 0.01, tipPosition.z + 0.4, tipPosition.x, tipPosition.y + 0.01, tipPosition.z - 0.8 + 0.4]
+    } else {
+        arrowHeadPosition = [tipPosition.x + 0.4, tipPosition.y + 0.01, tipPosition.z + 0.4, tipPosition.x - 0.4, tipPosition.y + 0.01, tipPosition.z + 0.4, tipPosition.x, tipPosition.y + 0.01, tipPosition.z + 0.8 - 0.4]
+    }
     arrowHeadGeometry.setAttribute('position', new THREE.Float32BufferAttribute(arrowHeadPosition, 3))
     let arrowHeadMeaterial = new THREE.MeshBasicMaterial({
         color: 0x000000

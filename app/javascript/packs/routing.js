@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import oc from 'three-orbit-controls'
+import DragControls from 'three-dragcontrols'
 import * as RoutingHelpers from './routingHelpers' 
 import * as RoutingControls from './routingControls'
 import * as VisualizeHelpers from './visualizeHelpers'
@@ -69,7 +70,7 @@ const OrbitControls = oc(THREE)
 let controls = new OrbitControls(camera, renderer.domElement)
 
 if (RoutingControls.getSwitchContext() == RoutingControls.getContext().planeMode) {
-    // controls.enableRotate = false
+    controls.enableRotate = false
 }
 let currIndex = 0
 let currPlane = planes[currIndex] 
@@ -77,6 +78,7 @@ cubeGroup.position.z = 2000
 scene.add(cubeGroup)
 scene.add(currPlane)
 
+let dragControl = new DragControls(currPlane, camera, renderer.domElement)
 
 window.addEventListener( 'resize', onWindowResize )
 window.addEventListener( 'pointermove', onMouseMove )
@@ -107,6 +109,23 @@ function findArrowVectors(vertex) {
     return [first, second, third]
 }
 
+function convertTransformAmplify(coordinate, side) {
+    return amplify(RoutingHelpers.transform(RoutingHelpers.convertToStandardForm(coordinate, side)))
+}
+
+function standardizeAllStaples(stapleSets) {
+    for (let i = 0; i < stapleSets.length - 1; i++) {
+        let coordinates = stapleSets[i].positions
+        let side = stapleSets[i].side
+
+        stapleSets[i].positions[0] = convertTransformAmplify(coordinates[0], side)
+        stapleSets[i].positions[1] = convertTransformAmplify(coordinates[1], side)
+        stapleSets[i].positions[2] = convertTransformAmplify(coordinates[2], side)
+    }
+
+    return stapleSets
+}
+
 function standardizeAllPlanes(planeSets) {
     for (let i = 0; i < planeSets.length; i++) {
         for (let j = 0; j < planeSets[i].edges.length; j++) {
@@ -120,7 +139,6 @@ function standardizeAllPlanes(planeSets) {
 // start adding mesh lines for scaffold
 function generatePlaneScaffoldRouting(index) {
     const stanardizedPlaneSets = standardizeAllPlanes(JSON.parse(JSON.stringify(rawGraph.planes[index].sets))) 
-    // console.log(stanardizedPlaneSets)
     let setGroups = new THREE.Group()
     for (let i = 0; i < stanardizedPlaneSets.length; i++){ 
 
@@ -128,7 +146,6 @@ function generatePlaneScaffoldRouting(index) {
         setGroups.add(strand)
         
     }
-    // console.log("final", setGroups)
     return setGroups
 }
 
@@ -168,51 +185,15 @@ scene.add(staplesGroup)
 function generatePlaneStapleRouting(currIndex) {
     const map = RoutingHelpers.planeStringToNum()
     const staplePositions = JSON.parse(JSON.stringify(positions))
-    let red
-    let green
-    let blue
-    const blueStepSize = Math.floor(155 / staplePositions.length)
+    const stanardizedStapleSets = standardizeAllStaples(staplePositions)
     let edgeGroups = new THREE.Group()
 
-    for (let i = 0; i < staplePositions.length - 1; i++){ 
+    for (let i = 0; i < stanardizedStapleSets.length - 1; i++) {
         if (map[staplePositions[i].side] == currIndex) {
-            red = Math.floor(Math.random() * 60)
-            green =  Math.floor(Math.random() * 60)
-            blue = Math.floor(Math.random() * 60)
-            let edge = staplePositions[i].positions
-            let type = staplePositions[i].type
-            let side = staplePositions[i].side
-            let edgeMaterial = new MeshLineMaterial()
-            edgeMaterial.color = type == "Refl" ? new THREE.Color("rgb(" + 255 + ", " + 105 + ", " + 180 +")") : new THREE.Color("rgb(" + 20 + ", " + 20 + ", " + 255 +")")
-            edgeMaterial.lineWidth = 0.5
-            edgeMaterial.resolution = resolution
-            edgeMaterial.side = THREE.DoubleSide
-            let line1 = new MeshLine()
-            let line2 = new MeshLine()
-
-            let start1 = RoutingHelpers.convertToStandardForm(edge[0], side)
-            let end1 = RoutingHelpers.convertToStandardForm(edge[1], side)
-            let end2 = RoutingHelpers.convertToStandardForm(edge[2], side)
-
-            start1 = amplify(RoutingHelpers.transform(start1))
-            end1 = amplify(RoutingHelpers.transform(end1))
-            end2 = amplify(RoutingHelpers.transform(end2))
-            let [xCh1, zCh1, xCh2, zCh2] = RoutingHelpers.findDirectionalChange(edge)
-            const results = adjustStaplePositions(xCh1, zCh1, xCh2, zCh2, [start1, end1, end2])
-            start1 = results[0]
-            end1 = results[1]
-            end2 = results[2]
-
-            line1.setPoints([VisualizeHelpers.vectorize(start1), VisualizeHelpers.vectorize(end1)])
-            if (type == "Refl") {
-                line2.setPoints([VisualizeHelpers.vectorize(end1), VisualizeHelpers.vectorize(end2)])
-            }
-            let lineMesh1 = new THREE.Mesh(line1, edgeMaterial)
-            let lineMesh2 = new THREE.Mesh(line2, edgeMaterial)
-            edgeGroups.add(lineMesh1)
-            edgeGroups.add(lineMesh2)
+            console.log(stanardizedStapleSets[i].positions)
+            edgeGroups.add(GenerateStaple(stanardizedStapleSets[i].positions, 0xff0000))
         }
-        // setGroups.push(setEdgesGroup)
+        
     }
     return edgeGroups
 }
@@ -707,9 +688,6 @@ for (var i = 0; i < staples.length; i++){
       tr += "</tr>"
       t += tr
 }
-
-// const m = GenerateStaple([{v1: {x: 0, y: 0, z: 0}, v2: {x: 3, y: 0, z: 0}}, {v1: {x: 3, y: 0, z: 0}, v2: {x: 3, y: 0, z: 3}}, {v1: {x: 3, y: 0, z: 3}, v2: {x: 0, y: 0, z: 3}}], 0x29f4a2)
-// scene.add(m)
 
 document.getElementById("staples_field").value = JSON.stringify(staples)
 document.getElementById("staples_descriptions_field").value = JSON.stringify(descriptions)
