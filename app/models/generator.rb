@@ -67,9 +67,11 @@ class Generator < ApplicationRecord
   end
 
   def route
-    if shape == '1'
-      @graph = Graph.new([width, height, depth], width_segment + 1, scaffold_length)
-      # @plane = Plane.new(@graph)
+    case shape
+    when '1'
+      @graph = Graph.new([width, height, depth], :cube, width_segment + 1, scaffold_length)
+    when '6'
+      @graph = Graph.new([radius], :tetrahedron, width_segment + 1, scaffold_length)
     end
   end
 

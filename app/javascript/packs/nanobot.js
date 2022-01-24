@@ -16,28 +16,33 @@ $(document).ready(function () {
 
       requiredParams = displayInputs("height", "width", "depth", "ws", "hs", "ds")
       updatePlaceholders({width: "50 nm", height: "50 nm", depth: "50 nm", ws: "4", hs: "4", ds: "4"})
+      preventAllInput("height", "depth", "width", "ws", "hs", "ds")
 
     } else if (synthesizerChoice == "Sphere") {
 
       requiredParams = displayInputs("ws", "hs", "radius")
       updatePlaceholders({ws: "10", hs: "8", radius: "22 nm"})
+      preventAllInput("ws", "hs", "radius")
 
     } else if (synthesizerChoice == "Cylinder") {
 
       requiredParams = displayInputs("rs", "rt", "rb", "height")
       updatePlaceholders({rs: "12", rst: "18 nm", rsb: "10 nm", height: "33 nm"})
+      preventAllInput("rs", "rt", "rb", "height")
 
     } else if (synthesizerChoice == "Cone") {
 
       requiredParams = displayInputs("rs", "height", "radius")
       updatePlaceholders({radius: "20 nm", rs: "20", height: "33 nm"})
+      preventAllInput("rs", "radius", "height")
 
     } else if (synthesizerChoice == "Polyhedron" || synthesizerChoice == "Tetrahedron" ||
       synthesizerChoice == "Octahedron" || synthesizerChoice == "Icosahedron" ||
       synthesizerChoice == "Dodecahedron") {
 
-      requiredParams = displayInputs("radius", "detail")
+      requiredParams = displayInputs("radius", "ws", "detail")
       updatePlaceholders({radius: "22 nm", detail: "0"})
+      preventAllInput("detail", "radius", "ws")
 
     } else if (synthesizerChoice == "Torus") {
 
@@ -67,9 +72,10 @@ $(document).ready(function () {
     }
     return params
   }
-  preventAllInput("height", "depth", "width", "ws", "hs", "ds")
+  
 
   function preventAllInput(...args) {
+    
     for (let i = 0; i < args.length; i++) {
       let input = args[i]
       $(`.${input}-input`).on("input", function (evt) {
@@ -156,6 +162,8 @@ $(document).ready(function () {
       } else {
         $(".synthesize-form").submit()
       }
+    } else {
+      $(".synthesize-form").submit()
     }
   })
 })

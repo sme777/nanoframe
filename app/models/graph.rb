@@ -9,17 +9,27 @@ class Graph
   # dimension[0] -> width
   # dimension[1] -> height
   # dimension[2] -> depth
-  def initialize(dimensions, segments, scaff_length)
-    @width = dimensions[0]
-    @height = dimensions[1]
-    @depth = dimensions[2]
+  def initialize(dimensions, shape, segments, scaff_length)
+    # byebug
+    setup_dimensions(dimensions, shape)
     @segments = segments.to_i
     @scaff_length = scaff_length
-    v_and_e = create_vertices_and_edges(:cube)
+    v_and_e = create_vertices_and_edges(shape)
     @vertices = v_and_e[0]
     @edges = v_and_e[1]
     @template_planes = find_four_planes
     (@planes, @raw_planes) = find_plane_combination(@template_planes)
+  end
+
+  def setup_dimensions(dimensions, shape)
+    case shape
+    when :cube
+      @width = dimensions[0]
+      @height = dimensions[1]
+      @depth = dimensions[2]
+    when :tetrahedron
+      @radius = dimensions[0]
+    end
   end
   
 
@@ -52,7 +62,8 @@ class Graph
         end
 
       end
-    when :triangle
+    when :tetrahedron
+      # byebug
       v = get_vertices(:triangle)
       stripes = connect_vertices(v)
       e = get_edges(stripes)
@@ -89,6 +100,65 @@ class Graph
       end
     end
     e
+  end
+
+  def get_edges(stripes)
+    undisected_edges = stripes.clone
+    for i in 0..undisected_edges.length do
+      for j in 0..undisected_edges.length do
+        byebug
+        if i == j 
+          next
+        else
+          if intersect(undisected_edges[i], undisected_edges[j]) 
+            intersection_point = intersection(undisected_edges[i], undisected_edges[j])
+            e1_split = split_edge(undisected_edges[i], intersection_point)
+            e2_split = split_edge(undisected_edges[j], intersection_point)
+            undisected_edges.delete(undisected_edges[i])
+            undisected_edges.delete(undisected_edges[j])
+            undisected_edges << e1_split
+            undisected_edges << e2_split
+            # did_change 
+          end
+        end
+      end
+
+    end
+    # puts Edge.beautify_edges(stripes)
+
+    undisected_edges
+  end
+
+
+  def ccw(a, b, c)
+    (c.y-a.y) * (b.x-a.x) > (b.y-a.y) * (c.x-a.x)
+  end
+
+  def intersect(e1, e2)
+    a = e1.v1
+    b = e1.v2
+    c = e2.v1
+    d = e2.v2
+    ccw(a, c, d) != ccw(b, c, d) && ccw(a, b, c) != ccw(a, b, d)
+  end
+
+  def intersection(e1, e2)
+    xdiff = [e1.v1.x - e1.v2.x, e2.v1.x - e2.v2.x]
+    ydiff = [e1.v1.y - e1.v2.y, e2.v1.y - e2.v2.y]
+
+    div = det(xdiff, ydiff)
+    d = [det([e1.v1.x, e1.v1.y], [e1.v2.x, e1.v2.y]), det([e2.v1.x, e2.v1.y], [e2.v2.x, e2.v2.y])]
+    x = det(d, xdiff) / div
+    y = det(d, ydiff) / div
+    Vertex.new(x, y, 0)
+  end
+
+  def det(a, b)
+    a[0] * b[1] - a[1] * b[0]
+  end
+
+  def split_edge(edge, point)
+    [Edge.new(edge.v1, point), Edge.new(point, edge.v2)]
   end
 
   def same_side?(v1, v2)
