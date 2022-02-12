@@ -110,17 +110,16 @@ function findArrowVectors(vertex) {
 }
 
 function convertTransformAmplify(coordinate, side) {
+    // console.log(coordinate, side)
     return amplify(RoutingHelpers.transform(RoutingHelpers.convertToStandardForm(coordinate, side)))
 }
 
 function standardizeAllStaples(stapleSets) {
     for (let i = 0; i < stapleSets.length - 1; i++) {
-        let coordinates = stapleSets[i].positions
-        let side = stapleSets[i].side
-
-        stapleSets[i].positions[0] = convertTransformAmplify(coordinates[0], side)
-        stapleSets[i].positions[1] = convertTransformAmplify(coordinates[1], side)
-        stapleSets[i].positions[2] = convertTransformAmplify(coordinates[2], side)
+        for (let j = 0; j < stapleSets[i].positions.length; j++) {
+            stapleSets[i].positions[j].v1 = convertTransformAmplify(stapleSets[i].positions[j].v1, stapleSets[i].side)
+            stapleSets[i].positions[j].v2 = convertTransformAmplify(stapleSets[i].positions[j].v2, stapleSets[i].side)
+        }
     }
 
     return stapleSets
@@ -178,7 +177,6 @@ let sequenceDivison = []
 const es = createEdgeStrands()
 const mps = createAdjacentEdgeMap()
 const [staples, descriptions, positions] = generateStapleStrands(mps[0], mps[1])
-
 let staplesGroup = generatePlaneStapleRouting(currIndex)
 scene.add(staplesGroup)
 
@@ -190,87 +188,12 @@ function generatePlaneStapleRouting(currIndex) {
 
     for (let i = 0; i < stanardizedStapleSets.length - 1; i++) {
         if (map[staplePositions[i].side] == currIndex) {
-            console.log(stanardizedStapleSets[i].positions)
-            edgeGroups.add(GenerateStaple(stanardizedStapleSets[i].positions, 0xff0000))
+            edgeGroups.add(GenerateStaple(stanardizedStapleSets[i].positions, 0xff0000, 0.5, true))
         }
         
     }
     return edgeGroups
 }
-
-function adjustStaplePositions(xCh1, zCh1, xCh2, zCh2, arr) {
-    let start1 = arr[0]
-    let end1 = arr[1]
-    let end2 = arr[2]
-
-    if (xCh1 > 0 && zCh2 > 0) {
-        end1.z += 0.5
-        start1.z += 0.5
-        end2.x -= 0.5
-        end1.x -= 0.5
-    } else if (xCh1 > 0 && zCh2 < 0) {
-        start1.z -= 0.5
-        end1.z -= 0.5
-        end1.x -= 0.5
-        end2.x -= 0.5
-    } else if (xCh1 < 0 && zCh2 > 0) {
-        start1.z += 0.5
-        end1.z += 0.5
-        end1.x += 0.5
-        end2.x += 0.5
-    } else if (xCh1 < 0 && zCh2 < 0) {
-        start1.z -= 0.5
-        end1.z -= 0.5
-        end1.x += 0.5
-        end2.x += 0.5
-    } else if (zCh1 > 0 && xCh2 < 0) {
-        start1.x -= 0.5
-        end1.x -= 0.5
-        end1.z -= 0.5
-        end2.z -= 0.5
-    } else if (zCh1 > 0 && xCh2 > 0) {
-        start1.x += 0.5
-        end1.x += 0.5
-        end1.z -= 0.5
-        end2.z -= 0.5
-    } else if (zCh1 < 0 && xCh2 > 0) {
-        end1.x += 0.5
-        start1.x += 0.5
-        end2.z += 0.5
-        end1.z += 0.5
-    } else if (zCh1 < 0 && xCh2 < 0) {
-        end1.x -= 0.5
-        start1.x -= 0.5
-        end2.z += 0.5
-        end1.z += 0.5
-    } else if (xCh1 > 0) {
-        start1.z -= 0.5
-        end1.z -= 0.5
-    } else if (xCh1 < 0) {
-        start1.z += 0.5
-        end1.z += 0.5
-    } else if (zCh1 > 0) {
-        start1.x += 0.5
-        end1.x += 0.5
-    } else if (zCh1 < 0) {
-        start1.x += 0.5
-        end1.x += 0.5
-    } else if (xCh2 > 0) {
-        start1.z += 0.5
-        end1.z += 0.5
-    } else if (xCh2 < 0) {
-        start1.z -= 0.5
-        end1.z -= 0.5
-    } else if (zCh2 > 0) {
-        start1.x += 0.5
-        end1.x += 0.5
-    } else if (zCh2 < 0) {
-        start1.x -= 0.5
-        end1.x -= 0.5
-    }
-    return [start1, end1, end2]
-}
-
 
 function createAdjacentEdgeMap() {
     let edgeMap = {}
@@ -453,10 +376,15 @@ function generateStapleStrands(edgeMap, stringMap) {
         }
 
 
-        positions.push({"positions": [first, stringMap[key].end, last], "side": side, "type": type})
+        positions.push({"positions": makeEdges(first, stringMap[key].end, last), "side": side, "type": type})
  
     }
     return [staples, descriptions, positions]
+}
+
+function makeEdges(first, middle, last) {
+    return [{v1: middle, v2: last},{v1: first, v2: middle}]
+    
 }
 
 function findRowAndCol(edge, side) {

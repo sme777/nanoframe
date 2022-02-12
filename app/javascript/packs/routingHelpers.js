@@ -264,7 +264,7 @@ export function isOutgoerEdge(v, segments) {
  * @returns 
  */
 export function findDirectionalChange(es) {
-    const [first, middle, last] = [es[0], es[1], es[2]]
+    const [first, middle, last] = [es[1].v1, es[1].v2, es[0].v1]
 
     const xCh1 = middle.x - first.x
     const zCh1 = middle.z - first.z
