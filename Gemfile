@@ -29,6 +29,7 @@ gem 'omniauth'
 gem 'omniauth-github'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-rails_csrf_protection'
+gem 'pycall'
 # User Active Storage variant
 gem 'mini_magick', '~>4.8'
 # User AWS sdk

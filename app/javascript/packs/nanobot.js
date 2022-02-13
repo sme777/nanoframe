@@ -12,7 +12,7 @@ $(document).ready(function () {
     $(".synthesizer-btn").prop("disabled", true);
     $(".dimension-input").val("");
 
-    if (synthesizerChoice == "Cube") {
+    if (synthesizerChoice == "Cube (P1)") {
 
       requiredParams = displayInputs("height", "width", "depth", "ws", "hs", "ds")
       updatePlaceholders({width: "50 nm", height: "50 nm", depth: "50 nm", ws: "4", hs: "4", ds: "4"})
@@ -133,7 +133,7 @@ $(document).ready(function () {
 $(document).ready(function () {
   $(".synthesizer-btn").click(function (e) {
     e.preventDefault()
-    if ($('#synthesizer-shape').find(":selected").text() == "Cube") {
+    if ($('#synthesizer-shape').find(":selected").text() == "Cube (P1)") {
       const height = parseInt($(".height-input").val())
       const depth = parseInt($(".depth-input").val())
       const width = parseInt($(".width-input").val())

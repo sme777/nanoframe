@@ -9,7 +9,7 @@ class GeneratorsController < ApplicationController
 
   def index; end
 
-  def shaper; end
+  def custom; end
 
   def synthesize
     # @generator = Generator.find(params[:id])

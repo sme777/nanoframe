@@ -45,18 +45,63 @@
       <div class="shape-dropdown">
         <select id="synthesizer-shape" class="form-select" name="generator[shape]">
           <option value="0" disabled selected>Select Shape</option>
-          <option value="1">Cube</option>
-          <option value="2">Sphere</option>
-          <option value="3">Cylinder</option>
-          <option value="4">Cone</option>
-          <option value="5">Polyhedron</option>
-          <option value="6">Tetrahedron</option>
-          <option value="7">Octahedron</option>
-          <option value="8">Icosahedron</option>
-          <option value="9">Dodecahedron</option>
-          <option value="10 ">Torus</option>
-          <option value="11">Torus Knot</option>
-          <option value="/shaper">Custom</option>
+          <!-- Platonic Shapes-->
+          <option value="1">Cube (P1)</option>
+          <option value="2">Tetrahedron (P2)</option>
+          <option value="3">Octahedron (P3)</option>
+          <option value="4">Icosahedron (P4)</option>
+          <option value="5">Dodecahedron (P5)</option>
+          <!-- Archimedean Shapes-->
+          <option value="6">Truncated Tetrahedron (A1)</option>
+          <option value="7">Cuboctahedron (A2)</option>
+          <option value="8">Truncated Cube (A3)</option>
+          <option value="9">Truncated Octahedron (A4)</option>
+          <option value="10 ">Rhombicuboctahedron (A5)</option>
+          <option value="11">Truncated Cuboctahedron (A6)</option>
+          <option value="12">Snub Cube (A7)</option>
+          <option value="13">Icosidodecahedron (A8)</option>
+          <option value="14">Truncated Dodecahedron (A9)</option>
+          <option value="15">Truncated Icosahedron (A10)</option>
+          <option value="16 ">Rhombicosidodecahedron (A11)</option>
+          <option value="17">Truncated Icosidodecahedron (A12)</option>
+          <option value="18">Snub Dodecahedron (A13)</option>
+          <!-- Johnson Shapes-->
+          <option value="19">Square Pyramid (J1)</option>
+          <option value="20">Pentagonal Pyramid (J2)</option>
+          <option value="21">Triangular Cupola (J3)</option>
+          <option value="22">Square Cupola (J4)</option>
+          <option value="23">Pentagonal Cupola (J5)</option>
+          <option value="24">Pentagonal Rotunda (J6)</option>
+          <option value="25">Elongated Triangular Pyramid (J7)</option>
+          <option value="26">Elongated Square Pyramid (J8)</option>
+          <option value="27">Elongated Pentagonal Pyramid (J9)</option>
+          <option value="28">Gyroelongated Square Pyramid (J10)</option>
+          <option value="29">Gyroelongated Pentagonal Pyramid (J11)</option>
+          <option value="30">Triangular Bipyramid (J12)</option>
+          <option value="31">Pentagonal Bipyramid (J13)</option>
+
+          <option value="32">Elongated Triangular Bipyramid (J14)</option>
+          <option value="33">Elongated Square Bipyramid (J15)</option>
+          <option value="34">Elongated Pentagonal Bipyramid (J16)</option>
+          <option value="35">Gyroelongated Square Bipyramid (J17)</option>
+          <option value="36">Elongated Triangular Cupola (J18)</option>
+          <option value="37">Elongated Square Cupola (J19)</option>
+          <option value="38">Elongated Pentagonal Cupola (J20)</option>
+          <option value="39">Elongated Pentagonal Rotunda (J21)</option>
+          <option value="40">Gyroelongated Triangular Cupola (J22)</option>
+          <option value="41">Gyroelongated Square Cupola (J23)</option>
+          <option value="42">Gyroelongated Pentagonal Cupola (J24)</option>
+          <option value="43">Gyroelongated Pentagonal Rotunda (J25)</option>
+          <option value="44">Gyrobifastigium (J26)</option>
+          <option value="45">Triangular Orthobicupola (J27)</option>
+          <option value="46">Square Orthobicupola (J28)</option>
+          <option value="47">Square Gyrobicupola (J29)</option>
+          <option value="48">Pentagonal Orthobicupola (J30)</option>
+          <option value="49">Pentagonal Gyrobicupola (J31)</option>
+          <option value="50">Pentagonal Orthocupolarotunda (J32)</option>
+          <option value="51">Pentagonal Gyrocupolarotunda (J33)</option>
+          <option value="52">Pentagonal Orthobirotunda (J34)</option>
+          <option value="/nanobot/custom">Custom</option>
         </select>
         <%# <%= select_tag(:shape,  options_for_select(@options, :select => "2", :disabled => "0"), id: "synthesizer-shape", class: "form-select")%>
       </div>
