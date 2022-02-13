@@ -9,10 +9,10 @@ Rails.application.routes.draw do
   get '/signin' => 'users#sign_in'
   get '/signout' => 'users#sign_out'
   get '/miscellaneous' => 'users#miscellaneous'
-  get 'shaper' => 'generators#shaper'
   get '/nanobot' => 'generators#index'
   post '/nanobot' => 'generators#create', as: 'generator'
   post '/nanobot' => 'generators#create', as: 'generators'
+  get '/nanobot/custom' => "generators#custom"
 
   # oauth
   get '/auth/google_oauth2/callback', to: 'users#google_oauth2', as: :google_oauth2_callback

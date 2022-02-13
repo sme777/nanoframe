@@ -460,9 +460,16 @@ $btn-hover-border-color:  #111;
     text-align: right;
 }
 
+.outer-regenerate-container {
+    width: 20%;
+}
+
 .regenerate-container {
     position: absolute;
+    // width: 100px;
+    // width: 10%;
     right: 5%;
+    
 }
 
 .warning-container {
@@ -482,7 +489,7 @@ $btn-hover-border-color:  #111;
 }
 
 .box-state-container {
-    padding: 2% 0;
+    padding-top: 2%;
 }
 
 #red-color-slider::-webkit-slider-thumb  {
