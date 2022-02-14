@@ -13,8 +13,7 @@
  }
 
  .color-scaffold-select {
-     padding-top: 2%;
-     padding-bottom: 2%;
+     padding: 2% 5%;
  }
 
  .scaffold-select {
@@ -528,4 +527,9 @@ $btn-hover-border-color:  #111;
 .visibility-container {
    float: right;
    padding: 3% 5%;
+}
+
+.scaffold-length {
+    width: 100%;
+    // padding: 0 5%;
 }

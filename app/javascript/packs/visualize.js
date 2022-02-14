@@ -25,13 +25,17 @@ if (signOutBtn != null || boxState != null) {
     let insetWidth, insetHeight, camera2
     let firstStartPoint, firstEndPoint, lastStartPoint, lastEndPoint
     let id, graph_json, segments, scaffold_length
-    let canvas, width, height, depth
+    let canvas, width, height, depth, zoomUpdate
     let widthSegmentLenth, heightSegmentLength, depthSegmentLength
     let line0, line1, line2, line3, line4, line5, line6, line7
     let canvasContainer, canvasContainerWidth, canvasContainerHeight
     let routingColors
+    let sequence = []
     let planeRoutings
     let prevVertex
+    let toggle = 0
+    let sphereInter
+    let globalPositions
     let matLine = new LineMaterial({
         color: 0xffffff,
         linewidth: 10,
@@ -44,8 +48,22 @@ if (signOutBtn != null || boxState != null) {
     let matLineBasic = new THREE.LineBasicMaterial({
         vertexColors: true
     })
+    const clock = new THREE.Clock()
     const OrbitControls = oc(THREE)
+    const raycaster = new THREE.Raycaster()
+    const mouse = new THREE.Vector2()
 
+
+    for (let i = 0; i < 7249; i++) {
+        if (i % 2 == 0) {
+            sequence.push("T")
+        } else if (i % 3 == 0) {
+            sequence.push("C")
+        } else  {
+            sequence.push("G")
+        }
+        
+    }
     /**
      * 
      * @returns 
@@ -143,7 +161,7 @@ if (signOutBtn != null || boxState != null) {
         let positions = []
         let colors = []
         const spline = new THREE.CatmullRomCurve3(edges)
-        const divisions = Math.round(12 * edges.length)
+        const divisions = 7249//Math.round(12 * edges.length)
         const point = new THREE.Vector3()
 
         for (let i = 0, l = divisions; i < l; i++) {
@@ -195,8 +213,10 @@ if (signOutBtn != null || boxState != null) {
         }
         const geometry = new LineGeometry()
         geometry.setPositions(positions)
+        // console.log(positions)
+        globalPositions = positions
         geometry.setColors(colors)
-
+        // console.log(positions)
         if (!residualEdges) {
             line0 = new Line2(geometry, matLine)
             line0.computeLineDistances()
@@ -215,7 +235,6 @@ if (signOutBtn != null || boxState != null) {
             }
 
             camera.lookAt(line0.position)
-
 
         } else {
             line2 = new Line2(geometry, matLine)
@@ -371,9 +390,34 @@ if (signOutBtn != null || boxState != null) {
         controls.maxDistance = 500
 
         window.addEventListener('resize', onWindowResize)
+        canvas.addEventListener('wheel', onZoom)
+        document.addEventListener('pointermove', onPointerMove)
         onWindowResize()
 
+
+
+        const sphereGeometry = new THREE.SphereGeometry(controls.target.distanceTo( controls.object.position ) * 0.005);
+        const sphereMaterial = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+
+        sphereInter = new THREE.Mesh( sphereGeometry, sphereMaterial );
+        sphereInter.visible = false;
+        scene.add( sphereInter );
+
+
         requestAnimationFrame(render)
+
+        function onZoom(event) {
+            zoomUpdate = true
+        }
+
+        function onPointerMove(event) {
+            // const rect = canvas.getBoundingClientRect()
+            // mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+            // mouse.y = -((event.clientY - rect.top) / rect.height) * 2 - 1
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1
+            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1
+        }
+
 
         function onWindowResize() {
 
@@ -385,9 +429,25 @@ if (signOutBtn != null || boxState != null) {
                 insetWidth = canvasContainerHeight / 4
                 insetHeight = canvasContainerHeight / 4
                 camera2.aspect = insetWidth / insetHeight
-                camera2.updateProjectionMatrix()
+                camera2.updateProjectionMatrix(line1)
+
             }
 
+        }
+
+        function findIndex(pos) {
+            let min = Infinity
+            let idx = null
+            for (let i = 0; i < globalPositions.length; i += 3) {
+                let temp = Math.abs(pos.x - globalPositions[i]) + 
+                            Math.abs(pos.y - globalPositions[i+1]) + 
+                            Math.abs(pos.z - globalPositions[i+2])
+                if (temp < min) {
+                    min = temp 
+                    idx = Math.floor(i / 3)
+                }
+            }
+            return idx
         }
 
         function render() {
@@ -396,7 +456,37 @@ if (signOutBtn != null || boxState != null) {
             matLine.resolution.set(canvasContainerWidth, canvasContainerHeight); // resolution of the viewport
             renderer.render(scene, camera);
 
+
             if (visualize) {
+                raycaster.setFromCamera(mouse, camera)
+                // // let x = line0.raycast(raycaster, globalPositions)
+                // // console.log(x)
+                const intersections = raycaster.intersectObject(line0, true)
+                // // console.log(line1)
+                // // let intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null
+                if (intersections.length > 0) {
+                    if (zoomUpdate) {
+                        // sphereInter.geometry.dispose()
+                        sphereInter.geometry = new THREE.SphereGeometry(controls.target.distanceTo( controls.object.position ) * 0.005)
+                        zoomUpdate = false
+                    }
+                    sphereInter.visible = true
+                    sphereInter.position.copy(intersections[0].point)
+                    let idx = findIndex(sphereInter.position)
+                    
+                    if (idx != null) {
+                        document.querySelector(".sequnce-name").innerHTML = "Base selection: " + sequence[idx] + "\n" + "Index: " + idx
+                    }
+                // //     // console.log("touchy touchy")
+                //     // console.log(intersections)
+                //     let idx = intersections[0].faceIndex;
+                //     console.log(intersections[0])
+                // line0.material.color.copy(Math.random() * 0xffffff )
+                //     // object.material.color.set( Math.random() * 0xffffff );
+                } else {
+                    sphereInter.visible = false
+                }
+
                 renderer.setClearColor(0xf5f5f5, 1)
                 renderer.clearDepth()
                 renderer.setScissorTest(true)
@@ -408,6 +498,7 @@ if (signOutBtn != null || boxState != null) {
                 renderer.render(scene, camera2)
                 renderer.setScissorTest(false)
             }
+            toggle += clock.getDelta()
             requestAnimationFrame(render)
         }
 

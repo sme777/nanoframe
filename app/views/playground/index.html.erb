@@ -1,0 +1,20 @@
+<head>
+    <title>NanoFrame</title>
+    <%= render "layouts/scripts"%>
+    <%= stylesheet_link_tag 'application', media: 'all' %>
+</head>
+
+<body>
+    <%= render partial: "layouts/nav", locals: {tab: "playground"}%>
+
+    <div class="playground-container">
+        <div class="row">
+            <div class="col-md-10">
+            </div>
+            <div class="col-md-2">
+            </div>
+        </div>
+    </div>
+    <%= render "layouts/footer"%>
+     <%= javascript_pack_tag 'playground', 'data-turbolinks-track': 'reload'%>
+</body>

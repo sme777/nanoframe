@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  get 'playground/index'
   resources :routers
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   get '/' => 'users#index'
@@ -10,6 +11,7 @@ Rails.application.routes.draw do
   get '/signout' => 'users#sign_out'
   get '/miscellaneous' => 'users#miscellaneous'
   get '/nanobot' => 'generators#index'
+  get '/playground' => 'playground#index'
   post '/nanobot' => 'generators#create', as: 'generator'
   post '/nanobot' => 'generators#create', as: 'generators'
   get '/nanobot/custom' => "generators#custom"
@@ -44,4 +46,5 @@ Rails.application.routes.draw do
   get '/nanobot/:id/bundle' => 'downloads#download_bundle'
   # resources :generators
   get 'nanobot/generator' => 'generators#generator', as: 'shape_generator'
+
 end

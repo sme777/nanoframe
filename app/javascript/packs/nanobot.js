@@ -170,7 +170,6 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $("#continue_anchor").click(function (e) {
-    console.log("fucks")
     e.preventDefault()
     $("#synthesize-form").submit()
   })
@@ -183,5 +182,12 @@ $(document).ready(function () {
     } else {
       $("#visibility-label").text("Private")
     }
+  })
+})
+
+$(document).ready(function () {
+  $(".custom-scaffold-length").click(() => {
+    $("#7249-radiobtn").prop("checked", false)
+    $("#8064-radiobtn").prop("checked", false)
   })
 })
