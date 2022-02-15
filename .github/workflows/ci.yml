@@ -29,7 +29,7 @@ jobs:
         uses: actions/setup-ruby@v1
         with:
           ruby-version: 3.0.3
-
+      
       - name: Set up Node
         uses: actions/setup-node@v1
         with:
@@ -49,6 +49,12 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-
+      - name: Set up PostgreSQL
+        run: |
+          sudo apt-get install postgresql libpq-dev
+          sudo service postgresql start
+          sudo -u postgres createuser --superuser "$USER"
+
       - name: Install Ruby dependencies
         run: |
           gem install bundler
@@ -67,53 +73,3 @@ jobs:
         run: bundle exec rails test:system test
         env:
           RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-
-  rubocop:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v1
-
-      - name: Set up Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: 3.0.3
-
-      - name: Set up gems cache
-        uses: actions/cache@preview
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-rubocop-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-rubocop-
-      - name: Install Ruby dependencies
-        run: |
-          gem install bundler
-          bundle config path vendor/bundle
-          bundle install --without default development test brakeman --jobs 4 --retry 3
-      - name: Run rubocop
-        run: bundle exec rubocop --parallel
-
-  prettier:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v1
-
-      - name: Set up Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 17.4.0
-
-      - name: Set up node_modules cache
-        uses: actions/cache@preview
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-prettier-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-prettier-
-      - name: Install Node dependencies
-        run: npm install prettier --no-package-lock --save-exact
-
-      - name: Run prettier
-        run: npm run prettier:check
