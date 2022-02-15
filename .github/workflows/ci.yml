@@ -1,75 +1,38 @@
 name: CI
-
 on: [push, pull_request]
 
 jobs:
-  minitest:
+  tests:
     runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:11.5-alpine
-        env:
-          POSTGRES_USER: runner
-        ports: ['5432:5432']
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-      redis:
-        image: redis:5.0.6-alpine
-        ports: ['6379:6379']
-        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
-
     steps:
-      - uses: actions/checkout@v1
-
-      - name: Install required packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes libpq-dev
-      - name: Set up Ruby
-        uses: actions/setup-ruby@v1
-        with:
-          ruby-version: 3.0.3
-      
-      - name: Set up Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 17.4.0
-
-      - name: Set up gems cache
-        uses: actions/cache@preview
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-ruby-${{ hashFiles('**/Gemfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-ruby-
-      - name: Set up node_modules cache
-        uses: actions/cache@preview
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-      - name: Set up PostgreSQL
-        run: |
-          sudo apt-get install postgresql libpq-dev
-          sudo service postgresql start
-          sudo -u postgres createuser --superuser "$USER"
-
-      - name: Install Ruby dependencies
-        run: |
-          gem install bundler
-          bundle config path vendor/bundle
-          bundle install --without rubocop --jobs 4 --retry 3
-      - name: Install Node dependencies
-        run: |
-          npm install -g yarn
-          yarn install --frozen-lockfile
-      - name: Set up database
-        run: bundle exec rake db:setup
-        env:
-          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
-
-      - name: Run tests
-        run: bundle exec rails test:system test
-        env:
-          RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+    - name: Set up Git repository
+      uses: actions/checkout@v1
+    - name: Get Ruby version
+      run: echo "::set-output name=RUBY_VERSION::$(cat .ruby-version)"
+      id: ruby_version
+    - name: Set up Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: "${{ steps.ruby_version.outputs.RUBY_VERSION }}"
+    - name: Get NodeJS version
+      run: echo "::set-output name=NODE_VERSION::$(cat .node-version)"
+      id: node_version
+    - name: Set up NodeJS
+      uses: actions/setup-node@v1
+      with:
+        node-version: "${{ steps.node_version.outputs.NODE_VERSION }}"
+    - name: Set up PostgreSQL
+      run: |
+        sudo apt-get install postgresql libpq-dev
+        sudo service postgresql start
+        sudo -u postgres createuser --superuser "$USER"
+    - name: Bootstrap
+      run: script/bootstrap
+    - name: Set up Rails
+      run: script/setup
+      env:
+        RAILS_ENV: test
+    - name: Run tests
+      run: bundle exec rake test
+    - name: Run RuboCop
+      run: bundle exec rubocop
