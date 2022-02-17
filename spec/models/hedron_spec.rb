@@ -30,18 +30,18 @@ RSpec.describe Graph, type: :model do
       end
     end
 
-    describe 'connectin vertices' do
-      it 'should connect vertices for 2 segments' do
-        g = G2.new([30, 30, 30], 2, 7249)
-        v = g.get_vertices(:triangle)
-        Edge.beautify_edges(g.connect_vertices(v))
-      end
+    # describe 'connectin vertices' do
+    #   it 'should connect vertices for 2 segments' do
+    #     g = G2.new([30, 30, 30], 2, 7249)
+    #     v = g.get_vertices(:triangle)
+    #     Edge.beautify_edges(g.connect_vertices(v))
+    #   end
 
-      it 'should connect vertices for 2 segments' do
-        g = G2.new([30, 30, 30], 4, 7249)
-        v = g.get_vertices(:triangle)
-        puts Edge.beautify_edges(g.connect_vertices(v))
-      end
-    end
+    #   it 'should connect vertices for 2 segments' do
+    #     g = G2.new([30, 30, 30], 4, 7249)
+    #     v = g.get_vertices(:triangle)
+    #     puts Edge.beautify_edges(g.connect_vertices(v))
+    #   end
+    # end
   end
 end

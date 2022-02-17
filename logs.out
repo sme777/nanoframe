@@ -1,31 +1,5 @@
-                                          user        system      total        real
-Create Vertices and Edges for 2 Segments  0.001283   0.000677   0.001960 (  0.001993)
-Create Vertices and Edges for 3 Segments  0.000037   0.000002   0.000039 (  0.000037)
-Create Vertices and Edges for 4 Segments  0.000089   0.000002   0.000091 (  0.000089)
-Create Vertices and Edges for 5 Segments  0.000107   0.000002   0.000109 (  0.000106)
-Create Vertices and Edges for 6 Segments  0.000123   0.000003   0.000126 (  0.000123)
-Create Vertices and Edges for 7 Segments  0.000192   0.000007   0.000199 (  0.000187)
-Create Vertices and Edges for 8 Segments  0.000264   0.000002   0.000266 (  0.000264)
-Create Vertices and Edges for 9 Segments  0.000242   0.000002   0.000244 (  0.000241)
-Create Vertices and Edges for 10 Segments  0.000310   0.000002   0.000312 (  0.000310)
-Create Vertices and Edges for 50 Segments  0.009888   0.000087   0.009975 (  0.010205)
-Create Vertices and Edges for 100 Segments  0.047041   0.000824   0.047865 (  0.049751)
-Create Vertices and Edges for 250 Segments  0.258187   0.005667   0.263854 (  0.264292)
-Create Vertices and Edges for 500 Segments  0.933438   0.023166   0.956604 (  0.961330)
-Create Vertices and Edges for 1000 Segments  3.547342   0.106884   3.654226 (  3.668907)
-Find Single Routing for 2 segments  0.000952   0.000373   0.001325 (  0.001328)
-Find Single Routing for 3 segments  0.001786   0.000110   0.001896 (  0.001977)
-Find Single Routing for 4 segments  0.008515   0.000151   0.008666 (  0.009018)
-Find Single Routing for 5 segments  0.052856   0.000375   0.053231 (  0.053672)
-Find Single Routing for 6 segments  1.942002   0.018933   1.960935 (  1.964337)
-Find Single Routing for 7 segments 16.623032   0.093827  16.716859 ( 16.748161)
-Find Four Planes for 2 segments  0.000553   0.000002   0.000555 (  0.000555)
-Find Four Planes for 3 segments  0.003844   0.000038   0.003882 (  0.003963)
-Find Four Planes for 4 segments  0.024342   0.000297   0.024639 (  0.025137)
-Find Four Planes for 5 segments  0.330225   0.000676   0.330901 (  0.331818)
-Find Four Planes for 6 segments  2.880074   0.002962   2.883036 (  2.889063)
-Find Four Planes for 7 segments 17.032076   0.017742  17.049818 ( 17.081080)
-Find Shape Routing for 2 segments  0.001218   0.000020   0.001238 (  0.001234)
-Find Shape Routing for 3 segments  0.002633   0.000003   0.002636 (  0.002632)
-Find Shape Routing for 4 segments  0.048408   0.000021   0.048429 (  0.048438)
-Find Shape Routing for 5 segments 58.574211   0.120987  58.695198 ( 59.057094)
+                                     user     system      total        real
+                                     user     system      total        real
+                                     user     system      total        real
+                                     user     system      total        real
+Create Vertices and Edges for 2 SegmentsCreate Vertices and Edges for 3 SegmentsCreate Vertices and Edges for 4 SegmentsCreate Vertices and Edges for 5 SegmentsCreate Vertices and Edges for 6 SegmentsCreate Vertices and Edges for 7 SegmentsCreate Vertices and Edges for 8 SegmentsCreate Vertices and Edges for 9 SegmentsCreate Vertices and Edges for 10 SegmentsCreate Vertices and Edges for 50 SegmentsCreate Vertices and Edges for 100 SegmentsCreate Vertices and Edges for 250 SegmentsCreate Vertices and Edges for 500 SegmentsCreate Vertices and Edges for 1000 SegmentsCoverage report generated for RSpec to /home/sme777/Desktop/nanoframe/coverage. 208 / 473 LOC (43.97%) covered.
