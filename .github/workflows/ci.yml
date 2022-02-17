@@ -26,7 +26,8 @@ jobs:
         sudo apt-get install postgresql libpq-dev
         sudo service postgresql start
         sudo -u postgres createuser --superuser "$USER"
-    
+    - name: Get Dependencies
+      run: bundle install
     - name: Run tests
       run: bundle exec rake test
     # - name: Run RuboCop
