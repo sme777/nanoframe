@@ -8,13 +8,18 @@
     <%= render partial: "layouts/nav", locals: {tab: "playground"}%>
 
     <div class="playground-container">
+        <canvas id="playground-canvas"></canvas>
         <div class="row">
             <div class="col-md-10">
+                <div id="playground" class="diagram left">
+                </div>
             </div>
             <div class="col-md-2">
+                <div id="playground-item" class="diagram right">
+                </div>
             </div>
         </div>
     </div>
     <%= render "layouts/footer"%>
-     <%= javascript_pack_tag 'playground', 'data-turbolinks-track': 'reload'%>
+    <%= javascript_pack_tag 'playground', 'data-turbolinks-track': 'reload'%>
 </body>

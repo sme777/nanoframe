@@ -1,3 +1,32 @@
 // Place all the styles related to the Playground controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
+
+#playground-canvas {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    display: block;
+    z-index: -1;
+
+}
+
+.diagram {
+    display: inline-block;
+    width: 100%;
+    height: 80vh
+    // height: auto;
+    // width: 20em;
+
+}
+
+.left {
+    text-align: center;
+    margin-right: .25em;
+}
+.right {
+    text-align: center;
+    margin-left: .25em;
+}
