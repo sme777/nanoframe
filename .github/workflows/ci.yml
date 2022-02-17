@@ -1,18 +1,33 @@
-name: build
-
+name: CI
 on: [push, pull_request]
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - name: Install Ruby (3.0)
+    - name: Set up Git repository
+      uses: actions/checkout@v1
+    - name: Get Ruby version
+      run: echo "::set-output name=RUBY_VERSION::$(cat .ruby-version)"
+      id: ruby_version
+    - name: Set up Ruby
       uses: actions/setup-ruby@v1
       with:
-        ruby-version: 3.0.3
-    - name: Build and test with RSpec
+        ruby-version: "${{ steps.ruby_version.outputs.RUBY_VERSION }}"
+    - name: Get NodeJS version
+      run: echo "::set-output name=NODE_VERSION::$(cat .node-version)"
+      id: node_version
+    - name: Set up NodeJS
+      uses: actions/setup-node@v1
+      with:
+        node-version: "${{ steps.node_version.outputs.NODE_VERSION }}"
+    - name: Set up PostgreSQL
       run: |
-        gem install bundler
-        bundle install --jobs 4 --retry 3
-        bundle exec rspec
+        sudo apt-get install postgresql libpq-dev
+        sudo service postgresql start
+        sudo -u postgres createuser --superuser "$USER"
+    
+    - name: Run tests
+      run: bundle exec rake test
+    - name: Run RuboCop
+      run: bundle exec rubocop
