@@ -1,0 +1,15 @@
+<div class="diagram right playground-item">
+    <input type="hidden" id=<%= "item#{index}_geometry" %> value="<%= item.geometry %>">
+    <input type="hidden" id=<%= "item#{index}_material" %> value="<%= item.material %>">
+    <%
+=begin%>
+ <%= content_tag :div, class: "playground-item-info", data: {"geometry": , "material": item.material} %> 
+<%
+=end%>
+    <div class="playground-item-canvas" id="item<%= index %>">
+    
+    </div>
+    <div class="playground-item-name">
+        <h5><%= item.name %></h5>
+    </div>
+</div>

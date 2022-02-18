@@ -15,8 +15,18 @@
                 </div>
             </div>
             <div class="col-md-2">
-                <div id="playground-item" class="diagram right">
+                <div class="sidebar">
+                    <div class="sidebar-header">
+                    </div>
+                    <div class="sidebar-search">
+                    </div>
+                    <div class="sidebar-content">
+                        <% @playground_items.each_with_index do |item, idx| %>
+                            <%= render partial: "item", locals: {item: item, index: idx} %>
+                        <% end %>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>

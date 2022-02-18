@@ -213,15 +213,18 @@ if (signOutBtn != null || boxState != null) {
         }
         const geometry = new LineGeometry()
         geometry.setPositions(positions)
-        // console.log(positions)
+        console.log(JSON.stringify(positions))
         globalPositions = positions
         geometry.setColors(colors)
-        // console.log(positions)
+        console.log(JSON.stringify(colors))
+
         if (!residualEdges) {
             line0 = new Line2(geometry, matLine)
-            line0.computeLineDistances()
-            line0.scale.set(1, 1, 1)
+            // line0.computeLineDistances()
+            // line0.scale.set(1, 1, 1)
+            
             scene.add(line0)
+            // console.log(scene.toJSON())
             const geo = new THREE.BufferGeometry()
             geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
             geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
@@ -403,7 +406,7 @@ if (signOutBtn != null || boxState != null) {
         sphereInter.visible = false;
         scene.add( sphereInter );
 
-
+        
         requestAnimationFrame(render)
 
         function onZoom(event) {

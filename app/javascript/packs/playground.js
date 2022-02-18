@@ -4,8 +4,9 @@ import * as THREE from 'three'
 const canvas = document.getElementById("playground-canvas")
 const renderer = new THREE.WebGLRenderer( {canvas: canvas, alpha: true} )
 const playGroundScene = setupPlayGroundScene()
-const sideBarScene = setupSideBarScene()
-console.log(playGroundScene)
+// const sideBarScene = setupSideBarScene()
+setupSideBarItemScene(0)
+
 function makeScene(elem) {
     const scene = new THREE.Scene()
 
@@ -49,6 +50,12 @@ function setupSideBarScene() {
     sceneInfo.scene.add(mesh)
     sceneInfo.mesh = mesh
     return sceneInfo
+}
+
+function setupSideBarItemScene(idx) {
+    const positions = document.getElementById(`item${idx}_geometry`).value
+    const colors = document.getElementById(`item${idx}_material`).value
+    console.log(positions, colors)
 }
 
 
@@ -100,10 +107,10 @@ function render(time) {
     renderer.setScissorTest(true)
    
     playGroundScene.mesh.rotation.y = time * .1
-    sideBarScene.mesh.rotation.y = time * .1
+    // sideBarScene.mesh.rotation.y = time * .1
    
     renderSceneInfo(playGroundScene)
-    renderSceneInfo(sideBarScene)
+    // renderSceneInfo(sideBarScene)
    
     requestAnimationFrame(render)
 }
