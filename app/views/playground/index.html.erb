@@ -21,6 +21,7 @@
                     <div class="sidebar-search">
                     </div>
                     <div class="sidebar-content">
+                    <input type="hidden" id="playground_item_listing" value="<%= @playground_items.length %>">
                         <% @playground_items.each_with_index do |item, idx| %>
                             <%= render partial: "item", locals: {item: item, index: idx} %>
                         <% end %>

@@ -1,11 +1,25 @@
 import * as THREE from 'three'
+import oc from 'three-orbit-controls'
+import { Line2 } from './threejs/Line2'
+import { LineMaterial } from './threejs/LineMaterial'
+import { LineGeometry } from './threejs/LineGeometry'
 
 
 const canvas = document.getElementById("playground-canvas")
 const renderer = new THREE.WebGLRenderer( {canvas: canvas, alpha: true} )
 const playGroundScene = setupPlayGroundScene()
-// const sideBarScene = setupSideBarScene()
-setupSideBarItemScene(0)
+
+
+const material = new LineMaterial({
+    color: 0xffffff,
+    linewidth: 10,
+    vertexColors: true,
+    dashed: false,
+    alphaToCoverage: true,
+
+})
+const sideBarScenes = setupSideBarScene()
+console.log(sideBarScenes)
 
 function makeScene(elem) {
     const scene = new THREE.Scene()
@@ -16,9 +30,13 @@ function makeScene(elem) {
     const far = 100
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
     camera.position.z = 2
-    camera.position.set(0, 1, 2)
+    camera.position.set(20, 10, 2)
     camera.lookAt(0, 0, 0)
 
+    const OrbitControls = oc(THREE)
+    const controls = new OrbitControls(camera, renderer.domElement)
+    controls.minDistance = 10
+    controls.maxDistance = 500
     {
         const color = 0xFFFFFF
         const intensity = 1
@@ -26,7 +44,7 @@ function makeScene(elem) {
         light.position.set(-1, 2, 4)
         scene.add(light)
     }
-    return {scene, camera, elem}
+    return {scene, camera, elem, controls}
 }
 
 function setupPlayGroundScene() {
@@ -40,22 +58,43 @@ function setupPlayGroundScene() {
     return sceneInfo
 }
 
+
 function setupSideBarScene() {
-    const playGroundItem = document.getElementById("playground-item")
-    const sceneInfo = makeScene(playGroundItem)
-    const geometry = new THREE.SphereGeometry(0.8, 4, 2)
-    const material = new THREE.MeshPhongMaterial({ color: 'blue', flatShading: true,})
+    const playGroundItemsSize = parseInt(document.getElementById("playground_item_listing").value)
+    console.log(playGroundItemsSize)
+    const sideBarScenes = []
+    for (let i = 0; i < playGroundItemsSize; i++) {
+        sideBarScenes.push(setupSideBarItemScene(i))
+        // sideBarGroup.add(setupSideBarItemScene(i))
+    }
+    // const playGroundItem = document.getElementById("playground-item")
+    // const sceneInfo = makeScene(playGroundItem)
+    // const geometry = new THREE.SphereGeometry(0.8, 4, 2)
+    // const material = new THREE.MeshPhongMaterial({ color: 'blue', flatShading: true,})
     
-    const mesh = new THREE.Mesh(geometry, material)
-    sceneInfo.scene.add(mesh)
-    sceneInfo.mesh = mesh
-    return sceneInfo
+    // const mesh = new THREE.Mesh(geometry, material)
+    // sceneInfo.scene.add(mesh)
+    // sceneInfo.mesh = mesh
+    return sideBarScenes
 }
 
 function setupSideBarItemScene(idx) {
-    const positions = document.getElementById(`item${idx}_geometry`).value
-    const colors = document.getElementById(`item${idx}_material`).value
-    console.log(positions, colors)
+    const positions = JSON.parse(document.getElementById(`item${idx}_geometry`).value)
+    const colors = JSON.parse(document.getElementById(`item${idx}_material`).value)
+    const playGroundItemContianer = document.getElementById(`playground_item_${idx}`)
+    console.log(playGroundItemContianer)
+    const sceneInfo = makeScene(playGroundItemContianer)
+    const geometry = new LineGeometry()
+    geometry.setPositions(positions)
+    geometry.setColors(colors)
+
+    // const g2 = new THREE.BoxGeometry(1, 1, 1)
+    // const m2 = new THREE.MeshBasicMaterial({ color:0xff00ff})
+    // const mesh = new THREE.Mesh(g2, m2)
+    const line = new Line2(geometry, material)
+    sceneInfo.scene.add(line)
+    sceneInfo.mesh = line
+    return sceneInfo
 }
 
 
@@ -107,10 +146,12 @@ function render(time) {
     renderer.setScissorTest(true)
    
     playGroundScene.mesh.rotation.y = time * .1
-    // sideBarScene.mesh.rotation.y = time * .1
    
     renderSceneInfo(playGroundScene)
-    // renderSceneInfo(sideBarScene)
+    for (let i = 0; i < sideBarScenes.length; i++) {
+        renderSceneInfo(sideBarScenes[i])
+    }
+    
    
     requestAnimationFrame(render)
 }
