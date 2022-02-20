@@ -4,11 +4,14 @@ import { Line2 } from './threejs/Line2'
 import { LineMaterial } from './threejs/LineMaterial'
 import { LineGeometry } from './threejs/LineGeometry'
 
+import {
+	LineSegmentsGeometry
+} from './threejs/LineSegmentsGeometry.js'
 
 const canvas = document.getElementById("playground-canvas")
 const renderer = new THREE.WebGLRenderer( {canvas: canvas, alpha: true} )
+const OrbitControls = oc(THREE)
 const playGroundScene = setupPlayGroundScene()
-
 
 const material = new LineMaterial({
     color: 0xffffff,
@@ -18,8 +21,8 @@ const material = new LineMaterial({
     alphaToCoverage: true,
 
 })
+
 const sideBarScenes = setupSideBarScene()
-console.log(sideBarScenes)
 
 function makeScene(elem) {
     const scene = new THREE.Scene()
@@ -27,16 +30,12 @@ function makeScene(elem) {
     const fov = 45
     const aspect = 2
     const near = 0.1
-    const far = 100
+    const far = 1000
     const camera = new THREE.PerspectiveCamera(fov, aspect, near, far)
     camera.position.z = 2
-    camera.position.set(20, 10, 2)
-    camera.lookAt(0, 0, 0)
+    camera.position.set(-40, 60, 90)
+    // camera.lookAt(0, 0, 0)
 
-    const OrbitControls = oc(THREE)
-    const controls = new OrbitControls(camera, renderer.domElement)
-    controls.minDistance = 10
-    controls.maxDistance = 500
     {
         const color = 0xFFFFFF
         const intensity = 1
@@ -44,17 +43,25 @@ function makeScene(elem) {
         light.position.set(-1, 2, 4)
         scene.add(light)
     }
-    return {scene, camera, elem, controls}
+    return {scene, camera, elem}
 }
 
 function setupPlayGroundScene() {
     const playGroundContainer = document.getElementById("playground")
-    const sceneInfo = makeScene(playGroundContainer)
-    const geometry = new THREE.BoxGeometry(1, 1, 1)
+
+    const sceneInfo = makeScene(playGroundContainer, playGroundContainer.clientHeight, playGroundContainer.clientWidth)
+    const geometry = new THREE.BoxGeometry(30, 30, 30)
     const material = new THREE.MeshPhongMaterial({color: 'red'})
     const mesh = new THREE.Mesh(geometry, material)
     sceneInfo.scene.add(mesh)
     sceneInfo.mesh = mesh
+
+    
+    const controls = new OrbitControls(sceneInfo.camera, playGroundContainer)
+    controls.minDistance = 0.1
+    controls.maxDistance = 1000
+
+
     return sceneInfo
 }
 
@@ -65,35 +72,31 @@ function setupSideBarScene() {
     const sideBarScenes = []
     for (let i = 0; i < playGroundItemsSize; i++) {
         sideBarScenes.push(setupSideBarItemScene(i))
-        // sideBarGroup.add(setupSideBarItemScene(i))
     }
-    // const playGroundItem = document.getElementById("playground-item")
-    // const sceneInfo = makeScene(playGroundItem)
-    // const geometry = new THREE.SphereGeometry(0.8, 4, 2)
-    // const material = new THREE.MeshPhongMaterial({ color: 'blue', flatShading: true,})
-    
-    // const mesh = new THREE.Mesh(geometry, material)
-    // sceneInfo.scene.add(mesh)
-    // sceneInfo.mesh = mesh
     return sideBarScenes
 }
 
 function setupSideBarItemScene(idx) {
     const positions = JSON.parse(document.getElementById(`item${idx}_geometry`).value)
     const colors = JSON.parse(document.getElementById(`item${idx}_material`).value)
-    const playGroundItemContianer = document.getElementById(`playground_item_${idx}`)
-    console.log(playGroundItemContianer)
-    const sceneInfo = makeScene(playGroundItemContianer)
+    const playGroundItemContainer = document.getElementById(`playground_item_${idx}`)
+    const sceneInfo = makeScene(playGroundItemContainer)
     const geometry = new LineGeometry()
     geometry.setPositions(positions)
     geometry.setColors(colors)
 
-    // const g2 = new THREE.BoxGeometry(1, 1, 1)
-    // const m2 = new THREE.MeshBasicMaterial({ color:0xff00ff})
-    // const mesh = new THREE.Mesh(g2, m2)
+
     const line = new Line2(geometry, material)
+    line.geometry.center()
     sceneInfo.scene.add(line)
     sceneInfo.mesh = line
+
+    
+    const controls = new OrbitControls(sceneInfo.camera, playGroundItemContainer)
+    controls.minDistance = 0.1
+    controls.maxDistance = 1000
+
+
     return sceneInfo
 }
 
@@ -111,11 +114,13 @@ function resizeRendererToDisplaySize(renderer, camera) {
     return needResize
 }
 
+const pgic = document.getElementById(`playground_item_0`)
 
 function renderSceneInfo(sceneInfo) {
     const {scene, camera, elem} = sceneInfo
 
     const {left, right, top, bottom, width, height} = elem.getBoundingClientRect()
+    material.resolution.set(pgic.clientWidth, pgic.clientHeight)
 
     const isOffscreen =
         bottom < 0 ||
