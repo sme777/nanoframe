@@ -60,7 +60,7 @@ function setupPlayGroundScene() {
     const controls = new OrbitControls(sceneInfo.camera, playGroundContainer)
     controls.minDistance = 0.1
     controls.maxDistance = 1000
-
+    controls.enableDamping = true
 
     return sceneInfo
 }
@@ -95,8 +95,9 @@ function setupSideBarItemScene(idx) {
     const controls = new OrbitControls(sceneInfo.camera, playGroundItemContainer)
     controls.minDistance = 0.1
     controls.maxDistance = 1000
-
-
+    controls.enableZoom = false
+    // controls.enableDamping = true
+    // controls.dampingFactor = 10
     return sceneInfo
 }
 
