@@ -2,6 +2,7 @@
 
 require 'json'
 
+
 class Graph
 
   attr_accessor :vertices, :edges, :sets, :route, :planes, :vertices, :edges

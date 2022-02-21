@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import oc from 'three-orbit-controls'
+import DragControls from 'three-dragcontrols';
 import { Line2 } from './threejs/Line2'
 import { LineMaterial } from './threejs/LineMaterial'
 import { LineGeometry } from './threejs/LineGeometry'
@@ -13,6 +14,8 @@ const OrbitControls = oc(THREE)
 const playGroundContainer = document.getElementById("playground")
 const playGroundScene = setupPlayGroundScene()
 renderer.setPixelRatio(playGroundContainer.devicePixelRatio)
+let playGroundObjects = []
+
 
 const material = new LineMaterial({
     color: 0xffffff,
@@ -44,6 +47,7 @@ function makeScene(elem) {
         light.position.set(-1, 2, 4)
         scene.add(light)
     }
+    
     return {scene, camera, elem}
 }
 
@@ -111,6 +115,8 @@ function setupSideBarItemScene(idx) {
 
 function addItemToPlayground(item) {
     playGroundScene.scene.add(item)
+    playGroundObjects.push(item)
+    const dragControls = new DragControls(playGroundObjects, playGroundScene.camera, renderer.domElement);
 }
 
 
