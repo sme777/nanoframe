@@ -13,3 +13,10 @@ $(document).ready(function() {
         $(".exitSearchBar").hide()
     })
 })
+
+$(document).ready(function() {
+    $(".sidebarContent").scroll(() => {
+        // console.log($(".sidebarContent")[0])
+        // console.log( $(".sidebarContent").prop('scrollHeight'))
+    })
+})

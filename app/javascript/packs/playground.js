@@ -4,14 +4,14 @@ import { Line2 } from './threejs/Line2'
 import { LineMaterial } from './threejs/LineMaterial'
 import { LineGeometry } from './threejs/LineGeometry'
 
-import {
-	LineSegmentsGeometry
-} from './threejs/LineSegmentsGeometry.js'
 
 const canvas = document.getElementById("playground-canvas")
+const sideBarHeight = document.querySelector(".sidebarContent").scrollTopMax
 const renderer = new THREE.WebGLRenderer( {canvas: canvas, alpha: true} )
 const OrbitControls = oc(THREE)
+
 const playGroundScene = setupPlayGroundScene()
+
 
 const material = new LineMaterial({
     color: 0xffffff,
@@ -61,6 +61,7 @@ function setupPlayGroundScene() {
     controls.minDistance = 0.1
     controls.maxDistance = 1000
     controls.enableDamping = true
+    controls.enableZoom = false
 
     return sceneInfo
 }
@@ -68,7 +69,6 @@ function setupPlayGroundScene() {
 
 function setupSideBarScene() {
     const playGroundItemsSize = parseInt(document.getElementById("playground_item_listing").value)
-    console.log(playGroundItemsSize)
     const sideBarScenes = []
     for (let i = 0; i < playGroundItemsSize; i++) {
         sideBarScenes.push(setupSideBarItemScene(i))
@@ -117,17 +117,30 @@ function resizeRendererToDisplaySize(renderer, camera) {
 
 const pgic = document.getElementById(`playground_item_0`)
 
+
+
 function renderSceneInfo(sceneInfo) {
     const {scene, camera, elem} = sceneInfo
 
     const {left, right, top, bottom, width, height} = elem.getBoundingClientRect()
     material.resolution.set(pgic.clientWidth, pgic.clientHeight)
-
+    
     const isOffscreen =
-        bottom < 0 ||
-        top > renderer.domElement.clientHeight ||
-        right < 0 ||
-        left > renderer.domElement.clientWidth
+    bottom < 0 ||
+    top > renderer.domElement.clientHeight ||
+    right < 0 ||
+    left > renderer.domElement.clientWidth
+
+        // top > scrollHeight
+    
+    // const isOffscreen =
+    //     scrollHeight + sideBarHeight < top ||
+    //     scrollHeight + sideBarHeight < bottom ||
+    //     scrollHeight > top ||
+    //     scrollHeight > bottom ||
+    //     right < 0 ||
+    //     left > renderer.domElement.clientWidth
+
     if (isOffscreen) {
         return
     }
@@ -162,3 +175,5 @@ function render(time) {
     requestAnimationFrame(render)
 }
 requestAnimationFrame(render)
+
+

@@ -6,7 +6,7 @@
 
 <body>
     <%= render partial: "layouts/nav", locals: {tab: "playground"}%>
-
+    <div class="playgroundContainerWrapper">
     <div class="playgroundContainer">
         <canvas id="playground-canvas"></canvas>
         <div class="row">
@@ -16,6 +16,7 @@
             </div>
             <div class="col-md-2">
                 <div class="sidebar">
+                    <div class="offSidebarContent">
                     <div class="sidebarHeader">
                         <h4 class="itemHeaderFont">Playground Items</h4>
                         <hr class="my-4">
@@ -25,19 +26,22 @@
                         <div class="exitSearchBar"></div>
                         <hr class="my-4">
                     </div>
-                    
+                    </div>
 
-                    <div class="sidebar-content">
+                    <div class="sidebarContent">
 
                         <input type="hidden" id="playground_item_listing" value="<%= @playground_items.length %>">
+                        
                         <% @playground_items.each_with_index do |item, idx| %>
                             <%= render partial: "item", locals: {item: item, index: idx} %>
                         <% end %>
+                        
                     </div>
                 </div>
 
             </div>
         </div>
+    </div>
     </div>
     <%= render "layouts/footer"%>
     <%= javascript_pack_tag 'playground', 'playgroundQueries', 'data-turbolinks-track': 'reload'%>
