@@ -161,7 +161,8 @@ if (signOutBtn != null || boxState != null) {
         let positions = []
         let colors = []
         const spline = new THREE.CatmullRomCurve3(edges)
-        const divisions = 7249//Math.round(12 * edges.length)
+        const divisions = Math.round(12 * edges.length) 
+        console.log(divisions)//7249
         const point = new THREE.Vector3()
 
         for (let i = 0, l = divisions; i < l; i++) {
@@ -198,25 +199,26 @@ if (signOutBtn != null || boxState != null) {
         } else {
             colors = findColorSequnece(start, positions.length, divisions)
         }
-        let routingPositions = []
-        for (let i = 0; i < scaffold_length; i++) {
-            const t = i / scaffold_length
-            spline.getPoint(t, point)
-            routingPositions.push(point.x, point.y, point.z)
+        // let routingPositions = []
+        // for (let i = 0; i < scaffold_length; i++) {
+        //     const t = i / scaffold_length
+        //     spline.getPoint(t, point)
+        //     routingPositions.push(point.x, point.y, point.z)
 
-        }
+        // }
         if (visualize) {
             document.getElementById("routing-positions").value = JSON.stringify({
-                "positions": routingPositions
+                "positions": positions
             })
 
         }
+
         const geometry = new LineGeometry()
-        geometry.setPositions(positions)
         console.log(JSON.stringify(positions))
+        console.log(JSON.stringify(colors))
+        geometry.setPositions(positions)
         globalPositions = positions
         geometry.setColors(colors)
-        console.log(JSON.stringify(colors))
 
         if (!residualEdges) {
             line0 = new Line2(geometry, matLine)

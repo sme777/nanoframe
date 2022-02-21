@@ -65,9 +65,8 @@ class LineSegmentsGeometry extends THREE.InstancedBufferGeometry {
 			lineSegments = new Float32Array( array );
 
 		}
-
+		
 		const instanceBuffer = new THREE.InstancedInterleavedBuffer( lineSegments, 6, 1 ); // xyz, xyz
-
 		this.setAttribute( 'instanceStart', new THREE.InterleavedBufferAttribute( instanceBuffer, 3, 0 ) ); // xyz
 		this.setAttribute( 'instanceEnd', new THREE.InterleavedBufferAttribute( instanceBuffer, 3, 3 ) ); // xyz
 

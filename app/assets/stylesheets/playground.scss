@@ -1,6 +1,9 @@
 // Place all the styles related to the Playground controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
+// .playgroundContainerWrapper {
+//     background-color: white;
+// }
 
 #playground-canvas {
     position: fixed;
@@ -13,13 +16,22 @@
 
 }
 
+.playgroundContainer {
+    margin: 3% 0;
+}
+
 .diagram {
-    display: inline-block;
+    display: block;
+}
+
+.playground-item {
+    width: 100%;
+    height: 25vh;
+}
+
+.playground {
     width: 100%;
     height: 80vh
-    // height: auto;
-    // width: 20em;
-
 }
 
 .left {
@@ -29,4 +41,100 @@
 .right {
     text-align: center;
     margin-left: .25em;
+}
+
+.sidebarSearch {
+    position: relative;
+    padding: 0 5%;
+}
+
+
+.sidebarSearchField {
+    padding: 17px;
+    padding-left: 35px;
+    width: 100%;
+    border: 1px solid #f5f5f5;
+    font-size: 18px;
+    font-family: 'Source Code Pro', monospace;
+    color: gray;
+    background-image: url("http://nanoframe.s3.us-west-1.amazonaws.com/search.png");
+    background-size: 20px;
+    background-repeat: no-repeat;
+    background-position: left center;
+    outline: 0;
+}
+
+.exitSearchBar {
+    display: none;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 7.5%;
+    top: 25%;
+    background-image: url("http://nanoframe.s3.us-west-1.amazonaws.com/close.png");
+    background-size: 20px;
+    background-repeat: no-repeat;
+}
+
+.sidebarHeader {
+    padding: 0 5%;
+}
+
+.sidebarContent {
+    max-height: 75vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    direction: ltr;
+}
+
+.playgroundItemTitle {
+    margin: 0 0; 
+}
+
+.sidebar {
+    padding-top: 5%;
+    padding-bottom: 5%;
+    // box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+
+}
+
+.playgroundItem {
+    position: relative;
+}
+
+.itemToPlayGround {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    right: 7.5%;
+    top: 7.5%;
+    background-image: url("https://nanoframe.s3.us-west-1.amazonaws.com/plus.png");
+    background-size: 20px;
+    background-repeat: no-repeat;
+}
+
+.itemToPlayGround:hover {
+    cursor: pointer;
+}
+
+
+.itemFont {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: 'Source Code Pro', monospace;
+    // font-family: 'Source Sans Pro', sans-serif;
+}
+
+.itemHeaderFont {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+.itemDescriptionContainer {
+    margin: 0 20px;
+}
+
+.itemDescription:hover {
+    color: #1C658C;
+    cursor: help;
 }
