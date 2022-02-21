@@ -138,3 +138,42 @@
     color: #1C658C;
     cursor: help;
 }
+
+.createCustomShape {
+    padding-top: 5%;
+    margin: 0;
+    text-align: right;
+}
+
+.createCustomButton {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
+.createCustomFieldContainer {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 2%;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+
+.formCloseButton {
+    cursor: pointer;
+    width: 20px;
+    height: auto;
+    position: absolute;
+    top: 5%;
+    right: 3%;
+}

@@ -7,42 +7,378 @@
 <body>
     <%= render partial: "layouts/nav", locals: {tab: "playground"}%>
     <div class="playgroundContainerWrapper">
-    <div class="playgroundContainer">
-        <canvas id="playground-canvas"></canvas>
-        <div class="row">
-            <div class="col-md-9">
-                <div id="playground" class="diagram left playground">
+        <div class="playgroundContainer">
+            <canvas id="playground-canvas"></canvas>
+            <div class="row">
+                <div class="col-md-9">
+                    <div id="playground" class="diagram left playground">
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="sidebar">
-                    <div class="offSidebarContent">
-                    <div class="sidebarHeader">
-                        <h4 class="itemHeaderFont">Playground Items</h4>
-                        <hr class="my-4">
-                    </div>
-                    <div class="sidebarSearch">
-                        <input type="search" class="sidebarSearchField form-control">
-                        <div class="exitSearchBar"></div>
-                        <hr class="my-4">
-                    </div>
-                    </div>
+                <div class="col-md-3">
+                    <div class="sidebar">
+                        <div class="offSidebarContent">
+                            <div class="sidebarHeader">
+                                <h4 class="itemHeaderFont">Playground Items</h4>
+                                <hr class="my-4">
+                            </div>
+                            <div class="sidebarSearch">
+                                <input type="search" class="sidebarSearchField form-control">
+                                <div class="exitSearchBar"></div>
+                                <div class="createCustomShape">
+                                    <button class="btn btn-link createCustomButton">Create Custom</button>
+                                    <div class="createCustomFieldContainer">
+                                        <div class="sign-up-form">
 
-                    <div class="sidebarContent">
+                                            <div class="sign-up-form-header">
+                                                <h3>Custom Object Details</h3>
+                                                <img class="formCloseButton"
+                                                    src="https://nanoframe.s3.us-west-1.amazonaws.com/close.png">
+                                                <hr class="my-4">
+                                                <div class="formContainer">
+                                                    <%= form_with(model: @generator, method: :post, id: "synthesize-form", class: "synthesize-form") do |f| %>
+                                                    <div class="shape-dropdown">
+                                                        <select id="synthesizer-shape" class="form-select"
+                                                            name="generator[shape]">
+                                                            <option value="0" disabled selected>Select Shape</option>
+                                                            <!-- Platonic Shapes-->
+                                                            <option value="1">Cube (P1)</option>
+                                                            <option value="2">Tetrahedron (P2)</option>
+                                                            <option value="3">Octahedron (P3)</option>
+                                                            <option value="4">Icosahedron (P4)</option>
+                                                            <option value="5">Dodecahedron (P5)</option>
+                                                            <!-- Archimedean Shapes-->
+                                                            <option value="6">Truncated Tetrahedron (A1)</option>
+                                                            <option value="7">Cuboctahedron (A2)</option>
+                                                            <option value="8">Truncated Cube (A3)</option>
+                                                            <option value="9">Truncated Octahedron (A4)</option>
+                                                            <option value="10 ">Rhombicuboctahedron (A5)</option>
+                                                            <option value="11">Truncated Cuboctahedron (A6)</option>
+                                                            <option value="12">Snub Cube (A7)</option>
+                                                            <option value="13">Icosidodecahedron (A8)</option>
+                                                            <option value="14">Truncated Dodecahedron (A9)</option>
+                                                            <option value="15">Truncated Icosahedron (A10)</option>
+                                                            <option value="16 ">Rhombicosidodecahedron (A11)</option>
+                                                            <option value="17">Truncated Icosidodecahedron (A12)
+                                                            </option>
+                                                            <option value="18">Snub Dodecahedron (A13)</option>
+                                                            <!-- Johnson Shapes-->
+                                                            <option value="19">Square Pyramid (J1)</option>
+                                                            <option value="20">Pentagonal Pyramid (J2)</option>
+                                                            <option value="21">Triangular Cupola (J3)</option>
+                                                            <option value="22">Square Cupola (J4)</option>
+                                                            <option value="23">Pentagonal Cupola (J5)</option>
+                                                            <option value="24">Pentagonal Rotunda (J6)</option>
+                                                            <option value="25">Elongated Triangular Pyramid (J7)
+                                                            </option>
+                                                            <option value="26">Elongated Square Pyramid (J8)</option>
+                                                            <option value="27">Elongated Pentagonal Pyramid (J9)
+                                                            </option>
+                                                            <option value="28">Gyroelongated Square Pyramid (J10)
+                                                            </option>
+                                                            <option value="29">Gyroelongated Pentagonal Pyramid (J11)
+                                                            </option>
+                                                            <option value="30">Triangular Bipyramid (J12)</option>
+                                                            <option value="31">Pentagonal Bipyramid (J13)</option>
 
-                        <input type="hidden" id="playground_item_listing" value="<%= @playground_items.length %>">
-                        
-                        <% @playground_items.each_with_index do |item, idx| %>
+                                                            <option value="32">Elongated Triangular Bipyramid (J14)
+                                                            </option>
+                                                            <option value="33">Elongated Square Bipyramid (J15)</option>
+                                                            <option value="34">Elongated Pentagonal Bipyramid (J16)
+                                                            </option>
+                                                            <option value="35">Gyroelongated Square Bipyramid (J17)
+                                                            </option>
+                                                            <option value="36">Elongated Triangular Cupola (J18)
+                                                            </option>
+                                                            <option value="37">Elongated Square Cupola (J19)</option>
+                                                            <option value="38">Elongated Pentagonal Cupola (J20)
+                                                            </option>
+                                                            <option value="39">Elongated Pentagonal Rotunda (J21)
+                                                            </option>
+                                                            <option value="40">Gyroelongated Triangular Cupola (J22)
+                                                            </option>
+                                                            <option value="41">Gyroelongated Square Cupola (J23)
+                                                            </option>
+                                                            <option value="42">Gyroelongated Pentagonal Cupola (J24)
+                                                            </option>
+                                                            <option value="43">Gyroelongated Pentagonal Rotunda (J25)
+                                                            </option>
+                                                            <option value="44">Gyrobifastigium (J26)</option>
+                                                            <option value="45">Triangular Orthobicupola (J27)</option>
+                                                            <option value="46">Square Orthobicupola (J28)</option>
+                                                            <option value="47">Square Gyrobicupola (J29)</option>
+                                                            <option value="48">Pentagonal Orthobicupola (J30)</option>
+                                                            <option value="49">Pentagonal Gyrobicupola (J31)</option>
+                                                            <option value="50">Pentagonal Orthocupolarotunda (J32)
+                                                            </option>
+                                                            <option value="51">Pentagonal Gyrocupolarotunda (J33)
+                                                            </option>
+                                                            <option value="52">Pentagonal Orthobirotunda (J34)</option>
+
+                                                            <option value="53">Elongated Triangular Orthobicupola (J35)
+                                                            </option>
+                                                            <option value="54">Elongated Triangular Gyrobicupola (J36)
+                                                            </option>
+                                                            <option value="55">Elongated Square Gyrobicupola (J37)
+                                                            </option>
+                                                            <option value="56">Elongated Pentagonal Orthobicupola (J38)
+                                                            </option>
+                                                            <option value="57">Elongated Pentagonal Gyrobicupola (J39)
+                                                            </option>
+                                                            <option value="58">Elongated Pentagonal Orthocupolarotunda
+                                                                (J40)</option>
+                                                            <option value="59">Elongated Pentagonal Gyrocupolarotunda
+                                                                (J41)</option>
+                                                            <option value="60">Elongated Pentagonal Orthobirotunda (J42)
+                                                            </option>
+                                                            <option value="61">Elongated Pentagonal Gyrobirotunda (J43)
+                                                            </option>
+                                                            <option value="62">Gyroelongated Triangular Bicupola (J44)
+                                                            </option>
+                                                            <option value="63">Gyroelongated Square Bicupola (J45)
+                                                            </option>
+                                                            <option value="64">Gyroelongated Pentagonal Bicupola (J46)
+                                                            </option>
+                                                            <option value="65">Gyroelongated Pentagonal Cupolarotunda
+                                                                (J47)</option>
+                                                            <option value="66">Gyroelongated Pentagonal Birotunda (J48)
+                                                            </option>
+                                                            <option value="67">Augmented Triangular Prism (J49)</option>
+                                                            <option value="68">Biaugmented Triangular Prism (J50)
+                                                            </option>
+                                                            <option value="69">Triaugmented Triangular Prism (J51)
+                                                            </option>
+
+                                                            <option value="70">Augmented Pentagonal Prism (J52)</option>
+                                                            <option value="71">Biaugmented Pentagonal Prism (J53)
+                                                            </option>
+                                                            <option value="72">Augmented Hexagonal Prism (J54)</option>
+                                                            <option value="73">Parabiaugmented Hexagonal Prism (J55)
+                                                            </option>
+                                                            <option value="74">Metabiaugmented Hexagonal Prism (J56)
+                                                            </option>
+                                                            <option value="75">Triaugmented Hexagonal Prism (J57)
+                                                            </option>
+
+                                                            <option value="/nanobot/custom">Custom</option>
+                                                        </select>
+                                                        <%# <%= select_tag(:shape,  options_for_select(@options, :select => "2", :disabled => "0"), id: "synthesizer-shape", class: "form-select")%>
+                                                    </div>
+                                                    <div class="color-scaffold-select">
+                                                        <div class="row scaffold-select">
+                                                            <div class="col-md-4">
+                                                                <div class="form-check form-check-inline">
+                                                                    <%= f.radio_button :option, "8064 nt scaffold", class: "btn-check", id: "8064-radiobtn", autocomplete: "off",  style: "display: none;"%>
+                                                                    <%= f.label "1", "8064 nt scaffold", for: "8064-radiobtn", class: "btn btn-outline-dark", id: "inlineRadio1"%>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-check form-check-inline">
+                                                                    <%= f.radio_button :option, "7249 nt scaffold", class: "btn-check", id: "7249-radiobtn", autocomplete: "off",  style: "display: none;" %>
+                                                                    <%= f.label "2", "7249 nt scaffold", for: "7249-radiobtn", class: "btn btn-outline-dark", id: "inlineRadio2"%>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-check form-check-inline">
+                                                                    <%= f.text_field :width, type: "text", class: "form-control custom-scaffold-length", placeholder: "40000" %>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <%# Erbify %>
+                                                    <div class="row sequence-container">
+                                                        <div class="col-md-6 random-sequence-container">
+                                                            <input class="form-check-input" type="checkbox" value=""
+                                                                id="sequenceCheckbox" checked autocomplete="off">
+                                                            <label class="form-check-label" for="sequenceCheckbox">
+                                                                Random Sequence
+                                                            </label>
+                                                        </div>
+
+                                                        <div class="col-md-6 input-container">
+                                                            <input class="form-control" id="sequenceUpload" type="file"
+                                                                accept=".txt">
+                                                        </div>
+                                                    </div>
+                                                    <%= f.hidden_field "scaffold_length" ""%>
+                                                    <%# Add hidden field for JSON data %>
+                                                    <% if @current_user %>
+                                                    <div class="visibility-container">
+                                                        <div class="form-check form-switch">
+                                                            <%= f.check_box :visibility, class: "form-check-input", id: "visibility-input", checked: true%>
+                                                            <label class="form-check-label" id="visibility-label"
+                                                                for="visibility-input">Public</label>
+                                                        </div>
+                                                    </div>
+                                                    <% end %>
+                                                    <div class="dimension-picker">
+                                                        <div
+                                                            class="width-container dimension-wrapper-container <%= 'dimension-container' %>">
+                                                            <div class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Width</span>
+                                                                <%= f.text_field :width, type: "text", class: "dimension-input width-input form-control", placeholder: "30 nm" %>
+                                                            </div>
+                                                        </div>
+
+                                                        <div
+                                                            class="height-container dimension-wrapper-container <%= 'dimension-container' %>">
+                                                            <div class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Height</span>
+                                                                <%= f.text_field :height, type: "text", class: "dimension-input height-input form-control", placeholder: "30 nm" %>
+                                                            </div>
+                                                        </div>
+
+                                                        <div
+                                                            class="depth-container dimension-wrapper-container <%= 'dimension-container'%>">
+                                                            <div class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Depth</span>
+                                                                <%= f.text_field :depth, type: "text", class: "dimension-input depth-input form-control", placeholder: "30 nm" %>
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            class="radius-container dimension-wrapper-container <%= 'dimension-container' %>">
+                                                            <div data-bs-toggle="tooltip" data-bs-placement="left"
+                                                                title="Radius of the chosen object."
+                                                                class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Radius</span>
+                                                                <%= f.text_field :radius, type: "text", class: "dimension-input radius-input form-control", placeholder: "20 nm" %>
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            class="rs-container dimension-wrapper-container <%= 'dimension-container' %>">
+                                                            <div data-bs-toggle="tooltip" data-bs-placement="left"
+                                                                title="Number of segmented faces around the circumference."
+                                                                class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Radial
+                                                                    Segment</span>
+                                                                <%= f.text_field :radial_segment, type: "text", class: "dimension-input rs-input form-control", placeholder: "10 nm" %>
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            class="rt-container dimension-wrapper-container <%= 'dimension-container'%>">
+                                                            <div data-bs-toggle="tooltip" data-bs-placement="left"
+                                                                title="Radius of the chosen object at the top"
+                                                                class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Radius Top</span>
+                                                                <%= f.text_field :radius_top, type: "text", class: "dimension-input rst-input form-control", placeholder: "20 nm" %>
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            class="rb-container dimension-wrapper-container <%= 'dimension-container'  %>">
+                                                            <div data-bs-toggle="tooltip" data-bs-placement="left"
+                                                                title="Radius of the object at the bottom"
+                                                                class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Radius Bottom</span>
+                                                                <%= f.text_field :radius_bottom, type: "text", class: "dimension-input rsb-input form-control", placeholder: "15 nm" %>
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            class="detail-container dimension-wrapper-container <%= 'dimension-container' %>">
+                                                            <div title="Setting this to a value greater than 0 adds vertices making it no longer a chosen hedron."
+                                                                class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Detail</span>
+                                                                <%= f.text_field :detail, type: "text", class: "dimension-input detail-input form-control", placeholder: "0" %>
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            class="ws-container dimension-wrapper-container <%= 'dimension-container' %>">
+                                                            <div class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Width Stripes</span>
+                                                                <%= f.text_field :width_segment, type: "text", class: "dimension-input ws-input form-control", placeholder: "3" %>
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            class="hs-container dimension-wrapper-container <%= 'dimension-container'  %>">
+                                                            <div class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Height
+                                                                    Stripes</span>
+                                                                <%= f.text_field :height_segment, type: "text", class: "dimension-input hs-input form-control", placeholder: "3" %>
+                                                            </div>
+                                                        </div>
+
+                                                        <div
+                                                            class="ds-container dimension-wrapper-container <%= 'dimension-container'%>">
+                                                            <div class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Depth Stripes</span>
+                                                                <%= f.text_field :depth_segment, type: "text", class: "dimension-input ds-input form-control", placeholder: "3" %>
+                                                            </div>
+                                                        </div>
+
+                                                        <div
+                                                            class="tube-container dimension-wrapper-container <%= 'dimension-container' %>">
+                                                            <div data-bs-toggle="tooltip" data-bs-placement="left"
+                                                                title="Radius of the tube."
+                                                                class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Tube Radius</span>
+                                                                <%= f.text_field :tube_radius, type: "text", class: "dimension-input tube-input form-control", placeholder: "6 nm" %>
+                                                            </div>
+                                                        </div>
+
+                                                        <div
+                                                            class="tubular-container dimension-wrapper-container <%= 'dimension-container'  %>">
+                                                            <div class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Tubular
+                                                                    Segment</span>
+                                                                <%= f.text_field :tubular_radius, type: "text", class: "dimension-input tubular-input form-control", placeholder: "10 nm" %>
+                                                            </div>
+                                                        </div>
+
+                                                        <div
+                                                            class="p-container dimension-wrapper-container <%= 'dimension-container'  %>">
+                                                            <div data-bs-toggle="tooltip" data-bs-placement="left"
+                                                                title="This value determines, how many times the geometry 
+              winds around its axis of rotational symmetry. Default is 2."
+                                                                class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">P</span>
+                                                                <%= f.text_field :p, type: "text", class: "dimension-input p-input form-control", placeholder: "5" %>
+                                                            </div>
+                                                        </div>
+
+                                                        <div
+                                                            class="q-container dimension-wrapper-container <%= 'dimension-container'  %>">
+                                                            <div data-bs-toggle="tooltip" data-bs-placement="left"
+                                                                title="This value determines, how many times the geometry winds around 
+              a circle in the interior of the torus. Default is 3." class="input-group dimension-input-container">
+                                                                <span class="input-group-text w-25">Q</span>
+                                                                <%= f.text_field :q, type: "text", class: "dimension-input q-input form-control", placeholder: "5" %>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="json-container">
+                                                            <%= f.text_field :json, type: "hidden", class: "json-input" %>
+                                                        </div>
+                                                    </div>
+                                                    <div class="synthesizer-btn-container">
+                                                        <%= f.submit "Add to Playground", id: "synthesize-btn", class: "synthesizer-btn btn btn-secondary btn-lg w-50", disabled: true%>
+                                                        <%# <button type="submit" class="synthesizer-btn btn btn-secondary btn-lg w-50" disabled>Synthesize</button> %>
+                                                    </div>
+                                                    <% end %>
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+                            </div>
+                        </div>
+
+                        <div class="sidebarContent">
+
+                            <input type="hidden" id="playground_item_listing" value="<%= @playground_items.length %>">
+
+                            <% @playground_items.each_with_index do |item, idx| %>
                             <%= render partial: "item", locals: {item: item, index: idx} %>
-                        <% end %>
-                        
-                    </div>
-                </div>
+                            <% end %>
 
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
     </div>
-    </div>
     <%= render "layouts/footer"%>
-    <%= javascript_pack_tag 'playground', 'playgroundQueries', 'data-turbolinks-track': 'reload'%>
+    <%= javascript_pack_tag 'playground', 'playgroundQueries', 'nanobot', 'data-turbolinks-track': 'reload'%>
 </body>

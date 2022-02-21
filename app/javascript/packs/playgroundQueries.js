@@ -15,8 +15,11 @@ $(document).ready(function() {
 })
 
 $(document).ready(function() {
-    $(".sidebarContent").scroll(() => {
-        // console.log($(".sidebarContent")[0])
-        // console.log( $(".sidebarContent").prop('scrollHeight'))
+    $(".createCustomButton").click(() => {
+        $(".createCustomFieldContainer").css({"display": "block"});
+    })
+
+    $(".formCloseButton").click(() => {
+        $(".createCustomFieldContainer").css({"display": "none"});
     })
 })
