@@ -3,6 +3,7 @@
 require 'rubygems'
 require 'zip'
 require 'date'
+require 'Object3D'
 
 class Generator < ApplicationRecord
   attr_accessor :atom_count

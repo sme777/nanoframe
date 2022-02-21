@@ -161,7 +161,8 @@ if (signOutBtn != null || boxState != null) {
         let positions = []
         let colors = []
         const spline = new THREE.CatmullRomCurve3(edges)
-        const divisions = Math.round(12 * edges.length) //7249
+        const divisions = Math.round(12 * edges.length) 
+        console.log(divisions)//7249
         const point = new THREE.Vector3()
 
         for (let i = 0, l = divisions; i < l; i++) {

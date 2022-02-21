@@ -8,10 +8,11 @@ import { LineGeometry } from './threejs/LineGeometry'
 const canvas = document.getElementById("playground-canvas")
 const sideBarHeight = document.querySelector(".sidebarContent").scrollTopMax
 const renderer = new THREE.WebGLRenderer( {canvas: canvas, alpha: true} )
+
 const OrbitControls = oc(THREE)
-
+const playGroundContainer = document.getElementById("playground")
 const playGroundScene = setupPlayGroundScene()
-
+renderer.setPixelRatio(playGroundContainer.devicePixelRatio)
 
 const material = new LineMaterial({
     color: 0xffffff,
@@ -47,14 +48,14 @@ function makeScene(elem) {
 }
 
 function setupPlayGroundScene() {
-    const playGroundContainer = document.getElementById("playground")
+    
 
     const sceneInfo = makeScene(playGroundContainer, playGroundContainer.clientHeight, playGroundContainer.clientWidth)
-    const geometry = new THREE.BoxGeometry(30, 30, 30)
-    const material = new THREE.MeshPhongMaterial({color: 'red'})
-    const mesh = new THREE.Mesh(geometry, material)
-    sceneInfo.scene.add(mesh)
-    sceneInfo.mesh = mesh
+    // const geometry = new THREE.BoxGeometry(30, 30, 30)
+    // const material = new THREE.MeshPhongMaterial({color: 'red'})
+    // const mesh = new THREE.Mesh(geometry, material)
+    // sceneInfo.scene.add(mesh)
+    // sceneInfo.mesh = mesh
 
     
     const controls = new OrbitControls(sceneInfo.camera, playGroundContainer)
@@ -71,7 +72,13 @@ function setupSideBarScene() {
     const playGroundItemsSize = parseInt(document.getElementById("playground_item_listing").value)
     const sideBarScenes = []
     for (let i = 0; i < playGroundItemsSize; i++) {
-        sideBarScenes.push(setupSideBarItemScene(i))
+        const elementScene = setupSideBarItemScene(i)
+        sideBarScenes.push(elementScene)
+        document.getElementById(`add_playground_item_${i}`).addEventListener("click", () => {
+            const routingObject = (elementScene.scene.getObjectByName("routingObject")).clone()
+            
+            addItemToPlayground(routingObject)
+        })
     }
     return sideBarScenes
 }
@@ -88,6 +95,7 @@ function setupSideBarItemScene(idx) {
 
     const line = new Line2(geometry, material)
     line.geometry.center()
+    line.name = "routingObject"
     sceneInfo.scene.add(line)
     sceneInfo.mesh = line
 
@@ -99,6 +107,10 @@ function setupSideBarItemScene(idx) {
     // controls.enableDamping = true
     // controls.dampingFactor = 10
     return sceneInfo
+}
+
+function addItemToPlayground(item) {
+    playGroundScene.scene.add(item)
 }
 
 
@@ -119,11 +131,15 @@ const pgic = document.getElementById(`playground_item_0`)
 
 
 
-function renderSceneInfo(sceneInfo) {
+function renderSceneInfo(sceneInfo, resolution={
+    height: playGroundContainer.clientHeight, 
+    width: playGroundContainer.clientWidth
+
+}) {
     const {scene, camera, elem} = sceneInfo
 
     const {left, right, top, bottom, width, height} = elem.getBoundingClientRect()
-    material.resolution.set(pgic.clientWidth, pgic.clientHeight)
+    material.resolution.set(resolution.width, resolution.height)
     
     const isOffscreen =
     bottom < 0 ||
@@ -164,11 +180,13 @@ function render(time) {
     renderer.clear(true, true)
     renderer.setScissorTest(true)
    
-    playGroundScene.mesh.rotation.y = time * .1
+
+    // playGroundScene.mesh.rotation.y = time * .1
    
     renderSceneInfo(playGroundScene)
     for (let i = 0; i < sideBarScenes.length; i++) {
-        renderSceneInfo(sideBarScenes[i])
+        const sidebarContainer = document.getElementById(`playground_item_${i}`)
+        renderSceneInfo(sideBarScenes[i], {height: sidebarContainer.clientHeight, width: sidebarContainer.clientWidth})
     }
     
    
