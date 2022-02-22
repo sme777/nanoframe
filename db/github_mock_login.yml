@@ -1,0 +1,9 @@
+development:
+  github_uid: 'sme777'
+  name: 'Samson Petrosyan'
+  email: 'sm3@berkeley.edu'
+  
+test:
+  github_uid: "nfr_developer"
+  name: "NanoFrame Developer"
+  email: "root@nanoframe.org"

@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  get 'session/create'
   get 'playground/index'
   resources :routers
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-  get '/' => 'users#index'
+  get '/' => 'users#index', as: :root
   post '/' => 'users#create'
   get '/profile' => 'users#profile'
   get '/signin' => 'users#sign_in'
@@ -17,8 +18,11 @@ Rails.application.routes.draw do
   get '/nanobot/custom' => "generators#custom"
 
   # oauth
-  get '/auth/google_oauth2/callback', to: 'users#google_oauth2', as: :google_oauth2_callback
-  get '/auth/github/callback', to: 'users#github', as: :github_callback
+  get  'auth/:provider/callback' => 'session#github'
+  get 'auth/failure' => 'session#failure'
+  get 'logout' => 'session#destroy'
+  # get '/auth/google_oauth2/callback', to: 'users#google_oauth2', as: :google_oauth2_callback
+  # get '/auth/github/callback', to: 'users#github', as: :github_callback
 
   post '/nanobot/:id/routing_position_update' => 'generators#routing_position_update'
   get '/nanobot/:id/synthesize' => 'generators#synthesize'

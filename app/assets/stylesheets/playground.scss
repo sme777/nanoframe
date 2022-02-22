@@ -145,10 +145,26 @@
     text-align: right;
 }
 
+.uploadCustomShape {
+    padding-top: 5%;
+    margin: 0;
+    text-align: left;
+}
+
 .createCustomButton {
     margin: 0;
     padding: 0;
     text-decoration: none;
+}
+
+.uploadCustomButton {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+}
+
+#customFileInput {
+    display: none;
 }
 
 .createCustomFieldContainer {

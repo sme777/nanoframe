@@ -25,10 +25,11 @@ gem 'dotenv-rails'
 # Use Active Model has_secure_password
 gem 'bcrypt', '~> 3.1.7'
 # Use third party sign on authenticate users
-gem 'omniauth'
-gem 'omniauth-github'
+gem 'omniauth', '~> 2.0'
+gem 'omniauth-github', '~> 2.0.0'
 gem 'omniauth-google-oauth2'
-gem 'omniauth-rails_csrf_protection'
+gem 'omniauth-rails_csrf_protection', '~> 1.0'
+
 gem 'pycall'
 # User Active Storage variant
 gem 'mini_magick', '~>4.8'
@@ -45,8 +46,6 @@ gem 'rubyzip'
 gem 'oink'
 gem 'unicorn'
 # gem 'rack-timeout'
-gem 'simplex', '~> 1.2'
-
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
