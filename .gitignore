@@ -27,7 +27,6 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
-/config/credentials.yml.enc
 
 # Ignore local results in assets
 /app/assets/results

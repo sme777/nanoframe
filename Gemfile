@@ -28,8 +28,7 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'omniauth', '~> 2.0'
 gem 'omniauth-github', '~> 2.0.0'
 gem 'omniauth-google-oauth2'
-gem 'omniauth-google-oauth2'
-gem 'omniauth-rails_csrf_protection', '~> 1.0'
+gem 'omniauth-rails_csrf_protection'
 
 gem 'pycall'
 # User Active Storage variant
