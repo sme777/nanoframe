@@ -56,6 +56,12 @@ class SessionController < ApplicationController
       password: :password
     )
   end
+  
+  def failure
+    flash[:danger] = 'Authentication failed, please try again.'
+    flash[:danger] += params[:message] if params[:message]
+    redirect_to login_path
+  end
 
   def auth_hash
     request.env['omniauth.auth']
