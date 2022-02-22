@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreatePlaygroundItems < ActiveRecord::Migration[6.1]
   def change
     create_table :playground_items do |t|

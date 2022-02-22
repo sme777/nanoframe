@@ -1,6 +1,8 @@
-class SessionController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: :create
+# frozen_string_literal: true
 
+class SessionController < ApplicationController
+  skip_before_action :verify_authenticity_token, only: :google_oauth2
+  skip_before_action :verify_authenticity_token, only: :github
 
   def google_oauth2
     create_session(:create_google_user)
@@ -31,16 +33,16 @@ class SessionController < ApplicationController
   def create_google_user(user_info)
     User.create(
       id: user_info['uid'],
-      provider: User.providers[:google_oauth2],
-      first_name: user_info['info']['first_name'],
-      last_name: user_info['info']['last_name'],
-      email: user_info['info']['email']
+      provider: :google_oauth2,
+      name: user_info['info']['name'],
+      email: user_info['info']['email'],
+      password: :password
     )
   end
 
   def create_github_user(user_info)
     name = user_info['info']['name']
-    username = user_info['info']['nickname']
+    username = user_info['info']['nickname'] || user_info['info']['email'][/([^@]+)/]
     if name.nil?
       first_name = 'Anon'
       last_name = 'User'
@@ -56,7 +58,7 @@ class SessionController < ApplicationController
       password: :password
     )
   end
-  
+
   def failure
     flash[:danger] = 'Authentication failed, please try again.'
     flash[:danger] += params[:message] if params[:message]

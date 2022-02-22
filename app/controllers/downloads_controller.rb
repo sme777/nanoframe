@@ -32,10 +32,10 @@ class DownloadsController < ApplicationController
     staples = JSON.parse(params[:staples])
     descriptions = JSON.parse(params[:descriptions])
     filename = @generator.make_staples_file(staples, descriptions)
-    file = File.open('app/assets/results/' + filename + '.csv')
+    file = File.open("app/assets/results/#{filename}.csv")
     contents = file.read
     file.close
-    send_data contents, filename: filename + '.csv'
+    send_data contents, filename: "#{filename}.csv"
   end
 
   def download_bundle

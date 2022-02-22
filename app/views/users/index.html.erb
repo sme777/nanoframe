@@ -87,7 +87,7 @@
                 </div>
               </div>
         </form>
-        <%= form_tag "auth/google_oauth2", method: :post, id: "google-auth-form" do %>
+        <%= form_tag "/auth/google_oauth2", method: :post, id: "google-auth-form" do %>
         <div class="github-sign-in-container">
           <a id="google-button" class="btn btn-lg btn-block btn-social btn-google w-100 text-align-center">
             <i class="fa fa-google"></i> Sign in with Google
@@ -96,7 +96,7 @@
         <%= submit_tag "", class: "invisible", id: "google-sign-in"%>
         <% end %>
 
-        <%= form_tag "auth/github", method: :post, id: "github-auth-form" do %>
+        <%= form_tag "/auth/github", method: :post, id: "github-auth-form" do %>
         <div class="github-sign-in-container">
           <a id="github-button" class="btn btn-lg btn-block btn-social btn-github w-100  text-align-center">
             <i class="fa fa-github"></i> Sign in with GitHub

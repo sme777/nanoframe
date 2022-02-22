@@ -2,11 +2,9 @@
 
 require 'json'
 
-
 class Graph
-
   attr_accessor :vertices, :edges, :sets, :route, :planes, :vertices, :edges
-  
+
   # dimension[0] -> width
   # dimension[1] -> height
   # dimension[2] -> depth
@@ -32,7 +30,6 @@ class Graph
       @radius = dimensions[0]
     end
   end
-  
 
   def create_vertices_and_edges(shape)
     v = []
@@ -105,34 +102,30 @@ class Graph
 
   def get_edges(stripes)
     undisected_edges = stripes.clone
-    for i in 0..undisected_edges.length do
-      for j in 0..undisected_edges.length do
+    (0..undisected_edges.length).each do |i|
+      (0..undisected_edges.length).each do |j|
         byebug
-        if i == j 
+        if i == j
           next
-        else
-          if intersect(undisected_edges[i], undisected_edges[j]) 
-            intersection_point = intersection(undisected_edges[i], undisected_edges[j])
-            e1_split = split_edge(undisected_edges[i], intersection_point)
-            e2_split = split_edge(undisected_edges[j], intersection_point)
-            undisected_edges.delete(undisected_edges[i])
-            undisected_edges.delete(undisected_edges[j])
-            undisected_edges << e1_split
-            undisected_edges << e2_split
-            # did_change 
-          end
+        elsif intersect(undisected_edges[i], undisected_edges[j])
+          intersection_point = intersection(undisected_edges[i], undisected_edges[j])
+          e1_split = split_edge(undisected_edges[i], intersection_point)
+          e2_split = split_edge(undisected_edges[j], intersection_point)
+          undisected_edges.delete(undisected_edges[i])
+          undisected_edges.delete(undisected_edges[j])
+          undisected_edges << e1_split
+          undisected_edges << e2_split
+          # did_change
         end
       end
-
     end
     # puts Edge.beautify_edges(stripes)
 
     undisected_edges
   end
 
-
   def ccw(a, b, c)
-    (c.y-a.y) * (b.x-a.x) > (b.y-a.y) * (c.x-a.x)
+    (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x)
   end
 
   def intersect(e1, e2)
@@ -163,9 +156,9 @@ class Graph
   end
 
   def same_side?(v1, v2)
-    return (v1.y == v2.y && v1.y == 0) || (v1.y != 0 && v2.y != 0 &&
-    (v1.x < (@segments +1) / 2 && v2.x < (@segments +1) / 2 ||
-    v1.x > (@segments +1) / 2 && v2.x > (@segments +1) / 2))
+    (v1.y == v2.y && v1.y.zero?) || (v1.y != 0 && v2.y != 0 &&
+    (v1.x < (@segments + 1) / 2 && v2.x < (@segments + 1) / 2 ||
+    v1.x > (@segments + 1) / 2 && v2.x > (@segments + 1) / 2))
   end
 
   def find_outgoers

@@ -15,10 +15,11 @@ Rails.application.routes.draw do
   get '/playground' => 'playground#index'
   post '/nanobot' => 'generators#create', as: 'generator'
   post '/nanobot' => 'generators#create', as: 'generators'
-  get '/nanobot/custom' => "generators#custom"
+  get '/nanobot/custom' => 'generators#custom'
 
   # oauth
-  get  'auth/:provider/callback' => 'session#github'
+  get 'auth/github/callback' => 'session#github'
+  get 'auth/google_oauth2/callback' => 'session#google_oauth2'
   get 'auth/failure' => 'session#failure'
   get 'logout' => 'session#destroy'
   # get '/auth/google_oauth2/callback', to: 'users#google_oauth2', as: :google_oauth2_callback
@@ -50,5 +51,4 @@ Rails.application.routes.draw do
   get '/nanobot/:id/bundle' => 'downloads#download_bundle'
   # resources :generators
   get 'nanobot/generator' => 'generators#generator', as: 'shape_generator'
-
 end
