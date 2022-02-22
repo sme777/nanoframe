@@ -38,6 +38,7 @@ end
 
 Rails.application.config.middleware.use OmniAuth::Builder do
     setup_omniauth_mocks unless Rails.env.production?
+    byebug
     provider :github, Rails.application.credentials[:GITHUB_KEY], Rails.application.credentials[:GITHUB_SECRET]
     provider :google_oauth2, Rails.application.credentials[:GOOGLE_CLIENT_ID], Rails.application.credentials[:GOOGLE_CLIENT_SECRET]
 #   unless Rails.env.production?
