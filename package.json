@@ -14,7 +14,7 @@
     "jqeury": "^0.0.1-security",
     "parse-pdb": "^1.0.0",
     "rails-erb-loader": "^5.5.2",
-    "three": "^0.126.1",
+    "three": "^0.138.0",
     "three-css2drender": "^1.0.0",
     "three-dragcontrols": "^0.88.2",
     "three-mtl-loader": "^1.0.2",

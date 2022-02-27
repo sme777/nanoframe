@@ -1,10 +1,10 @@
 import * as THREE from 'three'
 import oc from 'three-orbit-controls'
-import DragControls from 'three-dragcontrols';
+// import DragControls from 'three-dragcontrols';
+import DragControls from 'three-dragcontrols'
 import { Line2 } from './threejs/Line2'
 import { LineMaterial } from './threejs/LineMaterial'
 import { LineGeometry } from './threejs/LineGeometry'
-
 
 const canvas = document.getElementById("playground-canvas")
 const sideBarHeight = document.querySelector(".sidebarContent").scrollTopMax
@@ -13,8 +13,16 @@ const renderer = new THREE.WebGLRenderer( {canvas: canvas, alpha: true} )
 const OrbitControls = oc(THREE)
 const playGroundContainer = document.getElementById("playground")
 const playGroundScene = setupPlayGroundScene()
+const raycaster = new THREE.Raycaster()
+const pointer = new THREE.Vector2()
+
+let playGroundControls
+let playGroundDraggers
 renderer.setPixelRatio(playGroundContainer.devicePixelRatio)
-let playGroundObjects = []
+let playGroundObjects
+
+
+
 
 
 const material = new LineMaterial({
@@ -62,11 +70,15 @@ function setupPlayGroundScene() {
     // sceneInfo.mesh = mesh
 
     
-    const controls = new OrbitControls(sceneInfo.camera, playGroundContainer)
-    controls.minDistance = 0.1
-    controls.maxDistance = 1000
-    controls.enableDamping = true
-    controls.enableZoom = false
+    playGroundControls = new OrbitControls(sceneInfo.camera, playGroundContainer)
+    playGroundControls.minDistance = 0.1
+    playGroundControls.maxDistance = 1000
+    playGroundControls.enableDamping = true
+    playGroundControls.enableZoom = false
+
+    playGroundObjects = []
+    playGroundDraggers = new DragControls([...playGroundObjects], sceneInfo.camera, playGroundContainer)
+
 
     return sceneInfo
 }
@@ -116,7 +128,13 @@ function setupSideBarItemScene(idx) {
 function addItemToPlayground(item) {
     playGroundScene.scene.add(item)
     playGroundObjects.push(item)
-    const dragControls = new DragControls(playGroundObjects, playGroundScene.camera, renderer.domElement);
+    updateDragControls()
+}
+
+
+function updateDragControls() {
+    playGroundDraggers.dispose()
+    playGroundDraggers = new DragControls([... playGroundObjects], playGroundScene.camera, playGroundContainer)
 }
 
 
@@ -132,9 +150,6 @@ function resizeRendererToDisplaySize(renderer, camera) {
     }
     return needResize
 }
-
-const pgic = document.getElementById(`playground_item_0`)
-
 
 
 function renderSceneInfo(sceneInfo, resolution={
@@ -177,8 +192,7 @@ function renderSceneInfo(sceneInfo, resolution={
     renderer.render(scene, camera);
 }
 
-function render(time) {
-    time *= 0.001
+function render() {
  
     resizeRendererToDisplaySize(renderer, playGroundScene.camera)
    
@@ -187,7 +201,6 @@ function render(time) {
     renderer.setScissorTest(true)
    
 
-    // playGroundScene.mesh.rotation.y = time * .1
    
     renderSceneInfo(playGroundScene)
     for (let i = 0; i < sideBarScenes.length; i++) {
@@ -196,8 +209,51 @@ function render(time) {
     }
     
    
+    raycaster.setFromCamera(pointer, playGroundScene.camera)
+
     requestAnimationFrame(render)
 }
 requestAnimationFrame(render)
 
 
+/**
+ * Event Listeners
+ */
+
+const zoomToggle = document.querySelector(".enableZoom")
+
+zoomToggle.addEventListener('click', () => {
+    if (playGroundControls.enableZoom) {
+        zoomToggle.innerText = "Enable Zoom"
+    } else {
+        zoomToggle.innerText = "Disable Zoom"
+    }
+    playGroundControls.enableZoom = !playGroundControls.enableZoom
+})
+
+
+playGroundContainer.addEventListener('mousedown', (e) => {
+    // console.log(e.pageX, e.pageY)
+    // for (let i in playGroundObjects) {
+    //     console.log(playGroundObjects[i].geometry.boundingBox)
+    // }
+    console.log(e.clientX, e.clientY)
+    const clientRect = playGroundContainer.getBoundingClientRect()
+    const scaleX = canvas.width / clientRect.width
+    const scaleY = canvas.height / clientRect.height
+
+    pointer.x = (e.clientX / clientRect.left) * 2 - 1
+    pointer.y = - (e.clientY / clientRect.top) * 2 + 1
+
+    console.log("pointer", pointer)
+    const intersects = raycaster.intersectObjects(playGroundObjects, true)
+    console.log(playGroundObjects[0].geometry.boundingBox)
+    console.log(intersects)
+
+    playGroundControls.enabled = false
+})
+
+playGroundContainer.addEventListener('mouseup', () => {
+    console.log(playGroundControls.enabled)
+    playGroundControls.enabled = true
+})
