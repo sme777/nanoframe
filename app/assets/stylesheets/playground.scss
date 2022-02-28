@@ -225,8 +225,17 @@
     cursor: pointer;
 }
 
+.settingButton {
+    margin: 0;
+    padding: 0;
+}
+
 .save {
     width: 25px;
     padding: 5px 0;
     margin-top: 10%; 
+}
+
+.save:hover {
+    cursor: pointer;
 }
