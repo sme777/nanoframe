@@ -17,10 +17,10 @@ const raycaster = new THREE.Raycaster()
 const pointer = new THREE.Vector2()
 
 let playGroundControls
-let playGroundDraggers
 renderer.setPixelRatio(playGroundContainer.devicePixelRatio)
 let playGroundObjects
-
+let playGroundDraggers
+console.log(playGroundDraggers)
 
 
 
@@ -75,10 +75,8 @@ function setupPlayGroundScene() {
     playGroundControls.maxDistance = 1000
     playGroundControls.enableDamping = true
     playGroundControls.enableZoom = false
-
     playGroundObjects = []
-    playGroundDraggers = new DragControls([...playGroundObjects], sceneInfo.camera, playGroundContainer)
-
+    playGroundDraggers = new DragControls(playGroundObjects, sceneInfo.camera, playGroundContainer)
 
     return sceneInfo
 }
@@ -120,8 +118,7 @@ function setupSideBarItemScene(idx) {
     controls.minDistance = 0.1
     controls.maxDistance = 1000
     controls.enableZoom = false
-    // controls.enableDamping = true
-    // controls.dampingFactor = 10
+
     return sceneInfo
 }
 
@@ -133,8 +130,7 @@ function addItemToPlayground(item) {
 
 
 function updateDragControls() {
-    playGroundDraggers.dispose()
-    playGroundDraggers = new DragControls([... playGroundObjects], playGroundScene.camera, playGroundContainer)
+    playGroundDraggers = new DragControls(playGroundObjects, playGroundScene.camera, playGroundContainer)
 }
 
 
@@ -232,28 +228,10 @@ zoomToggle.addEventListener('click', () => {
 })
 
 
-playGroundContainer.addEventListener('mousedown', (e) => {
-    // console.log(e.pageX, e.pageY)
-    // for (let i in playGroundObjects) {
-    //     console.log(playGroundObjects[i].geometry.boundingBox)
-    // }
-    console.log(e.clientX, e.clientY)
-    const clientRect = playGroundContainer.getBoundingClientRect()
-    const scaleX = canvas.width / clientRect.width
-    const scaleY = canvas.height / clientRect.height
-
-    pointer.x = (e.clientX / clientRect.left) * 2 - 1
-    pointer.y = - (e.clientY / clientRect.top) * 2 + 1
-
-    console.log("pointer", pointer)
-    const intersects = raycaster.intersectObjects(playGroundObjects, true)
-    console.log(playGroundObjects[0].geometry.boundingBox)
-    console.log(intersects)
-
+playGroundDraggers.addEventListener('dragstart', (e) => {
     playGroundControls.enabled = false
 })
 
-playGroundContainer.addEventListener('mouseup', () => {
-    console.log(playGroundControls.enabled)
+playGroundDraggers.addEventListener('dragend', (e) => {
     playGroundControls.enabled = true
 })
