@@ -85,12 +85,13 @@ window.addEventListener( 'pointermove', onMouseMove )
 onWindowResize()
 
 // DNA scaffold
-const material = new MeshLineMaterial();
-material.color.setHex(RoutingControls.viewParams.scaffold_color)
-material.lineWidth = 0.2
-material.color = new THREE.Color(0x29f4a2)
-material.resolution = resolution
-material.side = THREE.DoubleSide
+// const material = new MeshLineMaterial()
+// console.log(material)
+// material.color.setHex(RoutingControls.viewParams.scaffold_color)
+// material.lineWidth = 0.2
+// material.color = new THREE.Color(0x29f4a2)
+// material.resolution = resolution
+// material.side = THREE.DoubleSide
 // material.blending = THREE.AdditiveBlending
 
 function amplify(vertex, volume=dimension/segments) {
@@ -177,6 +178,7 @@ let sequenceDivison = []
 const es = createEdgeStrands()
 const mps = createAdjacentEdgeMap()
 const [staples, descriptions, positions] = generateStapleStrands(mps[0], mps[1])
+// console.log(staples, positions)
 let staplesGroup = generatePlaneStapleRouting(currIndex)
 scene.add(staplesGroup)
 
@@ -605,6 +607,9 @@ for (let i in dirs) {
         scene.add(staplesGroup)
     })
 }
+
+// console.log(staples)
+// console.log(staplesGroup)
 
 let t = "";
 for (var i = 0; i < staples.length; i++){

@@ -162,7 +162,7 @@ if (signOutBtn != null || boxState != null) {
         let colors = []
         const spline = new THREE.CatmullRomCurve3(edges)
         const divisions = Math.round(12 * edges.length) 
-        console.log(divisions)//7249
+        // console.log(divisions)//7249
         const point = new THREE.Vector3()
 
         for (let i = 0, l = divisions; i < l; i++) {
@@ -206,6 +206,7 @@ if (signOutBtn != null || boxState != null) {
         //     routingPositions.push(point.x, point.y, point.z)
 
         // }
+        // console.log(positions)
         if (visualize) {
             document.getElementById("routing-positions").value = JSON.stringify({
                 "positions": positions
@@ -214,8 +215,6 @@ if (signOutBtn != null || boxState != null) {
         }
 
         const geometry = new LineGeometry()
-        console.log(JSON.stringify(positions))
-        console.log(JSON.stringify(colors))
         geometry.setPositions(positions)
         globalPositions = positions
         geometry.setColors(colors)
@@ -387,7 +386,9 @@ if (signOutBtn != null || boxState != null) {
         let takenSets = []
         let objectSets = sortSets(mergeSets(), takenSets)
         const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
+        
         objectSets = Helpers.normalize(objectSets, widthSegmentLenth, heightSegmentLength, depthSegmentLength)
+        // console.log(objectSets)
         generateDisplay(objectSets, scene, camera)
 
         let controls = new OrbitControls(camera, renderer.domElement)

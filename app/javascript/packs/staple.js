@@ -11,8 +11,8 @@ export function GenerateStaple(edges, color, width=0.5, isStaple=false) {
 
     arrowGroup.add(getArrowTail(basePosition))
     
-
     let lineMaterial = new MeshLineMaterial()
+    // console.log(lineMaterial, lineMaterial.lineWidth)
     lineMaterial.color = new THREE.Color(color)
     lineMaterial.lineWidth = width
     lineMaterial.resolution = resolution
