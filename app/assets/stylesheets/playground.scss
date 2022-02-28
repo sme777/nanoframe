@@ -193,3 +193,49 @@
     top: 5%;
     right: 3%;
 }
+
+.playgroundToolbar {
+    // margin-left: 1%;
+    padding: 0.5% 5%;
+    width: 100%;
+    height: auto;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+.playgroundToolbarHelpers {
+    justify-content: right;
+}
+
+.fullscreen {
+    padding: 5px 0;
+    width: 30px;
+}
+
+.fullscreen:hover {
+    cursor: pointer;
+}
+
+.camera {
+    margin: 0 10px; 
+    padding: 5px 0;
+    width: 30px;
+}
+
+.camera:hover {
+    cursor: pointer;
+}
+
+.settingButton {
+    margin: 0;
+    padding: 0;
+}
+
+.save {
+    width: 25px;
+    padding: 5px 0;
+    margin-top: 10%; 
+}
+
+.save:hover {
+    cursor: pointer;
+}
