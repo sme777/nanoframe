@@ -27,6 +27,10 @@ class Vertex
     "#{x}#{y}#{z}"
   end
 
+  def equals(v)
+    return @x == v.x && @y == v.y && @z == v.z
+  end
+
   def self.string_of_vertices(vertices)
     res = '('
     vertices.each do |v|

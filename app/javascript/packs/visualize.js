@@ -113,6 +113,7 @@ if (signOutBtn != null || boxState != null) {
      * @returns 
      */
     function findNextSet(sets, lastVertex, takenSets) {
+        console.log(sets, lastVertex, takenSets)
         for (let s = 0; s < sets.length; s++) {
             let set = sets[s]
             for (let e = 0; e < set.edges.length; e++) {
