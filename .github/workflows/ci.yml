@@ -43,8 +43,11 @@ jobs:
     - run: npm install -g yarn
     - run: yarn install
     - run: yarn build
-    - uses: paambaati/codeclimate-action@v2.2.4
+    - name: Test & publish code coverage
+      uses: paambaati/codeclimate-action@v3.0.0
       env:
         CC_TEST_REPORTER_ID: 01f3b317eaae42803f6fc26db8de551dab0aada715f31df05004aca212272773
       with:
         coverageCommand: bundle exec rake spec
+        coverageLocations: |
+          ${{github.workspace}}/coverage/.last_run.json
