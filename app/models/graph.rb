@@ -463,7 +463,8 @@ class Graph
   # Generates JSON file of the graph
   def to_json(*_args)
     return nil if @planes.nil?
-
+    byebug
+    sorted_planes = Routing.sort_sets(@planes)
     plane_arr = []
     @planes.each do |plane|
       p = Plane.new(plane)

@@ -64,96 +64,96 @@ if (signOutBtn != null || boxState != null) {
         }
         
     }
-    /**
-     * 
-     * @returns 
-     */
-    function mergeSets() {
-        let arr = []
-        for (let i = 0; i < planeRoutings.length; i++) {
-            for (let j = 0; j < planeRoutings[i].sets.length; j++)
-                arr.push(planeRoutings[i].sets[j])
-        }
-        return arr
-    }
+    // /**
+    //  * 
+    //  * @returns 
+    //  */
+    // function mergeSets() {
+    //     let arr = []
+    //     for (let i = 0; i < planeRoutings.length; i++) {
+    //         for (let j = 0; j < planeRoutings[i].sets.length; j++)
+    //             arr.push(planeRoutings[i].sets[j])
+    //     }
+    //     return arr
+    // }
 
-    /**
-     * 
-     * @param {*} sets 
-     * @param {*} takenSets 
-     * @returns 
-     */
-    function sortSets(sets, takenSets) {
-        let edgeArr = []
-        let next = sets[0]
-        let edgesAndLastVertex = getEdgesFromSet(next)
-        edgeArr = edgeArr.concat(edgesAndLastVertex[0])
-        let counter = 0
-        let lastVertex = edgesAndLastVertex[1]
-        takenSets.push(sets[0])
+    // /**
+    //  * 
+    //  * @param {*} sets 
+    //  * @param {*} takenSets 
+    //  * @returns 
+    //  */
+    // function sortSets(sets, takenSets) {
+    //     let edgeArr = []
+    //     let next = sets[0]
+    //     let edgesAndLastVertex = getEdgesFromSet(next)
+    //     edgeArr = edgeArr.concat(edgesAndLastVertex[0])
+    //     let counter = 0
+    //     let lastVertex = edgesAndLastVertex[1]
+    //     takenSets.push(sets[0])
 
-        while (sets.length - 1 != counter) {
+    //     while (sets.length - 1 != counter) {
 
-            next = findNextSet(sets, lastVertex, takenSets)
-            takenSets.push(next)
-            edgesAndLastVertex = getEdgesFromSet(next)
-            edgeArr = edgeArr.concat(edgesAndLastVertex[0])
-            lastVertex = edgesAndLastVertex[1]
-            counter += 1
-        }
-        edgeArr.push(new THREE.Vector3(prevVertex.x, prevVertex.y, prevVertex.z))
-        return edgeArr
-    }
+    //         next = findNextSet(sets, lastVertex, takenSets)
+    //         takenSets.push(next)
+    //         edgesAndLastVertex = getEdgesFromSet(next)
+    //         edgeArr = edgeArr.concat(edgesAndLastVertex[0])
+    //         lastVertex = edgesAndLastVertex[1]
+    //         counter += 1
+    //     }
+    //     edgeArr.push(new THREE.Vector3(prevVertex.x, prevVertex.y, prevVertex.z))
+    //     return edgeArr
+    // }
 
-    /**
-     * 
-     * @param {*} sets 
-     * @param {*} lastVertex 
-     * @param {*} takenSets 
-     * @returns 
-     */
-    function findNextSet(sets, lastVertex, takenSets) {
-        console.log(sets, lastVertex, takenSets)
-        for (let s = 0; s < sets.length; s++) {
-            let set = sets[s]
-            for (let e = 0; e < set.edges.length; e++) {
-                let edge = set.edges[e]
-                if (Helpers.equalsVector(lastVertex, edge.v1) || Helpers.equalsVector(lastVertex, edge.v2)) {
-                    if (!takenSets.includes(set)) {
-                        return set
-                    }
-                }
-            }
-        }
-        return null
-    }
+    // /**
+    //  * 
+    //  * @param {*} sets 
+    //  * @param {*} lastVertex 
+    //  * @param {*} takenSets 
+    //  * @returns 
+    //  */
+    // function findNextSet(sets, lastVertex, takenSets) {
+    //     console.log(sets, lastVertex, takenSets)
+    //     for (let s = 0; s < sets.length; s++) {
+    //         let set = sets[s]
+    //         for (let e = 0; e < set.edges.length; e++) {
+    //             let edge = set.edges[e]
+    //             if (Helpers.equalsVector(lastVertex, edge.v1) || Helpers.equalsVector(lastVertex, edge.v2)) {
+    //                 if (!takenSets.includes(set)) {
+    //                     return set
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return null
+    // }
 
-    /**
-     * 
-     * @param {*} set 
-     * @returns 
-     */
-    function getEdgesFromSet(set) {
-        let vectors = []
-        const edges = set.edges
-        let lastVertex
-        for (let i = edges.length - 1; i >= 0; i--) {
+    // /**
+    //  * 
+    //  * @param {*} set 
+    //  * @returns 
+    //  */
+    // function getEdgesFromSet(set) {
+    //     let vectors = []
+    //     const edges = set.edges
+    //     let lastVertex
+    //     for (let i = edges.length - 1; i >= 0; i--) {
 
-            if (!Helpers.includesVector(vectors, edges[i].v1)) {
-                vectors.push(Helpers.vectorize(edges[i].v1))
-            }
-            if (!Helpers.includesVector(vectors, edges[i].v2)) {
-                vectors.push(Helpers.vectorize(edges[i].v2))
-            }
-        }
-        lastVertex = edges[0].v2
-        if (Helpers.equalsVector(lastVertex, prevVertex)) {
-            lastVertex = edges[edges.length - 1].v1
-            vectors = Helpers.reverseArray(vectors)
-        }
-        prevVertex = lastVertex
-        return [vectors.slice(0, -1), lastVertex]
-    }
+    //         if (!Helpers.includesVector(vectors, edges[i].v1)) {
+    //             vectors.push(Helpers.vectorize(edges[i].v1))
+    //         }
+    //         if (!Helpers.includesVector(vectors, edges[i].v2)) {
+    //             vectors.push(Helpers.vectorize(edges[i].v2))
+    //         }
+    //     }
+    //     lastVertex = edges[0].v2
+    //     if (Helpers.equalsVector(lastVertex, prevVertex)) {
+    //         lastVertex = edges[edges.length - 1].v1
+    //         vectors = Helpers.reverseArray(vectors)
+    //     }
+    //     prevVertex = lastVertex
+    //     return [vectors.slice(0, -1), lastVertex]
+    // }
 
 
 
@@ -383,12 +383,12 @@ if (signOutBtn != null || boxState != null) {
             camera2 = new THREE.PerspectiveCamera(40, 1, 1, 1000)
             camera2.position.copy(camera.position)
         }
-        planeRoutings = graph_json["planes"]
-        let takenSets = []
-        let objectSets = sortSets(mergeSets(), takenSets)
+        // planeRoutings = graph_json["planes"]
+        // let takenSets = []
+        let objectSets = graph_json["planes"] //document.getElementById("object_sets").value //sortSets(mergeSets(), takenSets) // take care of this one
         const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
         
-        objectSets = Helpers.normalize(objectSets, widthSegmentLenth, heightSegmentLength, depthSegmentLength)
+        // objectSets = Helpers.normalize(objectSets, widthSegmentLenth, heightSegmentLength, depthSegmentLength)
         // console.log(objectSets)
         generateDisplay(objectSets, scene, camera)
 
