@@ -52,13 +52,21 @@ module Routing
         vectors = []
         # byebug
         set.e.reverse_each do |edge|
-            if vectors.include?(edge.v1)
+            if !self.equals(edge.v1, vectors)
                 vectors << edge.v1
             end
 
-            if vectors.include?(edge.v2)
+            if !self.equals(edge.v2, vectors)
                 vectors << edge.v2
             end
+            
+            # if !vectors.include?(edge.v1)
+            #     vectors << edge.v1
+            # end
+
+            # if !vectors.include?(edge.v2)
+            #     vectors << edge.v2
+            # end
         end
         # byebug
         last_vertex = set.e.first.v2
@@ -89,6 +97,5 @@ module Routing
         end
         false
     end
-
 
 end
