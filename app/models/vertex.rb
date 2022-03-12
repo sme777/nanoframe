@@ -31,6 +31,14 @@ class Vertex
     return @x == v.x && @y == v.y && @z == v.z
   end
 
+  def distance_to_squared(v)
+    dx = @x - v.x
+    dy = @y - v.y
+    dz = @z - v.z
+
+    dx ** 2 + dy ** 2 + dz ** 2
+  end
+  
   def self.string_of_vertices(vertices)
     res = '('
     vertices.each do |v|
@@ -47,4 +55,22 @@ class Vertex
     end
     result
   end
+
+
+  def self.overload_operator(opr)
+    define_method(opr) do |obj|
+      if obj.class == Float
+        Vertex.new((@x.send opr, obj.to_f), (@y.send opr, obj.to_f), (@z.send opr, obj.to_f))
+      else
+        Vertex.new((@x.send opr, obj.x.to_f), (@y.send opr, obj.y.to_f), (@z.send opr, obj.z.to_f))
+      end
+    end
+
+  end
+
+  overload_operator :+
+  overload_operator :*
+  overload_operator :-
+  overload_operator :/
+
 end

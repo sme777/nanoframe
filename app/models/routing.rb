@@ -58,17 +58,8 @@ module Routing
 
             if !self.equals(edge.v2, vectors)
                 vectors << edge.v2
-            end
-            
-            # if !vectors.include?(edge.v1)
-            #     vectors << edge.v1
-            # end
-
-            # if !vectors.include?(edge.v2)
-            #     vectors << edge.v2
-            # end
+            end  
         end
-        # byebug
         last_vertex = set.e.first.v2
 
         if self.equals(last_vertex, [@@prev_vertex])

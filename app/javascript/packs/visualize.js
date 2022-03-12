@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import * as Algorithms from "./algorithms"
-import * as Helpers from "./visualizeHelpers"
 import oc from 'three-orbit-controls'
 import {
     Line2
@@ -26,13 +25,10 @@ if (signOutBtn != null || boxState != null) {
     let firstStartPoint, firstEndPoint, lastStartPoint, lastEndPoint
     let id, graph_json, segments, scaffold_length
     let canvas, width, height, depth, zoomUpdate
-    let widthSegmentLenth, heightSegmentLength, depthSegmentLength
     let line0, line1, line2, line3, line4, line5, line6, line7
     let canvasContainer, canvasContainerWidth, canvasContainerHeight
     let routingColors
     let sequence = []
-    let planeRoutings
-    let prevVertex
     let toggle = 0
     let sphereInter
     let globalPositions
@@ -64,103 +60,16 @@ if (signOutBtn != null || boxState != null) {
         }
         
     }
-    /**
-     * 
-     * @returns 
-     */
-    function mergeSets() {
-        let arr = []
-        for (let i = 0; i < planeRoutings.length; i++) {
-            for (let j = 0; j < planeRoutings[i].sets.length; j++)
-                arr.push(planeRoutings[i].sets[j])
-        }
-        return arr
-    }
-
-    /**
-     * 
-     * @param {*} sets 
-     * @param {*} takenSets 
-     * @returns 
-     */
-    function sortSets(sets, takenSets) {
-        let edgeArr = []
-        let next = sets[0]
-        let edgesAndLastVertex = getEdgesFromSet(next)
-        edgeArr = edgeArr.concat(edgesAndLastVertex[0])
-        let counter = 0
-        let lastVertex = edgesAndLastVertex[1]
-        takenSets.push(sets[0])
-
-        while (sets.length - 1 != counter) {
-
-            next = findNextSet(sets, lastVertex, takenSets)
-            takenSets.push(next)
-            edgesAndLastVertex = getEdgesFromSet(next)
-            edgeArr = edgeArr.concat(edgesAndLastVertex[0])
-            lastVertex = edgesAndLastVertex[1]
-            counter += 1
-        }
-        edgeArr.push(new THREE.Vector3(prevVertex.x, prevVertex.y, prevVertex.z))
-        return edgeArr
-    }
-
-    /**
-     * 
-     * @param {*} sets 
-     * @param {*} lastVertex 
-     * @param {*} takenSets 
-     * @returns 
-     */
-    function findNextSet(sets, lastVertex, takenSets) {
-        // console.log(sets, lastVertex, takenSets)
-        for (let s = 0; s < sets.length; s++) {
-            let set = sets[s]
-            for (let e = 0; e < set.edges.length; e++) {
-                let edge = set.edges[e]
-                if (Helpers.equalsVector(lastVertex, edge.v1) || Helpers.equalsVector(lastVertex, edge.v2)) {
-                    if (!takenSets.includes(set)) {
-                        return set
-                    }
-                }
-            }
-        }
-        return null
-    }
-
-    /**
-     * 
-     * @param {*} set 
-     * @returns 
-     */
-    function getEdgesFromSet(set) {
-        let vectors = []
-        const edges = set.edges
-        let lastVertex
-        for (let i = edges.length - 1; i >= 0; i--) {
-
-            if (!Helpers.includesVector(vectors, edges[i].v1)) {
-                vectors.push(Helpers.vectorize(edges[i].v1))
-            }
-            if (!Helpers.includesVector(vectors, edges[i].v2)) {
-                vectors.push(Helpers.vectorize(edges[i].v2))
-            }
-        }
-        lastVertex = edges[0].v2
-        if (Helpers.equalsVector(lastVertex, prevVertex)) {
-            lastVertex = edges[edges.length - 1].v1
-            vectors = Helpers.reverseArray(vectors)
-        }
-        prevVertex = lastVertex
-        return [vectors.slice(0, -1), lastVertex]
-    }
-
-
-
 
     function generateDisplay(edges, scene, camera, residualEdges = false, fullDisplay = true, start = 0) {
         let positions = []
         let colors = []
+        const spline2 = new THREE.CatmullRomCurve3([new THREE.Vector3(0,5, 5), new THREE.Vector3(10, 2, 2),
+            new THREE.Vector3(8,4, 12), new THREE.Vector3(7,9, 5), new THREE.Vector3(14,0, 12)])
+        // console.log(spline2)
+        for (let f = 0; f < 5; f++) {
+            console.log("test points", spline2.getPoint( f / 2, new THREE.Vector3()))
+        }
         const spline = new THREE.CatmullRomCurve3(edges)
         const divisions = Math.round(12 * edges.length) 
         // console.log(divisions)//7249
@@ -184,6 +93,7 @@ if (signOutBtn != null || boxState != null) {
 
             }
         }
+        console.log(positions)
         // set up first and last points
         if (!fullDisplay) {
             if (!residualEdges) {
@@ -355,13 +265,7 @@ if (signOutBtn != null || boxState != null) {
         }
         scaffold_length = graph_json["scaffold_length"]
         segments = graph_json["segments"]
-        width = graph_json["width"]
-        height = graph_json["height"]
-        depth = graph_json["depth"]
-        widthSegmentLenth = width / segments
-        heightSegmentLength = height / segments
-        depthSegmentLength = depth / segments
-
+        
 
         canvasContainer = document.querySelector(".canvas-container")
         canvasContainerWidth = canvasContainer.offsetWidth
@@ -383,16 +287,11 @@ if (signOutBtn != null || boxState != null) {
             camera2 = new THREE.PerspectiveCamera(40, 1, 1, 1000)
             camera2.position.copy(camera.position)
         }
-        planeRoutings = graph_json["planes"]
-        // let takenSets = []
-        let objectSets = convertToVector3D(graph_json["norm_planes"])
-        console.log("ruby", objectSets) 
-        // let objectSets = sortSets(mergeSets(), takenSets) // take care of this one
-        
+
+        let objectSets = convertToVector3D(graph_json["planes"])
+
         const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
-        
-        // objectSets = Helpers.normalize(objectSets, widthSegmentLenth, heightSegmentLength, depthSegmentLength)
-        // console.log(objectSets)
+
         generateDisplay(objectSets, scene, camera)
 
         let controls = new OrbitControls(camera, renderer.domElement)
@@ -477,11 +376,9 @@ if (signOutBtn != null || boxState != null) {
 
             if (visualize) {
                 raycaster.setFromCamera(mouse, camera)
-                // // let x = line0.raycast(raycaster, globalPositions)
-                // // console.log(x)
+                // let x = line0.raycast(raycaster, globalPositions)
                 const intersections = raycaster.intersectObject(line0, true)
-                // // console.log(line1)
-                // // let intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null
+                // let intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null
                 if (intersections.length > 0) {
                     if (zoomUpdate) {
                         // sphereInter.geometry.dispose()
@@ -495,12 +392,6 @@ if (signOutBtn != null || boxState != null) {
                     if (idx != null) {
                         document.querySelector(".sequnce-name").innerHTML = "Base selection: " + sequence[idx] + "\n" + "Index: " + idx
                     }
-                // //     // console.log("touchy touchy")
-                //     // console.log(intersections)
-                //     let idx = intersections[0].faceIndex;
-                //     console.log(intersections[0])
-                // line0.material.color.copy(Math.random() * 0xffffff )
-                //     // object.material.color.set( Math.random() * 0xffffff );
                 } else {
                     sphereInter.visible = false
                 }

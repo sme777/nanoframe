@@ -463,17 +463,12 @@ class Graph
   # Generates JSON file of the graph
   def to_json(*_args)
     return nil if @planes.nil?
-    xx = Marshal.load(Marshal.dump(@planes))
-    sorted_planes = Routing.sort_sets(xx)
+    plane_copy = Marshal.load(Marshal.dump(@planes))
+    sorted_planes = Routing.sort_sets(plane_copy)
     normalized_planes = Routing.normalize(sorted_planes, @width / @segments.to_f, @height / @segments.to_f, @depth / @segments.to_f)
-    plane_arr = []
-    @planes.each do |plane|
-      p = Plane.new(plane)
-      plane_arr.append(p.to_hash)
-    end
     
     hash = { "width": @width, "height": @height, "depth": @depth, "segments": @segments, "scaffold_length": 7249,
-             "norm_planes": normalized_planes, "planes": plane_arr }
+             "planes": normalized_planes}
     JSON.generate(hash)
   end
 
