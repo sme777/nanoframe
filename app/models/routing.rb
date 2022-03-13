@@ -80,4 +80,46 @@ module Routing
     end
     false
   end
+
+  def self.find_strongest_connected_components(edges, ratio, dims)
+    edge_size = edges.size
+    max_strength = -Float::INFINITY
+    edge_start = -1
+    final_ratio = -1
+    final_array = []
+    ratio = (edge_size * ratio).floor
+
+    for j in ratio...edge_size do
+      for i in 0...edge_size do
+        subarray = find_subarray(edges, i, j)
+        subarray_strength = find_subarray_strength(subarray, dims)
+        if subarray_strength > max_strength
+          max_strength = subarray_strength
+          edge_start = i
+          final_ratio = j
+          final_array = subarray
+        end
+      end
+    end
+    fedges_size = final_array.size
+    remaining_array = find_subarray(edges, (edge_start + fedges_size - 1) % edge_size, edge_size - fedges_size)
+    [final_array, remaining_array, edge_start, (edge_start + fedges_size - 1)]
+  end
+
+
+  def self.find_subarray(edges, start, length)
+    
+
+  end
+
+  def self.find_subarray_strength(arr, dims)
+
+
+  end
+
+  def self.find_plane_number(v1, v2, dims)
+
+
+  end
+
 end
