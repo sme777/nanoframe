@@ -61,29 +61,13 @@ if (signOutBtn != null || boxState != null) {
         
     }
 
-    function generateDisplay(edges, scene, camera, residualEdges = false, fullDisplay = true, start = 0) {
-        let positions = []
+    function generateDisplay(scene, camera, positions, residualEdges = false, fullDisplay = true, start = 0) {
         let colors = []
-        const spline2 = new THREE.CatmullRomCurve3([new THREE.Vector3(0,5, 5), new THREE.Vector3(10, 2, 2),
-            new THREE.Vector3(8,4, 12), new THREE.Vector3(7,9, 5), new THREE.Vector3(14,0, 12)])
-        // console.log(spline2)
-        for (let f = 0; f < 5; f++) {
-            console.log("test points", spline2.getPoint( f / 2, new THREE.Vector3()))
-        }
-        const spline = new THREE.CatmullRomCurve3(edges)
-        const divisions = Math.round(12 * edges.length) 
-        // console.log(divisions)//7249
-        const point = new THREE.Vector3()
+
+        const divisions = 7249
 
         for (let i = 0, l = divisions; i < l; i++) {
             const t = i / l
-            spline.getPoint(t, point)
-            if (residualEdges) {
-                positions.push(point.x - 30, point.y - 30, point.z + 60)
-
-            } else {
-                positions.push(point.x, point.y, point.z)
-            }
             if (fullDisplay) {
                 if (i == 0) {
                     colors.push(0.5, 0.5, t)
@@ -93,8 +77,7 @@ if (signOutBtn != null || boxState != null) {
 
             }
         }
-        console.log(positions)
-        // set up first and last points
+
         if (!fullDisplay) {
             if (!residualEdges) {
                 firstStartPoint = positions.slice(0, 3)
@@ -109,20 +92,6 @@ if (signOutBtn != null || boxState != null) {
             routingColors = colors
         } else {
             colors = findColorSequnece(start, positions.length, divisions)
-        }
-        // let routingPositions = []
-        // for (let i = 0; i < scaffold_length; i++) {
-        //     const t = i / scaffold_length
-        //     spline.getPoint(t, point)
-        //     routingPositions.push(point.x, point.y, point.z)
-
-        // }
-        // console.log(positions)
-        if (visualize) {
-            document.getElementById("routing-positions").value = JSON.stringify({
-                "positions": positions
-            })
-
         }
 
         const geometry = new LineGeometry()
@@ -289,10 +258,10 @@ if (signOutBtn != null || boxState != null) {
         }
 
         let objectSets = convertToVector3D(graph_json["planes"])
-
+        const psz = graph_json["positions"]
         const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
 
-        generateDisplay(objectSets, scene, camera)
+        generateDisplay(scene, camera, psz)
 
         let controls = new OrbitControls(camera, renderer.domElement)
         controls.minDistance = 10

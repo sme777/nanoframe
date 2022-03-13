@@ -463,12 +463,16 @@ class Graph
   # Generates JSON file of the graph
   def to_json(*_args)
     return nil if @planes.nil?
+
     plane_copy = Marshal.load(Marshal.dump(@planes))
     sorted_planes = Routing.sort_sets(plane_copy)
-    normalized_planes = Routing.normalize(sorted_planes, @width / @segments.to_f, @height / @segments.to_f, @depth / @segments.to_f)
-    
+    normalized_planes = Routing.normalize(sorted_planes, @width / @segments.to_f, @height / @segments.to_f,
+                                          @depth / @segments.to_f)
+    # byebug
+    spline = CatmullRomCurve3.new(normalized_planes[...-1])
+    spline_points = Vertex.flatten(spline.generate(7249))
     hash = { "width": @width, "height": @height, "depth": @depth, "segments": @segments, "scaffold_length": 7249,
-             "planes": normalized_planes}
+             "planes": normalized_planes, "positions": spline_points}
     JSON.generate(hash)
   end
 
