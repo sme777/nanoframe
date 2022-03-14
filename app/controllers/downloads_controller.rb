@@ -5,12 +5,13 @@ class DownloadsController < ApplicationController
 
   def self.define_download(type)
     define_method("download_#{type}") do
+    byebug
       json_obj = JSON.parse(@generator.json)
-      scaffold_sequence = json_obj['sequence']
-      scaffold_coordinates = json_obj['positions']
+      # scaffold_sequence = json_obj['sequence']
+      # scaffold_coordinates = json_obj['positions']
       staple_sequence = json_obj['sSequence']
       staple_coordinates = json_obj['sPositions']
-      @generator.scaffold(scaffold_sequence, scaffold_coordinates)
+      # @generator.scaffold(scaffold_sequence, scaffold_coordinates)
       @generator.staples(staple_sequence, staple_coordinates)
       filename = @generator.send(type.to_s, session[:filename])
       file = File.open("app/assets/results/#{filename}.#{type}")

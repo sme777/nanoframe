@@ -11,6 +11,8 @@ class Generator < ApplicationRecord
   def scaffold(sequence, coordinates)
     @dna = []
     @atom_count = 0
+    @sequence = sequence
+    @coordinates = coordinates
     @graph = nil
     index = 0
     sequence.each do |tide|
@@ -25,7 +27,7 @@ class Generator < ApplicationRecord
                        30
                      end
 
-      @dna.push(Nucleotide.new(tide, coordinates[index, index + 3], index))
+      @dna.push(Nucleotide.new(tide, @coordinates[index, index + 3], index))
       index += 3
     end
   end
@@ -68,11 +70,12 @@ class Generator < ApplicationRecord
   end
 
   def route
+    byebug
     case shape
     when '1'
-      @graph = Graph.new([width, height, depth], :cube, width_segment + 1, scaffold_length)
+      @graph = Graph.new(id, [width, height, depth], :cube, width_segment + 1, scaffold_length)
     when '6'
-      @graph = Graph.new([radius], :tetrahedron, width_segment + 1, scaffold_length)
+      @graph = Graph.new(id, [radius], :tetrahedron, width_segment + 1, scaffold_length)
     end
   end
 
@@ -206,6 +209,7 @@ class Generator < ApplicationRecord
     file.write('"id": 0,')
     file.write('"monomers": [')
     # loop for all strands
+    byebug
     dna = @dna
     dna_len = dna.length - 1
     dir = 1

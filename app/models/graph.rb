@@ -8,16 +8,19 @@ class Graph
   # dimension[0] -> width
   # dimension[1] -> height
   # dimension[2] -> depth
-  def initialize(dimensions, shape, segments, scaff_length)
-    # byebug
+  def initialize(id, dimensions, shape, segments, scaff_length)
     setup_dimensions(dimensions, shape)
+    @generator_id = id
     @segments = segments.to_i
     @scaff_length = scaff_length
     v_and_e = create_vertices_and_edges(shape)
     @vertices = v_and_e[0]
     @edges = v_and_e[1]
     @template_planes = find_four_planes
-    (@planes, @raw_planes) = find_plane_combination(@template_planes)
+    @planes, @raw_planes = find_plane_combination(@template_planes)
+    @sorted_planes, @spline_points = generate_spline_points
+    @opening_start, @length = open_structure
+    update_generator(@sorted_planes, @spline_points)
   end
 
   def setup_dimensions(dimensions, shape)
@@ -81,6 +84,13 @@ class Graph
       end
     end
     vertices
+  end
+
+
+  def update_generator(routing_vertices, routing_points)
+    byebug
+    gen = Generator.find_by(id: @generator_id)
+    gen.update(vertices: JSON.generate({vertices: routing_vertices, points: routing_points}))
   end
 
   def connect_vertices(vs)
@@ -460,20 +470,26 @@ class Graph
     end
   end
 
+  def generate_spline_points
+    plane_copy = Marshal.load(Marshal.dump(@planes))
+    sorted_planes = Routing.sort_sets(plane_copy)
+    
+    normalized_planes = Routing.normalize(sorted_planes, @width / @segments.to_f, @height / @segments.to_f,
+                                          @depth / @segments.to_f)
+    spline = CatmullRomCurve3.new(normalized_planes[...-1])
+    spline_points = Vertex.flatten(spline.generate(7249))
+    [sorted_planes, spline_points]
+  end
+
+  def open_structure(ratio=1/3.to_f)
+    Routing.find_strongest_connected_components(@sorted_planes, ratio, [@width, @height, @depth])
+  end
+
   # Generates JSON file of the graph
   def to_json(*_args)
     return nil if @planes.nil?
 
-    plane_copy = Marshal.load(Marshal.dump(@planes))
-    sorted_planes = Routing.sort_sets(plane_copy)
-    normalized_planes = Routing.normalize(sorted_planes, @width / @segments.to_f, @height / @segments.to_f,
-                                          @depth / @segments.to_f)
-    # byebug
-    spline = CatmullRomCurve3.new(normalized_planes[...-1])
-    spline_points = Vertex.flatten(spline.generate(7249))
-    hash = { "width": @width, "height": @height, "depth": @depth, "segments": @segments, "scaffold_length": 7249,
-             "planes": normalized_planes, "positions": spline_points}
-    JSON.generate(hash)
+    JSON.generate({ "scaffold_length": 7249, "start": @opening_start, "length": @length, "positions": @spline_points})
   end
 
   # Generates JSON file for unscaled planes of the graph

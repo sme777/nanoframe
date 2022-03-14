@@ -177,6 +177,7 @@ function onMouseMove(event) {
 let sequenceDivison = []
 const es = createEdgeStrands()
 const mps = createAdjacentEdgeMap()
+console.log(mps)
 const [staples, descriptions, positions] = generateStapleStrands(mps[0], mps[1])
 // console.log(staples, positions)
 let staplesGroup = generatePlaneStapleRouting(currIndex)

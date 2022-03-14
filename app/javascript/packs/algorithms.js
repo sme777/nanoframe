@@ -23,7 +23,7 @@ export function findStrongestConnectedComponents(edges, ratio, dims) {
         }
     }
     const remainingArray = findSubArray(edges, (edgeStart + finalArray.length - 1) % edgesLength, edgesLength - finalArray.length)
-    return [finalArray, remainingArray, edgeStart, (edgeStart + finalArray.length - 1) % edgesLength]
+    return [finalArray, remainingArray, edgeStart, edgeStart + finalArray.length - 1]
     
 }
 

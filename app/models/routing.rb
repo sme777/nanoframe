@@ -101,24 +101,50 @@ module Routing
         end
       end
     end
-    fedges_size = final_array.size
-    remaining_array = find_subarray(edges, (edge_start + fedges_size - 1) % edge_size, edge_size - fedges_size)
-    [final_array, remaining_array, edge_start, (edge_start + fedges_size - 1)]
+    # fedges_size = final_array.size
+    # remaining_array = find_subarray(edges, (edge_start + fedges_size - 1) % edge_size, edge_size - fedges_size)
+    [edge_start, final_array.size * 3]
   end
 
 
   def self.find_subarray(edges, start, length)
-    
-
+    double_egdes = edges + edges
+    double_egdes[start...(start + length)]
   end
 
   def self.find_subarray_strength(arr, dims)
+    planes = {}
 
-
+   for i in 0...(arr.size - 1) do
+      plane = find_plane_number(arr[i], arr[i+1], dims)
+      if planes.has_key?(plane)
+        planes[plane] += 1
+      else
+        planes[plane] = 1
+      end
+    end
+    plane_vals = planes.values.sort_by { |v| -v }
+    (plane_vals[...3].sum) / arr.size.to_f
   end
 
   def self.find_plane_number(v1, v2, dims)
+    if v1.z == 0 && v2.z == 0
+      0
+    elsif v1.z == -dims[2] && v2.z == -dims[2]
+      1
+    elsif v1.y == dims[1] && v2.y == dims[1]
+      2
+    elsif v1.y == 0 && v2.y == 0
+      3
+    elsif v1.x == 0 && v2.x == 0
+      4
+    else
+      5
+    end
 
+  end
+
+  def generate_staple_strands
 
   end
 

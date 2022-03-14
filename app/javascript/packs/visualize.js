@@ -61,25 +61,33 @@ if (signOutBtn != null || boxState != null) {
         
     }
 
-    function generateDisplay(scene, camera, positions, residualEdges = false, fullDisplay = true, start = 0) {
+    function generateDisplay(scene, camera, positions=psz, residualEdges = false, fullDisplay = true, start = 0, end = scaffold_length * 3) {
         let colors = []
-
         const divisions = 7249
+        // console.log(positions)
+        if (fullDisplay) {
+            const divisions = 7249
 
-        for (let i = 0, l = divisions; i < l; i++) {
-            const t = i / l
-            if (fullDisplay) {
-                if (i == 0) {
-                    colors.push(0.5, 0.5, t)
-                } else {
-                    colors.push(t, 0.5, 0.5)
+            for (let i = 0, l = divisions; i < l; i++) {
+                const t = i / l
+                if (fullDisplay) {
+                    if (i == 0) {
+                        colors.push(0.5, 0.5, t)
+                    } else {
+                        colors.push(t, 0.5, 0.5)
+                    }
+    
                 }
-
             }
         }
 
+        
         if (!fullDisplay) {
+            console.log(positions.length, start, end)
+            positions = positions.concat(positions).slice(start, end)
+            console.log(positions)
             if (!residualEdges) {
+                
                 firstStartPoint = positions.slice(0, 3)
                 firstEndPoint = positions.slice(-3)
             } else {
@@ -220,7 +228,8 @@ if (signOutBtn != null || boxState != null) {
 
         return [positions, colors]
     }
-
+    let psz, start, length
+    let simpleObjectSets
 
     for (let i = 0; i < size; i++) {
 
@@ -257,11 +266,14 @@ if (signOutBtn != null || boxState != null) {
             camera2.position.copy(camera.position)
         }
 
-        let objectSets = convertToVector3D(graph_json["planes"])
-        const psz = graph_json["positions"]
-        const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
+        // let objectSets = convertToVector3D(graph_json["planes"])
+        // simpleObjectSets = convertToVector3D(graph_json["alg"])
+        start = graph_json["start"]
+        length = graph_json["length"]
+        psz = graph_json["positions"]
+        // const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
 
-        generateDisplay(scene, camera, psz)
+        generateDisplay(scene, camera)
 
         let controls = new OrbitControls(camera, renderer.domElement)
         controls.minDistance = 10
@@ -290,6 +302,16 @@ if (signOutBtn != null || boxState != null) {
                 vectors.push(new THREE.Vector3(vertices[i].x, vertices[i].y, vertices[i].z))
             }
             return vectors
+        }
+
+        function flatten3DVectors(vertices) {
+            let positions = []
+            for (let i = 0; i < vertices.length; i++) {
+                positions.push(vertices[i].x)
+                positions.push(vertices[i].y)
+                positions.push(vertices[i].z)
+            }
+            return positions
         }
 
         function onZoom(event) {
@@ -381,23 +403,28 @@ if (signOutBtn != null || boxState != null) {
         }
 
         if (visualize) {
-            document.getElementById("set-values").value = JSON.stringify(simpleObjectSets)
+            // const algs = graph_json['alg']//document.getElementById("set-values").value = JSON.stringify(simpleObjectSets)
             const box = document.getElementById("box-state")
             const boxLabel = document.getElementById("box-state-label")
-            let scp = Algorithms.findStrongestConnectedComponents(objectSets, 1 / 3, [width, height, depth])
+            let scp = Algorithms.findStrongestConnectedComponents(simpleObjectSets, 1 / 3, [width, height, depth])
 
             box.addEventListener("click", () => {
                 if (box.checked) {
                     boxLabel.innerHTML = "Close Form"
                     clearDisplay(scene)
-                    generateDisplay(scp[0], scene, camera, false, false, scp[2])
-                    generateDisplay(scp[1], scene, camera, true, false, scp[3])
-                    connectEnds(scene)
+                    // console.log(psz)
+                    const dpsz = psz.concat(psz)
+                    console.log(scp)
+                    generateDisplay(scene, camera, psz, false, false, scp[2]* 3 * 30, scp[2]* 3 + scp[0].length * 3 * 30)
+                    generateDisplay(scene, camera, psz, true, false, scp[3] *3 * 30, scp[1].length * 3 + scp[3] *3 * 30)
+                    // generateDisplay(scene, camera, dpsz.slice(start, start + length), false, false, start)
+                    // generateDisplay(scene, camera, dpsz.slice(start + length, psz.length + start), true, false, (start + length - 1) % psz.length)
+                    // connectEnds(scene)
                     // generateDisplay(scp[1], true)
                 } else {
                     boxLabel.innerHTML = "Open Form"
                     clearDisplay(scene)
-                    generateDisplay(objectSets, scene, camera, false, true, 0)
+                    generateDisplay(scene, camera, psz, false, true, 0)
                 }
             })
         }

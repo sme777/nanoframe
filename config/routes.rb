@@ -25,7 +25,6 @@ Rails.application.routes.draw do
   # get '/auth/google_oauth2/callback', to: 'users#google_oauth2', as: :google_oauth2_callback
   # get '/auth/github/callback', to: 'users#github', as: :github_callback
 
-  post '/nanobot/:id/routing_position_update' => 'generators#routing_position_update'
   get '/nanobot/:id/synthesize' => 'generators#synthesize'
   post '/nanobot/:id/routing' => 'generators#routing'
   get '/nanobot/:id/routing' => 'generators#routing'
