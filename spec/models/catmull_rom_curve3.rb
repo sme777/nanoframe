@@ -11,11 +11,11 @@ RSpec.describe Atom, type: :model do
     end
 
     it 'should correctly give curve points' do
-      crc = CatmullRomCurve3.new([0, 5, 5, 10, 2, 2, 8, 4, 12, 7, 9, 5, 14, 0, 12])
-      byebug
+      crc = CatmullRomCurve3.new([Vertex.new(0, 5, 5), Vertex.new(10, 2, 2), Vertex.new(8, 4, 12)])
       points = crc.generate(2)
-
-      puts points
+      expect(points.first.x).to eq(0)
+      expect(points.first.y).to eq(5)
+      expect(points.first.z).to eq(5)
     end
   end
 end

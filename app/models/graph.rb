@@ -5,6 +5,8 @@ require 'json'
 class Graph
   attr_accessor :vertices, :edges, :sets, :route, :planes, :vertices, :edges
 
+  SSDNA_NT_DIST = 0.332
+
   # dimension[0] -> width
   # dimension[1] -> height
   # dimension[2] -> depth
@@ -20,7 +22,11 @@ class Graph
     @planes, @raw_planes = find_plane_combination(@template_planes)
     @sorted_planes, @spline_points = generate_spline_points
     @opening_start, @length = open_structure
-    update_generator(@sorted_planes, @spline_points)
+    update_generator_vertices(@sorted_planes, @spline_points)
+    constraints = staples_preprocess(shape)
+    @refl, @refr, @ext_vert, @ext_hor, @ext_e_vert, @ext_e_hor = ilp(constraints)
+    @staples = generate_staple_strands
+    update_generator_staples(@staples)
   end
 
   def setup_dimensions(dimensions, shape)
@@ -87,10 +93,13 @@ class Graph
   end
 
 
-  def update_generator(routing_vertices, routing_points)
-    byebug
+  def update_generator_vertices(routing_vertices, routing_points)
     gen = Generator.find_by(id: @generator_id)
     gen.update(vertices: JSON.generate({vertices: routing_vertices, points: routing_points}))
+  end
+
+  def update_generator_staples
+
   end
 
   def connect_vertices(vs)
@@ -484,6 +493,37 @@ class Graph
   def open_structure(ratio=1/3.to_f)
     Routing.find_strongest_connected_components(@sorted_planes, ratio, [@width, @height, @depth])
   end
+
+
+  def staples_preprocess(shape)
+    contraints = []
+    case shape
+    when :cube
+      h_edge = ((@width / @segments) / SSDNA_NT_DIST).floor
+      v_edge = ((@height / @segments) / SSDNA_NT_DIST).floor
+
+      if h_edge < 50
+        # remove horizontal extension constraint
+      end
+
+      if v_edge < 50
+        # remove vertical extension constraint
+      end
+    when :tetrahedron
+
+    end
+    contraints
+  end
+
+  def ilp(constraints)
+
+  end
+
+  def generate_staple_strands
+
+  end
+
+
 
   # Generates JSON file of the graph
   def to_json(*_args)

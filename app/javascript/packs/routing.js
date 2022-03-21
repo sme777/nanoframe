@@ -9,10 +9,13 @@ import { Edge } from './edge'
 import { GenerateStaple } from './staple'
 
 const rawGraph = JSON.parse(document.getElementById("raw-graph-container").value) 
+
 const graph = JSON.parse(document.getElementById("graph-container").value)
+
 const sets = JSON.parse(document.getElementById("sets-container").value)
+console.log(sets)
 const scaffoldSequence = document.getElementById("scaffold-container").value
-const segments = graph["segments"]
+const segments = 5
 
 // unpack dimensions
 const width = graph["width"]
@@ -176,8 +179,10 @@ function onMouseMove(event) {
 }
 let sequenceDivison = []
 const es = createEdgeStrands()
+console.log(es)
 const mps = createAdjacentEdgeMap()
 console.log(mps)
+// console.log(mps)
 const [staples, descriptions, positions] = generateStapleStrands(mps[0], mps[1])
 // console.log(staples, positions)
 let staplesGroup = generatePlaneStapleRouting(currIndex)
@@ -237,10 +242,12 @@ function createEdgeStrands() {
     let edgeSequence
     let edges = []
     const edgeLength = Math.floor((dimension / segments) / 0.332)
+    console.log(dimension, segments)
     let newEdge 
-    for (let i = 0; i < sets.length ; i++) {
+    console.log('here', sets)
+    for (let i = 0; i < sets['vertices'].length ; i++) {
         
-        if (i == sets.length - 1) {
+        if (i == sets['vertices'].length - 1) {
             edgeSequence = scaffoldSequence.slice(i * edgeLength)
             sequenceDivison.push(edgeSequence)
             newEdge = new Edge(sets[i], sets[0], edgeSequence, edgeLength, null)

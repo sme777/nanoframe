@@ -3,7 +3,7 @@
 class CatmullRomCurve3 < Curve
   def generate(divisions)
     curve_points = []
-    divisions_per_edge = (divisions / @points.size).floor
+    divisions_per_edge = (divisions / @points.size).floor == 0 ? 2 : (divisions / @points.size).floor
     @points.size.times do |i|
         p0, p1, p2, p3 = adjacent_points(i)
         alpha = 0.5
@@ -58,8 +58,5 @@ class CatmullRomCurve3 < Curve
 
     p0 * f1 + p1 * f2 + p2 * f3 + p3 * f4
 
-    # p0.zip(p1, p2, p3).map do |x0, x1, x2, x3|
-    #   x0 * f1 + x1 * f2 + x2 * f3 + x3 * f4
-    # end
   end
 end
