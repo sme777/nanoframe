@@ -3,11 +3,12 @@
 require 'json'
 
 class Edge
-  attr_accessor :v1, :v2
+  attr_accessor :v1, :v2, :sequence, :adjacent_edges, :next, :prev
 
   def initialize(v1, v2)
     @v1 = v1
     @v2 = v2
+    @adjacent_edges = []
   end
 
   def string
@@ -20,6 +21,20 @@ class Edge
 
   def to_json(*_args)
     JSON.generate({ "v1": @v1.to_hash, "v2": @v2.to_hash })
+  end
+
+  def directional_change
+    if @v1.x - @v2.x != 0
+      :x
+    elsif @v1.y - @v2.y != 0
+      :y
+    else
+      :z
+    end
+  end
+
+  def has_shared_edge?(e)
+    @v1 == e.v1 || @v2 == e.v2
   end
 
   def self.string_of_edges(_edges)

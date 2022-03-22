@@ -76,7 +76,7 @@ module Routing
     return unless !vertex.nil? && vals.any? { |v| !v.nil? }
 
     vals.each do |val|
-      return true if vertex.equals(val)
+      return true if vertex == val
     end
     false
   end

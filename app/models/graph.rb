@@ -192,7 +192,7 @@ class Graph
 
   def is_contained?(o, sets)
     sets.each do |s|
-      return true if equals_vertex(o, s.v.first) || equals_vertex(o, s.v.last)
+      return true if o == s.v.first || o == s.v.last
     end
     false
   end
@@ -283,8 +283,8 @@ class Graph
 
   def is_taken_edge?(e, taken_edges)
     taken_edges.each do |tk|
-      if (equals_vertex(tk.v1, e.v1) && equals_vertex(tk.v2, e.v2)) ||
-         (equals_vertex(tk.v2, e.v1) && equals_vertex(tk.v1, e.v2))
+      if (tk.v1 == e.v1 && tk.v2 == e.v2) ||
+         (tk.v2 == e.v1 && tk.v1 == e.v2)
         return true
       end
     end
@@ -293,8 +293,8 @@ class Graph
 
   def find_and_remove_edge(edges, e)
     (0...edges.length).each do |i|
-      next unless (equals_vertex(edges[i].v1, e.v1) && equals_vertex(edges[i].v2, e.v2)) ||
-                  (equals_vertex(edges[i].v2, e.v1) && equals_vertex(edges[i].v1, e.v2))
+      next unless (edges[i].v1 == e.v1 && edges[i].v2 == e.v2) ||
+                  (edges[i].v2 == e.v1 && edges[i].v1 == e.v2)
 
       edges.delete_at(i)
       break
@@ -306,9 +306,9 @@ class Graph
     n = []
     edges.each do |e|
       neighbor_vertex = nil
-      if equals_vertex(v, e.v1)
+      if v == e.v1
         neighbor_vertex = find_neighboring_vertex(v, e.v2, e.v1, prev)
-      elsif equals_vertex(v, e.v2)
+      elsif v == e.v2
         neighbor_vertex = find_neighboring_vertex(v, e.v1, e.v2, prev)
       end
       n << neighbor_vertex unless neighbor_vertex.nil?
@@ -451,7 +451,7 @@ class Graph
     starting_vertex = next_set.v.first
     end_vertex = next_set.v.last
     all_sets.delete(next_set)
-    until equals_vertex(starting_vertex, end_vertex)
+    until starting_vertex == end_vertex
       # do stuff
 
       res = find_next_set(all_sets, end_vertex)
@@ -475,9 +475,9 @@ class Graph
       start_v = s.v.first
       end_v = s.v.last
 
-      return [s, end_v] if equals_vertex(start_v, end_vertex)
+      return [s, end_v] if start_v == end_vertex
 
-      return [s, start_v] if equals_vertex(end_v, end_vertex)
+      return [s, start_v] if end_v == end_vertex
     end
   end
 
@@ -598,9 +598,52 @@ class Graph
   end
 
   def generate_staple_strands
-
+    edges = generate_shape_edges(@width / @segments)
+    byebug
   end
 
+  def generate_shape_edges(w_step)
+    sequence = IO.read("./app/assets/scaffolds/7249.txt")
+    edges = []
+    ### add extra checks for moving directions
+    @sorted_planes.each_with_index do |v, i| 
+      new_edge = Edge.new(v, @sorted_planes[(i+1) % @sorted_planes.size])
+      if i == @sorted_planes.size - 1
+        seq = sequence.slice(i*w_step, sequence.size)
+      else
+        seq = sequence.slice(i*w_step, w_step)
+      end
+      new_edge.sequence = seq
+      edges << new_edge
+    end
+
+    edges.each_with_index do |edge, idx|
+      edge.prev = edges[(idx - 1) % edges.size].object_id
+      edge.next = edges[(idx + 1) & edges.size].object_id
+    end
+    update_adjacent_edges(edges)
+  end
+
+  def update_adjacent_edges(edges)
+    byebug
+    edges.each do |e1|
+      edges.each do |e2|
+      
+        next unless e1 != e2
+        next unless e1.directional_change != e2.directional_change
+        next unless e1.next != e2.object_id && e1.prev != e2.object_id 
+        next unless !on_boundary?(e1.v2)
+        next unless e1.has_shared_edge?(e2)
+        e1.adjacent_edges << e2.object_id
+      end
+    end
+    edges
+  end
+
+
+  def on_boundary?(v)
+    v.x == @width || v.y == @height || v.z == @depth
+  end
 
 
   # Generates JSON file of the graph

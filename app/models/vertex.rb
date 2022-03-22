@@ -27,7 +27,7 @@ class Vertex
     "#{x}#{y}#{z}"
   end
 
-  def equals(v)
+  def ==(v)
     @x == v.x && @y == v.y && @z == v.z
   end
 

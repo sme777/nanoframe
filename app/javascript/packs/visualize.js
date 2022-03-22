@@ -381,7 +381,9 @@ if (signOutBtn != null || boxState != null) {
                     let idx = findIndex(sphereInter.position)
                     
                     if (idx != null) {
-                        document.querySelector(".sequnce-name").innerHTML = "Base selection: " + sequence[idx] + "\n" + "Index: " + idx
+                        document.querySelector(".sequence-base").value = sequence[idx]
+                        document.querySelector(".sequence-id").value = idx
+                        // document.querySelector(".sequnce-name").innerHTML = "Base selection: " + sequence[idx] + "\n" + "Index: " + idx
                     }
                 } else {
                     sphereInter.visible = false
