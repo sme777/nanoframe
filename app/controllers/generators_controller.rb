@@ -55,6 +55,7 @@ class GeneratorsController < ApplicationController
   end
 
   def create
+    byebug
     @generator = Generator.new(generator_params)
     @generator.user_id = @current_user.id unless @current_user.nil?
 

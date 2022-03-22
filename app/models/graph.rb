@@ -20,6 +20,7 @@ class Graph
     @edges = v_and_e[1]
     @template_planes = find_four_planes
     @planes, @raw_planes = find_plane_combination(@template_planes)
+    # byebug
     @sorted_planes, @spline_points = generate_spline_points
     @opening_start, @length = open_structure
     update_generator_vertices(@sorted_planes, @spline_points)
@@ -27,7 +28,7 @@ class Graph
     @refl, @refr, @ext_b_hor, @ext_b_vert, @ext_hor, @ext_vert = ilp(constraints)
     staples_postprocess(shape)
     @staples = generate_staple_strands
-    update_generator_staples(@staples)
+    update_generator_staples()
   end
 
   def setup_dimensions(dimensions, shape)
@@ -502,10 +503,10 @@ class Graph
     when :cube
       h_constraint = ((@width / @segments) / SSDNA_NT_DIST).floor >= 50
       v_constraint = ((@height / @segments) / SSDNA_NT_DIST).floor >= 50
-      constraints[:z1] = h_constraint
-      constraints[:z3] = h_constraint
-      constraints[:z2] = v_constraint
-      constraints[:z4] = v_constraint
+      contraints[:z1] = h_constraint
+      contraints[:z3] = h_constraint
+      contraints[:z2] = v_constraint
+      contraints[:z4] = v_constraint
     when :tetrahedron
 
     end
@@ -552,14 +553,14 @@ class Graph
     model.enforce(y >= 20)
     model.enforce(x <= 60)
     model.enforce(y <= 60)
-    model.enforce(0.5 * x + 0.5 * y + z1 >= w)
-    model.enforce(0.5 * x + 0.5 * y + z2 >= h)
-    model.enforce(0.5 * x + 0.5 * y + z1 <= w)
-    model.enforce(0.5 * x + 0.5 * y + z2 <= h)
-    model.enforce(x + z3 >= w)
-    model.enforce(y + z4 >= h)
-    model.enforce(x + z3 <= w)
-    model.enforce(y + z4 <= h)
+    model.enforce(0.5 * x + 0.5 * y + z1 >= @width)
+    model.enforce(0.5 * x + 0.5 * y + z2 >= @height)
+    model.enforce(0.5 * x + 0.5 * y + z1 <= @width)
+    model.enforce(0.5 * x + 0.5 * y + z2 <= @height)
+    model.enforce(x + z3 >= @width)
+    model.enforce(y + z4 >= @height)
+    model.enforce(x + z3 <= @width)
+    model.enforce(y + z4 <= @height)
     model.enforce(2*s2*x + 4*s*y + 2*s*z1 + 2*s*z2 + (s2-s)*z3 + (s2-s)*z4 <= @scaff_length)
     # z1, z2, z3, z4 filtered restraints
     if constraints[:z1]

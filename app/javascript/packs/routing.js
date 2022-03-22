@@ -179,7 +179,7 @@ function onMouseMove(event) {
 }
 let sequenceDivison = []
 const es = createEdgeStrands()
-console.log(es)
+// console.log(es)
 const mps = createAdjacentEdgeMap()
 console.log(mps)
 // console.log(mps)
@@ -206,7 +206,8 @@ function generatePlaneStapleRouting(currIndex) {
 function createAdjacentEdgeMap() {
     let edgeMap = {}
     let stringMap = {}
-    
+    // let es = sets['vertices']
+    console.log(es)
     for (let i = 0; i < es.length; i++) {
         let arr = []
         let arr2 = []
@@ -242,20 +243,20 @@ function createEdgeStrands() {
     let edgeSequence
     let edges = []
     const edgeLength = Math.floor((dimension / segments) / 0.332)
-    console.log(dimension, segments)
+    // console.log(dimension, segments)
     let newEdge 
-    console.log('here', sets)
+    // console.log('here', sets)
     for (let i = 0; i < sets['vertices'].length ; i++) {
         
         if (i == sets['vertices'].length - 1) {
             edgeSequence = scaffoldSequence.slice(i * edgeLength)
             sequenceDivison.push(edgeSequence)
-            newEdge = new Edge(sets[i], sets[0], edgeSequence, edgeLength, null)
+            newEdge = new Edge(sets['vertices'][i], sets['vertices'][0], edgeSequence, edgeLength, null)
             edges.push(newEdge)
         } else {
             edgeSequence = scaffoldSequence.slice(i * edgeLength, i * edgeLength + edgeLength)
             sequenceDivison.push(edgeSequence)
-            newEdge = new Edge(sets[i], sets[i+1], edgeSequence, edgeLength, null)
+            newEdge = new Edge(sets['vertices'][i], sets['vertices'][i+1], edgeSequence, edgeLength, null)
             edges.push(newEdge)
         }
     }
