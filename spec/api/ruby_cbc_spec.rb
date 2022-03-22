@@ -115,6 +115,9 @@ RSpec.describe 'Ruby CBC', type: :api do
         m.enforce(x >= 20)
         m.enforce(y >= 20)
         # z constraints obtained in preprocessing
+        m.enforce(z1 >= 0)
+        m.enforce(z3 >= 0)
+
         m.enforce(z2 >= 0)
         m.enforce(z2 <= 0)
         m.enforce(z4 >= 0)

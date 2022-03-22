@@ -24,7 +24,8 @@ class Graph
     @opening_start, @length = open_structure
     update_generator_vertices(@sorted_planes, @spline_points)
     constraints = staples_preprocess(shape)
-    @refl, @refr, @ext_vert, @ext_hor, @ext_e_vert, @ext_e_hor = ilp(constraints)
+    @refl, @refr, @ext_b_hor, @ext_b_vert, @ext_hor, @ext_vert = ilp(constraints)
+    staples_postprocess(shape)
     @staples = generate_staple_strands
     update_generator_staples(@staples)
   end
@@ -496,27 +497,103 @@ class Graph
 
 
   def staples_preprocess(shape)
-    contraints = []
+    contraints = {}
     case shape
     when :cube
-      h_edge = ((@width / @segments) / SSDNA_NT_DIST).floor
-      v_edge = ((@height / @segments) / SSDNA_NT_DIST).floor
-
-      if h_edge < 50
-        # remove horizontal extension constraint
-      end
-
-      if v_edge < 50
-        # remove vertical extension constraint
-      end
+      h_constraint = ((@width / @segments) / SSDNA_NT_DIST).floor >= 50
+      v_constraint = ((@height / @segments) / SSDNA_NT_DIST).floor >= 50
+      constraints[:z1] = h_constraint
+      constraints[:z3] = h_constraint
+      constraints[:z2] = v_constraint
+      constraints[:z4] = v_constraint
     when :tetrahedron
 
     end
     contraints
   end
 
-  def ilp(constraints)
+  def staples_postprocess(shape)
+    case shape
+    when :cube
+      arr = [@ext_b_hor, @ext_b_vert, @ext_hor, @ext_vert]
+      arr.each_with_index do |ext, i|
+        if ext > 60
+          broken_ext = self.break_long_extension(ext.to_f)
+          if ext % 2 != 0
+            broken_ext[broken_ext.length - 1] = broken_ext.last + 1
+          end
+          arr[i] = broken_ext
+        else
+          arr[i] = [ext]
+        end
+      end
+    when :tetrahedron
 
+    end
+  end
+
+  def self.break_long_extension(length)
+    # byebug
+    if length / 2 >= 20 && length / 2 <= 60
+      return [(length/2).floor, (length/2).ceil]
+    end
+    break_long_extension(length/2) * 2
+  end
+
+  def ilp(constraints)
+    model = Cbc::Model.new
+    s = @segments
+    s2 = s ** 2
+    x, y, z1, z2, z3, z4 = model.int_var_array(6, 0..Cbc::INF)
+    model.maximize(2*s2*x + 4*s*y + 2*s*z1 + 2*s*z2 + (s2-s)*z3 + (s2-s)*z4)
+
+    # x, y mandatory restraints
+    model.enforce(x >= 20)
+    model.enforce(y >= 20)
+    model.enforce(x <= 60)
+    model.enforce(y <= 60)
+    model.enforce(0.5 * x + 0.5 * y + z1 >= w)
+    model.enforce(0.5 * x + 0.5 * y + z2 >= h)
+    model.enforce(0.5 * x + 0.5 * y + z1 <= w)
+    model.enforce(0.5 * x + 0.5 * y + z2 <= h)
+    model.enforce(x + z3 >= w)
+    model.enforce(y + z4 >= h)
+    model.enforce(x + z3 <= w)
+    model.enforce(y + z4 <= h)
+    model.enforce(2*s2*x + 4*s*y + 2*s*z1 + 2*s*z2 + (s2-s)*z3 + (s2-s)*z4 <= @scaff_length)
+    # z1, z2, z3, z4 filtered restraints
+    if constraints[:z1]
+      model.enforce(z1 >= 0)
+    else
+      model.enforce(z1 >= 0)
+      model.enforce(z1 <= 0)
+    end
+
+    if constraints[:z2]
+      model.enforce(z2 >= 0)
+    else
+      model.enforce(z2 >= 0)
+      model.enforce(z2 <= 0)
+    end
+
+    if constraints[:z3]
+      model.enforce(z3 >= 0)
+    else
+      model.enforce(z3 >= 0)
+      model.enforce(z3 <= 0)
+    end
+
+    if constraints[:z4]
+      model.enforce(z4 >= 0)
+    else
+      model.enforce(z4 >= 0)
+      model.enforce(z4 <= 0)
+    end
+    problem = model.to_problem
+    problem.solve
+
+    [problem.value_of(x), problem.value_of(y), problem.value_of(z1),
+      problem.value_of(z2), problem.value_of(z3),problem.value_of(z4)]    
   end
 
   def generate_staple_strands
