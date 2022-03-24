@@ -1,4 +1,4 @@
-name: CI
+name: ci
 on: [push, pull_request]
 
 jobs:
@@ -31,6 +31,22 @@ jobs:
     - name: Set up test database
       run: bundle exec rake db:setup 
     - name: Run tests
-      run: bundle exec rake test
-    # - name: Run RuboCop
-    #   run: bundle exec rubocop
+      run: bundle exec rake spec
+  coverage:
+    needs: [ ci ]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - uses: actions/setup-node@master
+      with:
+        node-version: '12'
+    - run: npm install -g yarn
+    - run: yarn install
+    - name: Test & publish code coverage
+      uses: paambaati/codeclimate-action@v3.0.0
+      env:
+        CC_TEST_REPORTER_ID: 01f3b317eaae42803f6fc26db8de551dab0aada715f31df05004aca212272773
+      with:
+        coverageCommand: bundle exec rake spec
+        coverageLocations: |
+          ${{github.workspace}}/coverage/.last_run.json
