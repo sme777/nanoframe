@@ -41,7 +41,6 @@ module Routing
       last_vertex = edges_and_last_vertex[1]
       counter += 1
     end
-    edge_arr << Vertex.new(@@prev_vertex.x, @@prev_vertex.y, @@prev_vertex.z)
     edge_arr
   end
 

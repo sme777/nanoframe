@@ -33,8 +33,8 @@ class Edge
     end
   end
 
-  def has_shared_edge?(e)
-    @v1 == e.v1 || @v2 == e.v2
+  def has_shared_vertex?(e)
+   @v2 == e.v2 || @v2 == e.v1
   end
 
   def self.string_of_edges(_edges)

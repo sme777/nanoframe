@@ -26,7 +26,7 @@ class Graph
     update_generator_vertices(@sorted_planes, @spline_points)
     constraints = staples_preprocess(shape)
     @refl, @refr, @ext_b_hor, @ext_b_vert, @ext_hor, @ext_vert = ilp(constraints)
-    staples_postprocess(shape)
+    @ext_b_hor, @ext_b_vert, @ext_hor, @ext_vert = staples_postprocess(shape)
     @staples = generate_staple_strands
     update_generator_staples()
   end
@@ -487,7 +487,7 @@ class Graph
     
     normalized_planes = Routing.normalize(sorted_planes, @width / @segments.to_f, @height / @segments.to_f,
                                           @depth / @segments.to_f)
-    spline = CatmullRomCurve3.new(normalized_planes[...-1])
+    spline = CatmullRomCurve3.new(normalized_planes)
     spline_points = Vertex.flatten(spline.generate(7249))
     [sorted_planes, spline_points]
   end
@@ -531,6 +531,7 @@ class Graph
     when :tetrahedron
 
     end
+    arr
   end
 
   def self.break_long_extension(length)
@@ -597,12 +598,59 @@ class Graph
       problem.value_of(z2), problem.value_of(z3),problem.value_of(z4)]    
   end
 
-  def generate_staple_strands
-    edges = generate_shape_edges(@width / @segments)
-    byebug
+  def generate_staple_strands #(edges, refl, refr, exts)
+    edges = generate_shape_edges(@width / (@segments * SSDNA_NT_DIST))
+    staples = []
+    # ext_b_hor, ext_b_vert, ext_hor, ext_vert = exts
+    edges.each do |edge|
+      
+      if self.on_boundary?(edge.v2)
+        adjacent = ObjectSpace._id2ref(edge.next)
+        if @ext_b_hor == [0] && @ext_b_vert == [0]
+          staples << Staple.new(edge, adjacent, @refr / 2, @refr / 2, :refraction, 2)
+        elsif (edge.directional_change == :x && @ext_b_hor != [0]) || 
+            (edge.directional_change == :y && @ext_b_vert != [0])
+          start = @refl / 2
+          extensions = @ext_b_hor != [0] ? @ext_b_hor : @ext_b_vert
+          extensions.each do |ext|
+            staples << Staple.new(edge, edge, start, start + ext, :extension)
+            start += ext
+          end
+          staples << Staple.new(edge, adjacent, start, @refr / 2, :refraction, 2)
+
+        elsif (edge.directional_change == :x && @ext_b_hor == [0]) || 
+          (edge.directional_change == :y && @ext_b_vert == [0])
+          staples << Staple.new(edge, adjacent, @refr / 2, @refr / 2, :refraction, 2)
+        else 
+          
+        end
+      else
+        adjacent = ObjectSpace._id2ref(edge.adjacent_edges.first)
+        if @ext_hor == [0] && @ext_vert == [0]
+          staples << Staple.new(edge, adjacent, @refl / 2, @refl / 2, :reflection, 1)
+        elsif (edge.directional_change == :x && @ext_hor != [0]) || 
+            (edge.directional_change == :y && @ext_vert != [0])
+          start = @refl / 2
+          extensions = @ext_b_hor != [0] ? @ext_b_hor : @ext_b_vert
+          extensions.each do |ext|
+            staples << Staple.new(edge, edge, start, start + ext, :extension)
+            start += ext
+          end
+          staples << Staple.new(edge, adjacent, start, @refl / 2, :reflection, 1)
+
+        elsif (edge.directional_change == :x && @ext_hor == [0]) ||
+          (edge.directional_change == :y && @ext_vert == [0])
+          staples << Staple.new(edge, adjacent, @refl / 2, @refl / 2, :reflection, 1)
+        else 
+
+        end
+      end
+    end
+    staples
   end
 
   def generate_shape_edges(w_step)
+
     sequence = IO.read("./app/assets/scaffolds/7249.txt")
     edges = []
     ### add extra checks for moving directions
@@ -619,21 +667,19 @@ class Graph
 
     edges.each_with_index do |edge, idx|
       edge.prev = edges[(idx - 1) % edges.size].object_id
-      edge.next = edges[(idx + 1) & edges.size].object_id
+      edge.next = edges[(idx + 1) % edges.size].object_id
     end
     update_adjacent_edges(edges)
   end
 
   def update_adjacent_edges(edges)
-    byebug
     edges.each do |e1|
       edges.each do |e2|
-      
         next unless e1 != e2
         next unless e1.directional_change != e2.directional_change
         next unless e1.next != e2.object_id && e1.prev != e2.object_id 
         next unless !on_boundary?(e1.v2)
-        next unless e1.has_shared_edge?(e2)
+        next unless e1.has_shared_vertex?(e2)
         e1.adjacent_edges << e2.object_id
       end
     end
@@ -642,7 +688,8 @@ class Graph
 
 
   def on_boundary?(v)
-    v.x == @width || v.y == @height || v.z == @depth
+    # TODO fix for plane roatation
+    v.x % @width == 0 || v.y % @height == 0 || v.z % @depth == 0
   end
 
 
