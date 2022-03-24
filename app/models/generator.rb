@@ -11,6 +11,8 @@ class Generator < ApplicationRecord
   def scaffold(sequence, coordinates)
     @dna = []
     @atom_count = 0
+    @sequence = sequence
+    @coordinates = coordinates
     @graph = nil
     index = 0
     sequence.each do |tide|
@@ -25,12 +27,14 @@ class Generator < ApplicationRecord
                        30
                      end
 
-      @dna.push(Nucleotide.new(tide, coordinates[index, index + 3], index))
+      @dna.push(Nucleotide.new(tide, @coordinates[index, index + 3], index))
       index += 3
     end
   end
 
-  def staples(sequence, coordinates); end
+  def staples(sequence, coordinates)
+    
+  end
 
   def self.generate_objects(step_size, loopout_length, min_len, max_len, scaff_length)
     min_len = min_len.to_i
@@ -68,11 +72,44 @@ class Generator < ApplicationRecord
   end
 
   def route
+    length = option == '7249 nt scaffold' ? 7249 : 8064
     case shape
     when '1'
-      @graph = Graph.new([width, height, depth], :cube, width_segment + 1, scaffold_length)
+      @graph = Graph.new(id, [width, height, depth], :cube, width_segment + 1, length)
+    when '2'
+      @graph = Graph.new(id, [radius], :tetrahedron, width_segment + 1, length)
+    when '3'
+      @graph = Graph.new(id, [radius], :octahedron, width_segment + 1, length)
+    when '4'
+      @graph = Graph.new(id, [radius], :icosahedron, width_segment + 1, length)
+    when '5'
+      @graph = Graph.new(id, [radius], :dodecahedron, width_segment + 1, length)
     when '6'
-      @graph = Graph.new([radius], :tetrahedron, width_segment + 1, scaffold_length)
+      @graph = Graph.new(id, [radius], :truncated_tetrahedron, width_segment + 1, length)
+    when '7'
+      @graph = Graph.new(id, [radius], :cuboctahedron, width_segment + 1, length)
+    when '8'
+      @graph = Graph.new(id, [radius], :truncated_cube, width_segment + 1, length)
+    when '9'
+      @graph = Graph.new(id, [radius], :truncated_octahedron, width_segment + 1, length)
+    when '10'
+      @graph = Graph.new(id, [radius], :rhombicuboctahedron, width_segment + 1, length)
+    when '11'
+      @graph = Graph.new(id, [radius], :truncated_cuboctahedron, width_segment + 1, length)
+    when '12'
+      @graph = Graph.new(id, [radius], :snub_cube, width_segment + 1, length)
+    when '13'
+      @graph = Graph.new(id, [radius], :icosidodecahedron, width_segment + 1, length)
+    when '14'
+      @graph = Graph.new(id, [radius], :truncated_dodecahedron, width_segment + 1, length)
+    when '15'
+      @graph = Graph.new(id, [radius], :truncated_icosahedron, width_segment + 1, length)
+    when '16'
+      @graph = Graph.new(id, [radius], :rhombicosidodecahedron, width_segment + 1, length)
+    when '17'
+      @graph = Graph.new(id, [radius], :truncated_icosidodecahedron, width_segment + 1, length)
+    when '18'
+      @graph = Graph.new(id, [radius], :snub_dodecahedron, width_segment + 1, length)
     end
   end
 
@@ -206,6 +243,7 @@ class Generator < ApplicationRecord
     file.write('"id": 0,')
     file.write('"monomers": [')
     # loop for all strands
+    byebug
     dna = @dna
     dna_len = dna.length - 1
     dir = 1

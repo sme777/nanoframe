@@ -10,7 +10,7 @@
     <input type="hidden" id="routing-positions" value="">
 
 
-   <%= render partial: "layouts/nav", locals: {tab: "bot"}%>
+    <%= render partial: "layouts/nav", locals: {tab: "bot"}%>
 
     <div class="row outer-menu-container">
         <div class="col-md-6">
@@ -24,81 +24,98 @@
                 <form action="/nanobot/<%= @generator.id%>/routing" method="POST">
                     <input type="hidden" name="authenticity_token" value="<%=form_authenticity_token%>">
                     <input type="hidden" id="set-values" name="vertices" value="">
-                    <button type="submit" id="routing-btn" class="btn btn-link route-arrow">Routing &rarr;</button>
+                    <button type="submit" id="routing-btn" class="btn btn-link forwardbtn route-arrow">Routing
+                        &rarr;</button>
                 </form>
 
             </div>
         </div>
     </div>
+    
     <div class="outer-regenerate-container">
-    <div class="regenerate-container">
-        <div class="row">
-            <%= link_to "Regenerate Routing", generate_routing_path({regenerate: true}), class: "btn btn-outline-secondary" %>
-        </div>
-        <div class="row box-state-container">
-            <input id="box-state" type="checkbox" class="btn-check" autocomplete="off">
-            <label id="box-state-label" class="btn btn-outline-secondary" for="box-state">Open Form</label>
-        </div>
-        <div class="row box-state-container">
-            <input id="box-state-staples" type="checkbox" class="btn-check" autocomplete="off">
-            <label id="box-state-staples-label" class="btn btn-outline-secondary" for="box-state-staples">Show Staples</label><br>
-        </div>
-        
-        <div class="row">
-            <div class="col-md-8">
-                <label for="color-slider" class="form-label">Red Start</label>
-                <input type="range" class="form-range" id="red-color-slider">
+        <div class="regenerate-container">
+            <div class="row">
+                <%= link_to "Regenerate Routing", generate_routing_path({regenerate: true}), class: "btn btn-outline-secondary" %>
             </div>
-            <div class="col-md-4 ">
-                <div class="rgb-gradient">
-                    <input class="form-check-input" type="checkbox" value="" id="red-gradient-box" checked>
-                    <label class="form-check-label" for="red-gradient-box">Gradient</label>
+            <div class="row box-state-container">
+                <input id="box-state" type="checkbox" class="btn-check" autocomplete="off">
+                <label id="box-state-label" class="btn btn-outline-secondary" for="box-state">Open Form</label>
+            </div>
+            <div class="row box-state-container">
+                <input id="box-state-staples" type="checkbox" class="btn-check" autocomplete="off">
+                <label id="box-state-staples-label" class="btn btn-outline-secondary" for="box-state-staples">Show
+                    Staples</label><br>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <label for="color-slider" class="form-label">Red Start</label>
+                    <input type="range" class="form-range" id="red-color-slider">
+                </div>
+                <div class="col-md-4 ">
+                    <div class="rgb-gradient">
+                        <input class="form-check-input" type="checkbox" value="" id="red-gradient-box" checked>
+                        <label class="form-check-label" for="red-gradient-box">Gradient</label>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <label for="color-slider" class="form-label">Green Start</label>
-                <input type="range" class="form-range" id="green-color-slider">
-            </div>
-            <div class="col-md-4 ">
-                <div class="rgb-gradient">
-                    <input class="form-check-input" type="checkbox" value="" id="green-gradient-box" checked>
-                    <label class="form-check-label" for="green-gradient-box">Gradient</label>
+            <div class="row">
+                <div class="col-md-8">
+                    <label for="color-slider" class="form-label">Green Start</label>
+                    <input type="range" class="form-range" id="green-color-slider">
+                </div>
+                <div class="col-md-4 ">
+                    <div class="rgb-gradient">
+                        <input class="form-check-input" type="checkbox" value="" id="green-gradient-box" checked>
+                        <label class="form-check-label" for="green-gradient-box">Gradient</label>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-8">
-                <label for="color-slider" class="form-label">Blue Start</label>
-                <input type="range" class="form-range" id="blue-color-slider">
-            </div>
-            <div class="col-md-4 ">
-                <div class="rgb-gradient">
-                    <input class="form-check-input" type="checkbox" value="" id="blue-gradient-box" checked>
-                    <label class="form-check-label" for="blue-gradient-box">Gradient</label>
+            <div class="row">
+                <div class="col-md-8">
+                    <label for="color-slider" class="form-label">Blue Start</label>
+                    <input type="range" class="form-range" id="blue-color-slider">
+                </div>
+                <div class="col-md-4 ">
+                    <div class="rgb-gradient">
+                        <input class="form-check-input" type="checkbox" value="" id="blue-gradient-box" checked>
+                        <label class="form-check-label" for="blue-gradient-box">Gradient</label>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="selectionOuterContainer">
+        <div class="selectionContainer">
+            <div class="row">
+                <div class="seqeunce-name">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-text">Base</span>
+                        <input type="text" class="form-control sequence-base" value="" disabled>
+                    </div>
+                     <div class="input-group input-group-sm">
+                        <span class="input-group-text">Position</span>
+                        <input type="text" class="form-control sequence-id" value="" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="row">
-        <div class="col-md-1 sequnce-name">
-
-        </div>
-        <div class="col-md-10">
-            <div class="canvas-container">
-                <div class="datGUI"></div>
-                <canvas id="visualize-webgl"></canvas>
-            </div>
-        </div>
-        <div class="col-md-1">
+        <div class="canvas-container">
+            <div class="datGUI"></div>
+            <canvas id="visualize-webgl"></canvas>
         </div>
     </div>
+    <div class="col-md-1">
+    </div>
+
+
 
 
     <%= render "layouts/footer"%>
-    <%= javascript_pack_tag 'visualize', 'routingPositionUpdate', 'data-turbolinks-track': 'reload'%>
+    <%= javascript_pack_tag 'visualize', 'data-turbolinks-track': 'reload'%>
 </body>
 
 </html>
