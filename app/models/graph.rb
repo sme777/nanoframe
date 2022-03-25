@@ -5,8 +5,6 @@ require 'json'
 class Graph
   attr_accessor :vertices, :edges, :sets, :route, :planes, :vertices, :edges
 
-  SSDNA_NT_DIST = 0.332
-
   # dimension[0] -> width
   # dimension[1] -> height
   # dimension[2] -> depth
@@ -15,6 +13,7 @@ class Graph
     @generator_id = id
     @segments = segments.to_i
     @scaff_length = scaff_length
+    @staple_breaker = Breaker.new(id, dimensions, shape, segments, scaff_length)
     v_and_e = create_vertices_and_edges(shape)
     @vertices = v_and_e[0]
     @edges = v_and_e[1]
@@ -24,11 +23,8 @@ class Graph
     @sorted_planes, @spline_points = generate_spline_points
     @opening_start, @length = open_structure
     update_generator_vertices(@sorted_planes, @spline_points)
-    constraints = staples_preprocess(shape)
-    @refl, @refr, @ext_b_hor, @ext_b_vert, @ext_hor, @ext_vert = ilp(constraints)
-    @ext_b_hor, @ext_b_vert, @ext_hor, @ext_vert = staples_postprocess(shape)
-    @staples = generate_staple_strands
-    update_generator_staples()
+    @staples = generate_staples
+    update_generator_staples(@staples)
   end
 
   def setup_dimensions(dimensions, shape)
@@ -94,13 +90,12 @@ class Graph
     vertices
   end
 
-
   def update_generator_vertices(routing_vertices, routing_points)
     gen = Generator.find_by(id: @generator_id)
-    gen.update(vertices: JSON.generate({vertices: routing_vertices, points: routing_points}))
+    gen.update(vertices: JSON.generate({ vertices: routing_vertices, points: routing_points }))
   end
 
-  def update_generator_staples
+  def update_generator_staples(staples)
 
   end
 
@@ -125,7 +120,7 @@ class Graph
     undisected_edges = stripes.clone
     (0..undisected_edges.length).each do |i|
       (0..undisected_edges.length).each do |j|
-        byebug
+        # byebug
         if i == j
           next
         elsif intersect(undisected_edges[i], undisected_edges[j])
@@ -465,10 +460,6 @@ class Graph
     true
   end
 
-  def equals_vertex(v1, v2)
-    v1.x == v2.x && v1.y == v2.y && v1.z == v2.z
-  end
-
   # bug here
   def find_next_set(sets, end_vertex)
     sets.each do |s|
@@ -484,7 +475,7 @@ class Graph
   def generate_spline_points
     plane_copy = Marshal.load(Marshal.dump(@planes))
     sorted_planes = Routing.sort_sets(plane_copy)
-    
+
     normalized_planes = Routing.normalize(sorted_planes, @width / @segments.to_f, @height / @segments.to_f,
                                           @depth / @segments.to_f)
     spline = CatmullRomCurve3.new(normalized_planes)
@@ -492,212 +483,23 @@ class Graph
     [sorted_planes, spline_points]
   end
 
-  def open_structure(ratio=1/3.to_f)
-    Routing.find_strongest_connected_components(@sorted_planes, ratio, [@width, @height, @depth])
-  end
-
-
-  def staples_preprocess(shape)
-    contraints = {}
-    case shape
-    when :cube
-      h_constraint = ((@width / @segments) / SSDNA_NT_DIST).floor >= 50
-      v_constraint = ((@height / @segments) / SSDNA_NT_DIST).floor >= 50
-      contraints[:z1] = h_constraint
-      contraints[:z3] = h_constraint
-      contraints[:z2] = v_constraint
-      contraints[:z4] = v_constraint
-    when :tetrahedron
-
-    end
-    contraints
-  end
-
-  def staples_postprocess(shape)
-    case shape
-    when :cube
-      arr = [@ext_b_hor, @ext_b_vert, @ext_hor, @ext_vert]
-      arr.each_with_index do |ext, i|
-        if ext > 60
-          broken_ext = self.break_long_extension(ext.to_f)
-          if ext % 2 != 0
-            broken_ext[broken_ext.length - 1] = broken_ext.last + 1
-          end
-          arr[i] = broken_ext
-        else
-          arr[i] = [ext]
-        end
-      end
-    when :tetrahedron
-
-    end
-    arr
-  end
-
-  def self.break_long_extension(length)
-    # byebug
-    if length / 2 >= 20 && length / 2 <= 60
-      return [(length/2).floor, (length/2).ceil]
-    end
-    break_long_extension(length/2) * 2
-  end
-
-  def ilp(constraints)
-    model = Cbc::Model.new
-    s = @segments
-    s2 = s ** 2
-    x, y, z1, z2, z3, z4 = model.int_var_array(6, 0..Cbc::INF)
-    model.maximize(2*s2*x + 4*s*y + 2*s*z1 + 2*s*z2 + (s2-s)*z3 + (s2-s)*z4)
-
-    # x, y mandatory restraints
-    model.enforce(x >= 20)
-    model.enforce(y >= 20)
-    model.enforce(x <= 60)
-    model.enforce(y <= 60)
-    model.enforce(0.5 * x + 0.5 * y + z1 >= @width)
-    model.enforce(0.5 * x + 0.5 * y + z2 >= @height)
-    model.enforce(0.5 * x + 0.5 * y + z1 <= @width)
-    model.enforce(0.5 * x + 0.5 * y + z2 <= @height)
-    model.enforce(x + z3 >= @width)
-    model.enforce(y + z4 >= @height)
-    model.enforce(x + z3 <= @width)
-    model.enforce(y + z4 <= @height)
-    model.enforce(2*s2*x + 4*s*y + 2*s*z1 + 2*s*z2 + (s2-s)*z3 + (s2-s)*z4 <= @scaff_length)
-    # z1, z2, z3, z4 filtered restraints
-    if constraints[:z1]
-      model.enforce(z1 >= 0)
-    else
-      model.enforce(z1 >= 0)
-      model.enforce(z1 <= 0)
-    end
-
-    if constraints[:z2]
-      model.enforce(z2 >= 0)
-    else
-      model.enforce(z2 >= 0)
-      model.enforce(z2 <= 0)
-    end
-
-    if constraints[:z3]
-      model.enforce(z3 >= 0)
-    else
-      model.enforce(z3 >= 0)
-      model.enforce(z3 <= 0)
-    end
-
-    if constraints[:z4]
-      model.enforce(z4 >= 0)
-    else
-      model.enforce(z4 >= 0)
-      model.enforce(z4 <= 0)
-    end
-    problem = model.to_problem
-    problem.solve
-
-    [problem.value_of(x), problem.value_of(y), problem.value_of(z1),
-      problem.value_of(z2), problem.value_of(z3),problem.value_of(z4)]    
-  end
-
-  def generate_staple_strands #(edges, refl, refr, exts)
-    edges = generate_shape_edges(@width / (@segments * SSDNA_NT_DIST))
-    staples = []
-    # ext_b_hor, ext_b_vert, ext_hor, ext_vert = exts
-    edges.each do |edge|
-      
-      if self.on_boundary?(edge.v2)
-        adjacent = ObjectSpace._id2ref(edge.next)
-        if @ext_b_hor == [0] && @ext_b_vert == [0]
-          staples << Staple.new(edge, adjacent, @refr / 2, @refr / 2, :refraction, 2)
-        elsif (edge.directional_change == :x && @ext_b_hor != [0]) || 
-            (edge.directional_change == :y && @ext_b_vert != [0])
-          start = @refl / 2
-          extensions = @ext_b_hor != [0] ? @ext_b_hor : @ext_b_vert
-          extensions.each do |ext|
-            staples << Staple.new(edge, edge, start, start + ext, :extension)
-            start += ext
-          end
-          staples << Staple.new(edge, adjacent, start, @refr / 2, :refraction, 2)
-
-        elsif (edge.directional_change == :x && @ext_b_hor == [0]) || 
-          (edge.directional_change == :y && @ext_b_vert == [0])
-          staples << Staple.new(edge, adjacent, @refr / 2, @refr / 2, :refraction, 2)
-        else 
-          
-        end
-      else
-        adjacent = ObjectSpace._id2ref(edge.adjacent_edges.first)
-        if @ext_hor == [0] && @ext_vert == [0]
-          staples << Staple.new(edge, adjacent, @refl / 2, @refl / 2, :reflection, 1)
-        elsif (edge.directional_change == :x && @ext_hor != [0]) || 
-            (edge.directional_change == :y && @ext_vert != [0])
-          start = @refl / 2
-          extensions = @ext_b_hor != [0] ? @ext_b_hor : @ext_b_vert
-          extensions.each do |ext|
-            staples << Staple.new(edge, edge, start, start + ext, :extension)
-            start += ext
-          end
-          staples << Staple.new(edge, adjacent, start, @refl / 2, :reflection, 1)
-
-        elsif (edge.directional_change == :x && @ext_hor == [0]) ||
-          (edge.directional_change == :y && @ext_vert == [0])
-          staples << Staple.new(edge, adjacent, @refl / 2, @refl / 2, :reflection, 1)
-        else 
-
-        end
-      end
-    end
+  def generate_staples
+    constraints = @staple_breaker.staples_preprocess
+    staple_len_arr = @staple_breaker.ilp(constraints)
+    staple_adj_len_arr = @staple_breaker.staples_postprocess(staple_len_arr)
+    staples = @staple_breaker.generate_staple_strands(@sorted_planes, staple_adj_len_arr)
     staples
   end
 
-  def generate_shape_edges(w_step)
-
-    sequence = IO.read("./app/assets/scaffolds/7249.txt")
-    edges = []
-    ### add extra checks for moving directions
-    @sorted_planes.each_with_index do |v, i| 
-      new_edge = Edge.new(v, @sorted_planes[(i+1) % @sorted_planes.size])
-      if i == @sorted_planes.size - 1
-        seq = sequence.slice(i*w_step, sequence.size)
-      else
-        seq = sequence.slice(i*w_step, w_step)
-      end
-      new_edge.sequence = seq
-      edges << new_edge
-    end
-
-    edges.each_with_index do |edge, idx|
-      edge.prev = edges[(idx - 1) % edges.size].object_id
-      edge.next = edges[(idx + 1) % edges.size].object_id
-    end
-    update_adjacent_edges(edges)
+  def open_structure(ratio = 1 / 3.to_f)
+    Routing.find_strongest_connected_components(@sorted_planes, ratio, [@width, @height, @depth])
   end
-
-  def update_adjacent_edges(edges)
-    edges.each do |e1|
-      edges.each do |e2|
-        next unless e1 != e2
-        next unless e1.directional_change != e2.directional_change
-        next unless e1.next != e2.object_id && e1.prev != e2.object_id 
-        next unless !on_boundary?(e1.v2)
-        next unless e1.has_shared_vertex?(e2)
-        e1.adjacent_edges << e2.object_id
-      end
-    end
-    edges
-  end
-
-
-  def on_boundary?(v)
-    # TODO fix for plane roatation
-    v.x % @width == 0 || v.y % @height == 0 || v.z % @depth == 0
-  end
-
 
   # Generates JSON file of the graph
   def to_json(*_args)
     return nil if @planes.nil?
 
-    JSON.generate({ "scaffold_length": 7249, "start": @opening_start, "length": @length, "positions": @spline_points})
+    JSON.generate({ "scaffold_length": 7249, "start": @opening_start, "length": @length, "positions": @spline_points })
   end
 
   # Generates JSON file for unscaled planes of the graph

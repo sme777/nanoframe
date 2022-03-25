@@ -50,7 +50,7 @@ if (signOutBtn != null || boxState != null) {
     const mouse = new THREE.Vector2()
 
 
-    for (let i = 0; i < 7249; i++) {
+    for (let i = 0; i < 7219; i++) {
         if (i % 2 == 0) {
             sequence.push("T")
         } else if (i % 3 == 0) {
@@ -63,10 +63,10 @@ if (signOutBtn != null || boxState != null) {
 
     function generateDisplay(scene, camera, positions=psz, residualEdges = false, fullDisplay = true, start = 0, end = scaffold_length * 3) {
         let colors = []
-        const divisions = 7249
+        const divisions = 7219
         // console.log(positions)
         if (fullDisplay) {
-            const divisions = 7249
+            const divisions = 7219
 
             for (let i = 0, l = divisions; i < l; i++) {
                 const t = i / l
@@ -271,6 +271,7 @@ if (signOutBtn != null || boxState != null) {
         start = graph_json["start"]
         length = graph_json["length"]
         psz = graph_json["positions"]
+        console.log(psz)
         // const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
 
         generateDisplay(scene, camera)
@@ -278,6 +279,7 @@ if (signOutBtn != null || boxState != null) {
         let controls = new OrbitControls(camera, renderer.domElement)
         controls.minDistance = 10
         controls.maxDistance = 500
+        controls.enableZoom = false
 
         window.addEventListener('resize', onWindowResize)
         canvas.addEventListener('wheel', onZoom)
