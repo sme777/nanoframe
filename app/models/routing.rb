@@ -88,23 +88,22 @@ module Routing
     final_array = []
     ratio = (edge_size * ratio).floor
 
-    for j in ratio...edge_size do
-      for i in 0...edge_size do
+    (ratio...edge_size).each do |j|
+      (0...edge_size).each do |i|
         subarray = find_subarray(edges, i, j)
         subarray_strength = find_subarray_strength(subarray, dims)
-        if subarray_strength > max_strength
-          max_strength = subarray_strength
-          edge_start = i
-          final_ratio = j
-          final_array = subarray
-        end
+        next unless subarray_strength > max_strength
+
+        max_strength = subarray_strength
+        edge_start = i
+        final_ratio = j
+        final_array = subarray
       end
     end
     # fedges_size = final_array.size
     # remaining_array = find_subarray(edges, (edge_start + fedges_size - 1) % edge_size, edge_size - fedges_size)
     [edge_start, final_array.size * 3]
   end
-
 
   def self.find_subarray(edges, start, length)
     double_egdes = edges + edges
@@ -114,37 +113,33 @@ module Routing
   def self.find_subarray_strength(arr, dims)
     planes = {}
 
-   for i in 0...(arr.size - 1) do
-      plane = find_plane_number(arr[i], arr[i+1], dims)
-      if planes.has_key?(plane)
+    (0...(arr.size - 1)).each do |i|
+      plane = find_plane_number(arr[i], arr[i + 1], dims)
+      if planes.key?(plane)
         planes[plane] += 1
       else
         planes[plane] = 1
       end
     end
-    plane_vals = planes.values.sort_by { |v| -v }
-    (plane_vals[...3].sum) / arr.size.to_f
+    plane_vals = planes.values.sort_by(&:-@)
+    plane_vals[...3].sum / arr.size.to_f
   end
 
   def self.find_plane_number(v1, v2, dims)
-    if v1.z == 0 && v2.z == 0
+    if v1.z.zero? && v2.z.zero?
       0
     elsif v1.z == -dims[2] && v2.z == -dims[2]
       1
     elsif v1.y == dims[1] && v2.y == dims[1]
       2
-    elsif v1.y == 0 && v2.y == 0
+    elsif v1.y.zero? && v2.y.zero?
       3
-    elsif v1.x == 0 && v2.x == 0
+    elsif v1.x.zero? && v2.x.zero?
       4
     else
       5
     end
-
   end
 
-  def generate_staple_strands
-
-  end
-
+  def generate_staple_strands; end
 end

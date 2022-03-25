@@ -27,8 +27,8 @@ class Vertex
     "#{x}#{y}#{z}"
   end
 
-  def ==(v)
-    @x == v.x && @y == v.y && @z == v.z
+  def ==(other)
+    @x == other.x && @y == other.y && @z == other.z
   end
 
   def distance_to_squared(v)

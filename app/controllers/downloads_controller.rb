@@ -5,7 +5,7 @@ class DownloadsController < ApplicationController
 
   def self.define_download(type)
     define_method("download_#{type}") do
-    byebug
+      byebug
       json_obj = JSON.parse(@generator.json)
       # scaffold_sequence = json_obj['sequence']
       # scaffold_coordinates = json_obj['positions']
