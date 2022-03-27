@@ -33,6 +33,16 @@ class Edge
     end
   end
 
+  def directional_change_vec
+    if @v1.x - @v2.x != 0
+      [:x, @v1.x - @v2.x]
+    elsif @v1.y - @v2.y != 0
+      [:y, @v1.y - @v2.y]
+    else
+      [:z, @v1.z - @v2.z]
+    end
+  end
+
   def has_shared_vertex?(e)
     @v2 == e.v2 || @v2 == e.v1
   end

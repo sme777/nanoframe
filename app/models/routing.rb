@@ -63,12 +63,89 @@ module Routing
   end
 
   def self.normalize(vectors, wsl, hsl, _dsl)
-    vectors.each do |vector|
+    vectors.each do |vector, i|
       vector.x *= wsl
       vector.y *= hsl
       vector.z *= hsl
     end
+
+    vectors.each_with_index do |vector, i|
+      if !outgoer?(vector, 65, 65, 65)
+        prev_edge = Edge.new(vectors[(i - 1) % vectors.size], vector)
+        next_edge = Edge.new(vector, vectors[(i + 1) % vectors.size])
+
+        pe_dc, pe_vec = prev_edge.directional_change_vec
+        ne_dc, ne_vec = next_edge.directional_change_vec
+        cdr, cpe, cne = change_dir(pe_dc, ne_dc)
+        dpe_dc, dne_dc = corner_change(ch, dx, dy)
+        cpe_dc, cne_dc = vector.instance_variable_get("@#{cpe}"), vector.instance_variable_get("@#{cne}")
+        vector.instance_variable_set("@#{cpe}", cpe_dc + dpe_dc)
+        vector.instance_variable_set("@#{cne}", cne_dc + dne_dc)
+      end
+
+    end
+
     vectors
+  end
+
+  def change_dir(prev_dr, next_dr)
+    if (prev_dr == :x && next_dr == :z) 
+      [:hor, :x, :z]
+    elsif (prev_dr == :x && next_dr == :y) 
+      [:hor, :x, :y]
+    elsif(prev_dr == :z && next_dr == :y)
+      [:hor, :z, :y]
+    elsif (prev_dr == :z && next_dr == :x)
+      [:vert, :z, :x]
+    elsif (prev_dr == :y && next_dr == :x)
+      [:vert, :y, :x]
+    elsif (prev_dr == :y && next_dr == :z)
+      [:vert, :y, :z]
+    end
+  end
+
+  def corner_change(ch, dx, dy)
+    if ch == :hor
+      if dx < 0 && dy < 0
+        vector.x -= 0.5
+        vector.y += 0.5
+      elsif dx > 0 && dy > 0
+        vector.x += 0.5
+        vector.y -= 0.5
+      elsif dx < 0 && dy > 0
+        vector.x -= 0.5
+        vector.y -= 0.5
+      elsif dx > 0 && dy < 0
+        vector.x += 0.5
+        vector.y += 0.5
+      end
+    else
+      if dy > 0 && dx > 0
+        vector.x -= 0.5
+        vector.y += 0.5
+      elsif dy < 0 && dx < 0
+        vector.x += 0.5
+        vector.y -= 0.5
+      elsif dy > 0 && dx < 0
+        vector.x += 0.5
+        vector.y += 0.5
+      elsif dy < 0 && dx > 0
+        vector.x -= 0.5
+        vector.y -= 0.5
+      end
+    end
+  end
+
+  def self.outgoer?(v, width, height, depth)
+    if v.x % width == 0 && (v.y % height == 0 || v.z % depth == 0)
+      true
+    elsif v.y % width == 0 && (v.x % height == 0 || v.z % depth == 0)
+      true
+    elsif v.z % width == 0 && (v.x % height == 0 || v.y % depth == 0)
+      true
+    else
+      false
+    end
   end
 
   def self.equals(vertex, vals)

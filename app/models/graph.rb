@@ -19,12 +19,11 @@ class Graph
     @edges = v_and_e[1]
     @template_planes = find_four_planes
     @planes, @raw_planes = find_plane_combination(@template_planes)
-    # byebug
     @sorted_planes, @spline_points = generate_spline_points
     @opening_start, @length = open_structure
     update_generator_vertices(@sorted_planes, @spline_points)
-    @staples = generate_staples
-    update_generator_staples(@staples)
+    # @staples = generate_staples
+    # update_generator_staples(@staples)
   end
 
   def setup_dimensions(dimensions, shape)
