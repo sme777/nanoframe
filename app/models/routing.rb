@@ -70,25 +70,24 @@ module Routing
     end
 
     vectors.each_with_index do |vector, i|
-      if !outgoer?(vector, 65, 65, 65)
         prev_edge = Edge.new(vectors[(i - 1) % vectors.size], vector)
         next_edge = Edge.new(vector, vectors[(i + 1) % vectors.size])
-
         pe_dc, pe_vec = prev_edge.directional_change_vec
         ne_dc, ne_vec = next_edge.directional_change_vec
         cdr, cpe, cne = change_dir(pe_dc, ne_dc)
-        dpe_dc, dne_dc = corner_change(ch, dx, dy)
-        cpe_dc, cne_dc = vector.instance_variable_get("@#{cpe}"), vector.instance_variable_get("@#{cne}")
+        next unless !cdr.nil?
+        dpe_dc, dne_dc = corner_change(cdr, cpe, cne, pe_vec, ne_vec)
+        cpe_dc = vector.instance_variable_get("@#{cpe}")
+        cne_dc = vector.instance_variable_get("@#{cne}")
         vector.instance_variable_set("@#{cpe}", cpe_dc + dpe_dc)
         vector.instance_variable_set("@#{cne}", cne_dc + dne_dc)
-      end
 
     end
 
     vectors
   end
 
-  def change_dir(prev_dr, next_dr)
+  def self.change_dir(prev_dr, next_dr)
     if (prev_dr == :x && next_dr == :z) 
       [:hor, :x, :z]
     elsif (prev_dr == :x && next_dr == :y) 
@@ -104,36 +103,37 @@ module Routing
     end
   end
 
-  def corner_change(ch, dx, dy)
-    if ch == :hor
-      if dx < 0 && dy < 0
-        vector.x -= 0.5
-        vector.y += 0.5
-      elsif dx > 0 && dy > 0
-        vector.x += 0.5
-        vector.y -= 0.5
-      elsif dx < 0 && dy > 0
-        vector.x -= 0.5
-        vector.y -= 0.5
-      elsif dx > 0 && dy < 0
-        vector.x += 0.5
-        vector.y += 0.5
+  def self.corner_change(cdr, cpe, cne, dpe, dne)
+    if cdr == :hor
+      if dpe < 0 && dne < 0
+        dpe_shift = -0.5
+        dne_shift = 0.5
+      elsif dpe > 0 && dne > 0
+        dpe_shift = 0.5
+        dne_shift = -0.5
+      elsif dpe < 0 && dne > 0
+        dpe_shift = -0.5
+        dne_shift = -0.5
+      elsif dpe > 0 && dne < 0
+        dpe_shift = 0.5
+        dne_shift = 0.5
       end
     else
-      if dy > 0 && dx > 0
-        vector.x -= 0.5
-        vector.y += 0.5
-      elsif dy < 0 && dx < 0
-        vector.x += 0.5
-        vector.y -= 0.5
-      elsif dy > 0 && dx < 0
-        vector.x += 0.5
-        vector.y += 0.5
-      elsif dy < 0 && dx > 0
-        vector.x -= 0.5
-        vector.y -= 0.5
+      if dne > 0 && dpe > 0
+        dpe_shift = -0.5
+        dne_shift = 0.5
+      elsif dne < 0 && dpe < 0
+        dpe_shift = +0.5
+        dne_shift = 0.5
+      elsif dne > 0 && dpe < 0
+        dpe_shift = 0.5
+        dne_shift = 0.5
+      elsif dne < 0 && dpe > 0
+        dpe_shift = -0.5
+        dne_shift = -0.5
       end
     end
+    [dpe_shift, dne_shift]
   end
 
   def self.outgoer?(v, width, height, depth)
