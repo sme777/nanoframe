@@ -38,7 +38,7 @@ class Edge
       [:x, @v1.x - @v2.x]
     elsif @v1.y - @v2.y != 0
       [:y, @v1.y - @v2.y]
-    else
+    elsif @v1.z - @v2.z != 0
       [:z, @v1.z - @v2.z]
     end
   end

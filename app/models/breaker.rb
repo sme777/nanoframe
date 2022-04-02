@@ -26,8 +26,8 @@ class Breaker
     contraints = {}
     case @shape
     when :cube
-      h_constraint = ((@width / @segments) / SSDNA_NT_DIST).floor >= 50
-      v_constraint = ((@height / @segments) / SSDNA_NT_DIST).floor >= 50
+      h_constraint = ((@width / @segments) / SSDNA_NT_DIST).floor >= 60
+      v_constraint = ((@height / @segments) / SSDNA_NT_DIST).floor >= 60
       contraints[:z1] = h_constraint
       contraints[:z3] = h_constraint
       contraints[:z2] = v_constraint
@@ -88,24 +88,28 @@ class Breaker
     # z1, z2, z3, z4 filtered restraints
     model.enforce(z1 >= 0)
     if constraints[:z1]
+      model.enforce(z1 >= 20)
     else
       model.enforce(z1 <= 0)
     end
 
     model.enforce(z2 >= 0)
     if constraints[:z2]
+      model.enforce(z2 >= 20)
     else
       model.enforce(z2 <= 0)
     end
 
     model.enforce(z3 >= 0)
     if constraints[:z3]
+      model.enforce(z3 >= 20)
     else
       model.enforce(z3 <= 0)
     end
 
     model.enforce(z4 >= 0)
     if constraints[:z4]
+      model.enforce(z4 >= 20)
     else
       model.enforce(z4 <= 0)
     end
@@ -119,10 +123,13 @@ class Breaker
   def generate_staple_strands(vertices, staple_len_arr)
     refl, refr, ext_b_hor, ext_b_vert, ext_hor, ext_vert = staple_len_arr
     refl, refr = refl.first, refr.first
-    edges = generate_shape_edges(vertices, @width / (@segments * SSDNA_NT_DIST))
+    edges = generate_shape_edges(vertices)
     staples = []
+    
     # ext_b_hor, ext_b_vert, ext_hor, ext_vert = exts
+    
     edges.each do |edge|
+      
       if on_boundary?(edge.v2)
         adjacent = ObjectSpace._id2ref(edge.next)
         if ext_b_hor == [0] && ext_b_vert == [0]
@@ -142,6 +149,7 @@ class Breaker
           staples << Staple.new(edge, adjacent, refr / 2, refr / 2, :refraction, 2)
         end
       else
+        # byebug
         adjacent = ObjectSpace._id2ref(edge.adjacent_edges.first)
         if ext_hor == [0] && ext_vert == [0]
           staples << Staple.new(edge, adjacent, refl / 2, refl / 2, :reflection, 1)
@@ -164,16 +172,18 @@ class Breaker
     staples
   end
 
-  def generate_shape_edges(vertices, w_step)
+  def generate_shape_edges(vertices)
     sequence = IO.read('./app/assets/scaffolds/7249.txt')
     edges = []
     ### add extra checks for moving directions
+    
     vertices.each_with_index do |v, i|
       new_edge = Edge.new(v, vertices[(i + 1) % vertices.size])
+      steped = moving_step(new_edge)
       seq = if i == vertices.size - 1
-              sequence.slice(i * w_step, sequence.size)
+              sequence[i * steped...sequence.size]
             else
-              sequence.slice(i * w_step, w_step)
+              sequence[i * steped...(i+1) * steped]
             end
       new_edge.sequence = seq
       edges << new_edge
@@ -201,8 +211,30 @@ class Breaker
     edges
   end
 
+  def moving_step(edge)
+    w_step = @width / (@segments * SSDNA_NT_DIST)
+    h_step = @height/ (@segments * SSDNA_NT_DIST)
+    d_step = @depth / (@segments * SSDNA_NT_DIST)
+
+    case edge.directional_change
+    when :x
+      w_step
+    when :y
+      h_step
+    when :z
+      d_step
+    end
+    
+  end
+
   def on_boundary?(v)
     # TODO: fix for plane roatation
-    (v.x % @width).zero? || (v.y % @height).zero? || (v.z % @depth).zero?
+    (approx(v.x, @width) && approx(v.y, @height)) || 
+    (approx(v.x, @width) && approx(v.z, @depth)) || 
+    (approx(v.y, @depth) && approx(v.z, @depth))
+  end
+
+  def approx(val, divisor)
+    (val.ceil % divisor).zero? || (val.floor % divisor).zero?
   end
 end

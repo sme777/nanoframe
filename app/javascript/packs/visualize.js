@@ -23,12 +23,15 @@ if (signOutBtn != null || boxState != null) {
     }
     let insetWidth, insetHeight, camera2
     let firstStartPoint, firstEndPoint, lastStartPoint, lastEndPoint
-    let id, graph_json, segments, scaffold_length
+    let id, graph_json, segments, scaffold_length, staples
     let canvas, width, height, depth, zoomUpdate
     let line0, line1, line2, line3, line4, line5, line6, line7
     let canvasContainer, canvasContainerWidth, canvasContainerHeight
     let routingColors
     let sequence = []
+
+    let papaGroup = new THREE.Group()
+
     let toggle = 0
     let sphereInter
     let globalPositions
@@ -83,9 +86,7 @@ if (signOutBtn != null || boxState != null) {
 
         
         if (!fullDisplay) {
-            console.log(positions.length, start, end)
             positions = positions.concat(positions).slice(start, end)
-            console.log(positions)
             if (!residualEdges) {
                 
                 firstStartPoint = positions.slice(0, 3)
@@ -112,7 +113,7 @@ if (signOutBtn != null || boxState != null) {
             // line0.computeLineDistances()
             // line0.scale.set(1, 1, 1)
             
-            scene.add(line0)
+            // scene.add(line0)
             // console.log(scene.toJSON())
             const geo = new THREE.BufferGeometry()
             geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
@@ -120,13 +121,12 @@ if (signOutBtn != null || boxState != null) {
             line1 = new THREE.Line(geo, matLineBasic)
             line1.computeLineDistances()
             line1.visible = false
-            scene.add(line1)
-            camera.lookAt(line0.position)
+            // scene.add(line1)
+            // camera.lookAt(line0.position)
             if (fullDisplay) {
-                line0.geometry.center()
+                // papaGroup.add(line0)
+                // line0.geometry.center()
             }
-
-            camera.lookAt(line0.position)
 
         } else {
             line2 = new Line2(geometry, matLine)
@@ -240,7 +240,9 @@ if (signOutBtn != null || boxState != null) {
         } else {
             graph_json = JSON.parse(document.getElementById("generator-container").value)
             canvas = document.getElementById("visualize-webgl")
+            staples = JSON.parse(document.getElementById("staples-container").value)
         }
+        
         scaffold_length = graph_json["scaffold_length"]
         segments = graph_json["segments"]
         
@@ -271,15 +273,51 @@ if (signOutBtn != null || boxState != null) {
         start = graph_json["start"]
         length = graph_json["length"]
         psz = graph_json["positions"]
-        console.log(psz)
-        // const simpleObjectSets = JSON.parse(JSON.stringify(objectSets))
+       
+
+        /**
+         * test start
+         */
+
+        for (let i = 0; i < staples.positions.length / 4; i++) {
+            let staple_points = staples.positions[i]
+            let staple_colors = Array(staples.positions[i].length).fill(0.5)
+            let geometry = new LineGeometry()
+            geometry.setPositions(staple_points)
+            geometry.setColors(staple_colors)
+           
+            let staple_line = new Line2(geometry, matLine)
+                 // line0.computeLineDistances()
+                 // line0.scale.set(1, 1, 1)
+                 camera.lookAt(staple_line.position)
+            // staple_line.geometry.center()
+            // scene.add(staple_line)
+                 // console.log(scene.toJSON())
+                 let staple_geo = new THREE.BufferGeometry()
+            staple_geo.setAttribute('position', new THREE.Float32BufferAttribute(staple_points, 3))
+            staple_geo.setAttribute('color', new THREE.Float32BufferAttribute(staple_colors, 3))
+            let staple_line1 = new THREE.Line(staple_geo, matLineBasic)
+            staple_line1.computeLineDistances()
+            staple_line1.visible = false
+            papaGroup.add(staple_line)
+            // scene.add(staple_line1)
+        }
+
+        
+        new THREE.Box3().setFromObject( papaGroup ).getCenter( papaGroup.position ).multiplyScalar( - 1 );
+        scene.add(papaGroup)
+ 
+
+        /**
+         * test end
+         */
 
         generateDisplay(scene, camera)
 
         let controls = new OrbitControls(camera, renderer.domElement)
         controls.minDistance = 10
         controls.maxDistance = 500
-        controls.enableZoom = false
+        // controls.enableZoom = false
 
         window.addEventListener('resize', onWindowResize)
         canvas.addEventListener('wheel', onZoom)

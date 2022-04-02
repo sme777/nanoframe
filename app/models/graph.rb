@@ -22,8 +22,9 @@ class Graph
     @sorted_planes, @spline_points = generate_spline_points
     @opening_start, @length = open_structure
     update_generator_vertices(@sorted_planes, @spline_points)
-    # @staples = generate_staples
-    # update_generator_staples(@staples)
+    @staples = generate_staples
+    byebug
+    update_generator_staples(@staples)
   end
 
   def setup_dimensions(dimensions, shape)
@@ -95,7 +96,10 @@ class Graph
   end
 
   def update_generator_staples(staples)
-
+    staple_points = []
+    staples.each {|staple| staple_points << Vertex.flatten(staple.points) }
+    gen = Generator.find_by(id: @generator_id)
+    gen.update(staples: JSON.generate({ positions: staple_points }))
   end
 
   def connect_vertices(vs)
@@ -474,7 +478,7 @@ class Graph
   def generate_spline_points
     plane_copy = Marshal.load(Marshal.dump(@planes))
     sorted_planes = Routing.sort_sets(plane_copy)
-
+    
     normalized_planes = Routing.normalize(sorted_planes, @width / @segments.to_f, @height / @segments.to_f,
                                           @depth / @segments.to_f)
     spline = CatmullRomCurve3.new(normalized_planes)
