@@ -63,26 +63,26 @@ module Routing
   end
 
   def self.normalize(vectors, wsl, hsl, _dsl)
-    vectors.each do |vector, i|
+    vectors.each do |vector|
       vector.x *= wsl
       vector.y *= hsl
       vector.z *= hsl
     end
 
-    vectors.each_with_index do |vector, i|
-        prev_edge = Edge.new(vectors[(i - 1) % vectors.size], vector)
-        next_edge = Edge.new(vector, vectors[(i + 1) % vectors.size])
-        pe_dc, pe_vec = prev_edge.directional_change_vec
-        ne_dc, ne_vec = next_edge.directional_change_vec
-        cdr, cpe, cne = change_dir(pe_dc, ne_dc)
-        next unless !cdr.nil?
-        dpe_dc, dne_dc = corner_change(cdr, cpe, cne, pe_vec, ne_vec)
-        cpe_dc = vector.instance_variable_get("@#{cpe}")
-        cne_dc = vector.instance_variable_get("@#{cne}")
-        vector.instance_variable_set("@#{cpe}", cpe_dc + dpe_dc)
-        vector.instance_variable_set("@#{cne}", cne_dc + dne_dc)
+    # vectors.each_with_index do |vector, i|
+    #     prev_edge = Edge.new(vectors[(i - 1) % vectors.size], vector)
+    #     next_edge = Edge.new(vector, vectors[(i + 1) % vectors.size])
+    #     pe_dc, pe_vec = prev_edge.directional_change_vec
+    #     ne_dc, ne_vec = next_edge.directional_change_vec
+    #     cdr, cpe, cne = change_dir(pe_dc, ne_dc)
+    #     next unless !cdr.nil?
+    #     dpe_dc, dne_dc = corner_change(cdr, cpe, cne, pe_vec, ne_vec)
+    #     cpe_dc = vector.instance_variable_get("@#{cpe}")
+    #     cne_dc = vector.instance_variable_get("@#{cne}")
+    #     vector.instance_variable_set("@#{cpe}", cpe_dc + dpe_dc)
+    #     vector.instance_variable_set("@#{cne}", cne_dc + dne_dc)
 
-    end
+    # end
 
     vectors
   end
@@ -218,5 +218,4 @@ module Routing
     end
   end
 
-  def generate_staple_strands; end
 end
