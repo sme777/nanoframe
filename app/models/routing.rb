@@ -218,5 +218,4 @@ module Routing
     end
   end
 
-  def generate_staple_strands; end
 end

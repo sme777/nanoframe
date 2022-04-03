@@ -5,6 +5,9 @@ class CatmullRomCurve3 < Curve
     curve_points = []
     divisions_per_edge = (divisions / @points.size).floor.zero? ? 2 : (divisions / @points.size).floor
     @points.size.times do |i|
+      if i == (@points.size - 1) && !@ends_connect
+        next
+      end
       p0, p1, p2, p3 = adjacent_points(i)
       alpha = 0.5
 

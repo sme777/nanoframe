@@ -17,6 +17,10 @@ class Breaker
       @width = dimensions[0]
       @height = dimensions[1]
       @depth = dimensions[2]
+
+      @w_step = (dimensions[0] / SSDNA_NT_DIST) / @segments
+      @h_step = (dimensions[1] / SSDNA_NT_DIST) / @segments
+      @d_step = (dimensions[2] / SSDNA_NT_DIST) / @segments
     when :tetrahedron
       @radius = dimensions[0]
     end
@@ -76,14 +80,14 @@ class Breaker
     model.enforce(y >= 20)
     model.enforce(x <= 60)
     model.enforce(y <= 60)
-    model.enforce(0.5 * x + 0.5 * y + z1 >= @width)
-    model.enforce(0.5 * x + 0.5 * y + z2 >= @height)
-    model.enforce(0.5 * x + 0.5 * y + z1 <= @width)
-    model.enforce(0.5 * x + 0.5 * y + z2 <= @height)
-    model.enforce(x + z3 >= @width)
-    model.enforce(y + z4 >= @height)
-    model.enforce(x + z3 <= @width)
-    model.enforce(y + z4 <= @height)
+    model.enforce(0.5 * x + 0.5 * y + z1 >= @w_step)
+    model.enforce(0.5 * x + 0.5 * y + z2 >= @h_step)
+    model.enforce(0.5 * x + 0.5 * y + z1 <= @w_step)
+    model.enforce(0.5 * x + 0.5 * y + z2 <= @h_step)
+    model.enforce(x + z3 >= @w_step)
+    model.enforce(y + z4 >= @h_step)
+    model.enforce(x + z3 <= @w_step)
+    model.enforce(y + z4 <= @h_step)
     model.enforce(2 * s2 * x + 4 * s * y + 2 * s * z1 + 2 * s * z2 + (s2 - s) * z3 + (s2 - s) * z4 <= @scaff_length)
     # z1, z2, z3, z4 filtered restraints
     model.enforce(z1 >= 0)

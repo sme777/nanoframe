@@ -28,9 +28,12 @@ if (signOutBtn != null || boxState != null) {
     let line0, line1, line2, line3, line4, line5, line6, line7
     let canvasContainer, canvasContainerWidth, canvasContainerHeight
     let routingColors
+    let isInterpolated
     let sequence = []
 
-    let papaGroup = new THREE.Group()
+    let interpolatedGroup = new THREE.Group()
+    let linearGroup = new THREE.Group()
+    let currentGroup
 
     let toggle = 0
     let sphereInter
@@ -64,7 +67,7 @@ if (signOutBtn != null || boxState != null) {
         
     }
 
-    function generateDisplay(scene, camera, positions=psz, residualEdges = false, fullDisplay = true, start = 0, end = scaffold_length * 3) {
+    function generateDisplay(positions=linear_points, type='linear', residualEdges = false, fullDisplay = true, start = 0, end = scaffold_length * 3) {
         let colors = []
         const divisions = 7219
         // console.log(positions)
@@ -110,36 +113,45 @@ if (signOutBtn != null || boxState != null) {
 
         if (!residualEdges) {
             line0 = new Line2(geometry, matLine)
-            // line0.computeLineDistances()
-            // line0.scale.set(1, 1, 1)
-            
-            // scene.add(line0)
-            // console.log(scene.toJSON())
+   
             const geo = new THREE.BufferGeometry()
             geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
             geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
             line1 = new THREE.Line(geo, matLineBasic)
             line1.computeLineDistances()
             line1.visible = false
-            // scene.add(line1)
-            // camera.lookAt(line0.position)
+
             if (fullDisplay) {
-                // papaGroup.add(line0)
-                // line0.geometry.center()
+                if (type === 'linear') {
+                    linearGroup.add(line0)
+                } else if (type == 'interpolated') {
+                    interpolatedGroup.add(line0)
+                }
+                
             }
 
         } else {
             line2 = new Line2(geometry, matLine)
             line2.computeLineDistances()
             line2.scale.set(1, 1, 1)
-            scene.add(line2)
             const geo = new THREE.BufferGeometry()
             geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
             geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
             line3 = new THREE.Line(geo, matLineBasic)
             line3.computeLineDistances()
-            line3.visible = false
-            scene.add(line3)
+            // line3.visible = false
+        }
+    }
+
+    function updateDisplay(scene) {
+        scene.remove(currentGroup)
+
+        if (isInterpolated) {
+            currentGroup = interpolatedGroup
+            scene.add(currentGroup)
+        } else {
+            currentGroup = linearGroup
+            scene.add(currentGroup)
         }
     }
 
@@ -147,16 +159,17 @@ if (signOutBtn != null || boxState != null) {
      * 
      */
     function clearDisplay(scene) {
-        let temp
-        for (let i = 0; i < 8; i++) {
-            temp = eval(`line${i}`)
-            if (temp == undefined) {
-                continue
-            }
-            temp.geometry.dispose()
-            temp.material.dispose()
-            scene.remove(temp)
-        }
+        scene.remove(currentGroup)
+        // let temp
+        // for (let i = 0; i < 8; i++) {
+        //     temp = eval(`line${i}`)
+        //     if (temp == undefined) {
+        //         continue
+        //     }
+        //     temp.geometry.dispose()
+        //     temp.material.dispose()
+        //     scene.remove(temp)
+        // }
     }
 
     /**
@@ -228,7 +241,7 @@ if (signOutBtn != null || boxState != null) {
 
         return [positions, colors]
     }
-    let psz, start, length
+    let linear_points, interpolated_points, start, length
     let simpleObjectSets
 
     for (let i = 0; i < size; i++) {
@@ -242,6 +255,9 @@ if (signOutBtn != null || boxState != null) {
             canvas = document.getElementById("visualize-webgl")
             staples = JSON.parse(document.getElementById("staples-container").value)
         }
+
+        console.log("scaffold", graph_json)
+        console.log("staples", staples)
         
         scaffold_length = graph_json["scaffold_length"]
         segments = graph_json["segments"]
@@ -272,47 +288,36 @@ if (signOutBtn != null || boxState != null) {
         // simpleObjectSets = convertToVector3D(graph_json["alg"])
         start = graph_json["start"]
         length = graph_json["length"]
-        psz = graph_json["positions"]
-       
+        linear_points = graph_json["linear_points"]
+        interpolated_points = graph_json["interpolated_points"]
 
         /**
          * test start
          */
-
-        for (let i = 0; i < staples.positions.length / 4; i++) {
-            let staple_points = staples.positions[i]
-            let staple_colors = Array(staples.positions[i].length).fill(0.5)
-            let geometry = new LineGeometry()
-            geometry.setPositions(staple_points)
-            geometry.setColors(staple_colors)
-           
-            let staple_line = new Line2(geometry, matLine)
-                 // line0.computeLineDistances()
-                 // line0.scale.set(1, 1, 1)
-                 camera.lookAt(staple_line.position)
-            // staple_line.geometry.center()
-            // scene.add(staple_line)
-                 // console.log(scene.toJSON())
-                 let staple_geo = new THREE.BufferGeometry()
-            staple_geo.setAttribute('position', new THREE.Float32BufferAttribute(staple_points, 3))
-            staple_geo.setAttribute('color', new THREE.Float32BufferAttribute(staple_colors, 3))
-            let staple_line1 = new THREE.Line(staple_geo, matLineBasic)
-            staple_line1.computeLineDistances()
-            staple_line1.visible = false
-            papaGroup.add(staple_line)
-            // scene.add(staple_line1)
-        }
-
         
-        new THREE.Box3().setFromObject( papaGroup ).getCenter( papaGroup.position ).multiplyScalar( - 1 );
-        scene.add(papaGroup)
+
+        let stapleLinearGroup = new THREE.Group()
+        let stapleInterpolatedGroup = new THREE.Group()
+        stapleLinearGroup.visible = false
+        stapleInterpolatedGroup.visible = false
+        generateStapleGroup(staples.linear, stapleLinearGroup)
+        generateStapleGroup(staples.interpolated, stapleInterpolatedGroup)
+
+        linearGroup.add(stapleLinearGroup)
+        interpolatedGroup.add(stapleInterpolatedGroup)
+        // interpolatedGroup.add(stapleGroup)
+        new THREE.Box3().setFromObject(linearGroup).getCenter(linearGroup.position).multiplyScalar(-1)
+        new THREE.Box3().setFromObject(interpolatedGroup).getCenter(interpolatedGroup.position).multiplyScalar(-1)
+        currentGroup = linearGroup
+        scene.add(currentGroup)
  
 
         /**
          * test end
          */
 
-        generateDisplay(scene, camera)
+        generateDisplay(linear_points, 'linear')
+        generateDisplay(interpolated_points, 'interpolated')
 
         let controls = new OrbitControls(camera, renderer.domElement)
         controls.minDistance = 10
@@ -335,6 +340,30 @@ if (signOutBtn != null || boxState != null) {
 
         
         requestAnimationFrame(render)
+
+
+        function generateStapleGroup(staples, group) {
+            for (let i = 0; i < staples.length; i++) {
+                let staple_points = staples[i]
+                let staple_colors = Array(staples[i].length).fill(0)
+                let geometry = new LineGeometry()
+                geometry.setPositions(staple_points)
+                geometry.setColors(staple_colors)
+               
+                let staple_line = new Line2(geometry, matLine)
+
+                     camera.lookAt(staple_line.position)
+
+                let staple_geo = new THREE.BufferGeometry()
+                staple_geo.setAttribute('position', new THREE.Float32BufferAttribute(staple_points, 3))
+                staple_geo.setAttribute('color', new THREE.Float32BufferAttribute(staple_colors, 3))
+                let staple_line1 = new THREE.Line(staple_geo, matLineBasic)
+                staple_line1.computeLineDistances()
+                staple_line1.visible = false
+                group.add(staple_line)
+                // scene.add(staple_line1)
+            }
+        }
 
         function convertToVector3D(vertices) {
             let vectors = []
@@ -443,22 +472,24 @@ if (signOutBtn != null || boxState != null) {
             toggle += clock.getDelta()
             requestAnimationFrame(render)
         }
-
+        console.log(visualize)
         if (visualize) {
             // const algs = graph_json['alg']//document.getElementById("set-values").value = JSON.stringify(simpleObjectSets)
             const box = document.getElementById("box-state")
             const boxLabel = document.getElementById("box-state-label")
-            let scp = Algorithms.findStrongestConnectedComponents(simpleObjectSets, 1 / 3, [width, height, depth])
-
+            // let scp = Algorithms.findStrongestConnectedComponents(simpleObjectSets, 1 / 3, [width, height, depth])
+            const stapleToggler = document.getElementById("box-state-staples")
+            const interpolationToggler = document.getElementById("box-state-interpolated")
+            
             box.addEventListener("click", () => {
                 if (box.checked) {
                     boxLabel.innerHTML = "Close Form"
                     clearDisplay(scene)
                     // console.log(psz)
-                    const dpsz = psz.concat(psz)
+                    const dpsz = linear_points.concat(linear_points)
                     console.log(scp)
-                    generateDisplay(scene, camera, psz, false, false, scp[2]* 3 * 30, scp[2]* 3 + scp[0].length * 3 * 30)
-                    generateDisplay(scene, camera, psz, true, false, scp[3] *3 * 30, scp[1].length * 3 + scp[3] *3 * 30)
+                    generateDisplay(linear_points, false, false, scp[2]* 3 * 30, scp[2]* 3 + scp[0].length * 3 * 30)
+                    generateDisplay(linear_points, true, false, scp[3] *3 * 30, scp[1].length * 3 + scp[3] *3 * 30)
                     // generateDisplay(scene, camera, dpsz.slice(start, start + length), false, false, start)
                     // generateDisplay(scene, camera, dpsz.slice(start + length, psz.length + start), true, false, (start + length - 1) % psz.length)
                     // connectEnds(scene)
@@ -466,9 +497,25 @@ if (signOutBtn != null || boxState != null) {
                 } else {
                     boxLabel.innerHTML = "Open Form"
                     clearDisplay(scene)
-                    generateDisplay(scene, camera, psz, false, true, 0)
+                    generateDisplay(linear_points, false, true, 0)
                 }
             })
+
+
+            stapleToggler.addEventListener("click", () => {
+                if (isInterpolated) {
+                    stapleInterpolatedGroup.visible = !stapleInterpolatedGroup.visible
+                } else {
+                    stapleLinearGroup.visible = !stapleLinearGroup.visible
+                }
+                
+            })
+
+            interpolationToggler.addEventListener("click", () => {
+                isInterpolated = !isInterpolated
+                updateDisplay(scene)
+            })
+            
         }
     }
 

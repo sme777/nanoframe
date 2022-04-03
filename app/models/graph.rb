@@ -19,11 +19,10 @@ class Graph
     @edges = v_and_e[1]
     @template_planes = find_four_planes
     @planes, @raw_planes = find_plane_combination(@template_planes)
-    @sorted_planes, @spline_points = generate_spline_points
+    @sorted_planes, @linear_points, @interpolated_points = generate_spline_points
     @opening_start, @length = open_structure
-    update_generator_vertices(@sorted_planes, @spline_points)
+    update_generator_vertices(@linear_points, @interpolated_points)
     @staples = generate_staples
-    byebug
     update_generator_staples(@staples)
   end
 
@@ -68,7 +67,6 @@ class Graph
 
       end
     when :tetrahedron
-      # byebug
       v = get_vertices(:triangle)
       stripes = connect_vertices(v)
       e = get_edges(stripes)
@@ -90,16 +88,20 @@ class Graph
     vertices
   end
 
-  def update_generator_vertices(routing_vertices, routing_points)
+  def update_generator_vertices(linear_points, interpolated_points)
     gen = Generator.find_by(id: @generator_id)
-    gen.update(vertices: JSON.generate({ vertices: routing_vertices, points: routing_points }))
+    gen.update(vertices: JSON.generate({ linear_points: linear_points, interpolated_points: interpolated_points }))
   end
 
   def update_generator_staples(staples)
-    staple_points = []
-    staples.each {|staple| staple_points << Vertex.flatten(staple.points) }
+    staple_lin_points = []
+    staple_int_points = []
+    staples.each do |staple|
+      staple_lin_points << Vertex.flatten(staple.linear_points)
+      staple_int_points << Vertex.flatten(staple.interpolated_points)
+    end
     gen = Generator.find_by(id: @generator_id)
-    gen.update(staples: JSON.generate({ positions: staple_points }))
+    gen.update(staples: JSON.generate({ linear: staple_lin_points, interpolated: staple_int_points }))
   end
 
   def connect_vertices(vs)
@@ -123,7 +125,6 @@ class Graph
     undisected_edges = stripes.clone
     (0..undisected_edges.length).each do |i|
       (0..undisected_edges.length).each do |j|
-        # byebug
         if i == j
           next
         elsif intersect(undisected_edges[i], undisected_edges[j])
@@ -477,16 +478,25 @@ class Graph
 
   def generate_spline_points
     plane_copy = Marshal.load(Marshal.dump(@planes))
-    sorted_planes = Routing.sort_sets(plane_copy)
+    sorted_vertices = Routing.sort_sets(plane_copy)
     
-    normalized_planes = Routing.normalize(sorted_planes, @width / @segments.to_f, @height / @segments.to_f,
+    normalized_vertices = Routing.normalize(sorted_vertices, @width / @segments.to_f, @height / @segments.to_f,
                                           @depth / @segments.to_f)
-    spline = CatmullRomCurve3.new(normalized_planes)
+    # spline = CatmullRomCurve3.new(normalized_planes)
+    
+    sampled_points = []
+    normalized_vertices.each_with_index do |vertex, i|
+      dr_ch = Edge.new(vertex, normalized_vertices[(i+1) % normalized_vertices.size]).directional_change
+      sampled_points.concat(Vertex.linspace(dr_ch, 30, vertex, normalized_vertices[(i+1) % normalized_vertices.size]))
+    end
+    spline = CatmullRomCurve3.new(normalized_vertices)
     spline_points = Vertex.flatten(spline.generate(7249))
-    [sorted_planes, spline_points]
+    sampled_points = Vertex.flatten(sampled_points)
+    [sorted_vertices, sampled_points, spline_points]
   end
 
   def generate_staples
+    
     constraints = @staple_breaker.staples_preprocess
     staple_len_arr = @staple_breaker.ilp(constraints)
     staple_adj_len_arr = @staple_breaker.staples_postprocess(staple_len_arr)
@@ -502,7 +512,7 @@ class Graph
   def to_json(*_args)
     return nil if @planes.nil?
 
-    JSON.generate({ "scaffold_length": 7249, "start": @opening_start, "length": @length, "positions": @spline_points })
+    JSON.generate({ "scaffold_length": 7249, "start": @opening_start, "length": @length, "linear_points": @linear_points, "interpolated_points": @interpolated_points })
   end
 
   # Generates JSON file for unscaled planes of the graph
