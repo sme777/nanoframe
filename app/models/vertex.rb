@@ -68,11 +68,10 @@ class Vertex
 
   def self.linspace(dr, samples, start_v, end_v)
     v = Vertex.new(0, 0, 0)
-    [*0..(samples - 1)].collect do |i| 
+    [*0..(samples - 1)].collect do |i|
       v.instance_variable_set("@#{dr}", i.to_f)
       start_v + v * (end_v - start_v) / (samples.to_f - 1)
     end
-
   end
 
   def self.overload_operator(opr)

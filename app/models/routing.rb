@@ -88,22 +88,22 @@ module Routing
   end
 
   def self.change_dir(prev_dr, next_dr)
-    if (prev_dr == :x && next_dr == :z) 
-      [:hor, :x, :z]
-    elsif (prev_dr == :x && next_dr == :y) 
-      [:hor, :x, :y]
-    elsif(prev_dr == :z && next_dr == :y)
-      [:hor, :z, :y]
-    elsif (prev_dr == :z && next_dr == :x)
-      [:vert, :z, :x]
-    elsif (prev_dr == :y && next_dr == :x)
-      [:vert, :y, :x]
-    elsif (prev_dr == :y && next_dr == :z)
-      [:vert, :y, :z]
+    if prev_dr == :x && next_dr == :z
+      %i[hor x z]
+    elsif prev_dr == :x && next_dr == :y
+      %i[hor x y]
+    elsif prev_dr == :z && next_dr == :y
+      %i[hor z y]
+    elsif prev_dr == :z && next_dr == :x
+      %i[vert z x]
+    elsif prev_dr == :y && next_dr == :x
+      %i[vert y x]
+    elsif prev_dr == :y && next_dr == :z
+      %i[vert y z]
     end
   end
 
-  def self.corner_change(cdr, cpe, cne, dpe, dne)
+  def self.corner_change(cdr, _cpe, _cne, dpe, dne)
     if cdr == :hor
       if dpe < 0 && dne < 0
         dpe_shift = -0.5
@@ -118,20 +118,18 @@ module Routing
         dpe_shift = 0.5
         dne_shift = 0.5
       end
-    else
-      if dne > 0 && dpe > 0
-        dpe_shift = -0.5
-        dne_shift = 0.5
-      elsif dne < 0 && dpe < 0
-        dpe_shift = +0.5
-        dne_shift = 0.5
-      elsif dne > 0 && dpe < 0
-        dpe_shift = 0.5
-        dne_shift = 0.5
-      elsif dne < 0 && dpe > 0
-        dpe_shift = -0.5
-        dne_shift = -0.5
-      end
+    elsif dne > 0 && dpe > 0
+      dpe_shift = -0.5
+      dne_shift = 0.5
+    elsif dne < 0 && dpe < 0
+      dpe_shift = +0.5
+      dne_shift = 0.5
+    elsif dne > 0 && dpe < 0
+      dpe_shift = 0.5
+      dne_shift = 0.5
+    elsif dne < 0 && dpe > 0
+      dpe_shift = -0.5
+      dne_shift = -0.5
     end
     [dpe_shift, dne_shift]
   end
@@ -217,5 +215,4 @@ module Routing
       5
     end
   end
-
 end

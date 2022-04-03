@@ -45,7 +45,6 @@ gem 'rubyzip'
 # Loggers
 gem 'oink'
 gem 'unicorn'
-
 gem 'ruby-cbc'
 # gem 'rack-timeout'
 group :development, :test do

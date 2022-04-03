@@ -6,236 +6,233 @@
 // }
 
 #playground-canvas {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100vw;
-    height: 100vh;
-    display: block;
-    z-index: -1;
-
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: -1;
 }
 
 .playgroundContainer {
-    margin: 3% 0;
+  margin: 3% 0;
 }
 
 .diagram {
-    display: block;
+  display: block;
 }
 
 .playground-item {
-    width: 100%;
-    height: 25vh;
+  width: 100%;
+  height: 25vh;
 }
 
 .playground {
-    width: 100%;
-    height: 80vh
+  width: 100%;
+  height: 80vh;
 }
 
 .left {
-    text-align: center;
-    margin-right: .25em;
+  text-align: center;
+  margin-right: 0.25em;
 }
 .right {
-    text-align: center;
-    margin-left: .25em;
+  text-align: center;
+  margin-left: 0.25em;
 }
 
 .sidebarSearch {
-    position: relative;
-    padding: 0 5%;
+  position: relative;
+  padding: 0 5%;
 }
 
-
 .sidebarSearchField {
-    padding: 17px;
-    padding-left: 35px;
-    width: 100%;
-    border: 1px solid #f5f5f5;
-    font-size: 18px;
-    font-family: 'Source Code Pro', monospace;
-    color: gray;
-    background-image: url("http://nanoframe.s3.us-west-1.amazonaws.com/search.png");
-    background-size: 20px;
-    background-repeat: no-repeat;
-    background-position: left center;
-    outline: 0;
+  padding: 17px;
+  padding-left: 35px;
+  width: 100%;
+  border: 1px solid #f5f5f5;
+  font-size: 18px;
+  font-family: "Source Code Pro", monospace;
+  color: gray;
+  background-image: url("http://nanoframe.s3.us-west-1.amazonaws.com/search.png");
+  background-size: 20px;
+  background-repeat: no-repeat;
+  background-position: left center;
+  outline: 0;
 }
 
 .exitSearchBar {
-    display: none;
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    right: 7.5%;
-    top: 25%;
-    background-image: url("http://nanoframe.s3.us-west-1.amazonaws.com/close.png");
-    background-size: 20px;
-    background-repeat: no-repeat;
+  display: none;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  right: 7.5%;
+  top: 25%;
+  background-image: url("http://nanoframe.s3.us-west-1.amazonaws.com/close.png");
+  background-size: 20px;
+  background-repeat: no-repeat;
 }
 
 .sidebarHeader {
-    padding: 0 5%;
+  padding: 0 5%;
 }
 
 .sidebarContent {
-    max-height: 75vh;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    direction: ltr;
+  max-height: 75vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  direction: ltr;
 }
 
 .playgroundItemTitle {
-    margin: 0 0; 
+  margin: 0 0;
 }
 
 .sidebar {
-    padding-top: 5%;
-    padding-bottom: 5%;
-    // box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
-
+  padding-top: 5%;
+  padding-bottom: 5%;
+  // box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+    rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 }
 
 .playgroundItem {
-    position: relative;
+  position: relative;
 }
 
 .itemToPlayGround {
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    right: 7.5%;
-    top: 7.5%;
-    background-image: url("https://nanoframe.s3.us-west-1.amazonaws.com/plus.png");
-    background-size: 20px;
-    background-repeat: no-repeat;
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  right: 7.5%;
+  top: 7.5%;
+  background-image: url("https://nanoframe.s3.us-west-1.amazonaws.com/plus.png");
+  background-size: 20px;
+  background-repeat: no-repeat;
 }
 
 .itemToPlayGround:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
-
 .itemFont {
-    font-size: 20px;
-    font-weight: 600;
-    font-family: 'Source Code Pro', monospace;
-    // font-family: 'Source Sans Pro', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  font-family: "Source Code Pro", monospace;
+  // font-family: 'Source Sans Pro', sans-serif;
 }
 
 .itemHeaderFont {
-    font-family: 'Source Sans Pro', sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
 }
 
 .itemDescriptionContainer {
-    margin: 0 20px;
+  margin: 0 20px;
 }
 
 .itemDescription:hover {
-    color: #1C658C;
-    cursor: help;
+  color: #1c658c;
+  cursor: help;
 }
 
 .createCustomShape {
-    padding-top: 5%;
-    margin: 0;
-    text-align: right;
+  padding-top: 5%;
+  margin: 0;
+  text-align: right;
 }
 
 .uploadCustomShape {
-    padding-top: 5%;
-    margin: 0;
-    text-align: left;
+  padding-top: 5%;
+  margin: 0;
+  text-align: left;
 }
 
 .createCustomButton {
-    margin: 0;
-    padding: 0;
-    text-decoration: none;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
 }
 
 .uploadCustomButton {
-    margin: 0;
-    padding: 0;
-    text-decoration: none;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
 }
 
 #customFileInput {
-    display: none;
+  display: none;
 }
 
 .createCustomFieldContainer {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    -webkit-transform: translate(-50%, -50%);
-    -moz-transform: translate(-50%, -50%);
-    -o-transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
-    background-color: white;
-    border-radius: 2%;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 2%;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 
-    opacity: 1;
-    filter: alpha(opacity=100);
+  opacity: 1;
+  filter: alpha(opacity=100);
 }
 
 .formCloseButton {
-    cursor: pointer;
-    width: 20px;
-    height: auto;
-    position: absolute;
-    top: 5%;
-    right: 3%;
+  cursor: pointer;
+  width: 20px;
+  height: auto;
+  position: absolute;
+  top: 5%;
+  right: 3%;
 }
 
 .playgroundToolbar {
-    // margin-left: 1%;
-    padding: 0.5% 5%;
-    width: 100%;
-    height: auto;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  // margin-left: 1%;
+  padding: 0.5% 5%;
+  width: 100%;
+  height: auto;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 
 .playgroundToolbarHelpers {
-    justify-content: right;
+  justify-content: right;
 }
 
 .fullscreen {
-    padding: 5px 0;
-    width: 30px;
+  padding: 5px 0;
+  width: 30px;
 }
 
 .fullscreen:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .camera {
-    margin: 0 10px; 
-    padding: 5px 0;
-    width: 30px;
+  margin: 0 10px;
+  padding: 5px 0;
+  width: 30px;
 }
 
 .camera:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .settingButton {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .save {
-    width: 25px;
-    padding: 5px 0;
-    margin-top: 10%; 
+  width: 25px;
+  padding: 5px 0;
+  margin-top: 10%;
 }
 
 .save:hover {
-    cursor: pointer;
+  cursor: pointer;
 }

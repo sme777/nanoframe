@@ -1,11 +1,11 @@
 import {
-	EventDispatcher,
-	Matrix4,
-	Plane,
-	Raycaster,
-	Vector2,
-	Vector3
-} from 'three';
+  EventDispatcher,
+  Matrix4,
+  Plane,
+  Raycaster,
+  Vector2,
+  Vector3,
+} from "three";
 
 const _plane = new Plane();
 const _raycaster = new Raycaster();
@@ -17,204 +17,173 @@ const _worldPosition = new Vector3();
 const _inverseMatrix = new Matrix4();
 
 class DragControls extends EventDispatcher {
+  constructor(_objects, _camera, _domElement) {
+    super();
 
-	constructor( _objects, _camera, _domElement ) {
+    _domElement.style.touchAction = "none"; // disable touch scroll
 
-		super();
+    let _selected = null,
+      _hovered = null;
 
-		_domElement.style.touchAction = 'none'; // disable touch scroll
+    const _intersections = [];
 
-		let _selected = null, _hovered = null;
+    //
 
-		const _intersections = [];
+    const scope = this;
 
-		//
+    function activate() {
+      _domElement.addEventListener("pointermove", onPointerMove);
+      _domElement.addEventListener("pointerdown", onPointerDown);
+      _domElement.addEventListener("pointerup", onPointerCancel);
+      _domElement.addEventListener("pointerleave", onPointerCancel);
+    }
 
-		const scope = this;
+    function deactivate() {
+      _domElement.removeEventListener("pointermove", onPointerMove);
+      _domElement.removeEventListener("pointerdown", onPointerDown);
+      _domElement.removeEventListener("pointerup", onPointerCancel);
+      _domElement.removeEventListener("pointerleave", onPointerCancel);
 
-		function activate() {
+      _domElement.style.cursor = "";
+    }
 
-			_domElement.addEventListener( 'pointermove', onPointerMove );
-			_domElement.addEventListener( 'pointerdown', onPointerDown );
-			_domElement.addEventListener( 'pointerup', onPointerCancel );
-			_domElement.addEventListener( 'pointerleave', onPointerCancel );
+    function dispose() {
+      deactivate();
+    }
 
-		}
+    function getObjects() {
+      return _objects;
+    }
 
-		function deactivate() {
+    function getRaycaster() {
+      return _raycaster;
+    }
 
-			_domElement.removeEventListener( 'pointermove', onPointerMove );
-			_domElement.removeEventListener( 'pointerdown', onPointerDown );
-			_domElement.removeEventListener( 'pointerup', onPointerCancel );
-			_domElement.removeEventListener( 'pointerleave', onPointerCancel );
+    function onPointerMove(event) {
+      if (scope.enabled === false) return;
 
-			_domElement.style.cursor = '';
+      updatePointer(event);
 
-		}
+      _raycaster.setFromCamera(_pointer, _camera);
 
-		function dispose() {
+      if (_selected) {
+        if (_raycaster.ray.intersectPlane(_plane, _intersection)) {
+          _selected.position.copy(
+            _intersection.sub(_offset).applyMatrix4(_inverseMatrix)
+          );
+        }
 
-			deactivate();
+        scope.dispatchEvent({ type: "drag", object: _selected });
 
-		}
+        return;
+      }
 
-		function getObjects() {
+      // hover support
 
-			return _objects;
+      if (event.pointerType === "mouse" || event.pointerType === "pen") {
+        _intersections.length = 0;
 
-		}
+        _raycaster.setFromCamera(_pointer, _camera);
+        _raycaster.intersectObjects(_objects, true, _intersections);
 
-		function getRaycaster() {
+        if (_intersections.length > 0) {
+          const object = _intersections[0].object;
 
-			return _raycaster;
+          _plane.setFromNormalAndCoplanarPoint(
+            _camera.getWorldDirection(_plane.normal),
+            _worldPosition.setFromMatrixPosition(object.matrixWorld)
+          );
 
-		}
+          if (_hovered !== object && _hovered !== null) {
+            scope.dispatchEvent({ type: "hoveroff", object: _hovered });
 
-		function onPointerMove( event ) {
+            _domElement.style.cursor = "auto";
+            _hovered = null;
+          }
 
-			if ( scope.enabled === false ) return;
+          if (_hovered !== object) {
+            scope.dispatchEvent({ type: "hoveron", object: object });
 
-			updatePointer( event );
+            _domElement.style.cursor = "pointer";
+            _hovered = object;
+          }
+        } else {
+          if (_hovered !== null) {
+            scope.dispatchEvent({ type: "hoveroff", object: _hovered });
 
-			_raycaster.setFromCamera( _pointer, _camera );
+            _domElement.style.cursor = "auto";
+            _hovered = null;
+          }
+        }
+      }
+    }
 
-			if ( _selected ) {
+    function onPointerDown(event) {
+      if (scope.enabled === false) return;
 
-				if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
+      updatePointer(event);
 
-					_selected.position.copy( _intersection.sub( _offset ).applyMatrix4( _inverseMatrix ) );
+      _intersections.length = 0;
 
-				}
+      _raycaster.setFromCamera(_pointer, _camera);
+      _raycaster.intersectObjects(_objects, true, _intersections);
 
-				scope.dispatchEvent( { type: 'drag', object: _selected } );
+      if (_intersections.length > 0) {
+        _selected =
+          scope.transformGroup === true
+            ? _objects[0]
+            : _intersections[0].object;
 
-				return;
+        _plane.setFromNormalAndCoplanarPoint(
+          _camera.getWorldDirection(_plane.normal),
+          _worldPosition.setFromMatrixPosition(_selected.matrixWorld)
+        );
 
-			}
+        if (_raycaster.ray.intersectPlane(_plane, _intersection)) {
+          _inverseMatrix.copy(_selected.parent.matrixWorld).invert();
+          _offset
+            .copy(_intersection)
+            .sub(_worldPosition.setFromMatrixPosition(_selected.matrixWorld));
+        }
 
-			// hover support
+        _domElement.style.cursor = "move";
 
-			if ( event.pointerType === 'mouse' || event.pointerType === 'pen' ) {
+        scope.dispatchEvent({ type: "dragstart", object: _selected });
+      }
+    }
 
-				_intersections.length = 0;
+    function onPointerCancel() {
+      if (scope.enabled === false) return;
 
-				_raycaster.setFromCamera( _pointer, _camera );
-				_raycaster.intersectObjects( _objects, true, _intersections );
+      if (_selected) {
+        scope.dispatchEvent({ type: "dragend", object: _selected });
 
-				if ( _intersections.length > 0 ) {
+        _selected = null;
+      }
 
-					const object = _intersections[ 0 ].object;
+      _domElement.style.cursor = _hovered ? "pointer" : "auto";
+    }
 
-					_plane.setFromNormalAndCoplanarPoint( _camera.getWorldDirection( _plane.normal ), _worldPosition.setFromMatrixPosition( object.matrixWorld ) );
+    function updatePointer(event) {
+      const rect = _domElement.getBoundingClientRect();
 
-					if ( _hovered !== object && _hovered !== null ) {
+      _pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      _pointer.y = (-(event.clientY - rect.top) / rect.height) * 2 + 1;
+    }
 
-						scope.dispatchEvent( { type: 'hoveroff', object: _hovered } );
+    activate();
 
-						_domElement.style.cursor = 'auto';
-						_hovered = null;
+    // API
 
-					}
+    this.enabled = true;
+    this.transformGroup = false;
 
-					if ( _hovered !== object ) {
-
-						scope.dispatchEvent( { type: 'hoveron', object: object } );
-
-						_domElement.style.cursor = 'pointer';
-						_hovered = object;
-
-					}
-
-				} else {
-
-					if ( _hovered !== null ) {
-
-						scope.dispatchEvent( { type: 'hoveroff', object: _hovered } );
-
-						_domElement.style.cursor = 'auto';
-						_hovered = null;
-
-					}
-
-				}
-
-			}
-
-		}
-
-		function onPointerDown( event ) {
-
-			if ( scope.enabled === false ) return;
-
-			updatePointer( event );
-
-			_intersections.length = 0;
-
-			_raycaster.setFromCamera( _pointer, _camera );
-			_raycaster.intersectObjects( _objects, true, _intersections );
-
-			if ( _intersections.length > 0 ) {
-
-				_selected = ( scope.transformGroup === true ) ? _objects[ 0 ] : _intersections[ 0 ].object;
-
-				_plane.setFromNormalAndCoplanarPoint( _camera.getWorldDirection( _plane.normal ), _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );
-
-				if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
-
-					_inverseMatrix.copy( _selected.parent.matrixWorld ).invert();
-					_offset.copy( _intersection ).sub( _worldPosition.setFromMatrixPosition( _selected.matrixWorld ) );
-
-				}
-
-				_domElement.style.cursor = 'move';
-
-				scope.dispatchEvent( { type: 'dragstart', object: _selected } );
-
-			}
-
-
-		}
-
-		function onPointerCancel() {
-
-			if ( scope.enabled === false ) return;
-
-			if ( _selected ) {
-
-				scope.dispatchEvent( { type: 'dragend', object: _selected } );
-
-				_selected = null;
-
-			}
-
-			_domElement.style.cursor = _hovered ? 'pointer' : 'auto';
-
-		}
-
-		function updatePointer( event ) {
-
-			const rect = _domElement.getBoundingClientRect();
-
-			_pointer.x = ( event.clientX - rect.left ) / rect.width * 2 - 1;
-			_pointer.y = - ( event.clientY - rect.top ) / rect.height * 2 + 1;
-
-		}
-
-		activate();
-
-		// API
-
-		this.enabled = true;
-		this.transformGroup = false;
-
-		this.activate = activate;
-		this.deactivate = deactivate;
-		this.dispose = dispose;
-		this.getObjects = getObjects;
-		this.getRaycaster = getRaycaster;
-
-	}
-
+    this.activate = activate;
+    this.deactivate = deactivate;
+    this.dispose = dispose;
+    this.getObjects = getObjects;
+    this.getRaycaster = getRaycaster;
+  }
 }
 
 export { DragControls };

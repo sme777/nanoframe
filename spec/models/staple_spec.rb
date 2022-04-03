@@ -49,8 +49,8 @@ RSpec.describe 'Staple', type: :api do
       e3.sequence = 'G' * 30
 
       staple = Staple.new(e3, e1, 15, 15, :refraction, 2)
-      expect(staple.sequence[...15]).to eq('C'*15)
-      expect(staple.sequence[17...]).to eq('T'*15)
+      expect(staple.sequence[...15]).to eq('C' * 15)
+      expect(staple.sequence[17...]).to eq('T' * 15)
       # staple1 = Staple.new(e1, e1, 15, 45, :extension)
       # expect(staple1.sequence.size).to eq(30)
       # expect(staple1.sequence[...15]).to eq('T' * 15)
@@ -60,6 +60,5 @@ RSpec.describe 'Staple', type: :api do
       # expect(staple2.sequence[...15]).to eq('T' * 15)
       # expect(staple2.sequence[16...]).to eq('G' * 15)
     end
-
   end
 end

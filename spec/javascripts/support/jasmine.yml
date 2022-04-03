@@ -38,7 +38,7 @@ stylesheets:
 #   - 'helpers/**/*.js'
 #
 helpers:
-  - 'helpers/**/*.js'
+  - "helpers/**/*.js"
 
 # spec_files
 #
@@ -51,7 +51,7 @@ helpers:
 #   - '**/*[sS]pec.js'
 #
 spec_files:
-  - '**/*[sS]pec.js'
+  - "**/*[sS]pec.js"
 
 # src_dir
 #
@@ -142,4 +142,3 @@ boot_files:
 # random: false
 #
 random:
-
