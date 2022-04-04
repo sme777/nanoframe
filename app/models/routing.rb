@@ -156,16 +156,15 @@ module Routing
   end
 
   def self.find_strongest_connected_components(edges, ratio, dims)
-    edge_size = edges.size
     max_strength = -Float::INFINITY
     edge_start = -1
     final_ratio = -1
     final_array = []
-    ratio = (edge_size * ratio).floor
-
-    (ratio...edge_size).each do |j|
-      (0...edge_size).each do |i|
-        subarray = find_subarray(edges, i, j)
+    min_edges = (edges.size * ratio).floor
+    double_egdes = edges * 2
+    (min_edges...edges.size).each do |j|
+      (0...edges.size).each do |i|
+        subarray = double_egdes[i...(i + j)]
         subarray_strength = find_subarray_strength(subarray, dims)
         next unless subarray_strength > max_strength
 
@@ -178,11 +177,6 @@ module Routing
     # fedges_size = final_array.size
     # remaining_array = find_subarray(edges, (edge_start + fedges_size - 1) % edge_size, edge_size - fedges_size)
     [edge_start, final_array.size * 3]
-  end
-
-  def self.find_subarray(edges, start, length)
-    double_egdes = edges + edges
-    double_egdes[start...(start + length)]
   end
 
   def self.find_subarray_strength(arr, dims)

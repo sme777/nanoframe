@@ -499,7 +499,12 @@ class Graph
     constraints = @staple_breaker.staples_preprocess
     staple_len_arr = @staple_breaker.ilp(constraints)
     staple_adj_len_arr = @staple_breaker.staples_postprocess(staple_len_arr)
-    @staple_breaker.generate_staple_strands(@sorted_planes, staple_adj_len_arr)
+    staples = @staple_breaker.generate_staple_strands(@sorted_planes, staple_adj_len_arr)
+    @staple_breaker.update_boundary_strands(boundary_edge, staples)
+  end
+
+  def boundary_edge
+    []
   end
 
   def open_structure(ratio = 1 / 3.to_f)

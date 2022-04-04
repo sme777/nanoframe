@@ -3,12 +3,13 @@
 require 'json'
 
 class Edge
-  attr_accessor :v1, :v2, :sequence, :adjacent_edges, :next, :prev
+  attr_accessor :v1, :v2, :sequence, :adjacent_edges, :next, :prev, :assoc_strands
 
   def initialize(v1, v2)
     @v1 = v1
     @v2 = v2
     @adjacent_edges = []
+    @assoc_strands = []
   end
 
   def string

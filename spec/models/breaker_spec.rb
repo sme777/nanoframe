@@ -34,12 +34,23 @@ RSpec.describe Atom, type: :model do
     end
 
     it 'generates correct staple positions' do
-      breaker = Breaker.new(0, [50, 50, 50], :cube, 2, 7249)
-      Routing.normalize(@vs, 25, 25, 25)
+      breaker = Breaker.new(0, [20, 20, 20], :cube, 2, 7249)
+      Routing.normalize(@vs, 10, 10, 10)
       constraints = breaker.staples_preprocess
       staple_len_arr = breaker.staples_postprocess(breaker.ilp(constraints))
 
       staples = breaker.generate_staple_strands(@vs, staple_len_arr)
+      # byebug
     end
+
+    # it 'generates correct staple positions' do
+    #   breaker = Breaker.new(0, [50, 50, 50], :cube, 2, 7249)
+    #   Routing.normalize(@vs, 25, 25, 25)
+    #   constraints = breaker.staples_preprocess
+    #   staple_len_arr = breaker.staples_postprocess(breaker.ilp(constraints))
+
+    #   staples = breaker.generate_staple_strands(@vs, staple_len_arr)
+    #   byebug
+    # end
   end
 end

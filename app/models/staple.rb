@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 class Staple
-  attr_accessor :sequence, :front, :back, :type, :linear_points, :interpolated_points
+  attr_accessor :sequence, :front, :back, :type, :next, :prev, :linear_points, :interpolated_points
 
   def initialize(front, back, start_pos, end_pos, type, buffer = 0)
     @front = front
     @back = back
     @buffer = buffer
     @type = type
+    @next = nil
+    @prev = nil
     @sequence = if front == back
                   convert(front.sequence[start_pos...end_pos] + buffer_bp)
                 else

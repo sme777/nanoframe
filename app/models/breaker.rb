@@ -173,6 +173,63 @@ class Breaker
         end
       end
     end
+    set_staple_neighbors(staples)
+    staples
+  end
+
+  def set_staple_neighbors(staples)
+    staples.each do |staple1|
+      staples.each do |staple2|
+        next unless staple1 != staple2
+
+        if staple1.type == :extension
+
+          if staple2.type == :reflection || staple2.type == :reflection
+            if staple1.front == staple2.back
+              staple1.next = staple2.object_id
+            elsif staple1.back == staple2.front
+              staple1.prev = staple2.object_id
+            end
+          end
+        # works for only relfection-refraction pairs
+        elsif staple1.type == :refraction || staple1.type == :reflection
+          if staple1.front == staple2.back
+            staple1.prev = staple2.object_id
+          elsif staple1.back == staple2.front
+            staple1.next = staple2.object_id
+          end
+        end
+      end
+    end
+  end
+
+  def update_boundary_strands(edges, staples)
+    edges.each do |edge|
+      edge.assoc_strands do |strand|
+        if strand.type == :reflection && staples.include?(strand)
+          cutoff = (staple.sequence.size/2 - 2)
+          back_sequence = staple.sequence[...cutoff]
+          front_sequence = staple.sequence[cutoff...]
+
+          back_lin_positions = staple.linear_points[...cutoff]
+          back_int_positions = staple.interpolated_points[...cutoff]
+          front_lin_positions = staple.linear_points[cutoff...]
+          front_int_positions = staple.interpolated_points[cutoff...]
+
+          staple.prev.sequence = back_sequence + staple.prev.sequence
+          staple.prev.linear_points = back_lin_positions.concat(staple.prev.linear_points)
+          staple.prev.interpolated_points = back_int_positions.concat(staple.prev.interpolated_points)
+          staple.next.sequence = staple.next.sequence + front_sequence
+          staple.next.linear_points = staple.next.linear_points.concat(front_lin_positions)
+          staple.next.interpolated_points = staple.next.interpolated_points.concat(front_int_positions)
+          # need to update positions as well
+          staple.prev.next = staple.next
+          staple.next.prev = staple.prev
+
+          staples.delete(strand)
+        end
+      end
+    end
     staples
   end
 
