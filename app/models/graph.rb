@@ -20,12 +20,15 @@ class Graph
     @template_planes = find_four_planes
     @planes, @raw_planes = find_plane_combination(@template_planes)
     @sorted_vertices, @linear_points, @interpolated_points = generate_spline_points
-    update_generator_vertices(@linear_points, @interpolated_points)
+    @colors = generate_spline_colors
+    update_generator_vertices(@linear_points, @interpolated_points, @colors)
+    
     @sorted_edges, @staples = generate_staples
     @group1, @group2, @boundary_edges = open_structure
     # byebug
     # @staple_breaker.update_boundary_strands(@boundary_edges, @staples)
-    update_generator_staples(@staples)
+    @staple_colors = generate_staple_colors
+    update_generator_staples(@staples, @staple_colors)
   end
 
   def setup_dimensions(dimensions, shape)
@@ -90,12 +93,14 @@ class Graph
     vertices
   end
 
-  def update_generator_vertices(linear_points, interpolated_points)
+  def update_generator_vertices(linear_points, interpolated_points, colors)
     gen = Generator.find_by(id: @generator_id)
-    gen.update(vertices: JSON.generate({ linear_points: linear_points, interpolated_points: interpolated_points }))
+    gen.update(vertices: JSON.generate({ linear_points: linear_points, 
+                                          interpolated_points: interpolated_points,
+                                          colors: colors }))
   end
 
-  def update_generator_staples(staples)
+  def update_generator_staples(staples, staple_colors)
     staple_lin_points = []
     staple_int_points = []
     staples.each do |staple|
@@ -103,7 +108,7 @@ class Graph
       staple_int_points << Vertex.flatten(staple.interpolated_points)
     end
     gen = Generator.find_by(id: @generator_id)
-    gen.update(staples: JSON.generate({ linear: staple_lin_points, interpolated: staple_int_points }))
+    gen.update(staples: JSON.generate({ linear: staple_lin_points, interpolated: staple_int_points, colors: staple_colors }))
   end
 
   def connect_vertices(vs)
@@ -497,12 +502,31 @@ class Graph
     [sorted_vertices, sampled_points, spline_points]
   end
 
+  def generate_spline_colors
+    colors = []
+    (0...@scaff_length).each do |i|
+      t = i.to_f / @scaff_length
+      colors.concat([t, 0.5, 0.5])
+    end
+    colors
+  end
+
   def generate_staples
     constraints = @staple_breaker.staples_preprocess
     staple_len_arr = @staple_breaker.ilp(constraints)
     staple_adj_len_arr = @staple_breaker.staples_postprocess(staple_len_arr)
     edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_adj_len_arr)
   end
+
+  def generate_staple_colors
+    staple_colors = []
+    (0...@scaff_length * 1.2).each do |i|
+      t = i.to_f / @scaff_length
+      staple_colors.concat([0.5, 0.5, t])
+    end
+    staple_colors
+  end
+
 
   def open_structure(ratio = 1 / 3.to_f)
     first_parititon, second_partition, boundary_edges = Routing.find_strongest_connected_components(@sorted_edges,
@@ -514,7 +538,8 @@ class Graph
     return nil if @planes.nil?
 
     JSON.generate({ "scaffold_length": 7249, "start": @opening_start, "length": @length,
-                    "linear_points": @linear_points, "interpolated_points": @interpolated_points })
+                    "linear_points": @linear_points, "interpolated_points": @interpolated_points,
+                    "colors": @colors, "staple_colors": @staple_colors })
   end
 
   # Generates JSON file for unscaled planes of the graph

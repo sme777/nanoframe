@@ -61,29 +61,13 @@ if (signOutBtn != null || boxState != null) {
   function generateDisplay(
     positions = linear_points,
     type = "linear",
+    colors = colors,
     residualEdges = false,
     fullDisplay = true,
     start = 0,
     end = scaffold_length * 3
   ) {
-    let colors = [];
-    const divisions = positions.length / 3;
-    // console.log(positions)
-    if (fullDisplay) {
-    //   const divisions = 7219;
-
-      for (let i = 0, l = divisions; i < l; i++) {
-        const t = i / l;
-        if (fullDisplay) {
-          if (i == 0) {
-            colors.push(0.5, 0.5, t);
-          } else {
-            colors.push(t, 0.5, 0.5);
-          }
-        }
-      }
-    }
-
+    console.log(colors)
     if (!fullDisplay) {
       positions = positions.concat(positions).slice(start, end);
       if (!residualEdges) {
@@ -152,23 +136,6 @@ if (signOutBtn != null || boxState != null) {
       currentGroup = linearGroup;
       scene.add(currentGroup);
     }
-  }
-
-  /**
-   *
-   */
-  function clearDisplay(scene) {
-    scene.remove(currentGroup);
-    // let temp
-    // for (let i = 0; i < 8; i++) {
-    //     temp = eval(`line${i}`)
-    //     if (temp == undefined) {
-    //         continue
-    //     }
-    //     temp.geometry.dispose()
-    //     temp.material.dispose()
-    //     scene.remove(temp)
-    // }
   }
 
   /**
@@ -254,6 +221,7 @@ if (signOutBtn != null || boxState != null) {
     return [positions, colors];
   }
   let linear_points, interpolated_points, start, length;
+  let colors, staples_colors;
   let simpleObjectSets;
 
   for (let i = 0; i < size; i++) {
@@ -271,8 +239,8 @@ if (signOutBtn != null || boxState != null) {
       staples = JSON.parse(document.getElementById("staples-container").value);
     }
 
-    console.log("scaffold", graph_json);
-    console.log("staples", staples);
+    // console.log("scaffold", graph_json);
+    // console.log("staples", staples);
 
     scaffold_length = graph_json["scaffold_length"];
     segments = graph_json["segments"];
@@ -309,7 +277,8 @@ if (signOutBtn != null || boxState != null) {
     length = graph_json["length"];
     linear_points = graph_json["linear_points"];
     interpolated_points = graph_json["interpolated_points"];
-
+    colors = graph_json["colors"];
+    staples_colors = graph_json["staple_colors"];
     /**
      * test start
      */
@@ -319,7 +288,7 @@ if (signOutBtn != null || boxState != null) {
     stapleLinearGroup.visible = false;
     stapleInterpolatedGroup.visible = false;
     generateStapleGroup(staples.linear, stapleLinearGroup);
-    generateStapleGroup(staples.interpolated, stapleInterpolatedGroup);
+    // generateStapleGroup(staples.interpolated, stapleInterpolatedGroup); // TODO Fix
 
     linearGroup.add(stapleLinearGroup);
     interpolatedGroup.add(stapleInterpolatedGroup);
@@ -338,9 +307,8 @@ if (signOutBtn != null || boxState != null) {
     /**
      * test end
      */
-
-    generateDisplay(linear_points, "linear");
-    generateDisplay(interpolated_points, "interpolated");
+    generateDisplay(linear_points, "linear", colors);
+    generateDisplay(interpolated_points, "interpolated", colors);
 
     let controls = new OrbitControls(camera, renderer.domElement);
     controls.minDistance = 10;
@@ -364,9 +332,12 @@ if (signOutBtn != null || boxState != null) {
     requestAnimationFrame(render);
 
     function generateStapleGroup(staples, group) {
+      let pointer = 0
       for (let i = 0; i < staples.length; i++) {
         let staple_points = staples[i];
-        let staple_colors = Array(staples[i].length).fill(0);
+        let staple_colors = staples_colors.slice(pointer, pointer + staples[i].length); //Array(staples[i].length).fill(0);
+        
+        pointer += staples[i].length;
         let geometry = new LineGeometry();
         geometry.setPositions(staple_points);
         geometry.setColors(staple_colors);
@@ -390,26 +361,6 @@ if (signOutBtn != null || boxState != null) {
         group.add(staple_line);
         // scene.add(staple_line1)
       }
-    }
-
-    function convertToVector3D(vertices) {
-      let vectors = [];
-      for (let i = 0; i < vertices.length; i++) {
-        vectors.push(
-          new THREE.Vector3(vertices[i].x, vertices[i].y, vertices[i].z)
-        );
-      }
-      return vectors;
-    }
-
-    function flatten3DVectors(vertices) {
-      let positions = [];
-      for (let i = 0; i < vertices.length; i++) {
-        positions.push(vertices[i].x);
-        positions.push(vertices[i].y);
-        positions.push(vertices[i].z);
-      }
-      return positions;
     }
 
     function onZoom(event) {
@@ -499,7 +450,7 @@ if (signOutBtn != null || boxState != null) {
       toggle += clock.getDelta();
       requestAnimationFrame(render);
     }
-    console.log(visualize);
+    // console.log(visualize);
     if (visualize) {
       // const algs = graph_json['alg']//document.getElementById("set-values").value = JSON.stringify(simpleObjectSets)
       const box = document.getElementById("box-state");
@@ -513,12 +464,13 @@ if (signOutBtn != null || boxState != null) {
       box.addEventListener("click", () => {
         if (box.checked) {
           boxLabel.innerHTML = "Close Form";
-          clearDisplay(scene);
+          scene.remove(currentGroup);
           // console.log(psz)
           const dpsz = linear_points.concat(linear_points);
-          console.log(scp);
+        //   console.log(scp);
           generateDisplay(
             linear_points,
+            colors,
             false,
             false,
             scp[2] * 3 * 30,
@@ -526,6 +478,7 @@ if (signOutBtn != null || boxState != null) {
           );
           generateDisplay(
             linear_points,
+            colors,
             true,
             false,
             scp[3] * 3 * 30,
@@ -537,8 +490,8 @@ if (signOutBtn != null || boxState != null) {
           // generateDisplay(scp[1], true)
         } else {
           boxLabel.innerHTML = "Open Form";
-          clearDisplay(scene);
-          generateDisplay(linear_points, false, true, 0);
+          scene.remove(currentGroup);
+          generateDisplay(linear_points, colors, false, true, 0);
         }
       });
 
