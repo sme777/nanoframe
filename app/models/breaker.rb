@@ -137,44 +137,58 @@ class Breaker
       if on_boundary?(edge.v2)
         adjacent = ObjectSpace._id2ref(edge.next)
         if ext_b_hor == [0] && ext_b_vert == [0]
-          staples << Staple.new(edge, adjacent, refr / 2, refr / 2, :refraction, 2)
+          staple = Staple.new(edge, adjacent, refr / 2, refr / 2, :refraction, 2)
+          edge.assoc_strands << staple.object_id
+          staples << staple
         elsif (edge.directional_change == :x && ext_b_hor != [0]) ||
               (edge.directional_change == :y && ext_b_vert != [0])
           start = refl / 2
           extensions = ext_b_hor != [0] ? ext_b_hor : ext_b_vert
           extensions.each do |ext|
-            staples << Staple.new(edge, edge, start, start + ext, :extension)
+            staple = Staple.new(edge, edge, start, start + ext, :extension)
+            edge.assoc_strands << staple.object_id
+            staples << staple
             start += ext
           end
           staples << Staple.new(edge, adjacent, start, refr / 2, :refraction, 2)
 
         elsif (edge.directional_change == :x && ext_b_hor == [0]) ||
               (edge.directional_change == :y && ext_b_vert == [0])
-          staples << Staple.new(edge, adjacent, refr / 2, refr / 2, :refraction, 2)
+          staple = Staple.new(edge, adjacent, refr / 2, refr / 2, :refraction, 2)
+          edge.assoc_strands << staple.object_id
+          staples << staple
         end
       else
         # byebug
         adjacent = ObjectSpace._id2ref(edge.adjacent_edges.first)
         if ext_hor == [0] && ext_vert == [0]
-          staples << Staple.new(edge, adjacent, refl / 2, refl / 2, :reflection, 1)
+          staple = Staple.new(edge, adjacent, refl / 2, refl / 2, :reflection, 1)
+          edge.assoc_strands << staple.object_id
+          staples << staple
         elsif (edge.directional_change == :x && ext_hor != [0]) ||
               (edge.directional_change == :y && ext_vert != [0])
           start = refl / 2
           extensions = ext_b_hor != [0] ? ext_b_hor : ext_b_vert
           extensions.each do |ext|
-            staples << Staple.new(edge, edge, start, start + ext, :extension)
+            staple = Staple.new(edge, edge, start, start + ext, :extension)
+            edge.assoc_strands << staple.object_id
+            staples << staple
             start += ext
           end
-          staples << Staple.new(edge, adjacent, start, refl / 2, :reflection, 1)
+          staple = Staple.new(edge, adjacent, start, refl / 2, :reflection, 1)
+          edge.assoc_strands << staple.object_id
+          staples << staple
 
         elsif (edge.directional_change == :x && ext_hor == [0]) ||
               (edge.directional_change == :y && ext_vert == [0])
-          staples << Staple.new(edge, adjacent, refl / 2, refl / 2, :reflection, 1)
+          staples = Staple.new(edge, adjacent, refl / 2, refl / 2, :reflection, 1)
+          edge.assoc_strands << staple.object_id
+          staples << staple
         end
       end
     end
     set_staple_neighbors(staples)
-    staples
+    [edges, staples]
   end
 
   def set_staple_neighbors(staples)
@@ -205,9 +219,10 @@ class Breaker
 
   def update_boundary_strands(edges, staples)
     edges.each do |edge|
-      edge.assoc_strands do |strand|
-        if strand.type == :reflection && staples.include?(strand)
-          cutoff = (staple.sequence.size/2 - 2)
+      edge.assoc_strands.each do |staple_id|
+        staple = ObjectSpace._id2ref(staple_id)
+        if staple.type == :reflection && staples.include?(staple)
+          cutoff = (staple.sequence.size / 2 - 2)
           back_sequence = staple.sequence[...cutoff]
           front_sequence = staple.sequence[cutoff...]
 
@@ -216,17 +231,20 @@ class Breaker
           front_lin_positions = staple.linear_points[cutoff...]
           front_int_positions = staple.interpolated_points[cutoff...]
 
-          staple.prev.sequence = back_sequence + staple.prev.sequence
-          staple.prev.linear_points = back_lin_positions.concat(staple.prev.linear_points)
-          staple.prev.interpolated_points = back_int_positions.concat(staple.prev.interpolated_points)
-          staple.next.sequence = staple.next.sequence + front_sequence
-          staple.next.linear_points = staple.next.linear_points.concat(front_lin_positions)
-          staple.next.interpolated_points = staple.next.interpolated_points.concat(front_int_positions)
-          # need to update positions as well
-          staple.prev.next = staple.next
-          staple.next.prev = staple.prev
+          prev_staple = ObjectSpace._id2ref(staple.prev)
+          next_staple = ObjectSpace._id2ref(staple.next)
 
-          staples.delete(strand)
+          prev_staple.sequence = back_sequence + prev_staple.sequence
+          prev_staple.linear_points = back_lin_positions.concat(prev_staple.linear_points)
+          prev_staple.interpolated_points = back_int_positions.concat(prev_staple.interpolated_points)
+          next_staple.sequence = next_staple.sequence + front_sequence
+          next_staple.linear_points = next_staple.linear_points.concat(front_lin_positions)
+          next_staple.interpolated_points = next_staple.interpolated_points.concat(front_int_positions)
+          # need to update positions as well
+          prev_staple.next = next_staple.object_id
+          next_staple.prev = prev_staple.object_id
+
+          staples.delete(staple)
         end
       end
     end

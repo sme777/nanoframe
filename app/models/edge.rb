@@ -48,6 +48,16 @@ class Edge
     @v2 == e.v2 || @v2 == e.v1
   end
 
+  def shared_vertex?(e)
+    if @v2 == e.v2 || @v2 == e.v1
+      @v2
+    # elsif @v1 == e.v2 || @v1 == e.v1
+    #   @v1
+    else
+      nil
+    end
+  end
+
   def self.string_of_edges(_edges)
     ''
   end

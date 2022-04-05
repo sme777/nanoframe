@@ -119,17 +119,17 @@ module Routing
         dne_shift = 0.5
       end
     elsif dne > 0 && dpe > 0
-      dpe_shift = -0.5
-      dne_shift = 0.5
+      dpe_shift = 0.5
+      dne_shift = -0.5
     elsif dne < 0 && dpe < 0
-      dpe_shift = +0.5
+      dpe_shift = -0.5
       dne_shift = 0.5
     elsif dne > 0 && dpe < 0
-      dpe_shift = 0.5
-      dne_shift = 0.5
-    elsif dne < 0 && dpe > 0
       dpe_shift = -0.5
       dne_shift = -0.5
+    elsif dne < 0 && dpe > 0
+      dpe_shift = 0.5
+      dne_shift = 0.5
     end
     [dpe_shift, dne_shift]
   end
@@ -157,9 +157,9 @@ module Routing
 
   def self.find_strongest_connected_components(edges, ratio, dims)
     max_strength = -Float::INFINITY
-    edge_start = -1
-    final_ratio = -1
-    final_array = []
+    # edge_start = -1
+    first_partition = []
+    second_partition = []
     min_edges = (edges.size * ratio).floor
     double_egdes = edges * 2
     (min_edges...edges.size).each do |j|
@@ -169,21 +169,44 @@ module Routing
         next unless subarray_strength > max_strength
 
         max_strength = subarray_strength
-        edge_start = i
-        final_ratio = j
-        final_array = subarray
+        first_partition = subarray
+        second_partition = double_egdes[(i + j)...(edges.size + (i + j))]
+        # edge_start = i
+        # final_array = subarray
       end
     end
-    # fedges_size = final_array.size
-    # remaining_array = find_subarray(edges, (edge_start + fedges_size - 1) % edge_size, edge_size - fedges_size)
-    [edge_start, final_array.size * 3]
+
+    boundary_edges = []
+
+    first_partition.each do |p1_edge|
+      second_partition.each do |p2_edge|
+        vertex = p1_edge.shared_vertex?(p2_edge)
+        if !!vertex && !on_boundary?(vertex, 200, 200, 200)
+          boundary_edges << p1_edge unless boundary_edges.include?(p1_edge)
+          boundary_edges << p2_edge unless boundary_edges.include?(p2_edge)
+        end
+      end
+    end
+
+    [first_partition, second_partition, boundary_edges]
   end
 
-  def self.find_subarray_strength(arr, dims)
+  def self.on_boundary?(v, width, height, depth)
+    # TODO: fix for plane roatation
+    (approx(v.x, width) && approx(v.y, height)) ||
+      (approx(v.x, width) && approx(v.z, depth)) ||
+      (approx(v.y, depth) && approx(v.z, depth))
+  end
+
+  def self.approx(val, divisor)
+    (val.ceil % divisor).zero? || (val.floor % divisor).zero?
+  end
+
+  def self.find_subarray_strength(edges, dims)
     planes = {}
 
-    (0...(arr.size - 1)).each do |i|
-      plane = find_plane_number(arr[i], arr[i + 1], dims)
+    edges.each do |edge|
+      plane = find_plane_number(edge.v1, edge.v2, dims)
       if planes.key?(plane)
         planes[plane] += 1
       else
@@ -191,7 +214,7 @@ module Routing
       end
     end
     plane_vals = planes.values.sort_by(&:-@)
-    plane_vals[...3].sum / arr.size.to_f
+    plane_vals[...3].sum / edges.size.to_f
   end
 
   def self.find_plane_number(v1, v2, dims)

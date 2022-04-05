@@ -19,10 +19,12 @@ class Graph
     @edges = v_and_e[1]
     @template_planes = find_four_planes
     @planes, @raw_planes = find_plane_combination(@template_planes)
-    @sorted_planes, @linear_points, @interpolated_points = generate_spline_points
-    @opening_start, @length = open_structure
+    @sorted_vertices, @linear_points, @interpolated_points = generate_spline_points
     update_generator_vertices(@linear_points, @interpolated_points)
-    @staples = generate_staples
+    @sorted_edges, @staples = generate_staples
+    @group1, @group2, @boundary_edges = open_structure
+    # byebug
+    # @staple_breaker.update_boundary_strands(@boundary_edges, @staples)
     update_generator_staples(@staples)
   end
 
@@ -499,16 +501,12 @@ class Graph
     constraints = @staple_breaker.staples_preprocess
     staple_len_arr = @staple_breaker.ilp(constraints)
     staple_adj_len_arr = @staple_breaker.staples_postprocess(staple_len_arr)
-    staples = @staple_breaker.generate_staple_strands(@sorted_planes, staple_adj_len_arr)
-    @staple_breaker.update_boundary_strands(boundary_edge, staples)
-  end
-
-  def boundary_edge
-    []
+    edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_adj_len_arr)
   end
 
   def open_structure(ratio = 1 / 3.to_f)
-    Routing.find_strongest_connected_components(@sorted_planes, ratio, [@width, @height, @depth])
+    first_parititon, second_partition, boundary_edges = Routing.find_strongest_connected_components(@sorted_edges,
+                                                                                                    ratio, [@width, @height, @depth])
   end
 
   # Generates JSON file of the graph

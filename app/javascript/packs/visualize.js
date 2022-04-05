@@ -67,10 +67,10 @@ if (signOutBtn != null || boxState != null) {
     end = scaffold_length * 3
   ) {
     let colors = [];
-    const divisions = 7219;
+    const divisions = positions.length / 3;
     // console.log(positions)
     if (fullDisplay) {
-      const divisions = 7219;
+    //   const divisions = 7219;
 
       for (let i = 0, l = divisions; i < l; i++) {
         const t = i / l;

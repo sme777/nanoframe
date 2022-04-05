@@ -114,21 +114,21 @@ class Staple
   end
 
   def adjust(points)
-    if :refraction
+    if @type == :xyz
       dir_front = @front.directional_change
       dir_back = @back.directional_change
-      points.each { |p| p.instance_variable_set("@#{dir_front}", p.instance_variable_get("@#{dir_front}") + 1) }
-      points.each { |p| p.instance_variable_set("@#{dir_back}", p.instance_variable_get("@#{dir_back}") + 1) }
-    elsif :extension
+      points.each { |p| p.instance_variable_set("@#{dir_front}", p.instance_variable_get("@#{dir_front}") + 0.5) }
+      points.each { |p| p.instance_variable_set("@#{dir_back}", p.instance_variable_get("@#{dir_back}") + 0.5) }
+    elsif @type == :extension
       dir = @front.directional_change
-      points.each { |p| p.instance_variable_set("@#{dir}", p.instance_variable_get("@#{dir}") + 1) }
-    elsif :reflection
+      points.each { |p| p.instance_variable_set("@#{dir}", p.instance_variable_get("@#{dir}") + 0.5) }
+    elsif @type == :refraction || @type == :reflection
       dir_front, dir_front_ch = @front.directional_change_vec
       dir_back, dir_back_ch = @back.directional_change_vec
-
+      
       points.each do |p|
-        cdr, cpe, cne = Routing.change_dir(pe_dc, ne_dc)
-        dpe_dc, dne_dc = corner_change(cdr, cpe, cne, pe_vec, ne_vec)
+        cdr, cpe, cne = Routing.change_dir(dir_front, dir_back)
+        dpe_dc, dne_dc = Routing.corner_change(cdr, cpe, cne, dir_front_ch, dir_back_ch)
         cpe_dc = p.instance_variable_get("@#{cpe}")
         cne_dc = p.instance_variable_get("@#{cne}")
         p.instance_variable_set("@#{cpe}", cpe_dc + dpe_dc)
