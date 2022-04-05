@@ -107,6 +107,13 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript">
+        const graph_json = JSON.parse(<%= @graph_json.to_json.html_safe %>);
+        const staples = JSON.parse(<%= @staples.to_json.html_safe %>);
+        const signOutBtn = null;
+        const generatorSize = null;
+        const boxState = 1;
+    </script>
     <div class="row">
         <div class="canvas-container">
             <div class="datGUI"></div>

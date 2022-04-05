@@ -5,9 +5,6 @@ import { Line2 } from "./threejs/Line2";
 import { LineMaterial } from "./threejs/LineMaterial";
 import { LineGeometry } from "./threejs/LineGeometry";
 
-const signOutBtn = document.getElementById("signOutButton");
-const generatorSize = document.getElementById("generator-size");
-const boxState = document.getElementById("box-state");
 if (signOutBtn != null || boxState != null) {
   let size = 1;
   let visualize = true;
@@ -17,8 +14,8 @@ if (signOutBtn != null || boxState != null) {
   }
   let insetWidth, insetHeight, camera2;
   let firstStartPoint, firstEndPoint, lastStartPoint, lastEndPoint;
-  let id, graph_json, segments, scaffold_length, staples;
-  let canvas, width, height, depth, zoomUpdate;
+  let id, segments, scaffold_length;
+  let canvas, zoomUpdate;
   let line0, line1, line2, line3, line4, line5, line6, line7;
   let canvasContainer, canvasContainerWidth, canvasContainerHeight;
   let routingColors;
@@ -67,7 +64,6 @@ if (signOutBtn != null || boxState != null) {
     start = 0,
     end = scaffold_length * 3
   ) {
-    console.log(colors)
     if (!fullDisplay) {
       positions = positions.concat(positions).slice(start, end);
       if (!residualEdges) {
@@ -227,20 +223,10 @@ if (signOutBtn != null || boxState != null) {
   for (let i = 0; i < size; i++) {
     if (!visualize) {
       id = document.getElementById("index-" + i.toString()).value;
-      graph_json = JSON.parse(
-        document.getElementById("generator-container-" + id).value
-      );
       canvas = document.getElementById("webgl-public-" + id);
     } else {
-      graph_json = JSON.parse(
-        document.getElementById("generator-container").value
-      );
       canvas = document.getElementById("visualize-webgl");
-      staples = JSON.parse(document.getElementById("staples-container").value);
     }
-
-    // console.log("scaffold", graph_json);
-    // console.log("staples", staples);
 
     scaffold_length = graph_json["scaffold_length"];
     segments = graph_json["segments"];
@@ -288,7 +274,7 @@ if (signOutBtn != null || boxState != null) {
     stapleLinearGroup.visible = false;
     stapleInterpolatedGroup.visible = false;
     generateStapleGroup(staples.linear, stapleLinearGroup);
-    // generateStapleGroup(staples.interpolated, stapleInterpolatedGroup); // TODO Fix
+    generateStapleGroup(staples.interpolated, stapleInterpolatedGroup); // TODO Fix
 
     linearGroup.add(stapleLinearGroup);
     interpolatedGroup.add(stapleInterpolatedGroup);
@@ -334,6 +320,7 @@ if (signOutBtn != null || boxState != null) {
     function generateStapleGroup(staples, group) {
       let pointer = 0
       for (let i = 0; i < staples.length; i++) {
+        if (pointer > staples_colors.length) continue; // TODO fix for interpolated
         let staple_points = staples[i];
         let staple_colors = staples_colors.slice(pointer, pointer + staples[i].length); //Array(staples[i].length).fill(0);
         
