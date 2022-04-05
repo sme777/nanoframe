@@ -3,12 +3,13 @@
 require 'json'
 
 class Edge
-  attr_accessor :v1, :v2, :sequence, :adjacent_edges, :next, :prev
+  attr_accessor :v1, :v2, :sequence, :adjacent_edges, :next, :prev, :assoc_strands
 
   def initialize(v1, v2)
     @v1 = v1
     @v2 = v2
     @adjacent_edges = []
+    @assoc_strands = []
   end
 
   def string
@@ -45,6 +46,16 @@ class Edge
 
   def has_shared_vertex?(e)
     @v2 == e.v2 || @v2 == e.v1
+  end
+
+  def shared_vertex?(e)
+    if @v2 == e.v2 || @v2 == e.v1
+      @v2
+    # elsif @v1 == e.v2 || @v1 == e.v1
+    #   @v1
+    else
+      nil
+    end
   end
 
   def self.string_of_edges(_edges)

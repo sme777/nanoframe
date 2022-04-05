@@ -88,22 +88,22 @@ module Routing
   end
 
   def self.change_dir(prev_dr, next_dr)
-    if (prev_dr == :x && next_dr == :z) 
-      [:hor, :x, :z]
-    elsif (prev_dr == :x && next_dr == :y) 
-      [:hor, :x, :y]
-    elsif(prev_dr == :z && next_dr == :y)
-      [:hor, :z, :y]
-    elsif (prev_dr == :z && next_dr == :x)
-      [:vert, :z, :x]
-    elsif (prev_dr == :y && next_dr == :x)
-      [:vert, :y, :x]
-    elsif (prev_dr == :y && next_dr == :z)
-      [:vert, :y, :z]
+    if prev_dr == :x && next_dr == :z
+      %i[hor x z]
+    elsif prev_dr == :x && next_dr == :y
+      %i[hor x y]
+    elsif prev_dr == :z && next_dr == :y
+      %i[hor z y]
+    elsif prev_dr == :z && next_dr == :x
+      %i[vert z x]
+    elsif prev_dr == :y && next_dr == :x
+      %i[vert y x]
+    elsif prev_dr == :y && next_dr == :z
+      %i[vert y z]
     end
   end
 
-  def self.corner_change(cdr, cpe, cne, dpe, dne)
+  def self.corner_change(cdr, _cpe, _cne, dpe, dne)
     if cdr == :hor
       if dpe < 0 && dne < 0
         dpe_shift = -0.5
@@ -118,20 +118,18 @@ module Routing
         dpe_shift = 0.5
         dne_shift = 0.5
       end
-    else
-      if dne > 0 && dpe > 0
-        dpe_shift = -0.5
-        dne_shift = 0.5
-      elsif dne < 0 && dpe < 0
-        dpe_shift = +0.5
-        dne_shift = 0.5
-      elsif dne > 0 && dpe < 0
-        dpe_shift = 0.5
-        dne_shift = 0.5
-      elsif dne < 0 && dpe > 0
-        dpe_shift = -0.5
-        dne_shift = -0.5
-      end
+    elsif dne > 0 && dpe > 0
+      dpe_shift = 0.5
+      dne_shift = -0.5
+    elsif dne < 0 && dpe < 0
+      dpe_shift = -0.5
+      dne_shift = 0.5
+    elsif dne > 0 && dpe < 0
+      dpe_shift = -0.5
+      dne_shift = -0.5
+    elsif dne < 0 && dpe > 0
+      dpe_shift = 0.5
+      dne_shift = 0.5
     end
     [dpe_shift, dne_shift]
   end
@@ -158,40 +156,57 @@ module Routing
   end
 
   def self.find_strongest_connected_components(edges, ratio, dims)
-    edge_size = edges.size
     max_strength = -Float::INFINITY
-    edge_start = -1
-    final_ratio = -1
-    final_array = []
-    ratio = (edge_size * ratio).floor
-
-    (ratio...edge_size).each do |j|
-      (0...edge_size).each do |i|
-        subarray = find_subarray(edges, i, j)
+    # edge_start = -1
+    first_partition = []
+    second_partition = []
+    min_edges = (edges.size * ratio).floor
+    double_egdes = edges * 2
+    (min_edges...edges.size).each do |j|
+      (0...edges.size).each do |i|
+        subarray = double_egdes[i...(i + j)]
         subarray_strength = find_subarray_strength(subarray, dims)
         next unless subarray_strength > max_strength
 
         max_strength = subarray_strength
-        edge_start = i
-        final_ratio = j
-        final_array = subarray
+        first_partition = subarray
+        second_partition = double_egdes[(i + j)...(edges.size + (i + j))]
+        # edge_start = i
+        # final_array = subarray
       end
     end
-    # fedges_size = final_array.size
-    # remaining_array = find_subarray(edges, (edge_start + fedges_size - 1) % edge_size, edge_size - fedges_size)
-    [edge_start, final_array.size * 3]
+
+    boundary_edges = []
+
+    first_partition.each do |p1_edge|
+      second_partition.each do |p2_edge|
+        vertex = p1_edge.shared_vertex?(p2_edge)
+        if !!vertex && !on_boundary?(vertex, 200, 200, 200)
+          boundary_edges << p1_edge unless boundary_edges.include?(p1_edge)
+          boundary_edges << p2_edge unless boundary_edges.include?(p2_edge)
+        end
+      end
+    end
+
+    [first_partition, second_partition, boundary_edges]
   end
 
-  def self.find_subarray(edges, start, length)
-    double_egdes = edges + edges
-    double_egdes[start...(start + length)]
+  def self.on_boundary?(v, width, height, depth)
+    # TODO: fix for plane roatation
+    (approx(v.x, width) && approx(v.y, height)) ||
+      (approx(v.x, width) && approx(v.z, depth)) ||
+      (approx(v.y, depth) && approx(v.z, depth))
   end
 
-  def self.find_subarray_strength(arr, dims)
+  def self.approx(val, divisor)
+    (val.ceil % divisor).zero? || (val.floor % divisor).zero?
+  end
+
+  def self.find_subarray_strength(edges, dims)
     planes = {}
 
-    (0...(arr.size - 1)).each do |i|
-      plane = find_plane_number(arr[i], arr[i + 1], dims)
+    edges.each do |edge|
+      plane = find_plane_number(edge.v1, edge.v2, dims)
       if planes.key?(plane)
         planes[plane] += 1
       else
@@ -199,7 +214,7 @@ module Routing
       end
     end
     plane_vals = planes.values.sort_by(&:-@)
-    plane_vals[...3].sum / arr.size.to_f
+    plane_vals[...3].sum / edges.size.to_f
   end
 
   def self.find_plane_number(v1, v2, dims)
@@ -217,5 +232,4 @@ module Routing
       5
     end
   end
-
 end

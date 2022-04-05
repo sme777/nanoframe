@@ -196,6 +196,7 @@ GEM
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
     jmespath (1.6.0)
+    jslint_on_rails (1.1.1)
     jwt (2.3.0)
     kgio (2.11.4)
     listen (3.7.1)
@@ -437,6 +438,7 @@ DEPENDENCIES
   inline_svg
   jasmine
   jbuilder (~> 2.7)
+  jslint_on_rails
   listen (~> 3.3)
   mini_magick (~> 4.8)
   oink

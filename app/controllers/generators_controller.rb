@@ -36,7 +36,6 @@ class GeneratorsController < ApplicationController
   end
 
   def visualize
-    
     if params[:regenerate]
       @graph = @generator.route
       @graph_json = @graph.to_json

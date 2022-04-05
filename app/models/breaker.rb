@@ -11,7 +11,7 @@ class Breaker
     setup_dimensions(dimensions, shape)
   end
 
-  def setup_dimensions(dimensions, shape)
+  def setup_dimensions(dimensions, _shape)
     case @shape
     when :cube
       @width = dimensions[0]
@@ -126,50 +126,125 @@ class Breaker
   # (edges, refl, refr, exts)
   def generate_staple_strands(vertices, staple_len_arr)
     refl, refr, ext_b_hor, ext_b_vert, ext_hor, ext_vert = staple_len_arr
-    refl, refr = refl.first, refr.first
+    refl = refl.first
+    refr = refr.first
     edges = generate_shape_edges(vertices)
     staples = []
-    
+
     # ext_b_hor, ext_b_vert, ext_hor, ext_vert = exts
-    
+
     edges.each do |edge|
-      
       if on_boundary?(edge.v2)
         adjacent = ObjectSpace._id2ref(edge.next)
         if ext_b_hor == [0] && ext_b_vert == [0]
-          staples << Staple.new(edge, adjacent, refr / 2, refr / 2, :refraction, 2)
+          staple = Staple.new(edge, adjacent, refr / 2, refr / 2, :refraction, 2)
+          edge.assoc_strands << staple.object_id
+          staples << staple
         elsif (edge.directional_change == :x && ext_b_hor != [0]) ||
               (edge.directional_change == :y && ext_b_vert != [0])
           start = refl / 2
           extensions = ext_b_hor != [0] ? ext_b_hor : ext_b_vert
           extensions.each do |ext|
-            staples << Staple.new(edge, edge, start, start + ext, :extension)
+            staple = Staple.new(edge, edge, start, start + ext, :extension)
+            edge.assoc_strands << staple.object_id
+            staples << staple
             start += ext
           end
           staples << Staple.new(edge, adjacent, start, refr / 2, :refraction, 2)
 
         elsif (edge.directional_change == :x && ext_b_hor == [0]) ||
               (edge.directional_change == :y && ext_b_vert == [0])
-          staples << Staple.new(edge, adjacent, refr / 2, refr / 2, :refraction, 2)
+          staple = Staple.new(edge, adjacent, refr / 2, refr / 2, :refraction, 2)
+          edge.assoc_strands << staple.object_id
+          staples << staple
         end
       else
         # byebug
         adjacent = ObjectSpace._id2ref(edge.adjacent_edges.first)
         if ext_hor == [0] && ext_vert == [0]
-          staples << Staple.new(edge, adjacent, refl / 2, refl / 2, :reflection, 1)
+          staple = Staple.new(edge, adjacent, refl / 2, refl / 2, :reflection, 1)
+          edge.assoc_strands << staple.object_id
+          staples << staple
         elsif (edge.directional_change == :x && ext_hor != [0]) ||
               (edge.directional_change == :y && ext_vert != [0])
           start = refl / 2
           extensions = ext_b_hor != [0] ? ext_b_hor : ext_b_vert
           extensions.each do |ext|
-            staples << Staple.new(edge, edge, start, start + ext, :extension)
+            staple = Staple.new(edge, edge, start, start + ext, :extension)
+            edge.assoc_strands << staple.object_id
+            staples << staple
             start += ext
           end
-          staples << Staple.new(edge, adjacent, start, refl / 2, :reflection, 1)
+          staple = Staple.new(edge, adjacent, start, refl / 2, :reflection, 1)
+          edge.assoc_strands << staple.object_id
+          staples << staple
 
         elsif (edge.directional_change == :x && ext_hor == [0]) ||
               (edge.directional_change == :y && ext_vert == [0])
-          staples << Staple.new(edge, adjacent, refl / 2, refl / 2, :reflection, 1)
+          staples = Staple.new(edge, adjacent, refl / 2, refl / 2, :reflection, 1)
+          edge.assoc_strands << staple.object_id
+          staples << staple
+        end
+      end
+    end
+    set_staple_neighbors(staples)
+    [edges, staples]
+  end
+
+  def set_staple_neighbors(staples)
+    staples.each do |staple1|
+      staples.each do |staple2|
+        next unless staple1 != staple2
+
+        if staple1.type == :extension
+
+          if staple2.type == :reflection || staple2.type == :reflection
+            if staple1.front == staple2.back
+              staple1.next = staple2.object_id
+            elsif staple1.back == staple2.front
+              staple1.prev = staple2.object_id
+            end
+          end
+        # works for only relfection-refraction pairs
+        elsif staple1.type == :refraction || staple1.type == :reflection
+          if staple1.front == staple2.back
+            staple1.prev = staple2.object_id
+          elsif staple1.back == staple2.front
+            staple1.next = staple2.object_id
+          end
+        end
+      end
+    end
+  end
+
+  def update_boundary_strands(edges, staples)
+    edges.each do |edge|
+      edge.assoc_strands.each do |staple_id|
+        staple = ObjectSpace._id2ref(staple_id)
+        if staple.type == :reflection && staples.include?(staple)
+          cutoff = (staple.sequence.size / 2 - 2)
+          back_sequence = staple.sequence[...cutoff]
+          front_sequence = staple.sequence[cutoff...]
+
+          back_lin_positions = staple.linear_points[...cutoff]
+          back_int_positions = staple.interpolated_points[...cutoff]
+          front_lin_positions = staple.linear_points[cutoff...]
+          front_int_positions = staple.interpolated_points[cutoff...]
+
+          prev_staple = ObjectSpace._id2ref(staple.prev)
+          next_staple = ObjectSpace._id2ref(staple.next)
+
+          prev_staple.sequence = back_sequence + prev_staple.sequence
+          prev_staple.linear_points = back_lin_positions.concat(prev_staple.linear_points)
+          prev_staple.interpolated_points = back_int_positions.concat(prev_staple.interpolated_points)
+          next_staple.sequence = next_staple.sequence + front_sequence
+          next_staple.linear_points = next_staple.linear_points.concat(front_lin_positions)
+          next_staple.interpolated_points = next_staple.interpolated_points.concat(front_int_positions)
+          # need to update positions as well
+          prev_staple.next = next_staple.object_id
+          next_staple.prev = prev_staple.object_id
+
+          staples.delete(staple)
         end
       end
     end
@@ -180,14 +255,14 @@ class Breaker
     sequence = IO.read('./app/assets/scaffolds/7249.txt')
     edges = []
     ### add extra checks for moving directions
-    
+
     vertices.each_with_index do |v, i|
       new_edge = Edge.new(v, vertices[(i + 1) % vertices.size])
       steped = moving_step(new_edge)
       seq = if i == vertices.size - 1
               sequence[i * steped...sequence.size]
             else
-              sequence[i * steped...(i+1) * steped]
+              sequence[i * steped...(i + 1) * steped]
             end
       new_edge.sequence = seq
       edges << new_edge
@@ -217,7 +292,7 @@ class Breaker
 
   def moving_step(edge)
     w_step = @width / (@segments * SSDNA_NT_DIST)
-    h_step = @height/ (@segments * SSDNA_NT_DIST)
+    h_step = @height / (@segments * SSDNA_NT_DIST)
     d_step = @depth / (@segments * SSDNA_NT_DIST)
 
     case edge.directional_change
@@ -228,14 +303,13 @@ class Breaker
     when :z
       d_step
     end
-    
   end
 
   def on_boundary?(v)
     # TODO: fix for plane roatation
-    (approx(v.x, @width) && approx(v.y, @height)) || 
-    (approx(v.x, @width) && approx(v.z, @depth)) || 
-    (approx(v.y, @depth) && approx(v.z, @depth))
+    (approx(v.x, @width) && approx(v.y, @height)) ||
+      (approx(v.x, @width) && approx(v.z, @depth)) ||
+      (approx(v.y, @depth) && approx(v.z, @depth))
   end
 
   def approx(val, divisor)
