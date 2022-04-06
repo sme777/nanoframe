@@ -5,6 +5,7 @@ import { Line2 } from "./threejs/Line2";
 import { LineMaterial } from "./threejs/LineMaterial";
 import { LineGeometry } from "./threejs/LineGeometry";
 
+
 if (signOutBtn != null || boxState != null) {
   let size = 1;
   let visualize = true;

@@ -474,6 +474,7 @@ $btn-hover-border-color: #111;
 
 .box-state-container {
   padding-top: 2%;
+  // margin: 0;
 }
 
 #red-color-slider::-webkit-slider-thumb {
@@ -533,4 +534,13 @@ $btn-hover-border-color: #111;
 .selectionContainer {
   position: absolute;
   left: 5%;
+}
+
+.bridge-container {
+  display: inline;
+}
+
+.bridge-number-container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
