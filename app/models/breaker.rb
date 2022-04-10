@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'ruby-cbc'
 
 class Breaker
   SSDNA_NT_DIST = 0.332
