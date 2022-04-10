@@ -160,6 +160,7 @@ module Routing
     # edge_start = -1
     first_partition = []
     second_partition = []
+    start_idx = 0
     min_edges = (edges.size * ratio).floor
     double_egdes = edges * 2
     (min_edges...edges.size).each do |j|
@@ -168,6 +169,7 @@ module Routing
         subarray_strength = find_subarray_strength(subarray, dims)
         next unless subarray_strength > max_strength
 
+        start_idx = i
         max_strength = subarray_strength
         first_partition = subarray
         second_partition = double_egdes[(i + j)...(edges.size + (i + j))]
@@ -188,7 +190,7 @@ module Routing
       end
     end
 
-    [first_partition, second_partition, boundary_edges]
+    [start_idx, first_partition, second_partition, boundary_edges]
   end
 
   def self.on_boundary?(v, width, height, depth)

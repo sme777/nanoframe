@@ -3,7 +3,7 @@
 class CatmullRomCurve3 < Curve
   def generate(divisions)
     curve_points = []
-    divisions_per_edge = (divisions / @points.size).floor.zero? ? 2 : (divisions / @points.size).floor
+    divisions_per_edge = sampling_frequency(divisions)
     @points.size.times do |i|
       next if i == (@points.size - 1) && !@ends_connect
 
@@ -59,5 +59,9 @@ class CatmullRomCurve3 < Curve
     f4 = u3 * 0.5 + u2 * -0.5
 
     p0 * f1 + p1 * f2 + p2 * f3 + p3 * f4
+  end
+
+  def sampling_frequency(divisions)
+    (divisions / @points.size).floor.zero? ? 2 : (divisions / @points.size).floor
   end
 end

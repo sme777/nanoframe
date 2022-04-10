@@ -34,7 +34,13 @@
     </div>
 
     <div class="outer-regenerate-container">
+
         <div class="regenerate-container">
+            <div class="actions-container">
+
+            <div class="row box-state-label">
+                <h6>Actions</h6>
+            </div>
             <div class="row box-state-container">
                 <%= link_to "Regenerate Routing", generate_routing_path({regenerate: true}), class: "btn btn-outline-secondary" %>
             </div>
@@ -52,7 +58,12 @@
                 <label id="box-state-interpolated-label" class="btn btn-outline-secondary"
                     for="box-state-interpolated">Interpolated</label><br>
             </div>
+            </div>
+            <div class="modifications-container">
 
+            <div class="row box-state-label">
+                <h6>Modifications</h6>
+            </div>
             <div class="row box-state-container">
                 <div class="form-floating bridge-number-container">
                     <input class="form-control" type="number" id="bridge-number" value="2">
@@ -60,41 +71,23 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-8">
-                    <label for="color-slider" class="form-label">Red Start</label>
-                    <input type="range" class="form-range" id="red-color-slider">
-                </div>
-                <div class="col-md-4 ">
-                    <div class="rgb-gradient">
-                        <input class="form-check-input" type="checkbox" value="" id="red-gradient-box" checked>
-                        <label class="form-check-label" for="red-gradient-box">Gradient</label>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-8">
-                    <label for="color-slider" class="form-label">Green Start</label>
-                    <input type="range" class="form-range" id="green-color-slider">
-                </div>
-                <div class="col-md-4 ">
-                    <div class="rgb-gradient">
-                        <input class="form-check-input" type="checkbox" value="" id="green-gradient-box" checked>
-                        <label class="form-check-label" for="green-gradient-box">Gradient</label>
-                    </div>
+
+            <div class="row box-state-container">
+                <div class="form-floating bridge-number-container">
+                    <select id="color-palette" class="form-select" aria-label="Color Palette">
+
+                        <option selected value="1">Leather Vintage</option> <!-- 3A3845; F7CCAC; C69B7B; 826F66-->
+                        <option value="2">Cold Breeze</option> <!-- F7E2E2; 61A4BC; 5B7DB1; 1A132F-->
+                        <option value="3">Pink Forest</option> <!-- FAD9E6; E4AEC5; 5F7464; 243D25-->
+                        <option value="4">Customize...</option>
+                    </select>
+                    <label class="form-label" for="color-palette">Color Palette</label>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-8">
-                    <label for="color-slider" class="form-label">Blue Start</label>
-                    <input type="range" class="form-range" id="blue-color-slider">
-                </div>
-                <div class="col-md-4 ">
-                    <div class="rgb-gradient">
-                        <input class="form-check-input" type="checkbox" value="" id="blue-gradient-box" checked>
-                        <label class="form-check-label" for="blue-gradient-box">Gradient</label>
-                    </div>
-                </div>
+
+            <div class="row box-state-container">
+                <button type="button" class="btn btn-outline-dark"> Update </button>
+            </div>
             </div>
         </div>
     </div>
@@ -116,8 +109,8 @@
         </div>
     </div>
     <script type="text/javascript">
-        var graph_json = JSON.parse( <%= @graph_json.to_json.html_safe %> );
-        var staples = JSON.parse( <%= @staples_json.to_json.html_safe %> );
+        var graph_json = JSON.parse(<%= @graph_json.to_json.html_safe %>);
+        var staples = JSON.parse(<%= @staples_json.to_json.html_safe %>);
         var signOutBtn = null;
         var generatorSize = null;
         var boxState = 1;

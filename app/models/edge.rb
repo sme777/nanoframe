@@ -58,6 +58,18 @@ class Edge
     end
   end
 
+  def self.to_vertices(edges)
+    vertices = []
+    edges.each_with_index do |edge, idx|
+      if !vertices.include?(edge.v1)
+        vertices << edge.v1
+      end
+      
+      vertices << edge.v2
+    end
+    vertices
+  end
+
   def self.string_of_edges(_edges)
     ''
   end

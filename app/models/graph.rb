@@ -19,11 +19,10 @@ class Graph
     @edges = v_and_e[1]
     @template_planes = find_four_planes
     @planes, @raw_planes = find_plane_combination(@template_planes)
-    @sorted_vertices, @linear_points, @interpolated_points = generate_spline_points
+    @sorted_vertices, @linear_points, @interpolated_points, @sampling_frequency = generate_spline_points
     @colors = generate_spline_colors    
     @sorted_edges, @staples = generate_staples
-    @group1, @group2, @boundary_edges = open_structure
-    # @staple_breaker.update_boundary_strands(@boundary_edges, @staples)
+    @start_idx, @group1, @group2, @boundary_edges = open_structure
     @staple_colors = generate_staple_colors
   end
 
@@ -472,12 +471,12 @@ class Graph
   end
 
   def generate_spline_points
+
     plane_copy = Marshal.load(Marshal.dump(@planes))
     sorted_vertices = Routing.sort_sets(plane_copy)
-
     normalized_vertices = Routing.normalize(sorted_vertices, @width / @segments.to_f, @height / @segments.to_f,
                                             @depth / @segments.to_f)
-    # spline = CatmullRomCurve3.new(normalized_planes)
+
 
     sampled_points = []
     normalized_vertices.each_with_index do |vertex, i|
@@ -485,9 +484,10 @@ class Graph
       sampled_points.concat(Vertex.linspace(dr_ch, 30, vertex, normalized_vertices[(i + 1) % normalized_vertices.size]))
     end
     spline = CatmullRomCurve3.new(normalized_vertices)
-    spline_points = Vertex.flatten(spline.generate(@scaff_length))
+    spline_divisions = @scaff_length
+    spline_points = Vertex.flatten(spline.generate(spline_divisions))
     sampled_points = Vertex.flatten(sampled_points)
-    [sorted_vertices, sampled_points, spline_points]
+    [sorted_vertices, sampled_points, spline_points, spline.sampling_frequency(@scaff_length)]
   end
 
   def generate_spline_colors
@@ -527,17 +527,18 @@ class Graph
 
 
   def open_structure(ratio = 1 / 3.to_f)
-    first_parititon, second_partition, boundary_edges = Routing.find_strongest_connected_components(@sorted_edges,
+    start_idx, first_parititon, second_partition, boundary_edges = Routing.find_strongest_connected_components(@sorted_edges,
                                                                                                     ratio, [@width, @height, @depth])
   end
 
   # Generates JSON file of the graph
   def to_json(*_args)
     return nil if @planes.nil?
-
-    JSON.generate({ "scaffold_length": 7249, "start": @opening_start, "length": @length,
-                    "linear_points": @linear_points, "interpolated_points": @interpolated_points,
-                    "colors": @colors, "staple_colors": @staple_colors })
+    
+    JSON.generate({ "scaffold_length": @scaff_length, "linear_points": @linear_points, 
+                    "interpolated_points": @interpolated_points, "colors": @colors, 
+                    "staple_colors": @staple_colors, "start": @start_idx * @sampling_frequency, 
+                    "end": (@start_idx + @group1.size) * @sampling_frequency})
   end
 
   # Generates JSON file for unscaled planes of the graph
