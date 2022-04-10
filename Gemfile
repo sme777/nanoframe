@@ -44,7 +44,7 @@ gem 'bootsnap', '>= 1.4.4', require: false
 gem 'rubyzip'
 # Loggers
 gem 'oink'
-gem 'ruby-cbc'
+gem 'ruby-cbc', require: false
 gem 'unicorn'
 # gem 'rack-timeout'
 group :development, :test do
