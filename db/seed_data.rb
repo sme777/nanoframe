@@ -9,7 +9,20 @@ module SeedData
   end
 
   def self.items
-    [
+    [      {
+      name: 'Cube (P1)',
+      dimensions: '50x50x50x4',
+      geometry: SeedData.open_file('db/objects/50x50x50x4_new_pos.txt'),
+      material: SeedData.open_file('db/objects/50x50x50x4_new_col.txt')
+    },
+
+    {
+      name: 'Cube (P1)',
+      dimensions: '50x50x50x4',
+      geometry: SeedData.open_file('db/objects/50x50x50x4_new_pos.txt'),
+      material: SeedData.open_file('db/objects/50x50x50x4_yellow_col.txt')
+    },
+
       {
         name: 'Cube (P1)',
         dimensions: '30x30x140x3',

@@ -5,7 +5,11 @@ import { Line2 } from "./threejs/Line2";
 import { LineMaterial } from "./threejs/LineMaterial";
 import { LineGeometry } from "./threejs/LineGeometry";
 
+document.addEventListener("turbolinks:load", function() {
+    main();
+  })
 
+function main() {
 if (signOutBtn != null || boxState != null) {
   let size = 1;
   let visualize = true;
@@ -32,7 +36,7 @@ if (signOutBtn != null || boxState != null) {
   let globalPositions;
   let matLine = new LineMaterial({
     color: 0xffffff,
-    linewidth: 10,
+    linewidth: 5,
     vertexColors: true,
     dashed: false,
     alphaToCoverage: true,
@@ -218,6 +222,7 @@ if (signOutBtn != null || boxState != null) {
     return [positions, colors];
   }
   let linear_points, interpolated_points, start, length;
+  
   let colors, staples_colors;
   let simpleObjectSets;
 
@@ -269,7 +274,7 @@ if (signOutBtn != null || boxState != null) {
     /**
      * test start
      */
-
+     console.log(colors.toString())
     let stapleLinearGroup = new THREE.Group();
     let stapleInterpolatedGroup = new THREE.Group();
     stapleLinearGroup.visible = false;
@@ -497,4 +502,5 @@ if (signOutBtn != null || boxState != null) {
       });
     }
   }
+}
 }

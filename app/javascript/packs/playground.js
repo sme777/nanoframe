@@ -8,7 +8,7 @@ import { LineGeometry } from "./threejs/LineGeometry";
 
 const canvas = document.getElementById("playground-canvas");
 const sideBarHeight = document.querySelector(".sidebarContent").scrollTopMax;
-const renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
 
 const OrbitControls = oc(THREE);
 const playGroundContainer = document.getElementById("playground");
@@ -17,14 +17,15 @@ const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
 let playGroundControls;
-renderer.setPixelRatio(playGroundContainer.devicePixelRatio);
+renderer.setPixelRatio(window.devicePixelRatio);
+
 let playGroundObjects;
 let playGroundDraggers;
 console.log(playGroundDraggers);
 
 const material = new LineMaterial({
   color: 0xffffff,
-  linewidth: 10,
+  linewidth: 2,
   vertexColors: true,
   dashed: false,
   alphaToCoverage: true,
@@ -37,8 +38,8 @@ function makeScene(elem) {
 
   const fov = 45;
   const aspect = 2;
-  const near = 0.1;
-  const far = 1000;
+  const near = 0.01;
+  const far = 10000;
   const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   camera.position.z = 2;
   camera.position.set(-40, 60, 90);
@@ -68,8 +69,8 @@ function setupPlayGroundScene() {
   // sceneInfo.mesh = mesh
 
   playGroundControls = new OrbitControls(sceneInfo.camera, playGroundContainer);
-  playGroundControls.minDistance = 0.1;
-  playGroundControls.maxDistance = 1000;
+  playGroundControls.minDistance = 0.01;
+  playGroundControls.maxDistance = 10000;
   playGroundControls.enableDamping = true;
   playGroundControls.enableZoom = false;
   playGroundObjects = [];

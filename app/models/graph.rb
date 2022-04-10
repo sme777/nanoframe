@@ -485,7 +485,7 @@ class Graph
       sampled_points.concat(Vertex.linspace(dr_ch, 30, vertex, normalized_vertices[(i + 1) % normalized_vertices.size]))
     end
     spline = CatmullRomCurve3.new(normalized_vertices)
-    spline_points = Vertex.flatten(spline.generate(7249))
+    spline_points = Vertex.flatten(spline.generate(@scaff_length))
     sampled_points = Vertex.flatten(sampled_points)
     [sorted_vertices, sampled_points, spline_points]
   end
@@ -494,7 +494,7 @@ class Graph
     colors = []
     (0...@scaff_length).each do |i|
       t = i.to_f / @scaff_length
-      colors.concat([t, 0.5, 0.5])
+      colors.concat([t + 0.2, t + 0.2, t / 8])
     end
     colors
   end
@@ -508,10 +508,20 @@ class Graph
 
   def generate_staple_colors
     staple_colors = []
-    (0...@scaff_length * 1.2).each do |i|
-      t = i.to_f / @scaff_length
-      staple_colors.concat([0.5, 0.5, t])
+
+    @staples.each do |staple|
+      staple_color_r = rand
+      staple_color_g = rand
+      staple_color_b = rand
+      staple.linear_points.size.times do |i|
+        staple_colors.concat([staple_color_r, staple_color_g, staple_color_b])
+      end
     end
+
+    # (0...@scaff_length * 1.2).each do |i|
+    #   t = i.to_f / @scaff_length
+    #   staple_colors.concat([t, 0.5, t])
+    # end
     staple_colors
   end
 
