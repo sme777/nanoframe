@@ -51,8 +51,8 @@ class Edge
   def shared_vertex?(e)
     if @v2 == e.v2 || @v2 == e.v1
       @v2
-    # elsif @v1 == e.v2 || @v1 == e.v1
-    #   @v1
+    elsif @v1 == e.v2 || @v1 == e.v1
+      @v1
     else
       nil
     end

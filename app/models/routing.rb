@@ -162,28 +162,27 @@ module Routing
     second_partition = []
     start_idx = 0
     min_edges = (edges.size * ratio).floor
-    double_egdes = edges * 2
+    double_edges = edges * 2
     (min_edges...edges.size).each do |j|
       (0...edges.size).each do |i|
-        subarray = double_egdes[i...(i + j)]
+        subarray = double_edges[i...(i + j)]
         subarray_strength = find_subarray_strength(subarray, dims)
         next unless subarray_strength > max_strength
 
         start_idx = i
         max_strength = subarray_strength
         first_partition = subarray
-        second_partition = double_egdes[(i + j)...(edges.size + (i + j))]
+        second_partition = double_edges[(i + j)...((i + j) + (edges.size - first_partition.size))]
         # edge_start = i
         # final_array = subarray
       end
     end
 
     boundary_edges = []
-
     first_partition.each do |p1_edge|
       second_partition.each do |p2_edge|
         vertex = p1_edge.shared_vertex?(p2_edge)
-        if !!vertex && !on_boundary?(vertex, 200, 200, 200)
+        if !!vertex && !on_boundary?(vertex, 200, 200, 200)          
           boundary_edges << p1_edge unless boundary_edges.include?(p1_edge)
           boundary_edges << p2_edge unless boundary_edges.include?(p2_edge)
         end

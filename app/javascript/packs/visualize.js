@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import * as Algorithms from "./algorithms";
 import oc from "three-orbit-controls";
 import { Line2 } from "./threejs/Line2";
 import { LineMaterial } from "./threejs/LineMaterial";
@@ -112,7 +111,6 @@ if (signOutBtn != null || boxState != null) {
     globalPositions = positions;
     geometry.setColors(colors);
 
-    // if (!split) {
       line0 = new Line2(geometry, matLine);
 
       const geo = new THREE.BufferGeometry();
@@ -134,24 +132,8 @@ if (signOutBtn != null || boxState != null) {
       }
 
       if (split && (positions.length < linear_points.length / 2 || positions.length < interpolated_points.length / 2)) {
-        // line0.computeLineDistances();
-        // line0.scale.set(1, 1, 1);
         line0.geometry.center()
       }
-    // } else {
-    //   line2 = new Line2(geometry, matLine);
-    //   line2.computeLineDistances();
-    //   line2.scale.set(1, 1, 1);
-    //   const geo = new THREE.BufferGeometry();
-    //   geo.setAttribute(
-    //     "position",
-    //     new THREE.Float32BufferAttribute(positions, 3)
-    //   );
-    //   geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-    //   line3 = new THREE.Line(geo, matLineBasic);
-    //   line3.computeLineDistances();
-    //   // line3.visible = false
-    // }
   }
 
   function updateDisplay(scene) {
@@ -248,10 +230,9 @@ if (signOutBtn != null || boxState != null) {
 
     return [positions, colors];
   }
-  let linear_points, interpolated_points, group1LinearPoints, group2LinearPoints, group1InterpolatedPoints, group2InterpolatedPoints;
+  let linear_points, interpolated_points;
   let start, end;
   let colors, staples_colors;
-  let simpleObjectSets;
 
   for (let i = 0; i < size; i++) {
     if (!visualize) {
@@ -304,7 +285,7 @@ if (signOutBtn != null || boxState != null) {
 
     let group1LinearPoints = doubleLinearPoints.slice(start * 3, end * 3);
     let group2LinearPoints = doubleLinearPoints.slice(end * 3, linear_points.length + start * 3);
-
+    console.log(group2LinearPoints)
     generateDisplay(group1LinearPoints, "linear", doubleColors.slice(start * 3, end * 3), true);
     generateDisplay(group2LinearPoints, "linear", doubleColors.slice(end * 3, linear_points.length + start * 3), true);
 
@@ -315,15 +296,10 @@ if (signOutBtn != null || boxState != null) {
     generateDisplay(group2InterpolatedPoints, "interpolated", doubleColors.slice(end * 3, interpolated_points.length + start * 3), true);
 
     
-    /**
-     * test start
-     */
     let stapleLinearGroup = new THREE.Group();
     let stapleInterpolatedGroup = new THREE.Group();
     stapleLinearGroup.visible = false;
     stapleInterpolatedGroup.visible = false;
-
-
 
     generateStapleGroup(staples.linear, stapleLinearGroup);
     generateStapleGroup(staples.interpolated, stapleInterpolatedGroup); // TODO Fix
@@ -341,10 +317,6 @@ if (signOutBtn != null || boxState != null) {
       .multiplyScalar(-1);
     currentGroup = linearGroup;
     scene.add(currentGroup);
-
-    /**
-     * test end
-     */
 
 
     let controls = new OrbitControls(camera, renderer.domElement);
@@ -491,11 +463,10 @@ if (signOutBtn != null || boxState != null) {
       requestAnimationFrame(render);
     }
     if (visualize) {
-      // const algs = graph_json['alg']//document.getElementById("set-values").value = JSON.stringify(simpleObjectSets)
       const box = document.getElementById("box-state");
       const boxLabel = document.getElementById("box-state-label");
-      // let scp = Algorithms.findStrongestConnectedComponents(simpleObjectSets, 1 / 3, [width, height, depth])
       const stapleToggler = document.getElementById("box-state-staples");
+      const stapleTogglerLabel = document.getElementById("box-state-staples-label");
       const interpolationToggler = document.getElementById(
         "box-state-interpolated"
       );
@@ -519,6 +490,12 @@ if (signOutBtn != null || boxState != null) {
       });
 
       stapleToggler.addEventListener("click", () => {
+        if (stapleToggler.checked) {
+          stapleTogglerLabel.innerHTML = "Hide Staples";
+        } else {
+          stapleTogglerLabel.innerHTML = "Show Staples";
+        }
+
         if (isInterpolated) {
           stapleInterpolatedGroup.visible = !stapleInterpolatedGroup.visible;
         } else {

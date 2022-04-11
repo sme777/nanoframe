@@ -23,6 +23,7 @@ class Graph
     @colors = generate_spline_colors    
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
+    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples)
     @staple_colors = generate_staple_colors
   end
 
