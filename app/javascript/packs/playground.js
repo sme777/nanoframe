@@ -17,7 +17,7 @@ const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
 let playGroundControls;
-renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setPixelRatio(playGroundContainer.devicePixelRatio);
 
 let playGroundObjects;
 let playGroundDraggers;

@@ -495,7 +495,8 @@ class Graph
     colors = []
     (0...@scaff_length).each do |i|
       t = i.to_f / @scaff_length
-      colors.concat([t + 0.2, t + 0.2, t / 8])
+      # colors.concat([t / 4, t / 1.5 + 0.15, t + 0.2])
+      colors.concat([t + 0.2, t + 0.2, t / 8]) #yellow
     end
     colors
   end
