@@ -70,6 +70,7 @@
         <div class="col-md-4">
         </div>
     </div>
+    
     <div class="table-container">
         <div class="row">
             <div class="col-md-8">
@@ -83,6 +84,7 @@
                 <% end %>
             </div>
         </div>
+        
         <table class="table table-striped col-md-12" id="staples_table">
             <thead>
                 <tr>
@@ -97,6 +99,12 @@
             </tbody>
         </table>
     </div>
+
+    <script type="text/javascript">
+        var graph_json = JSON.parse(<%= @graph_json.to_json.html_safe %>);
+        var staples = JSON.parse(<%= @staples_json.to_json.html_safe %>);
+        var scaffold = "<%= @scaffold %>";
+    </script>
 
     <%= render "layouts/footer"%>
     <%= javascript_pack_tag 'routing', 'routingControls', 'data-turbolinks-track': 'reload'%>

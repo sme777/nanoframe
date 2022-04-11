@@ -8,14 +8,7 @@ import { MeshLine, MeshLineMaterial, MeshLineRaycast } from "three.meshline";
 import { Edge } from "./edge";
 import { GenerateStaple } from "./staple";
 
-const rawGraph = JSON.parse(
-  document.getElementById("raw-graph-container").value
-);
 
-const graph = JSON.parse(document.getElementById("graph-container").value);
-
-const sets = JSON.parse(document.getElementById("sets-container").value);
-console.log(sets);
 const scaffoldSequence = document.getElementById("scaffold-container").value;
 const segments = 5;
 

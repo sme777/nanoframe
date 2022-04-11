@@ -4,11 +4,6 @@ import { Line2 } from "./threejs/Line2";
 import { LineMaterial } from "./threejs/LineMaterial";
 import { LineGeometry } from "./threejs/LineGeometry";
 
-document.addEventListener("turbolinks:load", function() {
-    main();
-  })
-
-function main() {
 if (signOutBtn != null || boxState != null) {
   let size = 1;
   let visualize = true;
@@ -108,21 +103,21 @@ if (signOutBtn != null || boxState != null) {
 
     const geometry = new LineGeometry();
     geometry.setPositions(positions);
-    globalPositions = positions;
+    // console.log(colors.length)
     geometry.setColors(colors);
 
       line0 = new Line2(geometry, matLine);
 
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(positions, 3)
-      );
-      geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-      line1 = new THREE.Line(geo, matLineBasic);
-      line1.computeLineDistances();
-      line1.visible = false;
-
+      // const geo = new THREE.BufferGeometry();
+      // geo.setAttribute(
+      //   "position",
+      //   new THREE.Float32BufferAttribute(positions, 3)
+      // );
+      // geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+      // line1 = new THREE.Line(geo, matLineBasic);
+      // line1.computeLineDistances();
+      // line1.visible = false;
+    // console.log(line0.geometry.attributes.instanceColorStart.data.array)
       if (fullDisplay) {
         if (type === "linear") {
           let _ = split ? splitLinearGroup.add(line0) : linearGroup.add(line0);
@@ -272,20 +267,23 @@ if (signOutBtn != null || boxState != null) {
     }
 
     linear_points = graph_json["linear_points"];
+    globalPositions = linear_points;
     interpolated_points = graph_json["interpolated_points"];
     colors = graph_json["colors"];
     staples_colors = graph_json["staple_colors"];
     start = graph_json["start"];
     end = graph_json["end"];
+    // console.log(colors)
     let doubleLinearPoints = linear_points.concat(linear_points);
     let doubleInterpolatedPoints = interpolated_points.concat(interpolated_points);
     let doubleColors = colors.concat(colors);
+    // console.log(colors)
     generateDisplay(linear_points, "linear", colors);
     generateDisplay(interpolated_points, "interpolated", colors);
 
     let group1LinearPoints = doubleLinearPoints.slice(start * 3, end * 3);
     let group2LinearPoints = doubleLinearPoints.slice(end * 3, linear_points.length + start * 3);
-    console.log(group2LinearPoints)
+
     generateDisplay(group1LinearPoints, "linear", doubleColors.slice(start * 3, end * 3), true);
     generateDisplay(group2LinearPoints, "linear", doubleColors.slice(end * 3, linear_points.length + start * 3), true);
 
@@ -379,12 +377,17 @@ if (signOutBtn != null || boxState != null) {
       zoomUpdate = true;
     }
 
-    function onPointerMove(event) {
+    function onPointerMove(e) {
       // const rect = canvas.getBoundingClientRect()
       // mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
       // mouse.y = -((event.clientY - rect.top) / rect.height) * 2 - 1
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+      
+      const rect = e.target.getBoundingClientRect();
+      // console.log(rect.top, e.clientY)
+      const x = ((e.clientX) / window.innerWidth) * 2 - 1;
+      const y = -((e.clientY) / window.innerHeight) * 2 + 1;
+      mouse.x = x //(event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = y //-(event.clientY / window.innerHeight) * 2 + 1;
     }
 
     function onWindowResize() {
@@ -423,13 +426,15 @@ if (signOutBtn != null || boxState != null) {
       renderer.render(scene, camera);
 
       if (visualize) {
+        // console.log(mouse)
         raycaster.setFromCamera(mouse, camera);
+        // raycaster.set(controls.position, controls.getDirection(), 0, 40)
         // let x = line0.raycast(raycaster, globalPositions)
-        const intersections = raycaster.intersectObject(line0, true);
+        const intersections = raycaster.intersectObject(currentGroup, true);
         // let intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null
         if (intersections.length > 0) {
           if (zoomUpdate) {
-            // sphereInter.geometry.dispose()
+            sphereInter.geometry.dispose()
             sphereInter.geometry = new THREE.SphereGeometry(
               controls.target.distanceTo(controls.object.position) * 0.005
             );
@@ -437,8 +442,17 @@ if (signOutBtn != null || boxState != null) {
           }
           sphereInter.visible = true;
           sphereInter.position.copy(intersections[0].point);
-          let idx = findIndex(sphereInter.position);
-
+          const line = intersections[0].object;
+          // console.log(line.raycast(raycaster, intersections))
+          // console.log(line)
+          const idx = findIndex(intersections[0].point);
+          const colorsCopy = [...colors]
+          colorsCopy[colors[idx * 3]] = 0;
+          colorsCopy[colors[idx * 3 + 1]] = 0;
+          colorsCopy[colors[idx * 3 + 2]] = 0;
+          // line.geometry.setPositions(colorsCopy);
+          // console.log(intersections[ 0 ].object)
+          // console.log()
           if (idx != null) {
             document.querySelector(".sequence-base").value = sequence[idx];
             document.querySelector(".sequence-id").value = idx;
@@ -476,7 +490,7 @@ if (signOutBtn != null || boxState != null) {
           boxLabel.innerHTML = "Close Form";
           scene.remove(currentGroup);
           isSplit = true;
-          console.log(splitLinearGroup)
+          // console.log(splitLinearGroup)
           currentGroup = isInterpolated ? splitInterpolatedGroup : splitLinearGroup;
           scene.add(currentGroup)
 
@@ -509,5 +523,4 @@ if (signOutBtn != null || boxState != null) {
       });
     }
   }
-}
 }

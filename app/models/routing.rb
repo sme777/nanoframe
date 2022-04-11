@@ -104,32 +104,33 @@ module Routing
   end
 
   def self.corner_change(cdr, _cpe, _cne, dpe, dne)
+    shift_val = 0.5
     if cdr == :hor
       if dpe < 0 && dne < 0
-        dpe_shift = -0.5
-        dne_shift = 0.5
+        dpe_shift = -shift_val
+        dne_shift = shift_val
       elsif dpe > 0 && dne > 0
-        dpe_shift = 0.5
-        dne_shift = -0.5
+        dpe_shift = shift_val
+        dne_shift = -shift_val
       elsif dpe < 0 && dne > 0
-        dpe_shift = -0.5
-        dne_shift = -0.5
+        dpe_shift = -shift_val
+        dne_shift = -shift_val
       elsif dpe > 0 && dne < 0
-        dpe_shift = 0.5
-        dne_shift = 0.5
+        dpe_shift = shift_val
+        dne_shift = shift_val
       end
     elsif dne > 0 && dpe > 0
-      dpe_shift = 0.5
-      dne_shift = -0.5
+      dpe_shift = shift_val
+      dne_shift = -shift_val
     elsif dne < 0 && dpe < 0
-      dpe_shift = -0.5
-      dne_shift = 0.5
+      dpe_shift = -shift_val
+      dne_shift = shift_val
     elsif dne > 0 && dpe < 0
-      dpe_shift = -0.5
-      dne_shift = -0.5
+      dpe_shift = -shift_val
+      dne_shift = -shift_val
     elsif dne < 0 && dpe > 0
-      dpe_shift = 0.5
-      dne_shift = 0.5
+      dpe_shift = shift_val
+      dne_shift = shift_val
     end
     [dpe_shift, dne_shift]
   end

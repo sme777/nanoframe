@@ -111,6 +111,7 @@
     <script type="text/javascript">
         var graph_json = JSON.parse(<%= @graph_json.to_json.html_safe %>);
         var staples = JSON.parse(<%= @staples_json.to_json.html_safe %>);
+        var scaffold = "<%= @scaffold %>";
         var signOutBtn = null;
         var generatorSize = null;
         var boxState = 1;
