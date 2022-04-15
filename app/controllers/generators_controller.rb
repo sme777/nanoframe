@@ -7,7 +7,10 @@ class GeneratorsController < ApplicationController
   before_action :set_user
   skip_before_action :verify_authenticity_token
 
-  def index; end
+  def index
+    @shapes = Generator.shapes
+    @scaffolds = Generator.scaffolds
+  end
 
   def custom; end
 

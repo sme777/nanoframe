@@ -235,3 +235,13 @@ $(document).ready(function () {
     $("#8064-radiobtn").prop("checked", false);
   });
 });
+
+$(document).ready(function () {
+  $("#generator_scaffold_id").click(() => {
+    if ($("#generator_scaffold_id").val() == '3') {
+      $(".custom-scaffold-container").show();
+    } else {
+      $(".custom-scaffold-container").hide();
+    }
+  })
+})

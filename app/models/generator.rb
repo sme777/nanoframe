@@ -307,4 +307,98 @@ class Generator < ApplicationRecord
   def cadnano; end
 
   def bundle; end
+
+  def self.scaffolds
+    {
+      "M13mp18 p7249": 1,
+      "M13mp18 p8064": 2,
+      "Custom": 3
+    }
+
+  end
+
+  def self.shapes
+    shapes = [
+      "Cube (P1)",
+      "Tetrahedron (P2)",
+      "Octahedron (P3)",
+      "Icosahedron (P4)",
+      "Dodecahedron (P5)",
+      "Truncated Tetrahedron (A1)",
+      "Cuboctahedron (A2)",
+      "Truncated Cube (A3)",
+      "Truncated Octahedron (A4)",
+      "Rhombicuboctahedron (A5)",
+      "Truncated Cuboctahedron (A6)",
+      "Snub Cube (A7)",
+      "Icosidodecahedron (A8)",
+      "Truncated Dodecahedron (A9)",
+      "Truncated Icosahedron (A10)",
+      "Rhombicosidodecahedron (A11)",
+      "Truncated Icosidodecahedron (A12)",
+      "Snub Dodecahedron (A13)",
+      "Square Pyramid (J1)",
+      "Pentagonal Pyramid (J2)",
+      "Triangular Cupola (J3)",
+      "Square Cupola (J4)",
+      "Pentagonal Cupola (J5)",
+      "Pentagonal Rotunda (J6)",
+      "Elongated Triangular Pyramid (J7)",
+      "Elongated Square Pyramid (J8)",
+      "Elongated Pentagonal Pyramid (J9)",
+      "Gyroelongated Square Pyramid (J10)",
+      "Gyroelongated Pentagonal Pyramid (J11)",
+      "Triangular Bipyramid (J12)",
+      "Pentagonal Bipyramid (J13)",
+      "Elongated Triangular Bipyramid (J14)",
+      "Elongated Square Bipyramid (J15)",
+      "Elongated Pentagonal Bipyramid (J16)",
+      "Gyroelongated Square Bipyramid (J17)",
+      "Elongated Triangular Cupola (J18)",
+      "Elongated Square Cupola (J19)",
+      "Elongated Pentagonal Cupola (J20)",
+      "Elongated Pentagonal Rotunda (J21)",
+      "Gyroelongated Triangular Cupola (J22)",
+      "Gyroelongated Square Cupola (J23)",
+      "Gyroelongated Pentagonal Cupola (J24)",
+      "Gyroelongated Pentagonal Rotunda (J25)",
+      "Gyrobifastigium (J26)",
+      "Triangular Orthobicupola (J27)",
+      "Square Orthobicupola (J28)",
+      "Square Gyrobicupola (J29)",
+      "Pentagonal Orthobicupola (J30)",
+      "Pentagonal Gyrobicupola (J31)",
+      "Pentagonal Orthocupolarotunda (J32)",
+      "Pentagonal Gyrocupolarotunda (J33)",
+      "Pentagonal Orthobirotunda (J34)",
+      "Elongated Triangular Orthobicupola (J35)",
+      "Elongated Triangular Gyrobicupola (J36)",
+      "Elongated Square Gyrobicupola (J37)",
+      "Elongated Pentagonal Orthobicupola (J38)",
+      "Elongated Pentagonal Gyrobicupola (J39)",
+      "Elongated Pentagonal Orthocupolarotunda (J40)",
+      "Elongated Pentagonal Gyrocupolarotunda (J41)",
+      "Elongated Pentagonal Orthobirotunda (J42)",
+      "Elongated Pentagonal Gyrobirotunda (J43)",
+      "Gyroelongated Triangular Bicupola (J44)",
+      "Gyroelongated Square Bicupola (J45)",
+      "Gyroelongated Pentagonal Bicupola (J46)",
+      "Gyroelongated Pentagonal Cupolarotunda (J47)",
+      "Gyroelongated Pentagonal Birotunda (J48)",
+      "Augmented Triangular Prism (J49)",
+      "Biaugmented Triangular Prism (J50)",
+      "Triaugmented Triangular Prism (J51)",
+      "Augmented Pentagonal Prism (J52)",
+      "Biaugmented Pentagonal Prism (J53)",
+      "Augmented Hexagonal Prism (J54)",
+      "Parabiaugmented Hexagonal Prism (J55)",
+      "Metabiaugmented Hexagonal Prism (J56)",
+      "Triaugmented Hexagonal Prism (J57)"
+    ]
+    arr = {}
+    shapes.each_with_index do |shape, idx|
+      arr[shape] = idx + 1
+    end
+    arr
+  end
 end

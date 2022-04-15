@@ -13,7 +13,7 @@
 }
 
 .color-scaffold-select {
-  padding: 2% 5%;
+  // padding: 2% 5%;
 }
 
 .scaffold-select {
@@ -26,6 +26,10 @@
   margin-bottom: 5%;
 }
 
+.custom-scaffold-container {
+  display: none;
+}
+
 .sz {
   width: 80%;
 }
@@ -34,9 +38,13 @@
   display: none;
 }
 
+.form-container {
+  padding: 0 5%;
+}
+
 .synthesizer-btn-container {
   text-align: center;
-  padding: 5% 0;
+  padding: 5% 0%;
 }
 
 .synthesizer-btn {
@@ -56,7 +64,7 @@
 }
 
 .dimension-container {
-  display: none;
+  // display: none;
 }
 .synthesizer-container {
   margin-top: 5%;
@@ -134,7 +142,7 @@
 }
 
 .shape-dropdown {
-  padding: 0 5%;
+  // padding: 0 5%;
 }
 
 .save-container {
@@ -163,11 +171,15 @@ input {
 
 .random-sequence-container {
   text-align: center;
-  padding: 1% 0;
+  // padding: 1% 0;
 }
 
 .sequence-container {
-  padding: 0 5%;
+  // padding: 0 5%;
+}
+
+#sequence_checkbox_label {
+  font-size: small;
 }
 
 .body-navbar {

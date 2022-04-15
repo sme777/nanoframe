@@ -40,8 +40,13 @@ const material = new THREE.LineBasicMaterial({
   color: 0xff0000,
 });
 const curveObject = new THREE.Line(geometry, material);
-const axesHelper = new THREE.AxesHelper(15);
-scene.add(axesHelper);
+// const axesHelper = new THREE.AxesHelper(15);
+// scene.add(axesHelper);
+renderer.setPixelRatio(window.devicePixelRatio);
+const canvasContainer = document.getElementById("canvas-container");
+let canvasContainerWidth = canvasContainer.offsetWidth;
+let canvasContainerHeight = canvasContainer.offsetHeight;
+renderer.setSize(canvasContainerWidth, canvasContainerHeight);
 
 shape.addEventListener("click", function () {
   chosenShape = shape.value;
