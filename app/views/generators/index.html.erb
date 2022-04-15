@@ -92,7 +92,7 @@
             class="width-container synthesizer-item dimension-wrapper-container <%= 'dimension-container' if @generator.width == nil %>">
             <div class="input-group dimension-input-container">
               <span class="input-group-text w-25">Width</span>
-              <%= f.text_field :width, type: "number", class: "dimension-input width-input form-control", placeholder: "30 nm" %>
+              <%= f.text_field :width, type: "number", class: "dimension-input width-input form-control", placeholder: "50 nm" %>
             </div>
           </div>
 
@@ -100,7 +100,7 @@
             class="height-container synthesizer-item dimension-wrapper-container <%= 'dimension-container' if @generator.height == nil %>">
             <div class="input-group dimension-input-container">
               <span class="input-group-text w-25">Height</span>
-              <%= f.text_field :height, type: "number", class: "dimension-input height-input form-control", placeholder: "30 nm" %>
+              <%= f.text_field :height, type: "number", class: "dimension-input height-input form-control", placeholder: "50 nm" %>
             </div>
           </div>
 
@@ -108,15 +108,15 @@
             class="depth-container synthesizer-item dimension-wrapper-container <%= 'dimension-container' if @generator.depth == nil %>">
             <div class="input-group dimension-input-container">
               <span class="input-group-text w-25">Depth</span>
-              <%= f.text_field :depth, type: "number", class: "dimension-input depth-input form-control", placeholder: "30 nm" %>
+              <%= f.text_field :depth, type: "number", class: "dimension-input depth-input form-control", placeholder: "50 nm" %>
             </div>
           </div>
 
           <div
             class="ws-container synthesizer-item dimension-wrapper-container <%= 'dimension-container' if @generator.width_segment == nil %>">
             <div class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Stripes</span>
-              <%= f.text_field :segments, type: "number", class: "dimension-input ws-input form-control", placeholder: "3" %>
+              <span class="input-group-text w-25">Divisions</span>
+              <%= f.text_field :segments, type: "number", class: "dimension-input ws-input form-control", placeholder: "4" %>
             </div>
           </div>
 
