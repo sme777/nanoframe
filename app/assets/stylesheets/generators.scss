@@ -7,6 +7,11 @@
  *= require_self
  */
 
+ html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 .selection-menu {
   margin-top: 5%;
   margin-bottom: 2%;
@@ -23,7 +28,7 @@
 
 .synthesizer-header {
   text-align: center;
-  margin-bottom: 5%;
+  padding-top: 2%;
 }
 
 .custom-scaffold-container {
@@ -52,15 +57,19 @@
 }
 
 .dimension-picker {
-  padding: 0 5%;
+  // padding: 0 5%;
 }
 
 .dimension-input {
   text-align: center;
 }
 
+.synthesizer-item {
+  padding: 1% 0;
+}
+
 .dimension-wrapper-container {
-  padding: 1%;
+  // padding: 1%;
 }
 
 .dimension-container {
@@ -70,9 +79,21 @@
   margin-top: 5%;
 }
 
+#canvas-container {
+  
+}
+
+.controls-outer-container {
+  padding-right: 2%;
+}
+
+#controls-container {
+  // margin-right: 2%;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
 #synthesizer {
   width: 100%;
-  height: auto;
+  height: 100%;
 }
 
 .generator-container {

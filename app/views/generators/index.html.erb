@@ -32,39 +32,42 @@
 
   <!-- Start of Synthesizer Selection-->
   <div class="row selection-menu">
-    <div class="col-md-6 synthesizer-container">
-      <div class="datGUI"></div>
-      <div id="canvas-container">
+    <div id="canvas-container" class="col-md-6">
+      <!-- <div class="datGUI"></div> -->
         <canvas id="synthesizer"></canvas>
-      </div>
     </div>
-    <div class="col-md-6">
+    <div class="controls-outer-container col-md-6">
+    <div id="controls-container">
       <div class="synthesizer-header">
-        <h3>Select Synthesizing Options</h3>
+        <h6>Select Synthesizing Options</h6>
       </div>
       <%= form_with(model: @generator, method: :post, id: "synthesize-form", class: "synthesize-form") do |f| %>
       <div class="form-container">
         <div class="shape-dropdown">
+        <div class="synthesizer-item">
           <div class="form-floating">
             <%= f.select :shape_id, @shapes, {}, {class: "form-select"} %>
             <%= f.label "Shape", for: "generator_shape_id" %>
           </div>
+        </div>
+        <div class="synthesizer-item">
           <div class="form-floating">
             <%= f.select :scaffold_id, @scaffolds, {}, {class: "form-select"} %>
             <%= f.label "Scaffold", for: "generator_scaffold_id" %>
           </div>
           <%# <%= select_tag(:shape,  options_for_select(@options, :select => "2", :disabled => "0"), id: "synthesizer-shape", class: "form-select")%>
         </div>
-      <div class="custom-scaffold-container">
-        <div class="form-floating mb-3">
+      </div>
+      <div class="synthesizer-item custom-scaffold-container">
+        <div class="form-floating">
           <input type="text" class="form-control" id="custom_sequence_length" placeholder="scaffold length">
-          <label for="custom_sequence_length">Length</label>
+          <label for="custom_sequence_length">Scaffold Length</label>
         </div>
       </div>
         <%# Erbify %>
-        <div class="row sequence-container">
+        <div class="row sequence-container synthesizer-item">
           <div class="col-md-5 random-sequence-container">
-            <input class="form-check-input" type="checkbox" value="" id="sequence_checkbox" checked autocomplete="off">
+            <input class="form-check-input" type="checkbox" value="" id="sequence_checkbox" autocomplete="off">
             <label id="sequence_checkbox_label" class="form-check-label" for="sequence_checkbox">
               Random Sequence
             </label>
@@ -77,43 +80,43 @@
         <%= f.hidden_field "scaffold_length" ""%>
         <%# Add hidden field for JSON data %>
         <% if @current_user %>
-        <div class="visibility-container">
-          <div class="form-check form-switch">
-            <%= f.check_box :visibility, class: "form-check-input", id: "visibility-input", checked: true%>
-            <label class="form-check-label" id="visibility-label" for="visibility-input">Public</label>
+          <div class="visibility-container">
+            <div class="form-check form-switch">
+              <%= f.check_box :visibility, class: "form-check-input", id: "visibility-input", checked: true%>
+              <label class="form-check-label" id="visibility-label" for="visibility-input">Public</label>
+            </div>
           </div>
-        </div>
         <% end %>
         <div class="dimension-picker">
           <div
-            class="width-container dimension-wrapper-container <%= 'dimension-container' if @generator.width == nil %>">
+            class="width-container synthesizer-item dimension-wrapper-container <%= 'dimension-container' if @generator.width == nil %>">
             <div class="input-group dimension-input-container">
               <span class="input-group-text w-25">Width</span>
-              <%= f.text_field :width, type: "text", class: "dimension-input width-input form-control", placeholder: "30 nm" %>
+              <%= f.text_field :width, type: "number", class: "dimension-input width-input form-control", placeholder: "30 nm" %>
             </div>
           </div>
 
           <div
-            class="height-container dimension-wrapper-container <%= 'dimension-container' if @generator.height == nil %>">
+            class="height-container synthesizer-item dimension-wrapper-container <%= 'dimension-container' if @generator.height == nil %>">
             <div class="input-group dimension-input-container">
               <span class="input-group-text w-25">Height</span>
-              <%= f.text_field :height, type: "text", class: "dimension-input height-input form-control", placeholder: "30 nm" %>
+              <%= f.text_field :height, type: "number", class: "dimension-input height-input form-control", placeholder: "30 nm" %>
             </div>
           </div>
 
           <div
-            class="depth-container dimension-wrapper-container <%= 'dimension-container' if @generator.depth == nil %>">
+            class="depth-container synthesizer-item dimension-wrapper-container <%= 'dimension-container' if @generator.depth == nil %>">
             <div class="input-group dimension-input-container">
               <span class="input-group-text w-25">Depth</span>
-              <%= f.text_field :depth, type: "text", class: "dimension-input depth-input form-control", placeholder: "30 nm" %>
+              <%= f.text_field :depth, type: "number", class: "dimension-input depth-input form-control", placeholder: "30 nm" %>
             </div>
           </div>
 
           <div
-            class="ws-container dimension-wrapper-container <%= 'dimension-container' if @generator.width_segment == nil %>">
+            class="ws-container synthesizer-item dimension-wrapper-container <%= 'dimension-container' if @generator.width_segment == nil %>">
             <div class="input-group dimension-input-container">
               <span class="input-group-text w-25">Stripes</span>
-              <%= f.text_field :segments, type: "text", class: "dimension-input ws-input form-control", placeholder: "3" %>
+              <%= f.text_field :segments, type: "number", class: "dimension-input ws-input form-control", placeholder: "3" %>
             </div>
           </div>
 
@@ -134,5 +137,5 @@
   <!-- End of Synthesizer Selection-->
 
   <%= render "layouts/footer"%>
-  <%= javascript_pack_tag 'dna', 'nanobot', 'data-turbolinks-track': 'reload'%>
+  <%= javascript_pack_tag 'dna', 'model', 'nanobot', 'data-turbolinks-track': 'reload'%>
 </body>

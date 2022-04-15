@@ -240,8 +240,10 @@ $(document).ready(function () {
   $("#generator_scaffold_id").click(() => {
     if ($("#generator_scaffold_id").val() == '3') {
       $(".custom-scaffold-container").show();
+      $("#sequence_checkbox").prop("checked", true);
     } else {
       $(".custom-scaffold-container").hide();
+      $("#sequence_checkbox").prop("checked", false);
     }
   })
 })

@@ -23,12 +23,12 @@ controls.enableDamping = true;
 const gui = new dat.GUI({
   autoPlace: false,
 });
-document.querySelector(".datGUI").append(gui.domElement);
+// document.querySelector(".datGUI").append(gui.domElement);
 
 camera.position.z = 120;
 const scene = new THREE.Scene();
 
-const shape = document.getElementById("synthesizer-shape");
+const shape = document.getElementById("generator_shape_id");
 let chosenShape;
 let mesh;
 let meshData;
