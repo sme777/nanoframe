@@ -46,14 +46,14 @@
         <div class="shape-dropdown">
         <div class="synthesizer-item">
           <div class="form-floating">
-            <%= f.select :shape_id, @shapes, {}, {class: "form-select"} %>
+            <%= f.select :shape, @shapes, {}, {class: "form-select"} %>
             <%= f.label "Shape", for: "generator_shape_id" %>
           </div>
         </div>
         <div class="synthesizer-item">
           <div class="form-floating">
-            <%= f.select :scaffold_id, @scaffolds, {}, {class: "form-select"} %>
-            <%= f.label "Scaffold", for: "generator_scaffold_id" %>
+            <%= f.select :scaffold_name, @scaffolds, {}, {class: "form-select"} %>
+            <%= f.label "Scaffold", for: "generator_scaffold_name" %>
           </div>
           <%# <%= select_tag(:shape,  options_for_select(@options, :select => "2", :disabled => "0"), id: "synthesizer-shape", class: "form-select")%>
         </div>
@@ -89,34 +89,34 @@
         <% end %>
         <div class="dimension-picker">
           <div
-            class="width-container synthesizer-item dimension-wrapper-container <%= 'dimension-container' if @generator.width == nil %>">
+            class="width-container synthesizer-item dimension-wrapper-container">
             <div class="input-group dimension-input-container">
               <span class="input-group-text w-25">Width</span>
-              <%= f.text_field :width, type: "number", class: "dimension-input width-input form-control", placeholder: "50 nm" %>
+              <%= f.text_field :width, type: "text", class: "dimension-input width-input form-control", placeholder: "50 nm" %>
             </div>
           </div>
 
           <div
-            class="height-container synthesizer-item dimension-wrapper-container <%= 'dimension-container' if @generator.height == nil %>">
+            class="height-container synthesizer-item dimension-wrapper-container">
             <div class="input-group dimension-input-container">
               <span class="input-group-text w-25">Height</span>
-              <%= f.text_field :height, type: "number", class: "dimension-input height-input form-control", placeholder: "50 nm" %>
+              <%= f.text_field :height, type: "text", class: "dimension-input height-input form-control", placeholder: "50 nm" %>
             </div>
           </div>
 
           <div
-            class="depth-container synthesizer-item dimension-wrapper-container <%= 'dimension-container' if @generator.depth == nil %>">
+            class="depth-container synthesizer-item dimension-wrapper-container">
             <div class="input-group dimension-input-container">
               <span class="input-group-text w-25">Depth</span>
-              <%= f.text_field :depth, type: "number", class: "dimension-input depth-input form-control", placeholder: "50 nm" %>
+              <%= f.text_field :depth, type: "text", class: "dimension-input depth-input form-control", placeholder: "50 nm" %>
             </div>
           </div>
 
           <div
-            class="ws-container synthesizer-item dimension-wrapper-container <%= 'dimension-container' if @generator.width_segment == nil %>">
+            class="ws-container synthesizer-item dimension-wrapper-container">
             <div class="input-group dimension-input-container">
               <span class="input-group-text w-25">Divisions</span>
-              <%= f.text_field :segments, type: "number", class: "dimension-input ws-input form-control", placeholder: "4" %>
+              <%= f.text_field :divisions, type: "text", class: "dimension-input divisions-input form-control", placeholder: "4" %>
             </div>
           </div>
 

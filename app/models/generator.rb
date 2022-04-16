@@ -68,44 +68,44 @@ class Generator < ApplicationRecord
   end
 
   def route
-    length = option == '7249 nt scaffold' ? 7249 : 8064
-    case shape
-    when '1'
-      @graph = Graph.new(id, [width, height, depth], :cube, width_segment + 1, length)
+    shape_name = shape.match(/(^.*)\s/).captures.first.downcase
+    case shape_name
+    when 'cube'
+      @graph = Graph.new(id, [width, height, depth], :cube, divisions + 1, scaffold_length)
     when '2'
-      @graph = Graph.new(id, [radius], :tetrahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :tetrahedron, divisions + 1, scaffold_length)
     when '3'
-      @graph = Graph.new(id, [radius], :octahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :octahedron, divisions + 1, scaffold_length)
     when '4'
-      @graph = Graph.new(id, [radius], :icosahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :icosahedron, divisions + 1, scaffold_length)
     when '5'
-      @graph = Graph.new(id, [radius], :dodecahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :dodecahedron, divisions + 1, scaffold_length)
     when '6'
-      @graph = Graph.new(id, [radius], :truncated_tetrahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_tetrahedron, divisions + 1, scaffold_length)
     when '7'
-      @graph = Graph.new(id, [radius], :cuboctahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :cuboctahedron, divisions + 1, scaffold_length)
     when '8'
-      @graph = Graph.new(id, [radius], :truncated_cube, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_cube, divisions + 1, scaffold_length)
     when '9'
-      @graph = Graph.new(id, [radius], :truncated_octahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_octahedron, divisions + 1, scaffold_length)
     when '10'
-      @graph = Graph.new(id, [radius], :rhombicuboctahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :rhombicuboctahedron, divisions + 1, scaffold_length)
     when '11'
-      @graph = Graph.new(id, [radius], :truncated_cuboctahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_cuboctahedron, divisions + 1, scaffold_length)
     when '12'
-      @graph = Graph.new(id, [radius], :snub_cube, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :snub_cube, divisions + 1, scaffold_length)
     when '13'
-      @graph = Graph.new(id, [radius], :icosidodecahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :icosidodecahedron, divisions + 1, scaffold_length)
     when '14'
-      @graph = Graph.new(id, [radius], :truncated_dodecahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_dodecahedron, divisions + 1, scaffold_length)
     when '15'
-      @graph = Graph.new(id, [radius], :truncated_icosahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_icosahedron, divisions + 1, scaffold_length)
     when '16'
-      @graph = Graph.new(id, [radius], :rhombicosidodecahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :rhombicosidodecahedron, divisions + 1, scaffold_length)
     when '17'
-      @graph = Graph.new(id, [radius], :truncated_icosidodecahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_icosidodecahedron, divisions + 1, scaffold_length)
     when '18'
-      @graph = Graph.new(id, [radius], :snub_dodecahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :snub_dodecahedron, divisions + 1, scaffold_length)
     end
   end
 
@@ -310,11 +310,18 @@ class Generator < ApplicationRecord
 
   def self.scaffolds
     {
-      "M13mp18 p7249": 1,
-      "M13mp18 p8064": 2,
-      "Custom": 3
+      "M13mp18 p7249": "M13mp18 p7249",
+      "M13mp18 p8064": "M13mp18 p8064",
+      "Custom": "Custom"
     }
 
+  end
+
+  def self.scaffolds_to_length
+    {
+      "M13mp18 p7249": 7249,
+      "M13mp18 p8064": 8064,
+    }
   end
 
   def self.shapes
@@ -397,7 +404,7 @@ class Generator < ApplicationRecord
     ]
     arr = {}
     shapes.each_with_index do |shape, idx|
-      arr[shape] = idx + 1
+      arr[shape] = shape
     end
     arr
   end

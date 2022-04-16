@@ -34,7 +34,6 @@ class GeneratorsController < ApplicationController
   end
 
   def visualize
-    
     if params[:regenerate]
       @graph = @generator.route
       @graph_json = @graph.to_json
@@ -59,7 +58,9 @@ class GeneratorsController < ApplicationController
   end
 
   def create
-    @generator = Generator.new(generator_params)
+    generator_fields = generator_params
+    generator_fields[:scaffold_length] = Generator.scaffolds_to_length.stringify_keys[generator_fields[:scaffold_name]] 
+    @generator = Generator.new(generator_fields)
     @generator.user_id = @current_user.id unless @current_user.nil?
 
     if @generator.save
@@ -110,9 +111,7 @@ class GeneratorsController < ApplicationController
   private
 
   def generator_params
-    params.require(:generator).permit(:height, :width, :depth, :option, :depth_segment, :continue, :visibility,
-                                      :radius, :radial_segment, :radius_top, :radius_bottom, :width_segment, :detail,
-                                      :height_segment, :tube_radius, :tubular_radius, :p, :q, :scaffold_length, :shape, :json)
+    params.require(:generator).permit(:height, :width, :depth, :shape, :divisions, :scaffold_name)
   end
 
   def user_generator_params
