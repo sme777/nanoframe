@@ -62,11 +62,11 @@ module Routing
     [vectors[...-1], last_vertex]
   end
 
-  def self.normalize(vectors, wsl, hsl, _dsl)
+  def self.normalize(vectors, wsl, hsl, dsl)
     vectors.each do |vector|
       vector.x *= wsl
       vector.y *= hsl
-      vector.z *= hsl
+      vector.z *= dsl
     end
 
     # vectors.each_with_index do |vector, i|
@@ -221,17 +221,17 @@ module Routing
 
   def self.find_plane_number(v1, v2, dims)
     if v1.z.zero? && v2.z.zero?
-      0
+      :S1
     elsif v1.z == -dims[2] && v2.z == -dims[2]
-      1
+      :S2
     elsif v1.y == dims[1] && v2.y == dims[1]
-      2
+      :S3
     elsif v1.y.zero? && v2.y.zero?
-      3
+      :S4
     elsif v1.x.zero? && v2.x.zero?
-      4
+      :S5
     else
-      5
+      :S6
     end
   end
 end

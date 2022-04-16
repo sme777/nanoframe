@@ -6,6 +6,7 @@ const wireframeMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
 export function makeDefault() {}
 
 export function makeCube(obj = null) {
+  
   const geometry = new THREE.WireframeGeometry(
     new THREE.BoxGeometry(
       Data.cubeData.width,

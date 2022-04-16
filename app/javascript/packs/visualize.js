@@ -55,7 +55,7 @@ if (signOutBtn != null || boxState != null) {
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
 
-  for (let i = 0; i < 7219; i++) {
+  for (let i = 0; i < scaffold_length; i++) {
     if (i % 2 == 0) {
       sequence.push("T");
     } else if (i % 3 == 0) {

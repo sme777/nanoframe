@@ -1,10 +1,10 @@
 export const cubeData = {
-  height: 30,
-  width: 30,
-  depth: 30,
-  widthSegments: 2,
-  heightSegments: 2,
-  depthSegments: 2,
+  height: 50,
+  width: 50,
+  depth: 50,
+  widthSegments: 4,
+  heightSegments: 4,
+  depthSegments: 4,
 };
 
 export const sphereData = {

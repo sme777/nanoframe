@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'zip'
 require 'date'
-# require 'Object3D'
+require 'object3D'
 
 class Generator < ApplicationRecord
   attr_accessor :atom_count
@@ -68,44 +68,44 @@ class Generator < ApplicationRecord
   end
 
   def route
-    length = option == '7249 nt scaffold' ? 7249 : 8064
-    case shape
-    when '1'
-      @graph = Graph.new(id, [width, height, depth], :cube, width_segment + 1, length)
+    shape_name = shape.match(/(^.*)\s/).captures.first.downcase
+    case shape_name
+    when 'cube'
+      @graph = Graph.new(id, [width, height, depth], :cube, divisions + 1, scaffold_length)
     when '2'
-      @graph = Graph.new(id, [radius], :tetrahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :tetrahedron, divisions + 1, scaffold_length)
     when '3'
-      @graph = Graph.new(id, [radius], :octahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :octahedron, divisions + 1, scaffold_length)
     when '4'
-      @graph = Graph.new(id, [radius], :icosahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :icosahedron, divisions + 1, scaffold_length)
     when '5'
-      @graph = Graph.new(id, [radius], :dodecahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :dodecahedron, divisions + 1, scaffold_length)
     when '6'
-      @graph = Graph.new(id, [radius], :truncated_tetrahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_tetrahedron, divisions + 1, scaffold_length)
     when '7'
-      @graph = Graph.new(id, [radius], :cuboctahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :cuboctahedron, divisions + 1, scaffold_length)
     when '8'
-      @graph = Graph.new(id, [radius], :truncated_cube, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_cube, divisions + 1, scaffold_length)
     when '9'
-      @graph = Graph.new(id, [radius], :truncated_octahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_octahedron, divisions + 1, scaffold_length)
     when '10'
-      @graph = Graph.new(id, [radius], :rhombicuboctahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :rhombicuboctahedron, divisions + 1, scaffold_length)
     when '11'
-      @graph = Graph.new(id, [radius], :truncated_cuboctahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_cuboctahedron, divisions + 1, scaffold_length)
     when '12'
-      @graph = Graph.new(id, [radius], :snub_cube, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :snub_cube, divisions + 1, scaffold_length)
     when '13'
-      @graph = Graph.new(id, [radius], :icosidodecahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :icosidodecahedron, divisions + 1, scaffold_length)
     when '14'
-      @graph = Graph.new(id, [radius], :truncated_dodecahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_dodecahedron, divisions + 1, scaffold_length)
     when '15'
-      @graph = Graph.new(id, [radius], :truncated_icosahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_icosahedron, divisions + 1, scaffold_length)
     when '16'
-      @graph = Graph.new(id, [radius], :rhombicosidodecahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :rhombicosidodecahedron, divisions + 1, scaffold_length)
     when '17'
-      @graph = Graph.new(id, [radius], :truncated_icosidodecahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :truncated_icosidodecahedron, divisions + 1, scaffold_length)
     when '18'
-      @graph = Graph.new(id, [radius], :snub_dodecahedron, width_segment + 1, length)
+      @graph = Graph.new(id, [radius], :snub_dodecahedron, divisions + 1, scaffold_length)
     end
   end
 
@@ -307,4 +307,105 @@ class Generator < ApplicationRecord
   def cadnano; end
 
   def bundle; end
+
+  def self.scaffolds
+    {
+      "M13mp18 p7249": "M13mp18 p7249",
+      "M13mp18 p8064": "M13mp18 p8064",
+      "Custom": "Custom"
+    }
+
+  end
+
+  def self.scaffolds_to_length
+    {
+      "M13mp18 p7249": 7249,
+      "M13mp18 p8064": 8064,
+    }
+  end
+
+  def self.shapes
+    shapes = [
+      "Cube (P1)",
+      "Tetrahedron (P2)",
+      "Octahedron (P3)",
+      "Icosahedron (P4)",
+      "Dodecahedron (P5)",
+      "Truncated Tetrahedron (A1)",
+      "Cuboctahedron (A2)",
+      "Truncated Cube (A3)",
+      "Truncated Octahedron (A4)",
+      "Rhombicuboctahedron (A5)",
+      "Truncated Cuboctahedron (A6)",
+      "Snub Cube (A7)",
+      "Icosidodecahedron (A8)",
+      "Truncated Dodecahedron (A9)",
+      "Truncated Icosahedron (A10)",
+      "Rhombicosidodecahedron (A11)",
+      "Truncated Icosidodecahedron (A12)",
+      "Snub Dodecahedron (A13)",
+      "Square Pyramid (J1)",
+      "Pentagonal Pyramid (J2)",
+      "Triangular Cupola (J3)",
+      "Square Cupola (J4)",
+      "Pentagonal Cupola (J5)",
+      "Pentagonal Rotunda (J6)",
+      "Elongated Triangular Pyramid (J7)",
+      "Elongated Square Pyramid (J8)",
+      "Elongated Pentagonal Pyramid (J9)",
+      "Gyroelongated Square Pyramid (J10)",
+      "Gyroelongated Pentagonal Pyramid (J11)",
+      "Triangular Bipyramid (J12)",
+      "Pentagonal Bipyramid (J13)",
+      "Elongated Triangular Bipyramid (J14)",
+      "Elongated Square Bipyramid (J15)",
+      "Elongated Pentagonal Bipyramid (J16)",
+      "Gyroelongated Square Bipyramid (J17)",
+      "Elongated Triangular Cupola (J18)",
+      "Elongated Square Cupola (J19)",
+      "Elongated Pentagonal Cupola (J20)",
+      "Elongated Pentagonal Rotunda (J21)",
+      "Gyroelongated Triangular Cupola (J22)",
+      "Gyroelongated Square Cupola (J23)",
+      "Gyroelongated Pentagonal Cupola (J24)",
+      "Gyroelongated Pentagonal Rotunda (J25)",
+      "Gyrobifastigium (J26)",
+      "Triangular Orthobicupola (J27)",
+      "Square Orthobicupola (J28)",
+      "Square Gyrobicupola (J29)",
+      "Pentagonal Orthobicupola (J30)",
+      "Pentagonal Gyrobicupola (J31)",
+      "Pentagonal Orthocupolarotunda (J32)",
+      "Pentagonal Gyrocupolarotunda (J33)",
+      "Pentagonal Orthobirotunda (J34)",
+      "Elongated Triangular Orthobicupola (J35)",
+      "Elongated Triangular Gyrobicupola (J36)",
+      "Elongated Square Gyrobicupola (J37)",
+      "Elongated Pentagonal Orthobicupola (J38)",
+      "Elongated Pentagonal Gyrobicupola (J39)",
+      "Elongated Pentagonal Orthocupolarotunda (J40)",
+      "Elongated Pentagonal Gyrocupolarotunda (J41)",
+      "Elongated Pentagonal Orthobirotunda (J42)",
+      "Elongated Pentagonal Gyrobirotunda (J43)",
+      "Gyroelongated Triangular Bicupola (J44)",
+      "Gyroelongated Square Bicupola (J45)",
+      "Gyroelongated Pentagonal Bicupola (J46)",
+      "Gyroelongated Pentagonal Cupolarotunda (J47)",
+      "Gyroelongated Pentagonal Birotunda (J48)",
+      "Augmented Triangular Prism (J49)",
+      "Biaugmented Triangular Prism (J50)",
+      "Triaugmented Triangular Prism (J51)",
+      "Augmented Pentagonal Prism (J52)",
+      "Biaugmented Pentagonal Prism (J53)",
+      "Augmented Hexagonal Prism (J54)",
+      "Parabiaugmented Hexagonal Prism (J55)",
+      "Metabiaugmented Hexagonal Prism (J56)",
+      "Triaugmented Hexagonal Prism (J57)"
+    ]
+    arr = {}
+    shapes.each_with_index do |shape, idx|
+      arr[shape] = shape
+    end
+    arr
+  end
 end

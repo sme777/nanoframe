@@ -20,7 +20,8 @@ class Graph
     @template_planes = find_four_planes
     @planes, @raw_planes = find_plane_combination(@template_planes)
     @sorted_vertices, @linear_points, @interpolated_points, @sampling_frequency = generate_spline_points
-    @colors = generate_spline_colors    
+    @colors = generate_spline_colors
+    byebug    
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples)
@@ -502,10 +503,14 @@ class Graph
   end
 
   def generate_staples
-    constraints = @staple_breaker.staples_preprocess
-    staple_len_arr = @staple_breaker.ilp(constraints)
-    staple_adj_len_arr = @staple_breaker.staples_postprocess(staple_len_arr)
-    edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_adj_len_arr)
+    staple_len_map = {}
+    [:S1, :S2, :S3, :S4, :S5, :S6].each do |side|
+      constraints = @staple_breaker.staples_preprocess(side)
+      staple_len_arr = @staple_breaker.ilp(constraints, side)
+      staple_adj_len_arr = @staple_breaker.staples_postprocess(staple_len_arr)
+      staple_len_map[side] = staple_adj_len_arr
+    end
+    edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_len_map)
   end
 
   def generate_staple_colors
@@ -543,16 +548,4 @@ class Graph
                     "end": (@start_idx + @group1.size) * @sampling_frequency})
   end
 
-  # Generates JSON file for unscaled planes of the graph
-  def raw_to_json
-    return nil if @raw_planes.nil?
-
-    raw_plane_arr = []
-    @raw_planes.each do |plane|
-      p = Plane.new(plane)
-      raw_plane_arr.append(p.to_hash)
-    end
-    hash = { "segments": @segments, "scaffold_length": 7249, "planes": raw_plane_arr }
-    JSON.generate(hash)
-  end
 end

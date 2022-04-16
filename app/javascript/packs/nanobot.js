@@ -3,23 +3,25 @@ let requiredParams = [];
 $(document).ready(function () {
   $("#synthesizer-shape").val(0);
   $(".synthesizer-btn").prop("disabled", true);
+
+  preventAllInput("height", "depth", "width", "divisions");
+
   const allInputs = [
     "height",
     "width",
     "depth",
-    "ws",
-    "hs",
-    "ds",
-    "radius",
-    "rs",
-    "rt",
-    "rb",
-    "detail",
-    "tube",
-    "tubular",
-    "p",
-    "q",
+    "divisions"
   ];
+
+  requiredParams = displayInputs(
+    "height",
+    "width",
+    "depth",
+    "divisions"
+  );
+
+  preventAllInput("height", "depth", "width", "divisions");
+  checkIfDone();
 
   $("#synthesizer-shape").click(function () {
     let synthesizerChoice = $("#synthesizer-shape").find(":selected").text();
@@ -31,75 +33,10 @@ $(document).ready(function () {
         "height",
         "width",
         "depth",
-        "ws",
-        "hs",
-        "ds"
+        "divisions"
       );
-      updatePlaceholders({
-        width: "50 nm",
-        height: "50 nm",
-        depth: "50 nm",
-        ws: "4",
-        hs: "4",
-        ds: "4",
-      });
-      preventAllInput("height", "depth", "width", "ws", "hs", "ds");
-    } else if (synthesizerChoice == "Sphere") {
-      requiredParams = displayInputs("ws", "hs", "radius");
-      updatePlaceholders({ ws: "10", hs: "8", radius: "22 nm" });
-      preventAllInput("ws", "hs", "radius");
-    } else if (synthesizerChoice == "Cylinder") {
-      requiredParams = displayInputs("rs", "rt", "rb", "height");
-      updatePlaceholders({
-        rs: "12",
-        rst: "18 nm",
-        rsb: "10 nm",
-        height: "33 nm",
-      });
-      preventAllInput("rs", "rt", "rb", "height");
-    } else if (synthesizerChoice == "Cone") {
-      requiredParams = displayInputs("rs", "height", "radius");
-      updatePlaceholders({ radius: "20 nm", rs: "20", height: "33 nm" });
-      preventAllInput("rs", "radius", "height");
-    } else if (
-      synthesizerChoice == "Polyhedron" ||
-      synthesizerChoice == "Tetrahedron" ||
-      synthesizerChoice == "Octahedron" ||
-      synthesizerChoice == "Icosahedron" ||
-      synthesizerChoice == "Dodecahedron"
-    ) {
-      requiredParams = displayInputs("radius", "ws", "detail");
-      updatePlaceholders({ radius: "22 nm", detail: "0" });
-      preventAllInput("detail", "radius", "ws");
-    } else if (synthesizerChoice == "Torus") {
-      requiredParams = displayInputs("radius", "tube", "rs", "tubular");
-      updatePlaceholders({
-        radius: "22 nm",
-        rs: "8",
-        tube: "2 nm",
-        tubular: "24",
-      });
-    } else if (synthesizerChoice == "Torus Knot") {
-      requiredParams = displayInputs(
-        "radius",
-        "tube",
-        "rs",
-        "tubular",
-        "p",
-        "q"
-      );
-      updatePlaceholders({
-        radius: "15 nm",
-        rs: "8",
-        tube: "4 nm",
-        tubular: "64",
-        p: "2",
-        q: "3",
-      });
-    } else if (synthesizerChoice == "Custom") {
-      window.location = $(this).val();
-      displayInputs();
-    }
+      preventAllInput("height", "depth", "width", "divisions");
+    } 
   });
 
   function displayInputs(...args) {
@@ -127,16 +64,6 @@ $(document).ready(function () {
           (evt.which < 48 || evt.which > 57)
         ) {
           evt.preventDefault();
-        }
-        if (input == "ws") {
-          $(".hs-input").val(self.val());
-          $(".ds-input").val(self.val());
-        } else if (input == "hs") {
-          $(".ws-input").val(self.val());
-          $(".ds-input").val(self.val());
-        } else if (input == "ds") {
-          $(".ws-input").val(self.val());
-          $(".hs-input").val(self.val());
         }
         checkIfDone();
       });
@@ -174,25 +101,27 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
+  console.log($("#generator_scaffold_name").val())
   $(".synthesizer-btn").click(function (e) {
     e.preventDefault();
-    if ($("#synthesizer-shape").find(":selected").text() == "Cube (P1)") {
+    if ($("#generator_shape").find(":selected").text() == "Cube (P1)") {
       const height = parseInt($(".height-input").val());
       const depth = parseInt($(".depth-input").val());
       const width = parseInt($(".width-input").val());
-      const segments = parseInt($(".ws-input").val());
+      const segments = parseInt($(".divisions-input").val());
       let scaffold_length;
       const used =
         (width * segments * 4 + height * segments * 4 + depth * segments * 4) /
         0.332;
 
-      if ($("#8064-radiobtn").is(":checked")) {
-        scaffold_length = 8064;
-      } else if ($("#7249-radiobtn").is(":checked")) {
+      if ($("#generator_scaffold_name").val() == "M13mp18 p7249") {
         scaffold_length = 7249;
+      } else if ($("#generator_scaffold_name").val() == 'M13mp18 p8064') {
+        scaffold_length = 8064;
       } else {
         scaffold_length = 0;
       }
+      console.log(scaffold_length)
       // find a better way to replace error messages
       if (scaffold_length - used < 0) {
         $(".danger-container").show();
@@ -235,3 +164,15 @@ $(document).ready(function () {
     $("#8064-radiobtn").prop("checked", false);
   });
 });
+
+$(document).ready(function () {
+  $("#generator_scaffold_name").click(() => {
+    if ($("#generator_scaffold_name").val() == 'Custom') {
+      $(".custom-scaffold-container").show();
+      $("#sequence_checkbox").prop("checked", true);
+    } else {
+      $(".custom-scaffold-container").hide();
+      $("#sequence_checkbox").prop("checked", false);
+    }
+  })
+})

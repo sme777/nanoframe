@@ -19,24 +19,40 @@ class Breaker
       @height = dimensions[1]
       @depth = dimensions[2]
 
-      @w_step = (dimensions[0] / SSDNA_NT_DIST) / @segments
-      @h_step = (dimensions[1] / SSDNA_NT_DIST) / @segments
-      @d_step = (dimensions[2] / SSDNA_NT_DIST) / @segments
+      @w_step = ((dimensions[0] / SSDNA_NT_DIST) / @segments).floor
+      @h_step = ((dimensions[1] / SSDNA_NT_DIST) / @segments).floor
+      @d_step = ((dimensions[2] / SSDNA_NT_DIST) / @segments).floor
     when :tetrahedron
       @radius = dimensions[0]
     end
   end
 
-  def staples_preprocess
+  # S1 = front; S2 = back; S3 = top; S4 = bottom; S5 = left; S6 = right
+  def staples_preprocess(side)
     contraints = {}
     case @shape
     when :cube
-      h_constraint = ((@width / @segments) / SSDNA_NT_DIST).floor >= 60
-      v_constraint = ((@height / @segments) / SSDNA_NT_DIST).floor >= 60
-      contraints[:z1] = h_constraint
-      contraints[:z3] = h_constraint
-      contraints[:z2] = v_constraint
-      contraints[:z4] = v_constraint
+      
+      w_constraint = ((@width / @segments) / SSDNA_NT_DIST).floor >= 60
+      h_constraint = ((@height / @segments) / SSDNA_NT_DIST).floor >= 60
+      d_constraint = ((@depth / @segments) / SSDNA_NT_DIST).floor >= 60
+      case side
+      when :S1, :S2
+        contraints[:z1] = w_constraint
+        contraints[:z3] = w_constraint
+        contraints[:z2] = h_constraint
+        contraints[:z4] = h_constraint
+      when :S3, :S4
+        contraints[:z1] = w_constraint
+        contraints[:z3] = w_constraint
+        contraints[:z2] = d_constraint
+        contraints[:z4] = d_constraint
+      when :S5, :S6
+        contraints[:z1] = d_constraint
+        contraints[:z3] = d_constraint
+        contraints[:z2] = h_constraint
+        contraints[:z4] = h_constraint
+      end
     when :tetrahedron
 
     end
@@ -69,26 +85,31 @@ class Breaker
     break_long_extension(length / 2) * 2
   end
 
-  def ilp(constraints)
+  def ilp(constraints, side)
     model = Cbc::Model.new
     s = @segments
     s2 = s**2
-    x, y, z1, z2, z3, z4 = model.int_var_array(6, 0..Cbc::INF)
+    x, y, x1, x2, z1, z2, z3, z4 = model.int_var_array(8, 0..Cbc::INF)
     model.maximize(2 * s2 * x + 4 * s * y + 2 * s * z1 + 2 * s * z2 + (s2 - s) * z3 + (s2 - s) * z4)
+    h_step, v_step = step_size(side)
+
 
     # x, y mandatory restraints
     model.enforce(x >= 20)
     model.enforce(y >= 20)
     model.enforce(x <= 60)
     model.enforce(y <= 60)
-    model.enforce(0.5 * x + 0.5 * y + z1 >= @w_step)
-    model.enforce(0.5 * x + 0.5 * y + z2 >= @h_step)
-    model.enforce(0.5 * x + 0.5 * y + z1 <= @w_step)
-    model.enforce(0.5 * x + 0.5 * y + z2 <= @h_step)
-    model.enforce(x + z3 >= @w_step)
-    model.enforce(y + z4 >= @h_step)
-    model.enforce(x + z3 <= @w_step)
-    model.enforce(y + z4 <= @h_step)
+    model.enforce(x1 + 0.5 * y + z1 >= h_step)
+    model.enforce(x2 + 0.5 * y + z2 >= v_step)
+    model.enforce(x1 + 0.5 * y + z1 <= h_step)
+    model.enforce(x2 + 0.5 * y + z2 <= v_step)
+    model.enforce(2 * x1 + z3 >= h_step)
+    model.enforce(2 * x2 + z4 >= v_step)
+    model.enforce(2 * x1 + z3 <= h_step)
+    model.enforce(2 * x2 + z4 <= v_step)
+    model.enforce(x1 + x2 >= x)
+    model.enforce(x1 + x2 <= x)
+
     model.enforce(2 * s2 * x + 4 * s * y + 2 * s * z1 + 2 * s * z2 + (s2 - s) * z3 + (s2 - s) * z4 <= @scaff_length)
     # z1, z2, z3, z4 filtered restraints
     model.enforce(z1 >= 0)
@@ -120,25 +141,31 @@ class Breaker
     end
     problem = model.to_problem
     Thread.new { problem.solve }.join
-    [problem.value_of(x), problem.value_of(y), problem.value_of(z1),
+    [problem.value_of(x), problem.value_of(x1), problem.value_of(x2), problem.value_of(y), problem.value_of(z1),
      problem.value_of(z2), problem.value_of(z3), problem.value_of(z4)]
   end
 
-  # (edges, refl, refr, exts)
-  def generate_staple_strands(vertices, staple_len_arr)
-    refl, refr, ext_b_hor, ext_b_vert, ext_hor, ext_vert = staple_len_arr
-    refl = refl.first
-    refr = refr.first
+  def generate_staple_strands(vertices, staple_len_map)
+
     edges = generate_shape_edges(vertices)
     staples = []
 
-    # ext_b_hor, ext_b_vert, ext_hor, ext_vert = exts
-
     edges.each do |edge|
+      curr_side = edge_side(edge)
+      refl, refl1, refl2, refr, ext_b_hor, ext_b_vert, ext_hor, ext_vert = staple_len_map[curr_side]
+      refl = refl.first
+      refl1 = refl1.first
+      refl2 = refl2.first
+      refr = refr.first
+
       if on_boundary?(edge.v2)
         adjacent = ObjectSpace._id2ref(edge.next)
+        next_side = edge_side(adjacent)
+        _, _, _, refr2, _, _, _, _ = staple_len_map[next_side]
+        refr2 = refr2.first
+
         if ext_b_hor == [0] && ext_b_vert == [0]
-          staple = Staple.new(edge, adjacent, refr / 2, refr / 2, :refraction, 2)
+          staple = Staple.new(edge, adjacent, refr / 2, refr2 / 2, :refraction, 2)
           edge.assoc_strands << staple.object_id
           staples << staple
         elsif (edge.directional_change == :x && ext_b_hor != [0]) ||
@@ -161,9 +188,13 @@ class Breaker
         end
       else
         # byebug
+        if (edge.adjacent_edges.first.nil?)
+          byebug
+        end
+
         adjacent = ObjectSpace._id2ref(edge.adjacent_edges.first)
         if ext_hor == [0] && ext_vert == [0]
-          staple = Staple.new(edge, adjacent, refl / 2, refl / 2, :reflection, 1)
+          staple = Staple.new(edge, adjacent, refl2, refl2, :reflection, 1)
           edge.assoc_strands << staple.object_id
           staples << staple
         elsif (edge.directional_change == :x && ext_hor != [0]) ||
@@ -190,6 +221,29 @@ class Breaker
     end
     set_staple_neighbors(staples)
     [edges, staples]
+  end
+
+  def edge_side(edge)
+    Routing.find_plane_number(edge.v1, edge.v2, [@width, @height, @depth])
+  end
+
+  def step_size(side)
+    case @shape
+    when :cube
+      case side
+      when :S1, :S2
+        h_step = @w_step
+        v_step = @h_step
+      when :S3, :S4
+        h_step = @w_step
+        v_step = @d_step
+      when :S5, :S6
+        h_step = @d_step
+        v_step = @h_step
+      end
+    end
+
+    [h_step, v_step]
   end
 
   def set_staple_neighbors(staples)
@@ -258,17 +312,18 @@ class Breaker
     sequence = IO.read('./app/assets/scaffolds/7249.txt')
     edges = []
     ### add extra checks for moving directions
-
+    seq_count = 0
     vertices.each_with_index do |v, i|
-      new_edge = Edge.new(v, vertices[(i + 1) % vertices.size])
-      steped = moving_step(new_edge)
+      this_edge = Edge.new(v, vertices[(i + 1) % vertices.size])
+      this_step = moving_step(this_edge)
       seq = if i == vertices.size - 1
-              sequence[i * steped...sequence.size]
+              sequence[seq_count...sequence.size]
             else
-              sequence[i * steped...(i + 1) * steped]
+              sequence[seq_count...(seq_count + this_step)]
             end
-      new_edge.sequence = seq
-      edges << new_edge
+      seq_count += this_step
+      this_edge.sequence = seq
+      edges << this_edge
     end
 
     edges.each_with_index do |edge, idx|
@@ -294,9 +349,9 @@ class Breaker
   end
 
   def moving_step(edge)
-    w_step = @width / (@segments * SSDNA_NT_DIST)
-    h_step = @height / (@segments * SSDNA_NT_DIST)
-    d_step = @depth / (@segments * SSDNA_NT_DIST)
+    w_step = (@width / (@segments * SSDNA_NT_DIST)).floor
+    h_step = (@height / (@segments * SSDNA_NT_DIST)).floor
+    d_step = (@depth / (@segments * SSDNA_NT_DIST)).floor
 
     case edge.directional_change
     when :x
@@ -312,7 +367,7 @@ class Breaker
     # TODO: fix for plane roatation
     (approx(v.x, @width) && approx(v.y, @height)) ||
       (approx(v.x, @width) && approx(v.z, @depth)) ||
-      (approx(v.y, @depth) && approx(v.z, @depth))
+      (approx(v.y, @height) && approx(v.z, @depth))
   end
 
   def approx(val, divisor)
