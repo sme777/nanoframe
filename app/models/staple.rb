@@ -10,6 +10,13 @@ class Staple
     @type = type
     @next = nil
     @prev = nil
+    
+    # test = front
+    # test2 = back
+    if back.sequence.nil?
+      byebug
+    end
+
     @sequence = if front == back
                   convert(front.sequence[start_pos...end_pos] + buffer_bp)
                 else

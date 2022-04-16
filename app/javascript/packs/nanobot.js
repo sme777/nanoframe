@@ -101,9 +101,10 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
+  console.log($("#generator_scaffold_name").val())
   $(".synthesizer-btn").click(function (e) {
     e.preventDefault();
-    if ($("#synthesizer-shape").find(":selected").text() == "Cube (P1)") {
+    if ($("#generator_shape").find(":selected").text() == "Cube (P1)") {
       const height = parseInt($(".height-input").val());
       const depth = parseInt($(".depth-input").val());
       const width = parseInt($(".width-input").val());
@@ -113,13 +114,14 @@ $(document).ready(function () {
         (width * segments * 4 + height * segments * 4 + depth * segments * 4) /
         0.332;
 
-      if ($("#8064-radiobtn").is(":checked")) {
-        scaffold_length = 8064;
-      } else if ($("#7249-radiobtn").is(":checked")) {
+      if ($("#generator_scaffold_name").val() == "M13mp18 p7249") {
         scaffold_length = 7249;
+      } else if ($("#generator_scaffold_name").val() == 'M13mp18 p8064') {
+        scaffold_length = 8064;
       } else {
         scaffold_length = 0;
       }
+      console.log(scaffold_length)
       // find a better way to replace error messages
       if (scaffold_length - used < 0) {
         $(".danger-container").show();
