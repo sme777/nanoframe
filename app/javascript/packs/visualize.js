@@ -319,7 +319,7 @@ if (signOutBtn != null || boxState != null) {
 
     let controls = new OrbitControls(camera, renderer.domElement);
     controls.minDistance = 10;
-    controls.maxDistance = 500;
+    controls.maxDistance = 5000;
     // controls.enableZoom = false
 
     window.addEventListener("resize", onWindowResize);

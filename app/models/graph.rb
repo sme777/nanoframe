@@ -20,8 +20,7 @@ class Graph
     @template_planes = find_four_planes
     @planes, @raw_planes = find_plane_combination(@template_planes)
     @sorted_vertices, @linear_points, @interpolated_points, @sampling_frequency = generate_spline_points
-    @colors = generate_spline_colors
-    byebug    
+    @colors = generate_spline_colors   
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples)

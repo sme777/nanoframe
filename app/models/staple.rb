@@ -13,6 +13,11 @@ class Staple
     
     # test = front
     # test2 = back
+    if front.sequence[start_pos...].nil?
+      byebug
+    end 
+    buffer_bp + "" 
+    back.sequence[...end_pos] + ""
     if back.sequence.nil?
       byebug
     end
@@ -46,19 +51,23 @@ class Staple
   def compute_positions(start_pos, end_pos, _sample = 10)
     if @type == :extension
       dr_ch, dr_vec = @front.directional_change_vec
-      start_mid_vec = Vertex.new(@front.v1.x, @front.v1.y, @front.v1.z)
-      start_mid_vec.instance_variable_set("@#{dr_ch}",
-                                          @front.v1.instance_variable_get("@#{dr_ch}") + dr_vec * (start_pos.to_f / @front.sequence.size))
-      start_point = dr_vec < 0 ? @front.v1 - start_mid_vec : @front.v1 + start_mid_vec
+      points = Vertex.linspace(dr_ch, @front.sequence.size, @front.v1, @front.v2)[start_pos...end_pos]
+      # byebug
+      
+      # start_mid_vec = Vertex.new(0, 0, 0)
+      # start_mid_vec.instance_variable_set("@#{dr_ch}",
+      #                                     @front.v1.instance_variable_get("@#{dr_ch}") - dr_vec * (start_pos.to_f / @front.sequence.size))
+      # start_point = dr_vec < 0 ? @front.v1 - start_mid_vec : @front.v1 + start_mid_vec
 
-      end_mid_vec = Vertex.new(front.v1.x, front.v1.y, front.v1.z)
-      end_mid_vec.instance_variable_set("@#{dr_ch}",
-                                        front.v1.instance_variable_get("@#{dr_ch}") + dr_vec * (end_pos.to_f / front.sequence.size))
-      end_point = dr_vec < 0 ? front.v1 - end_mid_vec : front.v1 + end_mid_vec
+      # end_mid_vec = Vertex.new(0, 0, 0)
+      # end_mid_vec.instance_variable_set("@#{dr_ch}",
+      #                                   @front.v1.instance_variable_get("@#{dr_ch}") - dr_vec * (end_pos.to_f / @front.sequence.size))
+      # end_point = dr_vec < 0 ? @front.v1 - end_mid_vec : @front.v1 + end_mid_vec
 
-      Vertex.linspace(dr_ch, (start_pos - end_pos).abs, start_point, end_point)
-
-    elsif @type == :reflection || @type == :refraction
+      # points = Vertex.linspace(dr_ch, (start_pos - end_pos).abs, start_point, end_point)
+      # points
+      # adjust(points)
+    elsif @type == :reflection || @type == :refraction || @type == :extension
       dr_ch, dr_vec = @front.directional_change_vec
       start_mid_vec = Vertex.new(@front.v1.x, @front.v1.y, @front.v1.z)
       start_mid_vec.instance_variable_set("@#{dr_ch}",
@@ -121,12 +130,8 @@ class Staple
   end
 
   def adjust(points)
-    if @type == :xyz
-      dir_front = @front.directional_change
-      dir_back = @back.directional_change
-      points.each { |p| p.instance_variable_set("@#{dir_front}", p.instance_variable_get("@#{dir_front}") + 0.5) }
-      points.each { |p| p.instance_variable_set("@#{dir_back}", p.instance_variable_get("@#{dir_back}") + 0.5) }
-    elsif @type == :extension
+  
+    if @type == :extension
       dir = @front.directional_change
       points.each { |p| p.instance_variable_set("@#{dir}", p.instance_variable_get("@#{dir}") + 0.5) }
     elsif @type == :refraction || @type == :reflection
