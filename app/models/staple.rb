@@ -31,6 +31,18 @@ class Staple
     @interpolated_points = interpolate_positions(@linear_points)
   end
 
+  def setup_dimensions(dimensions, segments, shape)
+    case shape
+    when :cube
+      @width = dimensions[0]
+      @height = dimensions[1]
+      @depth = dimensions[2]
+      @segments = segments
+    when :tetrahedron
+      @radius = dimensions[0]
+    end
+  end
+
   def convert(edge_seq)
     sequence = ''
     seq = edge_seq.split('')
@@ -107,26 +119,34 @@ class Staple
   end
 
   def name
-    builder = @type.to_s
+    # builder = "#{@type.to_s}-"
     starting_vertex = @front.v1
     ending_vertex = @back.v2
+    side = "potato"
 
     if starting_vertex.z == 0 && ending_vertex.z == 0
-      builder += 'S1-'
+      side = :S1
+      # builder += 'S1-'
     elsif starting_vertex.z == -@depth && ending_vertex.z == -@depth
-      builder += 'S2-'
+      side = :S2
+      # builder += 'S2-'
     elsif starting_vertex.y == 0 && ending_vertex.y == 0
-      builder += 'S3-'
+      side = :S3
+      # builder += 'S3-'
     elsif starting_vertex.y == @height && ending_vertex.y == @height
-      builder += 'S4-'
+      side = :S4
+      # builder += 'S4-'
     elsif starting_vertex.x == 0 && ending_vertex.x == 0
-      builder += 'S5-'
+      side = :S5
+      # builder += 'S5-'
     elsif starting_vertex.x == @width && ending_vertex.z == @width
-      builder += 'S6-'
+      side = :S6
+      # builder += 'S6-'
     end
 
     row, col = row_and_col
-    builder += 'R' + row + '-' + 'C' + col
+    "#{@type}-#{side}-R#{row}-C#{col}"
+    # builder += "R#{row}-C#{col}"
   end
 
   def adjust(points)
@@ -151,5 +171,55 @@ class Staple
     points
   end
 
-  def row_and_col; end
+  def row_and_col
+    side = Routing.find_plane_number(@front.v1, @front.v2, [50, 50, 50])
+    dist2wseg = @width / @segments
+    dist2hseg = @height / @segments
+    dist2dseg = @depth / @segments
+    case side
+    when :S1, :S2
+      if @type == :reflection
+        edge_row = (@front.v1.y / dist2hseg).abs.floor + 1
+        edge_col = (@front.v1.x / dist2wseg).abs.floor + 1
+
+        front_dir, front_dir_ch = @front.directional_change_vec
+        back_dir, back_dir_ch = @back.directional_change_vec
+
+        if front_dir_ch > 0
+          if back_dir_ch > 0
+            col = edge_col - 1
+            row = edge_row
+          else
+            col = edge_col - 1
+            row = edge_row - 1
+          end
+        else
+          if back_dir_ch > 0
+            col = edge_col
+            row = edge_row
+          else
+            col = edge_col
+            row = edge_row - 1
+          end
+        end
+
+      elsif @type == :refraction
+        row = (@front.v1.y / dist2hseg).abs.floor + 1
+        col = (@front.v1.x / dist2wseg).abs.floor + 1
+      else
+        row = (@front.v1.y / dist2hseg).abs.floor + 1
+        col = (@front.v1.x / dist2wseg).abs.floor + 1
+      end
+    when :S3, :S4
+
+
+      
+      row = (@front.v1.z / dist2dseg).abs.ceil
+      col = (@front.v1.x / dist2wseg).abs.ceil
+    when :S5, :S6
+      row = (@front.v1.y / dist2hseg).abs.ceil
+      col = (@front.v1.z / dist2dseg).abs.ceil
+    end
+    [row, col]
+  end
 end

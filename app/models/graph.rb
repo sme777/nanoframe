@@ -25,6 +25,30 @@ class Graph
     @start_idx, @group1, @group2, @boundary_edges = open_structure
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples)
     @staple_colors = generate_staple_colors
+    write_staples(@staples, @staple_colors)
+    
+  end
+
+  def write_staples(staples, colors)
+    filename = "#{@width}x#{@height}x#{@depth}-#{@segments - 1}-#{Time.now}"
+    file = File.open("app/assets/results/#{filename}.csv", 'w')
+    file.write("name,color,sequence,length")
+    file.write("\n")
+    staples.each_with_index do |staple, idx|
+      staple_color = colors[idx]
+      file.write("#{staple.name},#{rgb_to_hex(staple_color)},#{staple.sequence},#{staple.sequence.size}")
+      file.write("\n")
+    end
+    file.close
+    filename
+  end
+
+  def rgb_to_hex(rgb_color)
+    red = (rgb_color[0] * 255).to_i.to_s(16)
+    green = (rgb_color[1] * 255).to_i.to_s(16)
+    blue = (rgb_color[2] * 255).to_i.to_s(16)
+    hex = sprintf("#%02s%02s%02s", red, green, blue)
+    hex
   end
 
   def setup_dimensions(dimensions, shape)
@@ -92,11 +116,16 @@ class Graph
   def staples_json
     staple_lin_points = []
     staple_int_points = []
+    staple_names = []
+    staple_sequences = []
     @staples.each do |staple|
       staple_lin_points << Vertex.flatten(staple.linear_points)
       staple_int_points << Vertex.flatten(staple.interpolated_points)
+      staple_names << staple.name
+      staple_sequences << staple.sequence
     end
-    JSON.generate({ linear: staple_lin_points, interpolated: staple_int_points, colors: @staple_colors })
+    JSON.generate({ linear: staple_lin_points, interpolated: staple_int_points, colors: @staple_colors.flatten,
+                    names: staple_names, sequences: staple_sequences })
   end
 
   def connect_vertices(vs)
@@ -519,9 +548,11 @@ class Graph
       staple_color_r = rand
       staple_color_g = rand
       staple_color_b = rand
+      staple_color = []
       staple.linear_points.size.times do |i|
-        staple_colors.concat([staple_color_r, staple_color_g, staple_color_b])
+        staple_color.concat([staple_color_r, staple_color_g, staple_color_b])
       end
+      staple_colors << staple_color
     end
 
     # (0...@scaff_length * 1.2).each do |i|
@@ -543,7 +574,7 @@ class Graph
     
     JSON.generate({ "scaffold_length": @scaff_length, "linear_points": @linear_points, 
                     "interpolated_points": @interpolated_points, "colors": @colors, 
-                    "staple_colors": @staple_colors, "start": @start_idx * @sampling_frequency, 
+                    "staple_colors": @staple_colors.flatten, "start": @start_idx * @sampling_frequency, 
                     "end": (@start_idx + @group1.size) * @sampling_frequency})
   end
 

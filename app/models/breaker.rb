@@ -166,6 +166,7 @@ class Breaker
 
         if ext_b_hor == [0] && ext_b_vert == [0]
           staple = Staple.new(edge, adjacent, refr / 2, refr2 / 2, :refraction, 2)
+          staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
           edge.assoc_strands << staple.object_id
           staples << staple
         else
@@ -188,6 +189,7 @@ class Breaker
             extension_staples = []
             extensions.each do |ext|
               staple = Staple.new(edge, edge, start, start + ext, :extension)
+              staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
               edge.assoc_strands << staple.object_id
               extension_staples << staple
               start += ext
@@ -204,10 +206,12 @@ class Breaker
             end
             # byebug
             staples.concat(extension_staples)
-
-            staples << Staple.new(edge, adjacent, start, refr2 / 2, :refraction, 2)
+            staple = Staple.new(edge, adjacent, start, refr2 / 2, :refraction, 2)
+            staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
+            staples << staple
           else
             staple = Staple.new(edge, adjacent, refr / 2, refr2 / 2, :reflection, 1)
+            staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
             edge.assoc_strands << staple.object_id
             staples << staple
           end
@@ -216,6 +220,7 @@ class Breaker
         adjacent = ObjectSpace._id2ref(edge.adjacent_edges.first)
         if ext_hor == [0] && ext_vert == [0]
           staple = Staple.new(edge, adjacent, refl2, refl2, :reflection, 1)
+          staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
           edge.assoc_strands << staple.object_id
           staples << staple
         else
@@ -242,6 +247,7 @@ class Breaker
             extensions.each do |ext|
               # byebug
               staple = Staple.new(edge, edge, start, start + ext, :extension)
+              staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
               edge.assoc_strands << staple.object_id
               extension_staples << staple
               start += ext
@@ -258,6 +264,7 @@ class Breaker
             
             staples.concat(extension_staples)
             staple = Staple.new(edge, adjacent, start, refl2, :reflection, 1)
+            staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
             edge.assoc_strands << staple.object_id
             staples << staple
         
@@ -271,7 +278,7 @@ class Breaker
             else
               staple = Staple.new(edge, adjacent, max_size, min_size, :reflection, 1)
             end
-            
+            staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
             edge.assoc_strands << staple.object_id
             staples << staple
           end

@@ -27,8 +27,8 @@ class GeneratorsController < ApplicationController
   end
 
   def routing
-    generator = Generator.find(generator_id)
-    @graph_json = generator.routing
+    @generator = Generator.find(generator_id)
+    @graph_json = @generator.routing
     @staples_json = @generator.staples
     @scaffold = Generator.m13_scaffold
   end

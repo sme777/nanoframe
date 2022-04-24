@@ -319,8 +319,8 @@ input {
 }
 
 #router-webgl {
-  width: 100%;
-  height: auto;
+  width: 100vw;
+  height: 50vw;
 }
 
 #visualize-webgl {
@@ -584,4 +584,12 @@ $btn-hover-border-color: #111;
 
 .box-state-label {
   text-align: center;
+}
+
+table{
+  table-layout: fixed;
+}
+
+td{
+  word-wrap:break-word
 }
