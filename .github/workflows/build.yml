@@ -32,22 +32,12 @@ jobs:
       - name: Set up test database
         run: bundle exec rake db:setup
       - name: Run tests
-        run: bundle exec rake spec
-  coverage:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - uses: actions/setup-node@master
-        with:
-          node-version: "12"
-      - run: npm install -g yarn
-      - run: yarn install
-      - name: Test & publish code coverage
-        uses: paambaati/codeclimate-action@v3.0.0
-        env:
-          CC_TEST_REPORTER_ID: 01f3b317eaae42803f6fc26db8de551dab0aada715f31df05004aca212272773
-        with:
-          coverageCommand: bundle exec rake spec
-          coverageLocations: |
-            ${{github.workspace}}/coverage/.last_run.json
+        run: |
+          bundle exec rake spec
+          ./cc-test-reporter format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
+      - name: Publish code coverage
+        run: |
+          export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
+          ./cc-test-reporter sum-coverage coverage/codeclimate.*.json
+          ./cc-test-reporter upload-coverage --id ${{ secrets.CC_TEST_REPORTER_ID }}
+          ./cc-test-reporter after-build --id ${{ secrets.CC_TEST_REPORTER_ID }}

@@ -1,6 +1,6 @@
 # NanoFrame
 
-[![CI](https://github.com/tilabberkeley/nanoframe/actions/workflows/ci.yml/badge.svg)](https://github.com/tilabberkeley/nanoframe/actions/workflows/ci.yml) [![Documentation Status](https://readthedocs.org/projects/nanoframe/badge/?version=latest)](https://nanoframe.readthedocs.io/en/latest/?badge=latest)
+[![build](https://github.com/tilabberkeley/nanoframe/actions/workflows/build.yml/badge.svg)](https://github.com/tilabberkeley/nanoframe/actions/workflows/ci.yml) [![Documentation Status](https://readthedocs.org/projects/nanoframe/badge/?version=latest)](https://nanoframe.readthedocs.io/en/latest/?badge=latest)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/a7c3b1796ed55dff5f27/test_coverage)](https://codeclimate.com/github/tilabberkeley/nanoframe/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/a7c3b1796ed55dff5f27/maintainability)](https://codeclimate.com/github/tilabberkeley/nanoframe/maintainability)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
