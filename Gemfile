@@ -56,8 +56,7 @@ group :development, :test do
   gem 'rubocop', require: false
   gem 'rubocop-rails', require: false
   gem 'rubocop-rspec', require: false
-  gem 'simplecov', require: false
-  gem 'simplecov_json_formatter', '~> 0.1.2', require: false
+  gem 'simplecov', '~> 0.17.0', require: false
   # database_cleaner is not required, but highly recommended
   gem 'database_cleaner'
 end
