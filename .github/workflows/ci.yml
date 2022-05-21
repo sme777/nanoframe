@@ -1,12 +1,12 @@
-name: ci
+name: build
 on: [push, pull_request]
 
 jobs:
-  ci:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Git repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
       - name: Get Ruby version
         run: echo "::set-output name=RUBY_VERSION::$(cat .ruby-version)"
         id: ruby_version
@@ -14,6 +14,7 @@ jobs:
         uses: actions/setup-ruby@v1
         with:
           ruby-version: "${{ steps.ruby_version.outputs.RUBY_VERSION }}"
+          bundler-cache: true
       - name: Get NodeJS version
         run: echo "::set-output name=NODE_VERSION::$(cat .node-version)"
         id: node_version
@@ -33,7 +34,7 @@ jobs:
       - name: Run tests
         run: bundle exec rake spec
   coverage:
-    needs: [ci]
+    needs: [build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
