@@ -25,8 +25,9 @@ jobs:
           sudo service postgresql start
           sudo -u postgres createuser --superuser "$USER"
       - name: Install Dependencies
-        run: sudo apt-get install libmagic-dev
-        run: bundle install
+        run: |
+          sudo apt-get install libmagic-dev
+          bundle install
       - name: Set up test database
         run: bundle exec rake db:setup
       - name: Run tests
