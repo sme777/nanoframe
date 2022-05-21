@@ -4,10 +4,10 @@ require 'rubygems'
 require 'zip'
 require 'date'
 require 'object3D'
+require 'oxdna_maker'
 
 class Generator < ApplicationRecord
   attr_accessor :atom_count
-
   def scaffold(sequence, coordinates)
     @dna = []
     @atom_count = 0
@@ -109,6 +109,33 @@ class Generator < ApplicationRecord
     end
   end
 
+  def oxdna
+    maker = OxDNAMaker.new
+    stuff = maker.generate("AAATTTCCCGGG")
+  end
+
+  def update_bridge_length(length)
+    staple_arr = regenerate_staples
+    boundary_edge_arr = regenerate_boundary_edges
+    staple_breaker = Breaker.new(id, [width, height, depth], :cube, divisions+1, scaffold_length)
+    staple_breaker.update_boundary_strands(boundary_edge_arr, staple_arr, length)
+  end
+
+  def regenerate_staples
+    arr = []
+    staples[:sequences].each_with_index do |seq, idx|
+      arr << Staple.new({sequence: seq, 
+            linear_points: staples[:linear_points][idx], 
+            interpolated_points: staples[:interpolated_points][idx]
+      })
+    end
+    arr
+  end
+
+  def update_color_pallette
+
+  end
+
   def make_staples_file(staples, descriptions)
     filename = "#{width}x#{height}x#{depth}-#{width_segment}"
     file = File.open("app/assets/results/#{filename}.csv", 'w')
@@ -128,6 +155,10 @@ class Generator < ApplicationRecord
 
   def self.m13_scaffold
     file = File.read('app/assets/scaffolds/7249.txt')
+  end
+
+  def self.color_palettes
+    ['Leather Vintage', 'Cold Breeze', 'Pink Forest', 'Customize...']
   end
 
   # @note using tabs instead of spaces causes pdb loading issues
@@ -407,5 +438,13 @@ class Generator < ApplicationRecord
       arr[shape] = shape
     end
     arr
+  end
+
+  def is_current_bridge_length(val)
+    bridge_length == val
+  end
+
+  def is_current_color_palette(val)
+    color_palette == val
   end
 end

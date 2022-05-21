@@ -3,7 +3,7 @@ import oc from "three-orbit-controls";
 import { Line2 } from "./threejs/Line2";
 import { LineMaterial } from "./threejs/LineMaterial";
 import { LineGeometry } from "./threejs/LineGeometry";
-
+console.log(graph_json['boundary_edges'])
 if (signOutBtn != null || boxState != null) {
   let size = 1;
   let visualize = true;
@@ -67,8 +67,12 @@ if (signOutBtn != null || boxState != null) {
 
   function adjustSplitPosition(points) {
     for (let i = 1; i < points.length; i += 3) {
-      points[i] += 30;
-      points[i+1] += 10;
+      points[i] -= 20;
+      points[i+1] += 20;
+      if (i != 2) {
+        points[i+2] -= 70;
+      }
+      
     }
     return points;
   }
@@ -319,7 +323,7 @@ if (signOutBtn != null || boxState != null) {
 
     let controls = new OrbitControls(camera, renderer.domElement);
     controls.minDistance = 10;
-    controls.maxDistance = 500;
+    controls.maxDistance = 5000;
     // controls.enableZoom = false
 
     window.addEventListener("resize", onWindowResize);
@@ -335,6 +339,46 @@ if (signOutBtn != null || boxState != null) {
     sphereInter = new THREE.Mesh(sphereGeometry, sphereMaterial);
     sphereInter.visible = false;
     scene.add(sphereInter);
+    let sidePlanes = [];
+    /**
+     * Setup plane for highlight
+     */
+    for (let i = 0; i < 6; i++) {
+      const planeGeometry = new THREE.PlaneGeometry(50, 50);
+      const planeMaterial = new THREE.MeshBasicMaterial( {color: 0x8190ed, side: THREE.DoubleSide, opacity: 0, transparent: true} );
+      const plane2D = new THREE.Mesh(planeGeometry, planeMaterial);
+      if (i - 3 > 0) {
+        planeGeometry.rotateY(Math.PI / 2);
+        if (i % 2 == 0) {
+          plane2D.position.x += 25;
+          plane2D.name = "S5";
+        } else {
+          plane2D.position.x -= 25;
+          plane2D.name = "S6";
+        }
+        
+      } else if (i - 1 > 0) {
+        planeGeometry.rotateX(Math.PI / 2);
+        if (i % 2 == 0) {
+          plane2D.position.y += 25;
+          plane2D.name = "S3";
+        } else {
+          plane2D.position.y -= 25;
+          plane2D.name = "S4";
+        }
+      } else {
+        if (i % 2 == 0) {
+          plane2D.position.z += 25;
+          plane2D.name = "S1";
+        } else {
+          plane2D.position.z -= 25;
+          plane2D.name = "S2";
+        }
+      }
+      sidePlanes.push(plane2D);
+      scene.add(plane2D);
+    }
+
 
     requestAnimationFrame(render);
 
@@ -423,6 +467,18 @@ if (signOutBtn != null || boxState != null) {
       renderer.setClearColor(0x000000, 0);
       renderer.setViewport(0, 0, canvasContainerWidth, canvasContainerHeight);
       matLine.resolution.set(canvasContainerWidth, canvasContainerHeight); // resolution of the viewport
+      
+      let minDist = Infinity;
+      let minDistPlane = null;
+      for (let i = 0; i < sidePlanes.length; i++) {
+        if (camera.position.distanceTo(sidePlanes[i].position) < minDist) {
+          minDist = camera.position.distanceTo(sidePlanes[i].position);
+          minDistPlane = sidePlanes[i].name;
+        }
+      }
+
+      document.querySelector(".side-id").value = minDistPlane;
+
       renderer.render(scene, camera);
 
       if (visualize) {

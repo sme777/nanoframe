@@ -49,7 +49,11 @@
         </div>
         <div class="col-md-10">
             <div class="router-container">
-                <div class="datGUIRouting"></div>
+                <%
+=begin%>
+ <div class="datGUIRouting"></div> 
+<%
+=end%>
                 <canvas id="router-webgl"></canvas>
             </div>
         </div>
@@ -77,11 +81,15 @@
                 <h2>Staple Strands Sequences</h2>
             </div>
             <div class="col-md-4 staple-download">
-                <%= form_tag download_staples_path, method: :post do %>
+                <%
+=begin%>
+ <%= form_tag download_staples_path, method: :post do %>
                 <%= hidden_field_tag "staples", "", id: "staples_field" %>
                 <%= hidden_field_tag "descriptions", "", id: "staples_descriptions_field" %>
                 <%= submit_tag "Download", class: "btn btn-outline-primary" %>
-                <% end %>
+                <% end %> 
+<%
+=end%>
             </div>
         </div>
         
@@ -101,12 +109,14 @@
     </div>
 
     <script type="text/javascript">
-        var graph_json = JSON.parse(<%= @graph_json.to_json.html_safe %>);
+        var graphJSON = JSON.parse(<%= @graph_json.to_json.html_safe %>);
         var staples = JSON.parse(<%= @staples_json.to_json.html_safe %>);
+        var dimensions = <%= [@generator.width, @generator.height, @generator.depth] %>
+        var segments = <%= @generator.divisions %>
         var scaffold = "<%= @scaffold %>";
     </script>
 
     <%= render "layouts/footer"%>
-    <%= javascript_pack_tag 'routing', 'routingControls', 'data-turbolinks-track': 'reload'%>
+    <%= javascript_pack_tag 'routing2', 'routingControls', 'data-turbolinks-track': 'reload'%>
 
 </body>

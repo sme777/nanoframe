@@ -3,27 +3,41 @@
 class Staple
   attr_accessor :sequence, :front, :back, :type, :next, :prev, :linear_points, :interpolated_points
 
-  def initialize(front, back, start_pos, end_pos, type, buffer = 0)
-    @front = front
-    @back = back
-    @buffer = buffer
-    @type = type
-    @next = nil
-    @prev = nil
-    
-    # test = front
-    # test2 = back
-    if back.sequence.nil?
-      byebug
+  def initialize(args)
+    if args.size == 3
+      @sequence = args[:sequence]
+      @linear_points = args[:linear_points]
+      @interpolated_points = args[:interpolated_points]
+    else
+      @front = args[:front]
+      @back = args[:back]
+      @buffer = args[:buffer] || 0
+      @type = args[:type]
+      start_pos = args[:start_pos]
+      end_pos = args[:end_pos]
+      @next = nil
+      @prev = nil
+  
+      @sequence = if front == back
+                    convert(front.sequence[start_pos...end_pos] + buffer_bp)
+                  else
+                    convert(front.sequence[start_pos...] + buffer_bp + back.sequence[...end_pos])
+                  end
+      @linear_points = compute_positions(start_pos, end_pos)
+      @interpolated_points = interpolate_positions(@linear_points)
     end
+  end
 
-    @sequence = if front == back
-                  convert(front.sequence[start_pos...end_pos] + buffer_bp)
-                else
-                  convert(front.sequence[start_pos...] + buffer_bp + back.sequence[...end_pos])
-                end
-    @linear_points = compute_positions(start_pos, end_pos)
-    @interpolated_points = interpolate_positions(@linear_points)
+  def setup_dimensions(dimensions, segments, shape)
+    case shape
+    when :cube
+      @width = dimensions[0]
+      @height = dimensions[1]
+      @depth = dimensions[2]
+      @segments = segments
+    when :tetrahedron
+      @radius = dimensions[0]
+    end
   end
 
   def convert(edge_seq)
@@ -46,19 +60,23 @@ class Staple
   def compute_positions(start_pos, end_pos, _sample = 10)
     if @type == :extension
       dr_ch, dr_vec = @front.directional_change_vec
-      start_mid_vec = Vertex.new(@front.v1.x, @front.v1.y, @front.v1.z)
-      start_mid_vec.instance_variable_set("@#{dr_ch}",
-                                          @front.v1.instance_variable_get("@#{dr_ch}") + dr_vec * (start_pos.to_f / @front.sequence.size))
-      start_point = dr_vec < 0 ? @front.v1 - start_mid_vec : @front.v1 + start_mid_vec
+      points = Vertex.linspace(dr_ch, @front.sequence.size, @front.v1, @front.v2)[start_pos...end_pos]
+      # byebug
+      
+      # start_mid_vec = Vertex.new(0, 0, 0)
+      # start_mid_vec.instance_variable_set("@#{dr_ch}",
+      #                                     @front.v1.instance_variable_get("@#{dr_ch}") - dr_vec * (start_pos.to_f / @front.sequence.size))
+      # start_point = dr_vec < 0 ? @front.v1 - start_mid_vec : @front.v1 + start_mid_vec
 
-      end_mid_vec = Vertex.new(front.v1.x, front.v1.y, front.v1.z)
-      end_mid_vec.instance_variable_set("@#{dr_ch}",
-                                        front.v1.instance_variable_get("@#{dr_ch}") + dr_vec * (end_pos.to_f / front.sequence.size))
-      end_point = dr_vec < 0 ? front.v1 - end_mid_vec : front.v1 + end_mid_vec
+      # end_mid_vec = Vertex.new(0, 0, 0)
+      # end_mid_vec.instance_variable_set("@#{dr_ch}",
+      #                                   @front.v1.instance_variable_get("@#{dr_ch}") - dr_vec * (end_pos.to_f / @front.sequence.size))
+      # end_point = dr_vec < 0 ? @front.v1 - end_mid_vec : @front.v1 + end_mid_vec
 
-      Vertex.linspace(dr_ch, (start_pos - end_pos).abs, start_point, end_point)
-
-    elsif @type == :reflection || @type == :refraction
+      # points = Vertex.linspace(dr_ch, (start_pos - end_pos).abs, start_point, end_point)
+      # points
+      # adjust(points)
+    elsif @type == :reflection || @type == :refraction || @type == :extension
       dr_ch, dr_vec = @front.directional_change_vec
       start_mid_vec = Vertex.new(@front.v1.x, @front.v1.y, @front.v1.z)
       start_mid_vec.instance_variable_set("@#{dr_ch}",
@@ -98,35 +116,39 @@ class Staple
   end
 
   def name
-    builder = @type.to_s
+    # builder = "#{@type.to_s}-"
     starting_vertex = @front.v1
     ending_vertex = @back.v2
+    side = "potato"
 
     if starting_vertex.z == 0 && ending_vertex.z == 0
-      builder += 'S1-'
+      side = :S1
+      # builder += 'S1-'
     elsif starting_vertex.z == -@depth && ending_vertex.z == -@depth
-      builder += 'S2-'
+      side = :S2
+      # builder += 'S2-'
     elsif starting_vertex.y == 0 && ending_vertex.y == 0
-      builder += 'S3-'
+      side = :S3
+      # builder += 'S3-'
     elsif starting_vertex.y == @height && ending_vertex.y == @height
-      builder += 'S4-'
+      side = :S4
+      # builder += 'S4-'
     elsif starting_vertex.x == 0 && ending_vertex.x == 0
-      builder += 'S5-'
+      side = :S5
+      # builder += 'S5-'
     elsif starting_vertex.x == @width && ending_vertex.z == @width
-      builder += 'S6-'
+      side = :S6
+      # builder += 'S6-'
     end
 
     row, col = row_and_col
-    builder += 'R' + row + '-' + 'C' + col
+    "#{@type}-#{side}-R#{row}-C#{col}"
+    # builder += "R#{row}-C#{col}"
   end
 
   def adjust(points)
-    if @type == :xyz
-      dir_front = @front.directional_change
-      dir_back = @back.directional_change
-      points.each { |p| p.instance_variable_set("@#{dir_front}", p.instance_variable_get("@#{dir_front}") + 0.5) }
-      points.each { |p| p.instance_variable_set("@#{dir_back}", p.instance_variable_get("@#{dir_back}") + 0.5) }
-    elsif @type == :extension
+  
+    if @type == :extension
       dir = @front.directional_change
       points.each { |p| p.instance_variable_set("@#{dir}", p.instance_variable_get("@#{dir}") + 0.5) }
     elsif @type == :refraction || @type == :reflection
@@ -146,5 +168,55 @@ class Staple
     points
   end
 
-  def row_and_col; end
+  def row_and_col
+    side = Routing.find_plane_number(@front.v1, @front.v2, [50, 50, 50])
+    dist2wseg = @width / @segments
+    dist2hseg = @height / @segments
+    dist2dseg = @depth / @segments
+    case side
+    when :S1, :S2
+      if @type == :reflection
+        edge_row = (@front.v1.y / dist2hseg).abs.floor + 1
+        edge_col = (@front.v1.x / dist2wseg).abs.floor + 1
+
+        front_dir, front_dir_ch = @front.directional_change_vec
+        back_dir, back_dir_ch = @back.directional_change_vec
+
+        if front_dir_ch > 0
+          if back_dir_ch > 0
+            col = edge_col - 1
+            row = edge_row
+          else
+            col = edge_col - 1
+            row = edge_row - 1
+          end
+        else
+          if back_dir_ch > 0
+            col = edge_col
+            row = edge_row
+          else
+            col = edge_col
+            row = edge_row - 1
+          end
+        end
+
+      elsif @type == :refraction
+        row = (@front.v1.y / dist2hseg).abs.floor + 1
+        col = (@front.v1.x / dist2wseg).abs.floor + 1
+      else
+        row = (@front.v1.y / dist2hseg).abs.floor + 1
+        col = (@front.v1.x / dist2wseg).abs.floor + 1
+      end
+    when :S3, :S4
+
+
+      
+      row = (@front.v1.z / dist2dseg).abs.ceil
+      col = (@front.v1.x / dist2wseg).abs.ceil
+    when :S5, :S6
+      row = (@front.v1.y / dist2hseg).abs.ceil
+      col = (@front.v1.z / dist2dseg).abs.ceil
+    end
+    [row, col]
+  end
 end
