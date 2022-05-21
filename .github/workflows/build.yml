@@ -15,6 +15,7 @@ jobs:
         uses: actions/setup-ruby@v1
         with:
           ruby-version: "3.0.x"
+          bundler-cache: true
       - name: Get NodeJS version
         run: echo "::set-output name=NODE_VERSION::$(cat .node-version)"
         id: node_version
@@ -42,7 +43,7 @@ jobs:
       - name: Run tests
         run: |
           bundle exec rake spec
-          ./cc-test-reporter format-coverage --output coverage/codeclimate.$SUITE.json --input-type simplecov
+          ./cc-test-reporter format-coverage --input-type simplecov --output coverage/codeclimate.$SUITE.json "/home/runner/work/nanoframe/nanoframe/coverage/.resultset.json" 
       - name: Publish code coverage
         run: |
           export GIT_BRANCH="${GITHUB_REF/refs\/heads\//}"
