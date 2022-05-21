@@ -454,6 +454,7 @@ DEPENDENCIES
   sass-rails (>= 6)
   selenium-webdriver
   simplecov
+  simplecov_json_formatter (~> 0.1.2)
   spring
   turbolinks (~> 5)
   tzinfo-data
