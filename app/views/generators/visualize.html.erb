@@ -36,58 +36,78 @@
     <div class="outer-regenerate-container">
 
         <div class="regenerate-container">
+            <div class="info-container">
+                <div class="row box-state-label">
+                    <h6>Info</h6>
+                </div>
+
+                <div class="row box-state-container">
+                    <div class="form-floating nopad-container">
+                        <input type="text" class="form-control" id="dimension_info"
+                            value="<%= @generator.width.to_i %>x<%= @generator.height.to_i %>x<%= @generator.depth.to_i %>x<%= @generator.divisions %>"
+                            disabled>
+                        <label for="dimension_info">Dimensions</label>
+                    </div>
+                </div>
+
+                <div class="row box-state-container">
+                    <div class="form-floating nopad-container">
+                        <input type="text" class="form-control" id="vertex_cut_info"
+                            value="<%= @generator.vertex_cuts %>" disabled>
+                        <label for="vertex_cut_info">Vertex Cuts</label>
+                    </div>
+                </div>
+
+            </div>
+
             <div class="actions-container">
 
-            <div class="row box-state-label">
-                <h6>Actions</h6>
-            </div>
-            <div class="row box-state-container">
-                <%= link_to "Regenerate Routing", generate_routing_path({regenerate: true}), class: "btn btn-outline-secondary" %>
-            </div>
-            <div class="row box-state-container">
-                <input id="box-state" type="checkbox" class="btn-check" autocomplete="off">
-                <label id="box-state-label" class="btn btn-outline-secondary" for="box-state">Open Form</label>
-            </div>
-            <div class="row box-state-container">
-                <input id="box-state-staples" type="checkbox" class="btn-check" autocomplete="off">
-                <label id="box-state-staples-label" class="btn btn-outline-secondary" for="box-state-staples">Show
-                    Staples</label><br>
-            </div>
-            <div class="row box-state-container">
-                <input id="box-state-interpolated" type="checkbox" class="btn-check" autocomplete="off">
-                <label id="box-state-interpolated-label" class="btn btn-outline-secondary"
-                    for="box-state-interpolated">Interpolated</label><br>
-            </div>
+                <div class="row box-state-label">
+                    <h6>Actions</h6>
+                </div>
+                <div class="row box-state-container">
+                    <%= link_to "Regenerate Routing", generate_routing_path({regenerate: true}), class: "btn btn-outline-secondary" %>
+                </div>
+                <div class="row box-state-container">
+                    <input id="box-state" type="checkbox" class="btn-check" autocomplete="off">
+                    <label id="box-state-label" class="btn btn-outline-secondary" for="box-state">Open Form</label>
+                </div>
+                <div class="row box-state-container">
+                    <input id="box-state-staples" type="checkbox" class="btn-check" autocomplete="off">
+                    <label id="box-state-staples-label" class="btn btn-outline-secondary" for="box-state-staples">Show
+                        Staples</label><br>
+                </div>
+                <div class="row box-state-container">
+                    <input id="box-state-interpolated" type="checkbox" class="btn-check" autocomplete="off">
+                    <label id="box-state-interpolated-label" class="btn btn-outline-secondary"
+                        for="box-state-interpolated">Interpolated</label><br>
+                </div>
             </div>
             <div class="modifications-container">
 
-            <div class="row box-state-label">
-                <h6>Modifications</h6>
-            </div>
-            <div class="row box-state-container">
-                <div class="form-floating bridge-number-container">
-                    <input class="form-control" type="number" id="bridge-number" value="2">
-                    <label class="form-label" for="bridge-number">Bridge Length</label>
+
+                <%= form_with(url: update_generator_path(@generator.id), method: :post) do |f| %>
+                <div class="row box-state-label">
+                    <h6>Modifications</h6>
                 </div>
-            </div>
-
-
-            <div class="row box-state-container">
-                <div class="form-floating bridge-number-container">
-                    <select id="color-palette" class="form-select" aria-label="Color Palette">
-
-                        <option selected value="1">Leather Vintage</option> <!-- 3A3845; F7CCAC; C69B7B; 826F66-->
-                        <option value="2">Cold Breeze</option> <!-- F7E2E2; 61A4BC; 5B7DB1; 1A132F-->
-                        <option value="3">Pink Forest</option> <!-- FAD9E6; E4AEC5; 5F7464; 243D25-->
-                        <option value="4">Customize...</option>
-                    </select>
-                    <label class="form-label" for="color-palette">Color Palette</label>
+                <div class="row box-state-container">
+                    <div class="form-floating nopad-container">
+                        <%= f.text_field :bridge_length, type: "number", class: "form-control", value: "2" %>
+                        <%= f.label "Bridge Length", for: "bridge_length", class: "form-label"%>
+                    </div>
                 </div>
-            </div>
 
-            <div class="row box-state-container">
-                <button type="button" class="btn btn-outline-dark"> Update </button>
-            </div>
+
+                <div class="row box-state-container">
+                    <div class="form-floating nopad-container">
+                        <%= f.select :color_palette, @color_palettes, {}, {class: "form-select"}%>
+                        <%= f.label "Color Palette", for: "color_palette", class: "form-label"%>
+                    </div>
+                </div>
+                <div class="row box-state-container">
+                    <%= f.submit "Update", class: "btn btn-outline-dark" %>
+                </div>
+                <% end %>
             </div>
         </div>
     </div>
@@ -113,8 +133,8 @@
         </div>
     </div>
     <script type="text/javascript">
-        var graph_json = JSON.parse(<%= @graph_json.to_json.html_safe %>);
-        var staples = JSON.parse(<%= @staples_json.to_json.html_safe %>);
+        var graph_json = JSON.parse( <%= @graph_json.to_json.html_safe %> );
+        var staples = JSON.parse( <%= @staples_json.to_json.html_safe %> );
         var scaffold = "<%= @scaffold %>";
         var signOutBtn = null;
         var generatorSize = null;

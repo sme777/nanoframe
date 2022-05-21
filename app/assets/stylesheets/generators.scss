@@ -573,12 +573,16 @@ $btn-hover-border-color: #111;
   display: inline;
 }
 
-.bridge-number-container {
+.nopad-container {
   padding-left: 0 !important;
   padding-right: 0 !important;
 }
 
 .modifications-container {
+  padding-top: 8%;
+}
+
+.actions-container {
   padding-top: 8%;
 }
 

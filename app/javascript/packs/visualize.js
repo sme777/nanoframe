@@ -3,7 +3,7 @@ import oc from "three-orbit-controls";
 import { Line2 } from "./threejs/Line2";
 import { LineMaterial } from "./threejs/LineMaterial";
 import { LineGeometry } from "./threejs/LineGeometry";
-
+console.log(graph_json['boundary_edges'])
 if (signOutBtn != null || boxState != null) {
   let size = 1;
   let visualize = true;
@@ -67,8 +67,12 @@ if (signOutBtn != null || boxState != null) {
 
   function adjustSplitPosition(points) {
     for (let i = 1; i < points.length; i += 3) {
-      points[i] += 30;
-      points[i+1] += 10;
+      points[i] -= 20;
+      points[i+1] += 20;
+      if (i != 2) {
+        points[i+2] -= 70;
+      }
+      
     }
     return points;
   }

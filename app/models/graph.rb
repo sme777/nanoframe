@@ -3,7 +3,10 @@
 require 'json'
 
 class Graph
-  attr_accessor :vertices, :edges, :sets, :route, :planes, :vertices, :edges
+  include ActiveModel::Serialization
+
+  attr_accessor :vertices, :edges, :sets, :route, :planes, :vertices, :edges, :vertex_cuts, :staples, :boundary_edges
+  
 
   # dimension[0] -> width
   # dimension[1] -> height
@@ -23,11 +26,25 @@ class Graph
     @colors = generate_spline_colors   
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
-    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples)
+    @vertex_cuts = []
+    @boundary_edges.each do |e| 
+      @vertex_cuts << e.v1 if !@vertex_cuts.include?(e.v1)
+      @vertex_cuts << e.v2 if !@vertex_cuts.include?(e.v2)
+    end
+    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 2)
     @staple_colors = generate_staple_colors
     write_staples(@staples, @staple_colors)
     
   end
+
+
+  # def self.update_bridge_length(generator)
+  #   staples = nil
+  #   boundary_edges = nil
+  #   staple_breaker = Breaker.new(id, dimensions, shape, segments, scaff_length)
+  #   staples = staple_breaker.update_boundary_strands(boundary_edges, staples)
+  #   staples
+  # end
 
   def write_staples(staples, colors)
     filename = "#{@width}x#{@height}x#{@depth}-#{@segments - 1}-#{Time.now}"
@@ -113,6 +130,10 @@ class Graph
     vertices
   end
 
+  def modifications_objects
+    {staples: Marshal.dump(@staples), boundary_edges: Marshal.dump(@boundary_edges),}
+  end
+
   def staples_json
     staple_lin_points = []
     staple_int_points = []
@@ -124,7 +145,7 @@ class Graph
       staple_names << staple.name
       staple_sequences << staple.sequence
     end
-    JSON.generate({ linear: staple_lin_points, interpolated: staple_int_points, colors: @staple_colors.flatten,
+    JSON.generate({linear: staple_lin_points, interpolated: staple_int_points, colors: @staple_colors.flatten,
                     names: staple_names, sequences: staple_sequences })
   end
 

@@ -34,23 +34,61 @@ class GeneratorsController < ApplicationController
   end
 
   def visualize
+    # byebug
+    @color_palettes = Generator.color_palettes
     if params[:regenerate]
       @graph = @generator.route
       @graph_json = @graph.to_json
       @staples_json = @graph.staples_json
-      Generator.find(@generator.id).update(routing: @graph_json, staples: @staples_json)
+      Generator.find(@generator.id).update(routing: @graph_json, 
+          staples: @staples_json, 
+          vertex_cuts: @graph.vertex_cuts.size,
+          )
       redirect_to "/nanobot/#{@generator.id}/visualize"
     elsif @generator.routing.nil?
       @graph = @generator.route
       @graph_json = @graph.to_json
       @staples_json = @graph.staples_json
       @scaffold = Generator.m13_scaffold
-      Generator.find(@generator.id).update(routing: @graph_json, staples: @staples_json)
+      Generator.find(@generator.id).update(routing: @graph_json, 
+        staples: @staples_json, 
+        vertex_cuts: @graph.vertex_cuts.size,
+        )
     else
+      vals = @generator.oxdna
+      filename = "test.dat"
+      file = File.open("app/assets/results/#{filename}", 'w')
+      # file.write("name,color,sequence,length")
+      # file.write("\n")
+      total = vals[0].size
+      # byebug
+      total.times do |i|
+        # staple_color = colors[idx]
+        file.write("#{vals[0][i][0]} #{vals[0][i][1]} #{vals[0][i][2]} #{vals[1][i][0]} #{vals[1][i][1]} #{vals[1][i][2]} #{vals[2][i][0]} #{vals[2][i][1]} #{vals[2][i][2]} 0.0 0.0 0.0 0.0 0.0 0.0")
+        file.write("\n")
+      end
+      file.close
+      # filename
+
       @graph_json = @generator.routing
       @staples_json = @generator.staples
       @scaffold = Generator.m13_scaffold
     end
+  end
+
+  def update_generator
+    
+    if params[:bridge_length] && !@generator.is_current_bridge_length(params[:bridge_length])
+      new_staples = @generator.update_bridge_length
+      Generator.find(@generator.id).update(staples: new_staples)
+    end
+
+    if params[:color_palette] && !@generator.is_current_color_palette(params[:color_palette])
+      graph_json = @generator.update_color_pallette
+      Generator.find(@generator.id).update(routing: graph_json)
+    end
+
+    redirect_to "/nanobot/#{@generator.id}/visualize"
   end
 
   def compile

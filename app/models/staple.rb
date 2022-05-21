@@ -3,32 +3,29 @@
 class Staple
   attr_accessor :sequence, :front, :back, :type, :next, :prev, :linear_points, :interpolated_points
 
-  def initialize(front, back, start_pos, end_pos, type, buffer = 0)
-    @front = front
-    @back = back
-    @buffer = buffer
-    @type = type
-    @next = nil
-    @prev = nil
-    
-    # test = front
-    # test2 = back
-    if front.sequence[start_pos...].nil?
-      byebug
-    end 
-    buffer_bp + "" 
-    back.sequence[...end_pos] + ""
-    if back.sequence.nil?
-      byebug
+  def initialize(args)
+    if args.size == 3
+      @sequence = args[:sequence]
+      @linear_points = args[:linear_points]
+      @interpolated_points = args[:interpolated_points]
+    else
+      @front = args[:front]
+      @back = args[:back]
+      @buffer = args[:buffer] || 0
+      @type = args[:type]
+      start_pos = args[:start_pos]
+      end_pos = args[:end_pos]
+      @next = nil
+      @prev = nil
+  
+      @sequence = if front == back
+                    convert(front.sequence[start_pos...end_pos] + buffer_bp)
+                  else
+                    convert(front.sequence[start_pos...] + buffer_bp + back.sequence[...end_pos])
+                  end
+      @linear_points = compute_positions(start_pos, end_pos)
+      @interpolated_points = interpolate_positions(@linear_points)
     end
-
-    @sequence = if front == back
-                  convert(front.sequence[start_pos...end_pos] + buffer_bp)
-                else
-                  convert(front.sequence[start_pos...] + buffer_bp + back.sequence[...end_pos])
-                end
-    @linear_points = compute_positions(start_pos, end_pos)
-    @interpolated_points = interpolate_positions(@linear_points)
   end
 
   def setup_dimensions(dimensions, segments, shape)
