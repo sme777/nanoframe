@@ -15,7 +15,7 @@ end
 def omniauth_google_mock
   user = YAML.safe_load(File.read("#{Rails.root}/db/google_mock_login.yml"))[Rails.env]
   {
-    uid: '54321',
+    uid: '112018742149922595393',
     info: {
       name: user['name'],
       email: user['email']
@@ -26,7 +26,7 @@ end
 def omniauth_github_mock
   user = YAML.safe_load(File.read("#{Rails.root}/db/github_mock_login.yml"))[Rails.env]
   {
-    uid: '12345',
+    uid: '112018742149922595393',
     info: {
       name: user['name'],
       nickname: user['github_uid'],

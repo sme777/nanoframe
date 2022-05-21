@@ -68,12 +68,5 @@ module SeedData
         material: SeedData.open_file('db/objects/20x10x70x6_col.txt')
       }
     ]
-    # ,
-    # {
-    #     name: "Cube (P1)",
-    #     dimensions: "40x30x30x6",
-    #     geometry: SeedData.open_file("40x30x30x6_pos.txt"),
-    #     material: SeedData.open_file("40x30x30x6_col.txt")
-    # }
   end
 end

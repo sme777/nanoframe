@@ -32,7 +32,7 @@ class SessionController < ApplicationController
 
   def create_google_user(user_info)
     User.create!(
-      id: user_info['uid'],
+      id: user_info['uid'].to_s[...8].to_i,
       provider: :google_oauth2,
       name: user_info['info']['name'],
       username: user_info['info']['name'],
