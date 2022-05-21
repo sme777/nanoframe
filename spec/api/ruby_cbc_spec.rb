@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rails_helper'
+require 'ruby-cbc'
 
 RSpec.describe 'Ruby CBC', type: :api do
   describe 'solving linear program' do
