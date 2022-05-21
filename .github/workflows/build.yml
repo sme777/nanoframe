@@ -27,6 +27,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get install libmagic-dev
+          sudo apt-get install coinor-libcbc-dev
           bundle install
       - name: Set up test database
         run: bundle exec rake db:setup
