@@ -5,8 +5,7 @@ require 'json'
 class Graph
   include ActiveModel::Serialization
 
-  attr_accessor :vertices, :edges, :sets, :route, :planes, :vertices, :edges, :vertex_cuts, :staples, :boundary_edges
-  
+  attr_accessor :vertices, :edges, :sets, :route, :planes, :vertices, :edges, :vertex_cuts, :staples, :staple_colors, :boundary_edges
 
   # dimension[0] -> width
   # dimension[1] -> height
@@ -33,7 +32,7 @@ class Graph
     end
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 2)
     @staple_colors = generate_staple_colors
-    write_staples(@staples, @staple_colors)
+    # write_staples(@staples, @staple_colors)
     
   end
 
@@ -60,7 +59,7 @@ class Graph
     filename
   end
 
-  def rgb_to_hex(rgb_color)
+  def self.rgb_to_hex(rgb_color)
     red = (rgb_color[0] * 255).to_i.to_s(16)
     green = (rgb_color[1] * 255).to_i.to_s(16)
     blue = (rgb_color[2] * 255).to_i.to_s(16)

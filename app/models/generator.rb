@@ -7,6 +7,9 @@ require 'object3D'
 require 'oxdna_maker'
 
 class Generator < ApplicationRecord
+
+  has_one_attached :staples_csv
+
   attr_accessor :atom_count
   def scaffold(sequence, coordinates)
     @dna = []

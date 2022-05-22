@@ -40,6 +40,7 @@ class GeneratorsController < ApplicationController
       @graph = @generator.route
       @graph_json = @graph.to_json
       @staples_json = @graph.staples_json
+      write_staples_to_s3(@graph.staples, @graph.staple_colors)
       Generator.find(@generator.id).update(routing: @graph_json, 
           staples: @staples_json, 
           vertex_cuts: @graph.vertex_cuts.size,
@@ -50,6 +51,7 @@ class GeneratorsController < ApplicationController
       @graph_json = @graph.to_json
       @staples_json = @graph.staples_json
       @scaffold = Generator.m13_scaffold
+      write_staples_to_s3(@graph.staples, @graph.staple_colors)
       Generator.find(@generator.id).update(routing: @graph_json, 
         staples: @staples_json, 
         vertex_cuts: @graph.vertex_cuts.size,
@@ -144,6 +146,27 @@ class GeneratorsController < ApplicationController
       flash[:register_and_save_errors] = user.errors.full_messages
       redirect_to "/nanobot/#{@generator.id}/compile"
     end
+  end
+
+  def write_staples_to_s3(staples, staple_colors)
+
+    if @current_user.nil?
+      user_dir = "anon"
+    else
+      user_dir = @current_user.username
+    end
+    filename = "#{@generator.width}x#{@generator.height}x#{@generator.depth}-#{@generator.divisions}-#{Time.now}"
+    # file_path = "#{user_dir}/#{filename}"
+    file = File.open("app/assets/results/#{filename}.csv", 'w')
+    file.write("name,color,sequence,length")
+    file.write("\n")
+    staples.each_with_index do |staple, idx|
+      staple_color = staple_colors[idx]
+      file.write("#{staple.name},#{Graph.rgb_to_hex(staple_color)},#{staple.sequence},#{staple.sequence.size}")
+      file.write("\n")
+    end
+    file.close
+    @generator.staples_csv.attach(io: File.open("app/assets/results/#{filename}.csv"), filename: "#{filename}.csv")
   end
 
   private
