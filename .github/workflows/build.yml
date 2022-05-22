@@ -14,7 +14,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.0.x"
+          ruby-version: "3.0.3"
           bundler-cache: true
       - name: Get NodeJS version
         run: echo "::set-output name=NODE_VERSION::$(cat .node-version)"
