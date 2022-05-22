@@ -11,10 +11,11 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v3
         id: ruby_version
-      - name: Set up Ruby
+      - name: Install external dependencies
         run: |
           sudo apt-get install libmagic-dev
           sudo apt-get install coinor-libcbc-dev
+      - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.0.3"
@@ -36,11 +37,6 @@ jobs:
           sudo apt-get install postgresql libpq-dev
           sudo service postgresql start
           sudo -u postgres createuser --superuser "$USER"
-      # - name: Install Dependencies
-      #   run: |
-      #     sudo apt-get install libmagic-dev
-      #     sudo apt-get install coinor-libcbc-dev
-      #     bundle install
       - name: Set up test database
         run: bundle exec rake db:setup
       - name: Run tests
