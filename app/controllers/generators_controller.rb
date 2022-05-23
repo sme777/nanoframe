@@ -167,7 +167,10 @@ class GeneratorsController < ApplicationController
       file.write("\n")
     end
     file.close
-    @generator.staples_csv.attach(io: File.open("#{Rails.root.join('tmp').to_s}/#{filename}.csv"), filename: "#{filename}.csv")
+    @generator.staples_csv.attach(
+      io: File.open("#{Rails.root.join('tmp').to_s}/#{filename}.csv"), 
+      filename: "#{filename}.csv",
+      content_type: "text/csv")
   end
 
   private

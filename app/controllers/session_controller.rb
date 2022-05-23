@@ -23,7 +23,7 @@ class SessionController < ApplicationController
     provider = user_info['provider']
     user = User.find_by(
       provider: provider,
-      id: user_info['uid']
+      id: user_info['uid'].to_s[...8].to_i
     )
     return user unless user.nil?
 
@@ -51,7 +51,7 @@ class SessionController < ApplicationController
       first_name, last_name = user_info['info']['name'].strip.split(/\s+/, 2)
     end
     User.create!(
-      id: user_info['uid'],
+      id: user_info['uid'].to_s[...8].to_i,
       provider: :github,
       name: "#{first_name} #{last_name}",
       username: username,
