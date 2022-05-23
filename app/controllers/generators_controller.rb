@@ -57,21 +57,6 @@ class GeneratorsController < ApplicationController
         vertex_cuts: @graph.vertex_cuts.size,
         )
     else
-      vals = @generator.oxdna
-      filename = "test.dat"
-      file = File.open("app/assets/results/#{filename}", 'w')
-      # file.write("name,color,sequence,length")
-      # file.write("\n")
-      total = vals[0].size
-      # byebug
-      total.times do |i|
-        # staple_color = colors[idx]
-        file.write("#{vals[0][i][0]} #{vals[0][i][1]} #{vals[0][i][2]} #{vals[1][i][0]} #{vals[1][i][1]} #{vals[1][i][2]} #{vals[2][i][0]} #{vals[2][i][1]} #{vals[2][i][2]} 0.0 0.0 0.0 0.0 0.0 0.0")
-        file.write("\n")
-      end
-      file.close
-      # filename
-
       @graph_json = @generator.routing
       @staples_json = @generator.staples
       @scaffold = Generator.m13_scaffold
