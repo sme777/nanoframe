@@ -157,7 +157,8 @@ class GeneratorsController < ApplicationController
     end
     filename = "#{@generator.width}x#{@generator.height}x#{@generator.depth}-#{@generator.divisions}-#{Time.now}"
     # file_path = "#{user_dir}/#{filename}"
-    file = File.open("app/assets/results/#{filename}.csv", 'w')
+    file = File.open("#{Rails.root.join('tmp').to_s}/#{filename}.csv", 'w')
+    # file = File.open("app/assets/temp/#{filename}.csv", 'w')
     file.write("name,color,sequence,length")
     file.write("\n")
     staples.each_with_index do |staple, idx|
@@ -166,7 +167,7 @@ class GeneratorsController < ApplicationController
       file.write("\n")
     end
     file.close
-    @generator.staples_csv.attach(io: File.open("app/assets/results/#{filename}.csv"), filename: "#{filename}.csv")
+    @generator.staples_csv.attach(io: File.open("#{Rails.root.join('tmp').to_s}/#{filename}.csv"), filename: "#{filename}.csv")
   end
 
   private
