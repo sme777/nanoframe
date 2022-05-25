@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import * as Data from "./shapeData";
 
+const polyhedronJSON = require("./polyhedron/shapes.json")
 const wireframeMaterial = new THREE.LineBasicMaterial({ color: 0x000000 });
 
 export function makeDefault() {}
@@ -58,15 +59,9 @@ export function makeCone(obj = null) {
     : new THREE.LineSegments(geometry, wireframeMaterial);
 }
 
-export function makePolyhedron(obj = null) {
-  const verticesOfCube = [
-    -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1, -1, -1, 1, 1, -1, 1, 1, 1, 1,
-    -1, 1, 1,
-  ];
-  const indicesOfFaces = [
-    2, 1, 0, 0, 3, 2, 0, 4, 7, 7, 3, 0, 0, 1, 5, 5, 4, 0, 1, 2, 6, 6, 5, 1, 2,
-    3, 7, 7, 6, 2, 4, 5, 6, 6, 7, 4,
-  ];
+export function makePolyhedron(shapeName) {
+  const verticesOfCube = polyhedronJSON[shapeName]["vertices"]
+  const indicesOfFaces =  polyhedronJSON[shapeName]["faces"]
 
   const geometry = new THREE.PolyhedronGeometry(
     verticesOfCube,
@@ -74,9 +69,12 @@ export function makePolyhedron(obj = null) {
     Data.polyhedronData.radius,
     Data.polyhedronData.detail
   );
-  return obj
-    ? regenerate(obj, geometry)
-    : new THREE.LineSegments(geometry, wireframeMaterial);
+  
+  const mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color: 0x00ff00, side: THREE.DoubleSide, opacity: 0.5, transparent: true}));
+  const edges = new THREE.EdgesGeometry( geometry );
+  const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0x000000 } ) );
+
+  return [mesh, line];
 }
 
 export function makeTetrahedron(obj = null) {

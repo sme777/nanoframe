@@ -4,7 +4,6 @@ import * as dat from "dat.gui";
 import gsap from "gsap";
 import * as Maker from "./shapeMaker";
 import { DNA } from "./dna";
-import * as Data from "./shapeData";
 
 const OrbitControls = oc(THREE);
 const canvas = document.querySelector("#synthesizer");
@@ -35,29 +34,25 @@ camera.position.z = 240;
 const scene = new THREE.Scene();
 
 const shape = document.getElementById("generator_shape_id");
+let shapeName = document.querySelector("#generator_shape").value;
+shapeName = shapeName.slice(0, shapeName.indexOf(" (")).toLowerCase();
 let chosenShape;
-let mesh;
+let mesh, lines;
 let meshData;
 let isGUISet = false;
 let guiElements = [];
 let dna = new DNA(7249);
-// const geometry = new THREE.BufferGeometry().setFromPoints(dna.positions);
-// const material = new THREE.LineBasicMaterial({
-//   color: 0xff0000,
-// });
-// const curveObject = new THREE.Line(geometry, material);
-// const axesHelper = new THREE.AxesHelper(15);
-// scene.add(axesHelper);
 
-
+const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.4);
+camera.add(directionalLight);
+scene.add(camera);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(canvasContainerWidth, canvasContainerHeight);
-
-mesh = Maker.makeCube();
-
+[mesh, lines] = Maker.makePolyhedron(shapeName);
 
 if (mesh != undefined) {
   scene.add(mesh);
+  scene.add(lines);
   requestAnimationFrame(render);
 }
 
@@ -93,8 +88,9 @@ function render(time) {
 
   const speed = 0.2;
   const rot = time * speed;
-  mesh.rotation.y = rot;
 
+  mesh.rotation.y = rot;
+  lines.rotation.y = rot;
   renderer.render(scene, camera);
   requestAnimationFrame(render);
 }
@@ -121,6 +117,15 @@ document.querySelector(".synthesizer-btn").onclick = () => {
   let jsonObj = {
     sequence: dnaSequence,
   };
-  //console.log(jsonObj)
   document.querySelector(".json-input").value = JSON.stringify(jsonObj);
 };
+
+
+document.querySelector("#generator_shape").onclick = () => {
+    shapeName = document.querySelector("#generator_shape").value;
+    shapeName = shapeName.slice(0, shapeName.indexOf(" (")).toLowerCase();
+    scene.remove(mesh, lines);
+    [mesh, lines] = Maker.makePolyhedron(shapeName);
+    scene.add(mesh);
+    scene.add(lines);
+}

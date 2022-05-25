@@ -27,7 +27,7 @@ export const coneData = {
 };
 
 export const polyhedronData = {
-  radius: 22,
+  radius: 35,
   detail: 0,
 };
 
