@@ -80,6 +80,7 @@
 
 .sidebarContent {
   max-height: 75vh;
+  // overflow: hidden;
   overflow-y: scroll;
   overflow-x: hidden;
   direction: ltr;
@@ -235,4 +236,10 @@
 
 .save:hover {
   cursor: pointer;
+}
+
+
+.sidebarOverflow {
+  width: 100%;
+  height: auto;
 }

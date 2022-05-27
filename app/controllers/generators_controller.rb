@@ -15,7 +15,7 @@ class GeneratorsController < ApplicationController
   def custom; end
 
   def synthesize
-    # @generator = Generator.find(params[:id])
+    @generator = Generator.find(params[:id])
     byebug
     sequence = JSON.parse(@generator.json)['sequence']
     coordinates = JSON.parse(@generator.vertices)['points']
@@ -31,31 +31,23 @@ class GeneratorsController < ApplicationController
     @graph_json = @generator.routing
     @staples_json = @generator.staples
     @scaffold = Generator.m13_scaffold
+    
   end
 
   def visualize
     # byebug
     @color_palettes = Generator.color_palettes
-    if params[:regenerate]
-      @graph = @generator.route
-      @graph_json = @graph.to_json
-      @staples_json = @graph.staples_json
-      write_staples_to_s3(@graph.staples, @graph.staple_colors)
-      Generator.find(@generator.id).update(routing: @graph_json, 
-          staples: @staples_json, 
-          vertex_cuts: @graph.vertex_cuts.size,
-          )
-      redirect_to "/nanobot/#{@generator.id}/visualize"
-    elsif @generator.routing.nil?
+    if params[:regenerate] || @generator.routing.nil?
       @graph = @generator.route
       @graph_json = @graph.to_json
       @staples_json = @graph.staples_json
       @scaffold = Generator.m13_scaffold
       write_staples_to_s3(@graph.staples, @graph.staple_colors)
       Generator.find(@generator.id).update(routing: @graph_json, 
-        staples: @staples_json, 
-        vertex_cuts: @graph.vertex_cuts.size,
-        )
+          staples: @staples_json, 
+          vertex_cuts: @graph.vertex_cuts.size,
+          )
+      redirect_to "/nanobot/#{@generator.id}/visualize" unless @generator.routing.nil?
     else
       @graph_json = @generator.routing
       @staples_json = @generator.staples

@@ -23,6 +23,7 @@ const canvasContainerWidth = canvasContainer.offsetWidth;
 const canvasContainerHeight = canvasContainer.offsetHeight;
 let insetWidth = canvasContainerWidth / 4;
 let insetHeight = canvasContainerHeight / 4;
+let currentOffsetGroup;
 
 let t = "";
 for (var i = 0; i < staples.names.length; i++) {
@@ -64,18 +65,19 @@ const camera = new THREE.PerspectiveCamera(
     8000
 );
 
+
 const camera2 = new THREE.PerspectiveCamera(
-    40, 
-    1, 
-    1,
-    2000
+  40,
+  1,
+  1,
+  1000
 );
+
 camera.position.set(-40, 60, 90);
-camera2.position.set(
-    camera.position.x,
-    camera.position.y + 200,
-    camera.position.z
-)
+
+camera2.position.copy(camera.position);
+camera2.layers.enable( 1 );
+camera2.layers.set( 1 );
 
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas,
@@ -96,7 +98,7 @@ scene.add(camera);
  const controls = new OrbitControls(camera, renderer.domElement);
  controls.minDistance = 10;
  controls.maxDistance = 5000;
-
+ controls.enableRotate = false;
 /**
  * Setup 3D routing object
  */
@@ -105,27 +107,34 @@ const linearRoutingGeometry = new LineGeometry();
 linearRoutingGeometry.setPositions(linearPoints);
 linearRoutingGeometry.setColors(scaffoldPallete);
 const linearLine = new Line2(linearRoutingGeometry, matLine);
+linearLine.layers.set(1);
+
 linearGroup.add(linearLine);
 generateStapleGroup(staples.linear, linearGroup)
 new THREE.Box3()
 .setFromObject(linearGroup)
 .getCenter(linearGroup.position)
 .multiplyScalar(-1);
+linearGroup.layers.enable(1);
 
+currentOffsetGroup = linearGroup;
 
 const interpolatedGroup = new THREE.Group();
 const interpolatedRoutingGeometry = new LineGeometry();
 interpolatedRoutingGeometry.setPositions(interpolatedPoints);
 interpolatedRoutingGeometry.setColors(scaffoldPallete);
 const interpolatedLine = new Line2(interpolatedRoutingGeometry, matLine);
+interpolatedLine.layers.set(1);
+
 interpolatedGroup.add(interpolatedLine);
 generateStapleGroup(staples.interpolated, interpolatedGroup)
 new THREE.Box3()
 .setFromObject(interpolatedGroup)
 .getCenter(interpolatedGroup.position)
 .multiplyScalar(-1);
+interpolatedGroup.layers.set(1);
 
-scene.add(linearGroup);
+scene.add(currentOffsetGroup);
 
 /**
  * Setup plane for highlight
@@ -135,6 +144,7 @@ for (let i = 0; i < 6; i++) {
     const planeGeometry = new THREE.PlaneGeometry(50, 50);
     const planeMaterial = new THREE.MeshBasicMaterial( {color: 0x8190ed, side: THREE.DoubleSide, opacity: 0, transparent: true} );
     const plane2D = new THREE.Mesh(planeGeometry, planeMaterial);
+    plane2D.layers.set(1);
     if (i - 3 > 0) {
         planeGeometry.rotateY(Math.PI / 2);
         if (i % 2 == 0) {
@@ -163,12 +173,54 @@ for (let i = 0; i < 6; i++) {
         plane2D.name = "S2";
         }
 }
-sidePlanes.push(plane2D);
-scene.add(plane2D);
+  sidePlanes.push(plane2D);
+  scene.add(plane2D);
 }
 
 
 
+/**
+ * Setup 2D plane grids
+ */
+
+Object.assign(THREE.PlaneBufferGeometry.prototype, {
+  toGrid: function() {
+    let segmentsX = this.parameters.widthSegments || 1;
+    let segmentsY = this.parameters.heightSegments || 1;
+    let indices = [];
+    for (let i = 0; i < segmentsY + 1; i++) {
+      let index11 = 0;
+      let index12 = 0;
+      for (let j = 0; j < segmentsX; j++) {
+        index11 = (segmentsX + 1) * i + j;
+        index12 = index11 + 1;
+        let index21 = index11;
+        let index22 = index11 + (segmentsX + 1);
+        indices.push(index11, index12);
+        if (index22 < ((segmentsX + 1) * (segmentsY + 1) - 1)) {
+          indices.push(index21, index22);
+        }
+      }
+      if ((index12 + segmentsX + 1) <= ((segmentsX + 1) * (segmentsY + 1) - 1)) {
+        indices.push(index12, index12 + segmentsX + 1);
+      }
+    }
+    this.setIndex(indices);
+    return this;
+  }
+});
+
+let planeGrids = [];
+let currentGrid;
+
+console.log(graphJSON);
+const planeGeom = new THREE.PlaneBufferGeometry(dimensions[0], dimensions[1], 50, 50).toGrid();
+const gridPlane = new THREE.LineSegments(planeGeom, new THREE.LineBasicMaterial({color: 0x696969}));
+gridPlane.quaternion.copy(camera.quaternion);
+const maxDistance = Math.max(dimensions[0], dimensions[1]);
+camera.fov =  2 * Math.atan( maxDistance / ( 2 * camera.position.distanceTo(gridPlane.position) ) ) * ( 180 / Math.PI );
+scene.add(gridPlane)
+console.log(staples)
 
 /**
  * Setup event listeners
@@ -178,6 +230,30 @@ onWindowResize();
  
 
 requestAnimationFrame(render);
+
+// function filterScaffoldPositions(side, type) {
+
+  
+
+
+//   if (side === "S1") {
+//     if (type == "linear") {
+//       let vertexArray = [];
+//       for (let i = 0; i < linearPoints.length / 3; i += 3) {
+//         vertexArray.push([linearPoints[i], linearPoints[i+1], linearPoints[i+2]]);
+//       }
+//       console.log(vertexArray)
+//       console.log(vertexArray.filter(vertex => {
+//         console.log(vertex[2] === 0)
+//         vertex[2] === 0
+//       }))
+
+//     }
+//   }
+// }
+
+// const planeCross = filterScaffoldPositions("S1", "linear");
+// console.log(planeCross);
 
 function generateStapleGroup(staples, group) {
     let pointer = 0
@@ -192,7 +268,7 @@ function generateStapleGroup(staples, group) {
       geometry.setColors(stapleColors);
 
       let stapleLine = new Line2(geometry, matLine);
-
+      stapleLine.layers.set(1);
       camera.lookAt(stapleLine.position);
 
       let stapleGeo = new THREE.BufferGeometry();
@@ -219,8 +295,8 @@ function render() {
     let minDistPlane = null;
     for (let i = 0; i < sidePlanes.length; i++) {
       sidePlanes[i].material.opacity = 0;
-      if (camera.position.distanceTo(sidePlanes[i].position) < minDist) {
-        minDist = camera.position.distanceTo(sidePlanes[i].position);
+      if (camera2.position.distanceTo(sidePlanes[i].position) < minDist) {
+        minDist = camera2.position.distanceTo(sidePlanes[i].position);
         minDistPlane = sidePlanes[i];
       }
     }
@@ -238,6 +314,8 @@ function render() {
     renderer.setScissorTest(true);
     renderer.setScissor(20, 20, insetWidth, insetHeight);
     renderer.setViewport(20, 20, insetWidth, insetHeight);
+    // camera2.position.copy(camera.position);
+		camera2.quaternion.copy( camera.quaternion );
     renderer.render(scene, camera2);
     renderer.setScissorTest(false);
 

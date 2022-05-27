@@ -7,6 +7,7 @@ import { LineMaterial } from "./threejs/LineMaterial";
 import { LineGeometry } from "./threejs/LineGeometry";
 
 const canvas = document.getElementById("playground-canvas");
+const sideBar = document.querySelector(".sidebarContent");
 const sideBarHeight = document.querySelector(".sidebarContent").scrollTopMax;
 const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
 
@@ -159,6 +160,8 @@ function resizeRendererToDisplaySize(renderer, camera) {
   }
   return needResize;
 }
+const initialOffsetTop = sideBarScenes[0].elem.parentElement.offsetTop;
+const scrollHeight =  sideBar.offsetHeight;
 
 function renderSceneInfo(
   sceneInfo,
@@ -168,38 +171,39 @@ function renderSceneInfo(
   }
 ) {
   const { scene, camera, elem } = sceneInfo;
-
+  const isMainScreen = resolution.height == playGroundContainer.clientHeight;
+  const sceneObject = scene.getObjectByName("routingObject");
   const { left, right, top, bottom, width, height } =
     elem.getBoundingClientRect();
   material.resolution.set(resolution.width, resolution.height);
+  
+  let newHeight, newBottom;
 
-  const isOffscreen =
-    bottom < 0 ||
-    top > renderer.domElement.clientHeight ||
-    right < 0 ||
-    left > renderer.domElement.clientWidth;
-
-  // top > scrollHeight
-
-  // const isOffscreen =
-  //     scrollHeight + sideBarHeight < top ||
-  //     scrollHeight + sideBarHeight < bottom ||
-  //     scrollHeight > top ||
-  //     scrollHeight > bottom ||
-  //     right < 0 ||
-  //     left > renderer.domElement.clientWidth
-
-  if (isOffscreen) {
-    return;
+  if (!isMainScreen) {
+    if (((top - initialOffsetTop) >= scrollHeight) || ((bottom - initialOffsetTop) <= 0)) {
+      return;
+    } else if (scrollHeight - (top - initialOffsetTop) < height) {
+      newHeight = scrollHeight - (top - initialOffsetTop); 
+      newBottom = bottom - (height - newHeight);
+      sceneObject.position.y = - (height - newHeight) / 3;
+    } else if (bottom - initialOffsetTop < height) {
+      newHeight = bottom - initialOffsetTop; 
+      newBottom = bottom;
+      sceneObject.position.y = (height - newHeight) / 3;
+    } else {
+      newHeight = height;
+      newBottom = bottom;
+    }
   }
+
+
 
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
-
-  const positiveYUpBottom = renderer.domElement.height - bottom;
-  renderer.setScissor(left, positiveYUpBottom, width, height);
-  renderer.setViewport(left, positiveYUpBottom, width, height);
-
+  
+  const positiveYUpBottom = window.innerHeight - newBottom;
+  renderer.setScissor(left, positiveYUpBottom, width, newHeight);
+  renderer.setViewport(left, positiveYUpBottom, width, newHeight);
   renderer.render(scene, camera);
 }
 

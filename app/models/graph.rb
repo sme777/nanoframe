@@ -33,7 +33,7 @@ class Graph
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 2)
     @staple_colors = generate_staple_colors
     # write_staples(@staples, @staple_colors)
-    
+    write_nfr
   end
 
 
@@ -44,6 +44,37 @@ class Graph
   #   staples = staple_breaker.update_boundary_strands(boundary_edges, staples)
   #   staples
   # end
+
+  def write_nfr
+    # byebug
+    hash = {}
+    hash[:name] = "M13mp18"
+    hash[:sequence] = Generator.m13_scaffold
+    hash[:vertex_cuts] = @vertex_cuts.size
+    hash[:dimension] = [@width, @height, @depth]
+    hash[:points] = {linear: @linear_points, interpolated: @interpolated_points}
+    hash[:colors] = {linear: @colors, interpolated: @colors}
+    
+    staple_arr = []
+    @staples.each_with_index do |st, idx|
+      st_hash = {}
+      st_hash[:name] = st.name
+      st_hash[:sequence] = st.sequence
+      st_hash[:points] = {linear: Vertex.flatten(st.linear_points), interpolated: Vertex.flatten(st.interpolated_points)}
+      st_hash[:colors] = {linear: @staple_colors[idx], interpolated: @staple_colors[idx]}
+      staple_arr << st_hash
+    end
+
+    hash[:staples] = staple_arr
+    hash[:bridge_length] = 3
+    hash[:graph] = to_hash
+    
+    filename = "test.json"
+    file = File.open("app/assets/results/#{filename}", 'w')
+    file.write(JSON.generate(hash))
+    file.close
+
+  end
 
   def write_staples(staples, colors)
     filename = "#{@width}x#{@height}x#{@depth}-#{@segments - 1}-#{Time.now}"
@@ -586,6 +617,23 @@ class Graph
   def open_structure(ratio = 1 / 3.to_f)
     start_idx, first_parititon, second_partition, boundary_edges = Routing.find_strongest_connected_components(@sorted_edges,
                                                                                                     ratio, [@width, @height, @depth])
+  end
+
+
+  def to_hash
+    return nil if @planes.nil?
+
+    # plane_arr = []
+    graph_hash = {}
+    graph_hash[:boundary_edges] = boundary_edges.each {|edge| edge.to_hash}
+    @planes.each do |plane|
+      p = Plane.new(plane, plane.object_id)
+      graph_hash[p.name] = p.to_hash
+      # plane_arr.append(p.to_hash)
+    end
+
+    graph_hash
+
   end
 
   # Generates JSON file of the graph

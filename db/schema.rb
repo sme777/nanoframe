@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_22_204302) do
+ActiveRecord::Schema.define(version: 2022_05_26_025928) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -65,6 +65,7 @@ ActiveRecord::Schema.define(version: 2022_05_22_204302) do
     t.string "staple_obj"
     t.string "edges_obj"
     t.string "graph_id"
+    t.string "sequence"
   end
 
   create_table "playground_items", force: :cascade do |t|

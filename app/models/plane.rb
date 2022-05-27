@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 class Plane
-  attr_accessor :graph, :up, :down, :left, :right
+  attr_accessor :graph, :up, :down, :left, :right, :name
 
-  def initialize(graph)
+  def initialize(graph, name)
+    @name = name
     @graph = graph
     @up = nil
     @down = nil
