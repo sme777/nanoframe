@@ -177,7 +177,8 @@ function renderSceneInfo(
     elem.getBoundingClientRect();
   material.resolution.set(resolution.width, resolution.height);
   
-  let newHeight, newBottom;
+  let newHeight = height;
+  let newBottom = bottom;
 
   if (!isMainScreen) {
     if (((top - initialOffsetTop) >= scrollHeight) || ((bottom - initialOffsetTop) <= 0)) {
@@ -190,9 +191,6 @@ function renderSceneInfo(
       newHeight = bottom - initialOffsetTop; 
       newBottom = bottom;
       sceneObject.position.y = (height - newHeight) / 3;
-    } else {
-      newHeight = height;
-      newBottom = bottom;
     }
   }
 
