@@ -31,7 +31,7 @@ class GeneratorsController < ApplicationController
     @graph_json = @generator.routing
     @staples_json = @generator.staples
     @scaffold = Generator.m13_scaffold
-    
+
   end
 
   def visualize

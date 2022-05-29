@@ -165,6 +165,18 @@ if (signOutBtn != null || boxState != null) {
     return subarray;
   }
 
+
+  function vectorizePoints(points) {
+    let newPoints = [];
+    for (let i = 0; i < points.length / 3; i += 3) {
+      newPoints.push([points[i], points[i+1], points[i+2]]);
+    }
+    return newPoints;
+  }
+
+  
+
+
   /**
    *
    * @param {*} scene
@@ -271,6 +283,7 @@ if (signOutBtn != null || boxState != null) {
     }
 
     linear_points = graph_json["linear_points"];
+    
     globalPositions = linear_points;
     interpolated_points = graph_json["interpolated_points"];
     colors = graph_json["colors"];
@@ -340,6 +353,20 @@ if (signOutBtn != null || boxState != null) {
     sphereInter.visible = false;
     scene.add(sphereInter);
     let sidePlanes = [];
+    
+    
+    // console.log(linear_points.toString());
+
+    // var fs = require('fs');
+
+    // var file = fs.createWriteStream('array.txt');
+    // file.on('error', function(err) { /* error handling */ });
+    // linear_points.forEach(function(v) { file.write(v.join(', ') + '\n'); });
+    // file.end();
+
+
+    console.log(clearPoints(linear_points).toString())
+
     /**
      * Setup plane for highlight
      */
@@ -382,6 +409,25 @@ if (signOutBtn != null || boxState != null) {
 
     requestAnimationFrame(render);
 
+    function clearPoints(points) {
+      let newPoints = [];
+      let last = new THREE.Vector3();
+      for (let i = 0; i < points.length; i += 3) {
+        if (last == undefined || last == null) {
+          newPoints.push(points[i]);
+          newPoints.push(points[i+1]);
+          newPoints.push(points[i+2]);
+        } else if (!(last.x == points[i] && last.y == points[i+1] && last.z == points[i+2])) {
+          newPoints.push(points[i]);
+          newPoints.push(points[i+1]);
+          newPoints.push(points[i+2]);
+          last.x = points[i];
+          last.y = points[i+1];
+          last.z = points[i+2];
+        }
+      }
+      return newPoints;
+    }
 
 
     function generateStapleGroup(staples, group) {
