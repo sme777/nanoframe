@@ -62,12 +62,14 @@ module Routing
     [vectors[...-1], last_vertex]
   end
 
-  def self.normalize(vectors, wsl, hsl, dsl)
+  def self.normalize(vectors, wsl, hsl, dsl, corners=true)
     vectors.each do |vector|
       vector.x *= wsl
       vector.y *= hsl
       vector.z *= dsl
     end
+
+    return vectors unless corners
 
     # vectors.each_with_index do |vector, i|
     #     prev_edge = Edge.new(vectors[(i - 1) % vectors.size], vector)

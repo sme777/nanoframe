@@ -236,6 +236,7 @@ class Breaker
           end
         end
       else
+        # byebug
         adjacent = ObjectSpace._id2ref(edge.adjacent_edges.first)
         if ext_hor == [0] && ext_vert == [0]
           # staple = Staple.new(edge, adjacent, refl2, refl2, :reflection, 1)

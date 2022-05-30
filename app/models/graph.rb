@@ -21,7 +21,7 @@ class Graph
     @edges = v_and_e[1]
     @template_planes = find_four_planes
     @planes, @raw_planes = find_plane_combination(@template_planes)
-    @sorted_vertices, @linear_points, @interpolated_points, @sampling_frequency = generate_spline_points
+    @sorted_vertices, @normalized_vertices, @linear_points, @interpolated_points, @sampling_frequency = generate_spline_points
     @colors = generate_spline_colors   
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
@@ -163,6 +163,7 @@ class Graph
   def modifications_objects
     {staples: Marshal.dump(@staples), boundary_edges: Marshal.dump(@boundary_edges),}
   end
+
 
   def staples_json
     staple_lin_points = []
@@ -555,20 +556,23 @@ class Graph
 
     plane_copy = Marshal.load(Marshal.dump(@planes))
     sorted_vertices = Routing.sort_sets(plane_copy)
-    normalized_vertices = Routing.normalize(sorted_vertices, @width / @segments.to_f, @height / @segments.to_f,
+    normalized_vertices = Marshal.load(Marshal.dump(sorted_vertices))
+    sorted_vertices = Routing.normalize(sorted_vertices, @width / @segments.to_f, @height / @segments.to_f,
+                                            @depth / @segments.to_f, false)
+    normalized_vertices = Routing.normalize(normalized_vertices, @width / @segments.to_f, @height / @segments.to_f,
                                             @depth / @segments.to_f)
 
-
+    # byebug
     sampled_points = []
     normalized_vertices.each_with_index do |vertex, i|
       dr_ch = Edge.new(vertex, normalized_vertices[(i + 1) % normalized_vertices.size]).directional_change
-      sampled_points.concat(Vertex.linspace(dr_ch, 30, vertex, normalized_vertices[(i + 1) % normalized_vertices.size]))
+      sampled_points.concat(Vertex.linspace(dr_ch, 30, vertex, normalized_vertices[(i + 1) % normalized_vertices.size])) # TODO change 30 to edge length
     end
     spline = CatmullRomCurve3.new(normalized_vertices)
     spline_divisions = @scaff_length
     spline_points = Vertex.flatten(spline.generate(spline_divisions))
     sampled_points = Vertex.flatten(sampled_points)
-    [sorted_vertices, sampled_points, spline_points, spline.sampling_frequency(@scaff_length)]
+    [sorted_vertices, normalized_vertices, sampled_points, spline_points, spline.sampling_frequency(@scaff_length)]
   end
 
   def generate_spline_colors
@@ -589,6 +593,7 @@ class Graph
       staple_adj_len_arr = @staple_breaker.staples_postprocess(staple_len_arr)
       staple_len_map[side] = staple_adj_len_arr
     end
+    # byebug
     edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_len_map)
   end
 
