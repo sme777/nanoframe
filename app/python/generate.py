@@ -52,32 +52,9 @@ def generate(bp, start_pos, dir, R, R0, is_y=False, perp=False, a1=None, a3=None
         rb += a3 * BASE_BASE
         a3 = a3
 
-    # if double:
-        # i = 1 if not is_y else 2
-    # if a1_d is None:
-    #     a1_d = -a1
-    #     # a1_d = v1
-    #     # a1_d = np.dot (R0.transpose(), a1)
-    #     rb_d = np.array(start_pos)
-    #     # a3 = dir
     a1_d = -a1
     a3_d = -a3
-    # Rt = R.transpose()
-    # print((rb - CM_CENTER_DS * a1_d))
     start_pos_d = (rb - CM_CENTER_DS * a1_d)
-
-    # # if a1_d is None:
-    # #     a1_d = v1
-    # #     a1_d = np.dot (R0, a1)
-    # #     rb_d = np.array(start_pos)
-    # #     a3_d = dir
-    # # else:
-    # start_pos_d[i] = (rb_d + CM_CENTER_DS * a1_d)[i]
-    # # print(a3_d)
-    # # a3_d = -a3
-    # a1_d = np.dot(Rt, a1_d)
-    # rb_d += a3_d * BASE_BASE
-    # a3_d = a3_d
 
     return [start_pos, a1, a3, rb, start_pos_d, a1_d, a3_d]
 
@@ -102,6 +79,24 @@ def get_dir_ch(v1, v2):
         direction = v1[2] - v2[2]
         max_dir = "z"
     return max_dir, direction
+
+def find_closest_nt(staple_nt, scaffold_nts_map):
+
+    min_dist = float('inf')
+    closest_nt = None
+    closest_a1 = None
+    closest_a3 = None
+
+    for nt in scaffold_nts_map:
+        nt2 = np.array([nt[0], nt[1], nt[2]])
+        dist = np.linalg.norm(nt2-staple_nt)
+        if dist < min_dist:
+            min_dist = dist
+            closest_nt = nt2
+            closest_a1 = scaffold_nts_map[nt][0]
+            closest_a3 = scaffold_nts_map[nt][1]
+
+    return closest_nt, closest_a1, closest_a3
 
 def setup(positions):
     all_positions, all_a1s, all_a3s = [], [], []
@@ -137,6 +132,7 @@ def setup(positions):
     dir_ch_prv = "x"
     Rs = []
     rbs = []
+    scaffold_nts_map = {}
     for i, seq in enumerate(positions):
         
         if (i != 0):
@@ -149,10 +145,7 @@ def setup(positions):
         else:
             dir_ch = dir_ch
         
-
-
         if dir_ch != dir_ch_prv:
-            print(dir_ch, dir_ch_prv, positions[i], positions[i-1])
             a1 = None
             if dir_ch == "x":
                 curr_R0 = R0X
@@ -169,69 +162,32 @@ def setup(positions):
                 curr_R = RZ
                 curr_a3 = dirZ if dir_vec > 0 else -dirZ
                 is_y = False
-        Rs += [curr_R]
         
         position, a1, a3, rb, position_d, a1_d, a3_d = generate(len(seq), np.array(positions[i], dtype=float), curr_a3, curr_R, curr_R0, is_y=is_y, a1=a1, a3=curr_a3, rb=rb)
         rbs += [rb]
         all_positions += [position]
-        all_d_positions += [position_d]
+        # all_d_positions += [position_d]
         all_a1s += [a1]
-        all_d_a1s += [a1_d]
+        # all_d_a1s += [a1_d]
         all_a3s += [a3]
-        all_d_a3s += [a3_d]
-    # positions.reverse()
-    # # print(rbs[4])
-    # a1_d = -a1
-    # print(a3)
-    # a3_d = a3
-    
-    # for i, pos in enumerate(positions):
-    #     Rt = Rs[i].transpose()
-    #     position = positions[i]
-    #     # print(position)
-    #     position[1] = (rbs[i] - CM_CENTER_DS * a1_d)[1]
+        # all_d_a3s += [a3_d]
+        scaffold_nts_map[(position_d[0], position_d[1], position_d[2])] = [a1_d, a3_d]
 
-    #     a1_d = np.dot(Rt, a1_d)
-    #     # rb += a3_d * BASE_BASE
-    #     all_d_positions += [position]
-    #     all_d_a1s += [a1_d]
-    #     all_d_a3s += [a3_d]
+
+
+    return all_positions, all_a1s, all_a3s, scaffold_nts_map #all_d_positions, all_d_a1s, all_d_a3s
         
 
-    # for i, seq in enumerate(positions):
-    #     dir_ch_prv = get_dir_ch(positions[i - 1% len(positions)], positions[i-2]) if (i != 0) else dir_ch_prv
-    #     dir_ch = get_dir_ch(positions[i% len(positions)], positions[i-1]) if (i != 0) else dir_ch
-        
-    #     if dir_ch != dir_ch_prv:
-    #         a1 = None
-    #         if dir_ch == "x":
-    #             curr_R0 = R0X.transpose()
-    #             curr_R = RX.transpose()
-    #             curr_a3 = -dirX
-    #             is_y = False
-    #         elif dir_ch == "y":
-    #             curr_R0 = R0Y.transpose()
-    #             curr_R = RY.transpose()
-    #             curr_a3 = -dirY
-    #             is_y = True
-    #         else:
-    #             curr_R0 = R0Z.transpose()
-    #             curr_R = RZ.transpose()
-    #             curr_a3 = -dirZ
-    #             is_y = False
-        
-    #     position_d, a1_d, a3_d, rb_d = generate(len(seq), np.array(positions[i], dtype=float), curr_a3, curr_R, curr_R0, is_y=is_y, a1=a1, a3=curr_a3, rb=rb)
-    #     # all_positions += [position]
-    #     all_d_positions += [position_d]
-    #     # all_a1s += [a1]
-    #     all_d_a1s += [a1_d]
-    #     # all_a3s += [a3]
-    #     all_d_a3s += [a3_d]
-
-    return all_positions, all_a1s, all_a3s, all_d_positions, all_d_a1s, all_d_a3s
-        
-
-
+def setup2(positions):
+    new_positions = []
+    new_a1s = []
+    new_a3s = []
+    for nt in positions:
+        pos, a1, a3 = find_closest_nt(nt, scaffold_nts_map)
+        new_positions.append(pos)
+        new_a1s.append(a1)
+        new_a3s.append(a3)
+    return new_positions, new_a1s, new_a3s
 import json
 ### SCAFFOLD ###
 
@@ -260,13 +216,13 @@ test_positions = []
 while i < len(clean_data):
     test_positions.append([clean_data[i], clean_data[i+1], clean_data[i+2]])
     i += 3
-# test_positions = test_positions[:300]
-all_positions, all_a1s, all_a3s, all_d_positions, all_d_a1s, all_d_a3s = setup(test_positions)
+# test_positions = test_positions[:200]
+all_positions, all_a1s, all_a3s, scaffold_nts_map = setup(test_positions)
 
 ### STAPLES ###
 
 f = open("../assets/results/staple_posz.json")
-staple_data = json.load(f)['positions'][:0]
+staple_data = json.load(f)['positions']
 f.close()
 # print(len(staple_data[0]))
 
@@ -283,7 +239,8 @@ for i in range(len(staple_data)):
         staple_position.append([staple_group[j], staple_group[j+1], staple_group[j+2]])
         j += 3
     # print(len(staple_position))
-    sall_positions, sall_a1s, sall_a3s = setup(staple_position)
+    print(i)
+    sall_positions, sall_a1s, sall_a3s = setup2(staple_position)
     staples_positions.append(sall_positions)
     staples_a1s.append(sall_a1s)
     staple_a3s.append(sall_a3s)
@@ -301,8 +258,8 @@ f.write("E = 0. 0. 0.\n")
 for i in range(len(all_positions)):
     f.write(f"{all_positions[i][0]} {all_positions[i][1]} {all_positions[i][2]} {all_a1s[i][0]} {all_a1s[i][1]} {all_a1s[i][2]} {all_a3s[i][0]} {all_a3s[i][1]} {all_a3s[i][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
 
-for i in range(len(all_positions)):
-    f.write(f"{all_d_positions[i][0]} {all_d_positions[i][1]} {all_d_positions[i][2]} {all_d_a1s[i][0]} {all_d_a1s[i][1]} {all_d_a1s[i][2]} {all_d_a3s[i][0]} {all_d_a3s[i][1]} {all_d_a3s[i][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
+# for i in range(len(all_positions)):
+#     f.write(f"{all_d_positions[i][0]} {all_d_positions[i][1]} {all_d_positions[i][2]} {all_d_a1s[i][0]} {all_d_a1s[i][1]} {all_d_a1s[i][2]} {all_d_a3s[i][0]} {all_d_a3s[i][1]} {all_d_a3s[i][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
 
 
 
@@ -327,10 +284,10 @@ f.write(f"{len(comb_seq)} {1 + len(staple_data)}\n")
 for i in range(len(test_positions)):
     f.write(f"1 {sequence[i]} {i - 1} {i + 1 if i + 1 < len(test_positions) else -1}\n")
 
-for j in range(len(test_positions)):
-    i += 1
-    # f.write(f"2 {sequence2[i]} {i - 1} {i + 1 if i + 1 < len(test_positions) else -1}\n")
-    f.write(f"2 {sequence2[j]} {i - 1 if j != 0 else -1} {i + 1 if (j != len(test_positions) - 1) else -1}\n")
+# for j in range(len(test_positions)):
+#     i += 1
+#     # f.write(f"2 {sequence2[i]} {i - 1} {i + 1 if i + 1 < len(test_positions) else -1}\n")
+#     f.write(f"2 {sequence2[j]} {i - 1 if j != 0 else -1} {i + 1 if (j != len(test_positions) - 1) else -1}\n")
 
 for j in range(len(staples_positions)):
     # print(staples_positions[j])
