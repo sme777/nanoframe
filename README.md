@@ -5,7 +5,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/a7c3b1796ed55dff5f27/maintainability)](https://codeclimate.com/github/tilabberkeley/nanoframe/maintainability)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
-NanoFrame [nanoframe.org](https://nanoframe.org) is a web based tool which enables design and synthesis of 3D wireframe objects. This web application takes a single stranded DNA scaffold (either 7249 or 8064-base) with custom sequences and forms the desired wireframe shape in 3D.
+NanoFrame [nanoframe.org](https://www.nanoframe.org) is a web based tool which enables design and synthesis of 3D wireframe objects. This web application takes a single stranded DNA scaffold (either 7249 or 8064-base) with custom sequences and forms the desired wireframe shape in 3D.
 Supported wireframes include cube, sphere, cone, tetrahedron, and many more.
 
 Consider citing the associated paper if you find the project useful.
