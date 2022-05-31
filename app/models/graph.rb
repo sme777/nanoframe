@@ -31,7 +31,7 @@ class Graph
       @vertex_cuts << e.v1 if !@vertex_cuts.include?(e.v1)
       @vertex_cuts << e.v2 if !@vertex_cuts.include?(e.v2)
     end
-    # @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 2)
+    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 2)
     @staple_colors = generate_staple_colors
     # write_staples(@staples, @staple_colors)
     # write_nfr
@@ -565,19 +565,11 @@ class Graph
     normalized_vertices = Routing.normalize(normalized_vertices, @width / @segments.to_f, @height / @segments.to_f,
                                             @depth / @segments.to_f)
 
-    # byebug
     sampled_points = []
-    # position_idxs = {}
-    # idx = 1
     normalized_vertices.each_with_index do |vertex, i|
       dr_ch = Edge.new(vertex, normalized_vertices[(i + 1) % normalized_vertices.size]).directional_change
       edge_sampled_points = Vertex.linspace(dr_ch, 31, vertex, normalized_vertices[(i + 1) % normalized_vertices.size])[1..]
-      # edge_sampled_points.each do |sample|
-      #   position_idxs[idx] = sample
-      #   idx += 1
-      # end
       sampled_points.concat(edge_sampled_points) # TODO change 30 to edge length
-      # position_idxs = 
     end
     spline = CatmullRomCurve3.new(normalized_vertices)
     spline_divisions = @scaff_length

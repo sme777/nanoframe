@@ -55,8 +55,8 @@ class GeneratorsController < ApplicationController
       @staples_json = @generator.staples
       # byebug
       oxdna_maker = OxDNAMaker.new
-      # byebug
-      poss, a1s, a3s, poss_ds, a1s_ds, a3s_ds = oxdna_maker.setup(JSON.parse(@graph_json)["linear_points"], JSON.parse(@staples_json)["scaffold_idxs"][...238])
+      staples_idxs = JSON.parse(@staples_json)["scaffold_idxs"]
+      poss, a1s, a3s, poss_ds, a1s_ds, a3s_ds = oxdna_maker.setup(JSON.parse(@graph_json)["linear_points"], staples_idxs[...staples_idxs.size-1])
       
       f = File.open("app/assets/results/controller_test.dat", 'w')
       f.write("t = 0\n")
@@ -74,9 +74,6 @@ class GeneratorsController < ApplicationController
         end
       end
 
-      # poss_d.each_with_index do |pos, i|
-      #   f.write("#{poss_d[i][0]} #{poss_d[i][1]} #{poss_d[i][2]} #{a1s_d[i][0]} #{a1s_d[i][1]} #{a1s_d[i][2]} #{a3s_d[i][0]} #{a3s_d[i][1]} #{a3s_d[i][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
-      # end
       f.close
 
       f = File.open("app/assets/results/controller_test.top", 'w')
@@ -90,7 +87,6 @@ class GeneratorsController < ApplicationController
       k = 2
       poss_ds.each_with_index do |poss, idx|
         j = 0
-
         while j < poss.size
           
           f.write("#{k} A #{j != 0 ? i - 1 : -1} #{j != (poss.size - 1) ? i + 1 : -1}\n")
@@ -100,10 +96,6 @@ class GeneratorsController < ApplicationController
         k += 1
       end
 
-      # poss_d.each_with_index do |pos, j|
-      #   f.write("2 A #{j != 0 ? i - 1 : -1} #{j != (poss.size - 1) ? i + 1 : -1}\n")
-      #   i += 1
-      # end
       f.close
       @scaffold = Generator.m13_scaffold
     end

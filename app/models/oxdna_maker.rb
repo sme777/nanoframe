@@ -14,7 +14,6 @@ class OxDNAMaker
         dir_X = Vector[1, 0, 0]
         dir_Y = Vector[0, 1, 0]
         dir_Z = Vector[0, 0, 1]
-        curr_dir = dir_Z
         rot = 0.0
 
         r0_X = rotation_matrix(dir_X, rot)
@@ -24,17 +23,18 @@ class OxDNAMaker
         r0_Z = rotation_matrix(dir_Z, rot)
         r_Z = rotation_matrix(dir_Z, [1, "bp"])
 
+        dir_ch, dir_vec = directional_change(positions[1], positions[0])
+        dir_ch_pv = dir_ch
+
         a1 = nil
-        a3 = dir_Z
+        a3 = dir_vec <= 0 ? binding.local_variable_get("dir_#{dir_ch}") : -binding.local_variable_get("dir_#{dir_ch}")
         rb = nil
 
-        curr_R0 = r0_X
-        curr_R = r_X
-        curr_a3 = dir_X
-        is_y = false
-        dir_ch = :X
-        dir_ch_pv = :X
-        dir_vec = 0
+        curr_R0 = binding.local_variable_get("r0_#{dir_ch}")
+        curr_R = binding.local_variable_get("r_#{dir_ch}")
+        curr_a3 = a3
+
+        
         scaffold_nts_hash = {}
 
         positions.each_with_index do |pos, idx|

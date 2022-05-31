@@ -386,9 +386,11 @@ class Breaker
       edge.assoc_strands.each do |staple_id|
         staple = ObjectSpace._id2ref(staple_id)
         if staple.type == :reflection && staples.include?(staple)
-          cutoff = (staple.sequence.size / 2 - bridge_len) # 2 is the bridge length
+          cutoff = (staple.sequence.size / 2 - bridge_len)
           back_sequence = staple.sequence[...cutoff]
+          back_idxs = staple.scaffold_idxs[...cutoff]
           front_sequence = staple.sequence[cutoff...]
+          front_idxs = staple.scaffold_idxs[cutoff...]
 
           back_lin_positions = staple.linear_points[...cutoff]
           back_int_positions = staple.interpolated_points[...cutoff]
@@ -399,10 +401,12 @@ class Breaker
           next_staple = ObjectSpace._id2ref(staple.next)
 
           prev_staple.sequence = prev_staple.sequence + back_sequence
+          prev_staple.scaffold_idxs = prev_staple.scaffold_idxs + back_idxs
           prev_staple.linear_points = prev_staple.linear_points.concat(back_lin_positions)
           prev_staple.interpolated_points = prev_staple.interpolated_points.concat(back_int_positions)
 
           next_staple.sequence = front_sequence + next_staple.sequence 
+          next_staple.scaffold_idxs = front_idxs + next_staple.scaffold_idxs
           next_staple.linear_points = front_lin_positions.concat(next_staple.linear_points)
           next_staple.interpolated_points = front_int_positions.concat(next_staple.interpolated_points)
           # need to update positions as well
