@@ -365,7 +365,7 @@ if (signOutBtn != null || boxState != null) {
     // file.end();
 
 
-    console.log(clearPoints(linear_points).toString())
+    // console.log(clearPoints(linear_points).toString())
 
     /**
      * Setup plane for highlight

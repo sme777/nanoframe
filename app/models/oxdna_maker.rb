@@ -5,11 +5,11 @@ class OxDNAMaker
     CM_CENTER_DS = POS_BASE + 0.2
     BASE_BASE = 0.3897628551303122
 
-    def setup(positions)
+    def setup(positions, staples_idxs)
         positions = group_positions(positions)
         scaffold_positions, scaffold_a1s, scaffold_a3s = [], [], []
         scaffold_nt_hash = {}
-        staple_positions, staple_a1s, staple_a3s = [], [], []
+        staples_positions, staples_a1s, staples_a3s = [], [], []
 
         dir_X = Vector[1, 0, 0]
         dir_Y = Vector[0, 1, 0]
@@ -53,13 +53,28 @@ class OxDNAMaker
             scaffold_positions << position
             scaffold_a1s << a1
             scaffold_a3s << a3
-            staple_positions << position_d
-            staple_a1s << a1_d
-            staple_a3s << a3_d
-            scaffold_nt_hash[idx] = [position_d, a1_d, a3_d]
+            # staple_positions << position_d
+            # staple_a1s << a1_d
+            # staple_a3s << a3_d
+            scaffold_nt_hash[idx+1] = [position_d, a1_d, a3_d]
         end
 
-        [scaffold_positions, scaffold_a1s, scaffold_a3s, staple_positions, staple_a1s, staple_a3s]
+        staples_idxs.each do |staple_idxs|
+            staple_positions, staple_a1s, staple_a3s = [], [], []
+            staple_idxs.each do |idx|
+                next if idx.nil?
+                complimentary_data = scaffold_nt_hash[idx]
+                staple_positions << complimentary_data[0]
+                staple_a1s << complimentary_data[1]
+                staple_a3s << complimentary_data[2]
+            end
+            staples_positions << staple_positions
+            staples_a1s << staple_a1s
+            staples_a3s << staple_a3s
+        end
+
+
+        [scaffold_positions, scaffold_a1s, scaffold_a3s, staples_positions, staples_a1s, staples_a3s]
     end
 
     def group_positions(positions)

@@ -25,15 +25,16 @@ class Graph
     @colors = generate_spline_colors   
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
+    # byebug
     @vertex_cuts = []
     @boundary_edges.each do |e| 
       @vertex_cuts << e.v1 if !@vertex_cuts.include?(e.v1)
       @vertex_cuts << e.v2 if !@vertex_cuts.include?(e.v2)
     end
-    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 2)
+    # @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 2)
     @staple_colors = generate_staple_colors
     # write_staples(@staples, @staple_colors)
-    write_nfr
+    # write_nfr
   end
 
 
@@ -170,14 +171,16 @@ class Graph
     staple_int_points = []
     staple_names = []
     staple_sequences = []
+    scaffold_idxs = []
     @staples.each do |staple|
       staple_lin_points << Vertex.flatten(staple.linear_points)
       staple_int_points << Vertex.flatten(staple.interpolated_points)
       staple_names << staple.name
       staple_sequences << staple.sequence
+      scaffold_idxs << staple.scaffold_idxs
     end
     JSON.generate({linear: staple_lin_points, interpolated: staple_int_points, colors: @staple_colors.flatten,
-                    names: staple_names, sequences: staple_sequences })
+                    names: staple_names, sequences: staple_sequences, scaffold_idxs: scaffold_idxs })
   end
 
   def connect_vertices(vs)
@@ -564,9 +567,17 @@ class Graph
 
     # byebug
     sampled_points = []
+    # position_idxs = {}
+    # idx = 1
     normalized_vertices.each_with_index do |vertex, i|
       dr_ch = Edge.new(vertex, normalized_vertices[(i + 1) % normalized_vertices.size]).directional_change
-      sampled_points.concat(Vertex.linspace(dr_ch, 30, vertex, normalized_vertices[(i + 1) % normalized_vertices.size])) # TODO change 30 to edge length
+      edge_sampled_points = Vertex.linspace(dr_ch, 31, vertex, normalized_vertices[(i + 1) % normalized_vertices.size])[1..]
+      # edge_sampled_points.each do |sample|
+      #   position_idxs[idx] = sample
+      #   idx += 1
+      # end
+      sampled_points.concat(edge_sampled_points) # TODO change 30 to edge length
+      # position_idxs = 
     end
     spline = CatmullRomCurve3.new(normalized_vertices)
     spline_divisions = @scaff_length

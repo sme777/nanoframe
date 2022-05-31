@@ -53,40 +53,58 @@ class GeneratorsController < ApplicationController
     else
       @graph_json = @generator.routing
       @staples_json = @generator.staples
-      # f = File.open("app/assets/results/test_corners.json", 'w')
-      # f.write(JSON.dump({positions: JSON.parse(@graph_json)["linear_points"]}))
-      # f.close
-      # f = File.open("app/assets/results/staple_posz.json", "w")
-      # f.write(JSON.dump({positions: JSON.parse(@staples_json)["linear"]}))
-      # f.close
+      # byebug
+      oxdna_maker = OxDNAMaker.new
+      # byebug
+      poss, a1s, a3s, poss_ds, a1s_ds, a3s_ds = oxdna_maker.setup(JSON.parse(@graph_json)["linear_points"], JSON.parse(@staples_json)["scaffold_idxs"][...238])
       
-      # oxdna_maker = OxDNAMaker.new
-      # poss, a1s, a3s, poss_d, a1s_d, a3s_d = oxdna_maker.setup(JSON.parse(@graph_json)["linear_points"])
-      # # byebug
-      # f = File.open("app/assets/results/controller_test.dat", 'w')
-      # f.write("t = 0\n")
-      # f.write("b = 1000.0 1000.0 1000.0\n")
-      # f.write("E = 0. 0. 0.\n")
-      # poss.each_with_index do |pos, i|
-      #   f.write("#{poss[i][0]} #{poss[i][1]} #{poss[i][2]} #{a1s[i][0]} #{a1s[i][1]} #{a1s[i][2]} #{a3s[i][0]} #{a3s[i][1]} #{a3s[i][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
-      # end
+      f = File.open("app/assets/results/controller_test.dat", 'w')
+      f.write("t = 0\n")
+      f.write("b = 1000.0 1000.0 1000.0\n")
+      f.write("E = 0. 0. 0.\n")
+      poss.each_with_index do |pos, i|
+        f.write("#{poss[i][0]} #{poss[i][1]} #{poss[i][2]} #{a1s[i][0]} #{a1s[i][1]} #{a1s[i][2]} #{a3s[i][0]} #{a3s[i][1]} #{a3s[i][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
+      end
+
+      poss_ds.each_with_index do |poss, idx|
+        j = 0
+        while j < poss.size
+          f.write("#{poss_ds[idx][j][0]} #{poss_ds[idx][j][1]} #{poss_ds[idx][j][2]} #{a1s_ds[idx][j][0]} #{a1s_ds[idx][j][1]} #{a1s_ds[idx][j][2]} #{a3s_ds[idx][j][0]} #{a3s_ds[idx][j][1]} #{a3s_ds[idx][j][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
+          j += 1
+        end
+      end
+
       # poss_d.each_with_index do |pos, i|
       #   f.write("#{poss_d[i][0]} #{poss_d[i][1]} #{poss_d[i][2]} #{a1s_d[i][0]} #{a1s_d[i][1]} #{a1s_d[i][2]} #{a3s_d[i][0]} #{a3s_d[i][1]} #{a3s_d[i][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
       # end
-      # f.close
+      f.close
 
-      # f = File.open("app/assets/results/controller_test.top", 'w')
-      # f.write("#{poss.size + poss_d.size} 2\n")
-      # i = 0
-      # poss.each do |pos|
-      #   f.write("1 T #{i - 1} #{i + 1 < poss.size ? i + 1 : -1}\n")
-      #   i += 1
-      # end
+      f = File.open("app/assets/results/controller_test.top", 'w')
+      f.write("#{poss.size + poss_ds.size} 2\n")
+      i = 0
+      poss.each do |pos|
+        f.write("1 T #{i - 1} #{i + 1 < poss.size ? i + 1 : -1}\n")
+        i += 1
+      end
+
+      k = 2
+      poss_ds.each_with_index do |poss, idx|
+        j = 0
+
+        while j < poss.size
+          
+          f.write("#{k} A #{j != 0 ? i - 1 : -1} #{j != (poss.size - 1) ? i + 1 : -1}\n")
+          j += 1
+          i += 1
+        end
+        k += 1
+      end
+
       # poss_d.each_with_index do |pos, j|
       #   f.write("2 A #{j != 0 ? i - 1 : -1} #{j != (poss.size - 1) ? i + 1 : -1}\n")
       #   i += 1
       # end
-      # f.close
+      f.close
       @scaffold = Generator.m13_scaffold
     end
   end
