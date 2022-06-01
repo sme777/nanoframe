@@ -3,7 +3,6 @@ import oc from "three-orbit-controls";
 import { Line2 } from "./threejs/Line2";
 import { LineMaterial } from "./threejs/LineMaterial";
 import { LineGeometry } from "./threejs/LineGeometry";
-import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline';
 
 console.log(graph_json['boundary_edges'])
 if (signOutBtn != null || boxState != null) {
@@ -103,27 +102,15 @@ if (signOutBtn != null || boxState != null) {
       colors = findColorSequnece(start, positions.length, divisions);
     }
 
-    if (split && (positions.length > linear_points.length / 2)){ //|| positions.length > interpolated_points.length / 2)) {
+    if (split && (positions.length > linear_points.length / 2)){ 
       positions = adjustSplitPosition(positions);
     }
 
     const geometry = new LineGeometry();
     geometry.setPositions(positions);
-    // console.log(colors.length)
     geometry.setColors(colors);
 
       line0 = new Line2(geometry, matLine);
-
-      // const geo = new THREE.BufferGeometry();
-      // geo.setAttribute(
-      //   "position",
-      //   new THREE.Float32BufferAttribute(positions, 3)
-      // );
-      // geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-      // line1 = new THREE.Line(geo, matLineBasic);
-      // line1.computeLineDistances();
-      // line1.visible = false;
-    // console.log(line0.geometry.attributes.instanceColorStart.data.array)
       if (fullDisplay) {
         if (type === "linear") {
           let _ = split ? splitLinearGroup.add(line0) : linearGroup.add(line0);
@@ -132,7 +119,7 @@ if (signOutBtn != null || boxState != null) {
         }
       }
 
-      if (split && (positions.length < linear_points.length / 2 )){// || positions.length < interpolated_points.length / 2)) {
+      if (split && (positions.length < linear_points.length / 2 )){
         line0.geometry.center()
       }
   }
@@ -185,7 +172,6 @@ if (signOutBtn != null || boxState != null) {
    */
   function connectEnds(scene) {
     let [positions, colors] = getCurvePoints(lastStartPoint, firstEndPoint);
-    // let colors = Array(30).fill(0.5)
     let geometry = new LineGeometry();
     geometry.setPositions(positions);
     geometry.setColors(colors);
@@ -285,45 +271,23 @@ if (signOutBtn != null || boxState != null) {
     }
 
     linear_points = graph_json["linear_points"];
-    
+    console.log(linear_points.length)
     globalPositions = linear_points;
     interpolated_points = graph_json["interpolated_points"];
     colors = graph_json["colors"];
     staples_colors = graph_json["staple_colors"];
     start = graph_json["start"];
     end = graph_json["end"];
-    // console.log(colors)
     let doubleLinearPoints = linear_points.concat(linear_points);
-    // let doubleInterpolatedPoints = interpolated_points.concat(interpolated_points);
     let doubleColors = colors.concat(colors);
-    // console.log(colors)
-    const radius = 1;
-    const smoothness = 12;
-    const coolPoints = roundedCornerLine(graph_json["vertices"], radius, smoothness, true);
-    // console
     generateDisplay(linear_points, "linear", colors);
     generateDisplay(interpolated_points, "interpolated", colors);
-
-    // const line = new MeshLine();
-    // line.setPoints(coolPoints, p => 0.5);
-    // // console.log(line.getPoints(5));
-    // const material = new MeshLineMaterial({color: 0x990000});
-    // const mesh = new THREE.Mesh(line, material);
-    // scene.add(mesh);
-
 
     let group1LinearPoints = doubleLinearPoints.slice(start * 3, end * 3);
     let group2LinearPoints = doubleLinearPoints.slice(end * 3, linear_points.length + start * 3);
 
     generateDisplay(group1LinearPoints, "linear", doubleColors.slice(start * 3, end * 3), true);
     generateDisplay(group2LinearPoints, "linear", doubleColors.slice(end * 3, linear_points.length + start * 3), true);
-
-    // let group1InterpolatedPoints = doubleInterpolatedPoints.slice(start * 3, end * 3)
-    // let group2InterpolatedPoints = doubleInterpolatedPoints.slice(end * 3, interpolated_points.length + start * 3);
-
-    // generateDisplay(group1InterpolatedPoints, "interpolated", doubleColors.slice(start * 3, end * 3), true);
-    // generateDisplay(group2InterpolatedPoints, "interpolated", doubleColors.slice(end * 3, interpolated_points.length + start * 3), true);
-
     
     let stapleLinearGroup = new THREE.Group();
     let stapleInterpolatedGroup = new THREE.Group();
@@ -335,7 +299,6 @@ if (signOutBtn != null || boxState != null) {
 
     linearGroup.add(stapleLinearGroup);
     interpolatedGroup.add(stapleInterpolatedGroup);
-    // interpolatedGroup.add(stapleGroup)
     new THREE.Box3()
       .setFromObject(linearGroup)
       .getCenter(linearGroup.position)
@@ -351,7 +314,6 @@ if (signOutBtn != null || boxState != null) {
     let controls = new OrbitControls(camera, renderer.domElement);
     controls.minDistance = 10;
     controls.maxDistance = 5000;
-    // controls.enableZoom = false
 
     window.addEventListener("resize", onWindowResize);
     canvas.addEventListener("wheel", onZoom);
@@ -368,19 +330,6 @@ if (signOutBtn != null || boxState != null) {
     scene.add(sphereInter);
     let sidePlanes = [];
     
-    
-    // console.log(linear_points.toString());
-
-    // var fs = require('fs');
-
-    // var file = fs.createWriteStream('array.txt');
-    // file.on('error', function(err) { /* error handling */ });
-    // linear_points.forEach(function(v) { file.write(v.join(', ') + '\n'); });
-    // file.end();
-
-
-    // console.log(clearPoints(linear_points).toString())
-
     /**
      * Setup plane for highlight
      */
@@ -420,110 +369,7 @@ if (signOutBtn != null || boxState != null) {
       scene.add(plane2D);
     }
 
-
-    // console.log(graph_json["vertices"])
-    // console.log(roundedCornerLine(graph_json["vertices"], radius, smoothness, true));
-
     requestAnimationFrame(render);
-
-
-    function roundedCornerLine(points, radius, smoothness, closed) {
-      // points = []
-      // for (let i = 0; i < psz.length; i += 3) {
-      //   points.push(new THREE.Vector3(psz[i], psz[i+1], psz[i+2]));
-      // }
-      
-      radius = radius !== undefined ? radius : .1;
-      smoothness = smoothness !== undefined ? Math.floor(smoothness) : 3;
-      closed = closed !== undefined ? closed : false;
-
-
-      let minVector = new THREE.Vector3();
-      let minLength = minVector.subVectors(points[0], points[1]).length();
-
-      for (let i = 1; i < points.length - 1; i++) {
-        minLength = Math.min(minLength, minVector.subVectors(points[i], points[i + 1]).length());
-      }
-      if (closed) {
-        minLength = Math.min(minLength, minVector.subVectors(points[points.length - 1], points[0]).length());
-      }
-  
-      radius = radius > minLength * .5 ? minLength * .5 : radius; // radius can't be greater than a half of a minimal segment
-  
-      let startIndex = 1;
-      let endIndex = points.length - 2;
-      if (closed) {
-        startIndex = 0;
-        endIndex = points.length - 1;
-      }
-  
-      let positions = [];
-      if (!closed) {
-        positions.push(points[0].clone())
-      };
-  
-      for (let i = startIndex; i <= endIndex; i++) {
-  
-        let iStart = i - 1 < 0 ? points.length - 1 : i - 1;
-        let iMid = i;
-        let iEnd = i + 1 > points.length - 1 ? 0 : i + 1;
-        let pStart = points[iStart];
-        let pMid = points[iMid];
-        let pEnd = points[iEnd];
-  
-        // key points
-        let vStartMid = new THREE.Vector3().subVectors(pStart, pMid).normalize();
-        let vEndMid = new THREE.Vector3().subVectors(pEnd, pMid).normalize();
-        let vCenter = new THREE.Vector3().subVectors(vEndMid, vStartMid).divideScalar(2).add(vStartMid).normalize();
-        let angle = vStartMid.angleTo(vEndMid);
-        let halfAngle = angle * .5;
-  
-        let sideLength = radius / Math.tan(halfAngle);
-        let centerLength = Math.sqrt(sideLength * sideLength + radius * radius);
-  
-        let startKeyPoint = vStartMid.multiplyScalar(sideLength);
-        let centerKeyPoint = vCenter.multiplyScalar(centerLength);
-        let endKeyPoint = vEndMid.multiplyScalar(sideLength);
-  
-        let cb = new THREE.Vector3(),
-          ab = new THREE.Vector3(),
-          normal = new THREE.Vector3();
-        cb.subVectors(centerKeyPoint, endKeyPoint);
-        ab.subVectors(startKeyPoint, endKeyPoint);
-        cb.cross(ab);
-        normal.copy(cb).normalize();
-  
-        let rotatingPointStart = new THREE.Vector3().subVectors(startKeyPoint, centerKeyPoint);
-        let rotatingPointEnd = new THREE.Vector3().subVectors(endKeyPoint, centerKeyPoint);
-        let rotatingAngle = rotatingPointStart.angleTo(rotatingPointEnd);
-        let angleDelta = rotatingAngle / smoothness;
-        let tempPoint = new THREE.Vector3();
-
-        for (let a = 0; a < smoothness + 1; a++) {
-          tempPoint.copy(rotatingPointStart).applyAxisAngle(normal, angleDelta * a).add(pMid).add(centerKeyPoint);
-          positions.push(tempPoint.clone());
-        }
-  
-      }
-  
-      if (!closed) {
-        positions.push(points[points.length - 1].clone());
-      } else {
-        positions.push(positions[0].clone());
-      }
-  
-      let flattened_positions = [];
-
-      for (let i = 0; i < positions.length; i++) {
-        flattened_positions.push(positions[i].x);
-        flattened_positions.push(positions[i].y);
-        flattened_positions.push(positions[i].z);
-      }
-      return flattened_positions;
-
-    }
-
-
 
     function clearPoints(points) {
       let newPoints = [];
@@ -584,16 +430,12 @@ if (signOutBtn != null || boxState != null) {
     }
 
     function onPointerMove(e) {
-      // const rect = canvas.getBoundingClientRect()
-      // mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-      // mouse.y = -((event.clientY - rect.top) / rect.height) * 2 - 1
       
       const rect = e.target.getBoundingClientRect();
-      // console.log(rect.top, e.clientY)
       const x = ((e.clientX) / window.innerWidth) * 2 - 1;
       const y = -((e.clientY) / window.innerHeight) * 2 + 1;
-      mouse.x = x //(event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = y //-(event.clientY / window.innerHeight) * 2 + 1;
+      mouse.x = x
+      mouse.y = y
     }
 
     function onWindowResize() {
@@ -628,8 +470,7 @@ if (signOutBtn != null || boxState != null) {
     function render() {
       renderer.setClearColor(0x000000, 0);
       renderer.setViewport(0, 0, canvasContainerWidth, canvasContainerHeight);
-      matLine.resolution.set(canvasContainerWidth, canvasContainerHeight); // resolution of the viewport
-      
+      matLine.resolution.set(canvasContainerWidth, canvasContainerHeight);
       let minDist = Infinity;
       let minDistPlane = null;
       for (let i = 0; i < sidePlanes.length; i++) {
@@ -644,12 +485,9 @@ if (signOutBtn != null || boxState != null) {
       renderer.render(scene, camera);
 
       if (visualize) {
-        // console.log(mouse)
         raycaster.setFromCamera(mouse, camera);
-        // raycaster.set(controls.position, controls.getDirection(), 0, 40)
-        // let x = line0.raycast(raycaster, globalPositions)
         const intersections = raycaster.intersectObject(currentGroup, true);
-        // let intersection = ( intersections.length ) > 0 ? intersections[ 0 ] : null
+
         if (intersections.length > 0) {
           if (zoomUpdate) {
             sphereInter.geometry.dispose()
@@ -661,20 +499,14 @@ if (signOutBtn != null || boxState != null) {
           sphereInter.visible = true;
           sphereInter.position.copy(intersections[0].point);
           const line = intersections[0].object;
-          // console.log(line.raycast(raycaster, intersections))
-          // console.log(line)
           const idx = findIndex(intersections[0].point);
           const colorsCopy = [...colors]
           colorsCopy[colors[idx * 3]] = 0;
           colorsCopy[colors[idx * 3 + 1]] = 0;
           colorsCopy[colors[idx * 3 + 2]] = 0;
-          // line.geometry.setPositions(colorsCopy);
-          // console.log(intersections[ 0 ].object)
-          // console.log()
           if (idx != null) {
             document.querySelector(".sequence-base").value = sequence[idx];
             document.querySelector(".sequence-id").value = idx;
-            // document.querySelector(".sequnce-name").innerHTML = "Base selection: " + sequence[idx] + "\n" + "Index: " + idx
           }
         } else {
           sphereInter.visible = false;

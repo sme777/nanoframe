@@ -53,16 +53,13 @@ class OxDNAMaker
             scaffold_positions << position
             scaffold_a1s << a1
             scaffold_a3s << a3
-            # staple_positions << position_d
-            # staple_a1s << a1_d
-            # staple_a3s << a3_d
             scaffold_nt_hash[idx+1] = [position_d, a1_d, a3_d]
         end
-
         staples_idxs.each do |staple_idxs|
             staple_positions, staple_a1s, staple_a3s = [], [], []
             staple_idxs.each do |idx|
                 next if idx.nil?
+                
                 complimentary_data = scaffold_nt_hash[idx]
                 staple_positions << complimentary_data[0]
                 staple_a1s << complimentary_data[1]
@@ -84,16 +81,7 @@ class OxDNAMaker
         i = 0
         while i < positions.size
             new_positions << [positions[i], positions[i+1], positions[i+2]]
-            if i + 5 > positions.size - 1
-                i += 3
-                next
-            end
-
-            if positions[i] == positions[i+3] && positions[i+1] == positions[i+4] && positions[i+2] == positions[i+5]
-                i += 6
-            else
-                i += 3
-            end
+            i += 3
         end
         new_positions
     end

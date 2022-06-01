@@ -567,7 +567,7 @@ class Graph
 
     sampled_points = []
     last_corners = nil
-    byebug
+    
     normalized_vertices.each_with_index do |vertex, i|
       next_vert = normalized_vertices[(i + 1) % normalized_vertices.size]
       next_next_vert = normalized_vertices[(i + 2) % normalized_vertices.size]
@@ -581,12 +581,9 @@ class Graph
       sampled_points.concat(edge_sampled_points) # TODO change 30 to edge length
     end
 
-    # spline = CatmullRomCurve3.new(normalized_vertices)
-    # spline_divisions = @scaff_length
-    # spline_points = Vertex.flatten(spline.generate(spline_divisions))
     sampled_points = Vertex.flatten(sampled_points)
     freq = (@scaff_length / sampled_points.size).floor.zero? ? 2 : (@scaff_length / sampled_points.size).floor
-    [sorted_vertices, normalized_vertices, sampled_points, freq] #, spline_points, spline.sampling_frequency(@scaff_length)]
+    [sorted_vertices, normalized_vertices, sampled_points, freq]
   end
 
 
