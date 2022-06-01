@@ -5,7 +5,7 @@ require 'json'
 class Vertex
   attr_accessor :x, :y, :z
 
-  def initialize(x, y, z = 0)
+  def initialize(x=0, y=0, z=0)
     @x = x
     @y = y
     @z = z
@@ -37,6 +37,62 @@ class Vertex
     dz = @z - v.z
 
     dx**2 + dy**2 + dz**2
+  end
+
+  def dot(v)
+    @x * v.x + @y * v.y + @z * v.z
+  end
+
+  # Euclidian distance from origin
+  def distance
+    Math.sqrt((@x ** 2) + (@y ** 2) + (@z ** 2))
+  end
+
+  def normalize
+    ds = distance
+    @x /= ds
+    @y /= ds
+    @z /= ds
+    self
+  end
+
+  def angleTo(v)
+    denom = Math.sqrt((distance ** 2) * (v.distance) **2)
+    if denom == 0
+      Math::PI / 2
+    else
+      theta = dot(v) / denom
+      clamped = [-1, [1, theta].min].max
+      Math.acos(clamped)
+    end
+  end
+
+  def cross_vectors(v)
+    ax, ay, az = @x, @y, @z
+
+    @x = ay * v.z - az * v.y
+    @y = az * v.x - ax * v.z
+    @z = ax * v.y - ay * v.x
+
+  end
+
+  def apply_axis_angle(axis, angle)
+    half_angle = angle / 2
+    s = Math.sin(half_angle)
+
+    qx = axis.x * s
+    qy = axis.y * s
+    qz = axis.z * s
+    qw = Math.cos(half_angle)
+
+    ix = qw * @x + qy * @z - qz * @y
+    iy = qw * @y + qz * @x - qx * @z
+    iz = qw * @z + qx * @y - qy * @x
+    iw = -qx * @x - qy * @y - qz * @z
+
+    @x = ix * qw + iw * -qx + iy * -qz - iz * -qy
+    @y = iy * qw + iw * -qy + iz * -qx - ix * -qz
+    @z = iz * qw + iw * -qz + ix * -qy - iy * -qx
   end
 
   def self.string_of_vertices(vertices)
@@ -76,7 +132,7 @@ class Vertex
 
   def self.overload_operator(opr)
     define_method(opr) do |obj|
-      if obj.instance_of?(Float)
+      if obj.instance_of?(Float) || obj.instance_of?(Integer)
         Vertex.new((@x.send opr, obj.to_f), (@y.send opr, obj.to_f), (@z.send opr, obj.to_f))
       else
         Vertex.new((@x.send opr, obj.x.to_f), (@y.send opr, obj.y.to_f), (@z.send opr, obj.z.to_f))

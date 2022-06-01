@@ -3,6 +3,8 @@ import oc from "three-orbit-controls";
 import { Line2 } from "./threejs/Line2";
 import { LineMaterial } from "./threejs/LineMaterial";
 import { LineGeometry } from "./threejs/LineGeometry";
+import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline';
+
 console.log(graph_json['boundary_edges'])
 if (signOutBtn != null || boxState != null) {
   let size = 1;
@@ -101,7 +103,7 @@ if (signOutBtn != null || boxState != null) {
       colors = findColorSequnece(start, positions.length, divisions);
     }
 
-    if (split && (positions.length > linear_points.length / 2 || positions.length > interpolated_points.length / 2)) {
+    if (split && (positions.length > linear_points.length / 2)){ //|| positions.length > interpolated_points.length / 2)) {
       positions = adjustSplitPosition(positions);
     }
 
@@ -130,7 +132,7 @@ if (signOutBtn != null || boxState != null) {
         }
       }
 
-      if (split && (positions.length < linear_points.length / 2 || positions.length < interpolated_points.length / 2)) {
+      if (split && (positions.length < linear_points.length / 2 )){// || positions.length < interpolated_points.length / 2)) {
         line0.geometry.center()
       }
   }
@@ -292,11 +294,23 @@ if (signOutBtn != null || boxState != null) {
     end = graph_json["end"];
     // console.log(colors)
     let doubleLinearPoints = linear_points.concat(linear_points);
-    let doubleInterpolatedPoints = interpolated_points.concat(interpolated_points);
+    // let doubleInterpolatedPoints = interpolated_points.concat(interpolated_points);
     let doubleColors = colors.concat(colors);
     // console.log(colors)
+    const radius = 1;
+    const smoothness = 12;
+    const coolPoints = roundedCornerLine(graph_json["vertices"], radius, smoothness, true);
+    // console
     generateDisplay(linear_points, "linear", colors);
     generateDisplay(interpolated_points, "interpolated", colors);
+
+    // const line = new MeshLine();
+    // line.setPoints(coolPoints, p => 0.5);
+    // // console.log(line.getPoints(5));
+    // const material = new MeshLineMaterial({color: 0x990000});
+    // const mesh = new THREE.Mesh(line, material);
+    // scene.add(mesh);
+
 
     let group1LinearPoints = doubleLinearPoints.slice(start * 3, end * 3);
     let group2LinearPoints = doubleLinearPoints.slice(end * 3, linear_points.length + start * 3);
@@ -304,11 +318,11 @@ if (signOutBtn != null || boxState != null) {
     generateDisplay(group1LinearPoints, "linear", doubleColors.slice(start * 3, end * 3), true);
     generateDisplay(group2LinearPoints, "linear", doubleColors.slice(end * 3, linear_points.length + start * 3), true);
 
-    let group1InterpolatedPoints = doubleInterpolatedPoints.slice(start * 3, end * 3)
-    let group2InterpolatedPoints = doubleInterpolatedPoints.slice(end * 3, interpolated_points.length + start * 3);
+    // let group1InterpolatedPoints = doubleInterpolatedPoints.slice(start * 3, end * 3)
+    // let group2InterpolatedPoints = doubleInterpolatedPoints.slice(end * 3, interpolated_points.length + start * 3);
 
-    generateDisplay(group1InterpolatedPoints, "interpolated", doubleColors.slice(start * 3, end * 3), true);
-    generateDisplay(group2InterpolatedPoints, "interpolated", doubleColors.slice(end * 3, interpolated_points.length + start * 3), true);
+    // generateDisplay(group1InterpolatedPoints, "interpolated", doubleColors.slice(start * 3, end * 3), true);
+    // generateDisplay(group2InterpolatedPoints, "interpolated", doubleColors.slice(end * 3, interpolated_points.length + start * 3), true);
 
     
     let stapleLinearGroup = new THREE.Group();
@@ -407,7 +421,109 @@ if (signOutBtn != null || boxState != null) {
     }
 
 
+    // console.log(graph_json["vertices"])
+    // console.log(roundedCornerLine(graph_json["vertices"], radius, smoothness, true));
+
     requestAnimationFrame(render);
+
+
+    function roundedCornerLine(points, radius, smoothness, closed) {
+      // points = []
+      // for (let i = 0; i < psz.length; i += 3) {
+      //   points.push(new THREE.Vector3(psz[i], psz[i+1], psz[i+2]));
+      // }
+      
+      radius = radius !== undefined ? radius : .1;
+      smoothness = smoothness !== undefined ? Math.floor(smoothness) : 3;
+      closed = closed !== undefined ? closed : false;
+
+
+      let minVector = new THREE.Vector3();
+      let minLength = minVector.subVectors(points[0], points[1]).length();
+
+      for (let i = 1; i < points.length - 1; i++) {
+        minLength = Math.min(minLength, minVector.subVectors(points[i], points[i + 1]).length());
+      }
+      if (closed) {
+        minLength = Math.min(minLength, minVector.subVectors(points[points.length - 1], points[0]).length());
+      }
+  
+      radius = radius > minLength * .5 ? minLength * .5 : radius; // radius can't be greater than a half of a minimal segment
+  
+      let startIndex = 1;
+      let endIndex = points.length - 2;
+      if (closed) {
+        startIndex = 0;
+        endIndex = points.length - 1;
+      }
+  
+      let positions = [];
+      if (!closed) {
+        positions.push(points[0].clone())
+      };
+  
+      for (let i = startIndex; i <= endIndex; i++) {
+  
+        let iStart = i - 1 < 0 ? points.length - 1 : i - 1;
+        let iMid = i;
+        let iEnd = i + 1 > points.length - 1 ? 0 : i + 1;
+        let pStart = points[iStart];
+        let pMid = points[iMid];
+        let pEnd = points[iEnd];
+  
+        // key points
+        let vStartMid = new THREE.Vector3().subVectors(pStart, pMid).normalize();
+        let vEndMid = new THREE.Vector3().subVectors(pEnd, pMid).normalize();
+        let vCenter = new THREE.Vector3().subVectors(vEndMid, vStartMid).divideScalar(2).add(vStartMid).normalize();
+        let angle = vStartMid.angleTo(vEndMid);
+        let halfAngle = angle * .5;
+  
+        let sideLength = radius / Math.tan(halfAngle);
+        let centerLength = Math.sqrt(sideLength * sideLength + radius * radius);
+  
+        let startKeyPoint = vStartMid.multiplyScalar(sideLength);
+        let centerKeyPoint = vCenter.multiplyScalar(centerLength);
+        let endKeyPoint = vEndMid.multiplyScalar(sideLength);
+  
+        let cb = new THREE.Vector3(),
+          ab = new THREE.Vector3(),
+          normal = new THREE.Vector3();
+        cb.subVectors(centerKeyPoint, endKeyPoint);
+        ab.subVectors(startKeyPoint, endKeyPoint);
+        cb.cross(ab);
+        normal.copy(cb).normalize();
+  
+        let rotatingPointStart = new THREE.Vector3().subVectors(startKeyPoint, centerKeyPoint);
+        let rotatingPointEnd = new THREE.Vector3().subVectors(endKeyPoint, centerKeyPoint);
+        let rotatingAngle = rotatingPointStart.angleTo(rotatingPointEnd);
+        let angleDelta = rotatingAngle / smoothness;
+        let tempPoint = new THREE.Vector3();
+
+        for (let a = 0; a < smoothness + 1; a++) {
+          tempPoint.copy(rotatingPointStart).applyAxisAngle(normal, angleDelta * a).add(pMid).add(centerKeyPoint);
+          positions.push(tempPoint.clone());
+        }
+  
+      }
+  
+      if (!closed) {
+        positions.push(points[points.length - 1].clone());
+      } else {
+        positions.push(positions[0].clone());
+      }
+  
+      let flattened_positions = [];
+
+      for (let i = 0; i < positions.length; i++) {
+        flattened_positions.push(positions[i].x);
+        flattened_positions.push(positions[i].y);
+        flattened_positions.push(positions[i].z);
+      }
+      return flattened_positions;
+
+    }
+
+
 
     function clearPoints(points) {
       let newPoints = [];

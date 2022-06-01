@@ -21,8 +21,8 @@ class Graph
     @edges = v_and_e[1]
     @template_planes = find_four_planes
     @planes, @raw_planes = find_plane_combination(@template_planes)
-    @sorted_vertices, @normalized_vertices, @linear_points, @interpolated_points, @sampling_frequency = generate_spline_points
-    @colors = generate_spline_colors   
+    @sorted_vertices, @normalized_vertices, @linear_points, @sampling_frequency = generate_spline_points
+    @colors = generate_colors   
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
     # byebug
@@ -566,19 +566,102 @@ class Graph
                                             @depth / @segments.to_f)
 
     sampled_points = []
+    last_corners = nil
+    byebug
     normalized_vertices.each_with_index do |vertex, i|
-      dr_ch = Edge.new(vertex, normalized_vertices[(i + 1) % normalized_vertices.size]).directional_change
-      edge_sampled_points = Vertex.linspace(dr_ch, 31, vertex, normalized_vertices[(i + 1) % normalized_vertices.size])[1..]
+      next_vert = normalized_vertices[(i + 1) % normalized_vertices.size]
+      next_next_vert = normalized_vertices[(i + 2) % normalized_vertices.size]
+      dr_ch = Edge.new(vertex, next_vert).directional_change
+      edge_sampled_points = Vertex.linspace(dr_ch, 31, vertex, next_vert)[1..]
+      
+      edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert])[-6...]
+      edge_sampled_points[...3] = last_corners unless last_corners.nil?
+      edge_sampled_points[-3...] = edge_corners[...3]
+      last_corners = edge_corners[3...]
       sampled_points.concat(edge_sampled_points) # TODO change 30 to edge length
     end
-    spline = CatmullRomCurve3.new(normalized_vertices)
-    spline_divisions = @scaff_length
-    spline_points = Vertex.flatten(spline.generate(spline_divisions))
+
+    # spline = CatmullRomCurve3.new(normalized_vertices)
+    # spline_divisions = @scaff_length
+    # spline_points = Vertex.flatten(spline.generate(spline_divisions))
     sampled_points = Vertex.flatten(sampled_points)
-    [sorted_vertices, normalized_vertices, sampled_points, spline_points, spline.sampling_frequency(@scaff_length)]
+    freq = (@scaff_length / sampled_points.size).floor.zero? ? 2 : (@scaff_length / sampled_points.size).floor
+    [sorted_vertices, normalized_vertices, sampled_points, freq] #, spline_points, spline.sampling_frequency(@scaff_length)]
   end
 
-  def generate_spline_colors
+
+  def rounded_corner_points(vertices, radius=1, smoothness=6, closed=true)
+    min_vector = (vertices[0] - vertices[1])
+    min_length = min_vector.distance
+    vertices.each_with_index do |v, idx|
+      next unless idx > 1 && idx != vertices.size - 1
+      min_length = [min_length, (vertices[i] - vertices[i+1]).distance].min
+    end
+
+    if closed
+      min_length = [min_length, (vertices[vertices.size - 1] - vertices[0]).distance].min
+    end
+
+    radius = radius > min_length * 0.5 ? min_length * 0.5 : radius
+
+
+    start_idx = 1
+    end_idx = vertices.size - 2
+    positions = []
+    if closed
+      start_idx = 0
+      end_idx = vertices.size - 1
+    end
+
+    i = start_idx
+    while i < end_idx
+      i_start = i - 1 < 0 ? vertices.size - 1 : i - 1
+      i_mid = i
+      i_end = i + 1 > vertices.size - 1 ? 0 : i + 1
+      p_start = vertices[i_start]
+      p_mid = vertices[i_mid]
+      p_end = vertices[i_end]
+
+      v_start_mid = (p_start - p_mid).normalize
+      v_end_mid = (p_end - p_mid).normalize
+      v_center = (((v_end_mid - v_start_mid) / 2) + v_start_mid).normalize
+      angle = v_start_mid.angleTo(v_end_mid)
+      half_angle = angle * 0.5
+
+      side_length = radius / Math.tan(half_angle)
+      center_length = Math.sqrt(side_length ** 2 + radius ** 2)
+
+      start_key_point = v_start_mid * side_length
+      center_key_point = v_center * center_length
+      end_key_point = v_end_mid * side_length
+
+      cb = center_key_point - end_key_point
+      ab = start_key_point - end_key_point
+      cb.cross_vectors(ab)
+      normal = Vertex.new(cb.x, cb.y, cb.z).normalize
+
+      rotating_point_start = start_key_point - center_key_point
+      rotating_point_end = end_key_point - center_key_point
+      rotating_angle = rotating_point_start.angleTo(rotating_point_end)
+      angle_delta = rotating_angle / smoothness
+
+      a = 0
+      while a < smoothness
+        temp_point = Vertex.new(rotating_point_start.x, rotating_point_start.y, rotating_point_start.z)
+        temp_point.apply_axis_angle(normal, angle_delta * a)
+        positions << temp_point + p_mid + center_key_point
+        a += 1
+      end
+      i += 1
+    end
+
+    positions
+
+  end
+
+
+
+  def generate_colors
     colors = []
     (0...@scaff_length).each do |i|
       t = i.to_f / @scaff_length
@@ -649,7 +732,7 @@ class Graph
     return nil if @planes.nil?
     
     JSON.generate({ "scaffold_length": @scaff_length, "linear_points": @linear_points, 
-                    "interpolated_points": @interpolated_points, "colors": @colors, 
+                    "vertices": @sorted_vertices, "colors": @colors,
                     "staple_colors": @staple_colors.flatten, "start": @start_idx * @sampling_frequency, 
                     "end": (@start_idx + @group1.size) * @sampling_frequency})
   end
