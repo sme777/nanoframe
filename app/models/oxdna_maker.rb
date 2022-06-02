@@ -16,11 +16,8 @@ class OxDNAMaker
         dir_Z = Vector[0, 0, 1]
         rot = 0.0
 
-        # r0_X = rotation_matrix(dir_X, rot)
         r_X = rotation_matrix(dir_X, [1, "bp"])
-        # r0_Y = rotation_matrix(dir_Y, rot)
         r_Y = rotation_matrix(dir_Y, [1, "bp"])
-        # r0_Z = rotation_matrix(dir_Z, rot)
         r_Z = rotation_matrix(dir_Z, [1, "bp"])
         r0 = Matrix.identity(3)
 
@@ -47,7 +44,10 @@ class OxDNAMaker
         # byebug
         
         scaffold_nts_hash = {}
+        current_prime_dir = :X
+        prev_prime_dir = :X
         # byebug
+        # plain_cross = false
         positions.each_with_index do |pos, idx|
             
             # dir_ch_prv, _ = directional_change(positions[idx-1], positions[idx-2]) if idx != 0
@@ -56,20 +56,16 @@ class OxDNAMaker
             dir_axis_prv, largest_delta_prv_idx = directional_change_axis(positions[idx - 1], positions[idx-2]) unless idx < 2
             dir_ch_prv, _ = directional_change(positions[idx-1], positions[idx-2]) if idx != 0
             dir_ch, dir_vec = directional_change(positions[idx], positions[idx-1]) if idx != 0
-            # if idx == 25
-            #     byebug
-                
-            # end
-
-            # if dir_axis.sort != dir_axis_prv.sort
-            #     a1 = nil
-            # end
+            
 
             if idx != 0
             # if dir_axis.sort != dir_axis_prv.sort #dir_axis[largest_delta_idx][0] != dir_axis_prv[largest_delta_prv_idx][0]
                 # byebug
+                # if idx == 33
+                #     byebug
+                # end
                 # a1 = nil
-                a3 = Vector[0, 0, 0]
+                a3 = Vector[0, 0, 0]    
                 curr_R = Matrix.identity(3)
                 sub_vec = Vertex.new(
                     positions[idx][0] - positions[idx-1][0], 
@@ -77,33 +73,80 @@ class OxDNAMaker
                     positions[idx][2] - positions[idx-1][2]
                     )
                 euler_angles = sub_vec.euler_angles
+                # a3 = binding.local_variable_get("dir_#{dir_axis.max_by{|k, v| v}[0]}")
                 dir_axis.each_with_index do |ax, i|
                     a3 += binding.local_variable_get("dir_#{ax[0]}") * ax[1]
+                    # if ax[1] < 0
+                    #     a1[i] = -a1[i]
+                    # end
                 end
-                    # curr_R *= rotation_matrix(binding.local_variable_get("dir_#{dir_ch}"), [euler_angles[i], "bp"]) #binding.local_variable_get("r_#{ax[0]}") * ax[1].abs
+                
+
+                # if dir_axis.size != 1 && dir_axis.map {|e| e[0] == :Z }.any?
+                #     plain_cross = true
                 # end
-                # byebug
+
+                # if dir_axis.size != 1 && dir_axis.map {|e| e[0] == :Y || e[0] == :X }.all?
+                #     plain_cross = false
+                # end
+
                 euler_angles.each_with_index do |e, i|
-                    if 1 - e < 10e-5
+                    if e % Math::PI == 0
+                        euler_angles[i] = 0
+                    end
+                    
+                    if 1 - e.abs < 10e-5 && e < 1
                         euler_angles[i] = 1
                     end
 
-                    if e < 10e-5
+                    if e.abs < 10e-5 #&& e > 0
                         euler_angles[i] = 0
                     end
+                    # if plain_cross
+                    #     euler_angles[i] /= Math::PI/4
+                    # else
+                        # euler_angles[i] /= Math::PI/2
+                    # end
+
+
                 end
+                euler_angles = Vector[euler_angles[0], euler_angles[1], euler_angles[2]].normalize
+                # if idx == 276
+                #     byebug
+                # end
+                # euler_angles = euler_angles.map {|e| (e / euler_angles.sum).abs} if euler_angles.count(0) == 2
+   
                 curr_R = (rotation_matrix(dir_Z, [euler_angles[2], "bp"]) * rotation_matrix(dir_Y, [euler_angles[1], "bp"])) * rotation_matrix(dir_X, [euler_angles[0], "bp"])
-                # col1_R = curr_R.column(0).normalize
-                # col2_R = curr_R.column(1).normalize
-                # col3_R = curr_R.column(2).normalize
-                # curr_R = Matrix[col1_R, col2_R, col3_R]
                 a3 = a3.normalize
+                
+                # a1 = curr_R * a1
+                # a3 = curr_R * a3
+                # if dir_axis.size == 1
+                    if dir_axis.sort != dir_axis_prv.sort && dir_axis.size == 1
+                        a3 = curr_R * a3
+                        # a1 = curr_R * a1
+                        # a1 = a1.normalize
+                        # a1 = curr_R * a1
+                        # byebug
+                        # a1 = positions[idx]
+                        # a1 = a3
+                        # a1 = curr_R * a1
+                        # a1 = Vector[positions[idx][0], positions[idx][1], positions[idx][2]]
+                        # v1 -= a3 * a3.inner_product(a3)
+                        # v1 /= Math.sqrt(v1.inner_product(v1))
+                        # a1 = v1
+                        # a1 = r * a1
+                        # rb = start_pos
+                        # a3 = dir 
+                    end
+                # end
                 # a1 = curr_R * a1
                 # curr_R0 = binding.local_variable_get("r0_#{dir_ch}")
                 # curr_R = binding.local_variable_get("r_#{dir_ch}")
                 # a3 = dir_vec >= 0 ? binding.local_variable_get("dir_#{dir_ch}") : -binding.local_variable_get("dir_#{dir_ch}")
                 # is_y = dir_ch != :Y ? false : true
             end
+            # byebug
             position, a1, a3, rb, position_d, a1_d, a3_d = generate(Vector[pos[0], pos[1], pos[2]], a3, curr_R, r0, a1, a3, rb)
             scaffold_positions << position
             scaffold_a1s << a1
@@ -158,7 +201,7 @@ class OxDNAMaker
             v1 -= dir * dir.inner_product(v1)
             v1 /= Math.sqrt(v1.inner_product(v1))
             a1 = v1
-            a1 = r0 * a1
+            a1 = r * a1
             rb = start_pos
             a3 = dir
         else
@@ -224,23 +267,23 @@ class OxDNAMaker
     end
 
     def directional_change_axis(v1, v2)
-        axis = []
+        axis = {}
         axis_count = 0
         dx = v1[0] - v2[0]
         dy = v1[1] - v2[1]
         dz = v1[2] - v2[2]
         if dx != 0
-            axis << [:X, dx]
+            axis[:X] = dx
             axis_count += dx.abs
         end
         
         if dy != 0
-            axis << [:Y, dy]
+            axis[:Y] = dy
             axis_count += dy.abs
         end
 
         if dz != 0
-            axis << [:Z, dz]
+            axis[:Z] = dz
             axis_count += dz.abs
         end
         axis.each do |ax|

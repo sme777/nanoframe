@@ -567,7 +567,7 @@ class Graph
 
     sampled_points = []
     last_corners = nil
-    byebug
+    # byebug
     normalized_vertices.each_with_index do |vertex, i|
       next_vert = normalized_vertices[(i + 1) % normalized_vertices.size]
       next_next_vert = normalized_vertices[(i + 2) % normalized_vertices.size]
