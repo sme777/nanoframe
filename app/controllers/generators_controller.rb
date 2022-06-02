@@ -69,13 +69,13 @@ class GeneratorsController < ApplicationController
         f.write("#{poss[i][0]} #{poss[i][1]} #{poss[i][2]} #{a1s[i][0]} #{a1s[i][1]} #{a1s[i][2]} #{a3s[i][0]} #{a3s[i][1]} #{a3s[i][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
       end
 
-      # poss_ds.each_with_index do |poss, idx|
-      #   j = 0
-      #   while j < poss.size
-      #     f.write("#{poss_ds[idx][j][0]} #{poss_ds[idx][j][1]} #{poss_ds[idx][j][2]} #{a1s_ds[idx][j][0]} #{a1s_ds[idx][j][1]} #{a1s_ds[idx][j][2]} #{a3s_ds[idx][j][0]} #{a3s_ds[idx][j][1]} #{a3s_ds[idx][j][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
-      #     j += 1
-      #   end
-      # end
+      poss_ds.each_with_index do |poss, idx|
+        j = 0
+        while j < poss.size
+          f.write("#{poss_ds[idx][j][0]} #{poss_ds[idx][j][1]} #{poss_ds[idx][j][2]} #{a1s_ds[idx][j][0]} #{a1s_ds[idx][j][1]} #{a1s_ds[idx][j][2]} #{a3s_ds[idx][j][0]} #{a3s_ds[idx][j][1]} #{a3s_ds[idx][j][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
+          j += 1
+        end
+      end
 
       f.close
 
@@ -88,17 +88,17 @@ class GeneratorsController < ApplicationController
       end
 
       k = 2
-      # poss_ds.each_with_index do |poss, idx|
-      #   seq = staples_sequences[idx]
-      #   j = 0
-      #   while j < poss.size
+      poss_ds.each_with_index do |poss, idx|
+        seq = staples_sequences[idx]
+        j = 0
+        while j < poss.size
           
-      #     f.write("#{k} #{seq[j]} #{j != 0 ? i - 1 : -1} #{j != (poss.size - 1) ? i + 1 : -1}\n")
-      #     j += 1
-      #     i += 1
-      #   end
-      #   k += 1
-      # end
+          f.write("#{k} #{seq[j]} #{j != 0 ? i - 1 : -1} #{j != (poss.size - 1) ? i + 1 : -1}\n")
+          j += 1
+          i += 1
+        end
+        k += 1
+      end
 
       f.close
       @scaffold = Generator.m13_scaffold

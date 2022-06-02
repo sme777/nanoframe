@@ -6,7 +6,7 @@ class OxDNAMaker
     BASE_BASE = 0.3897628551303122
 
     def setup(positions, staples_idxs)
-        positions = group_positions(positions)[...60]
+        positions = group_positions(positions) #[600...900]
         scaffold_positions, scaffold_a1s, scaffold_a3s = [], [], []
         scaffold_nt_hash = {}
         staples_positions, staples_a1s, staples_a3s = [], [], []
@@ -25,7 +25,7 @@ class OxDNAMaker
         dir_axis_prv, largest_delta_prv_idx = dir_axis, largest_delta_idx
         dir_ch, dir_vec = directional_change(positions[1], positions[0])
         dir_ch_prv = dir_ch
-        a1 = nil
+        # a1 = nil
         
         # a3 = Vector[0, 0, 0]
         # curr_R = Matrix.zero(3, 3)
@@ -35,37 +35,28 @@ class OxDNAMaker
         # end
         # # a3 = a3.normalize
 
-        a3 = dir_vec <= 0 ? binding.local_variable_get("dir_#{dir_ch}") : -binding.local_variable_get("dir_#{dir_ch}")
-        rb = nil
 
-        curr_R0 = r0 #binding.local_variable_get("r0_#{dir_ch}")
+        a3 = dir_vec <= 0 ? binding.local_variable_get("dir_#{dir_ch}") : -binding.local_variable_get("dir_#{dir_ch}")
+        v1 = Vector[rand, rand, rand]
+        v1 -= a3 * a3.inner_product(v1)
+        v1 /= Math.sqrt(v1.inner_product(v1))
+        a1 = v1
+        rb = Vector[positions[0][0], positions[0][1], positions[0][2]]
+
+        curr_R0 = r0 
         curr_R = binding.local_variable_get("r_#{dir_ch}")
-        # curr_a3 = a3
-        # byebug
         
         scaffold_nts_hash = {}
         current_prime_dir = :X
         prev_prime_dir = :X
-        # byebug
-        # plain_cross = false
         positions.each_with_index do |pos, idx|
             
-            # dir_ch_prv, _ = directional_change(positions[idx-1], positions[idx-2]) if idx != 0
-            # dir_ch, dir_vec = directional_change(positions[idx], positions[idx-1]) if idx != 0
             dir_axis, largest_delta_idx = directional_change_axis(positions[idx], positions[idx-1]) unless idx < 1
             dir_axis_prv, largest_delta_prv_idx = directional_change_axis(positions[idx - 1], positions[idx-2]) unless idx < 2
             dir_ch_prv, _ = directional_change(positions[idx-1], positions[idx-2]) if idx != 0
             dir_ch, dir_vec = directional_change(positions[idx], positions[idx-1]) if idx != 0
             
-
             if idx != 0
-            # if dir_axis.sort != dir_axis_prv.sort #dir_axis[largest_delta_idx][0] != dir_axis_prv[largest_delta_prv_idx][0]
-                # byebug
-                # if idx == 33
-                #     byebug
-                # end
-                # a1 = nil
-                a3 = Vector[0, 0, 0]    
                 curr_R = Matrix.identity(3)
                 sub_vec = Vertex.new(
                     positions[idx][0] - positions[idx-1][0], 
@@ -73,22 +64,13 @@ class OxDNAMaker
                     positions[idx][2] - positions[idx-1][2]
                     )
                 euler_angles = sub_vec.euler_angles
-                # a3 = binding.local_variable_get("dir_#{dir_axis.max_by{|k, v| v}[0]}")
+                a3 = Vector[0, 0, 0]
                 dir_axis.each_with_index do |ax, i|
                     a3 += binding.local_variable_get("dir_#{ax[0]}") * ax[1]
-                    # if ax[1] < 0
-                    #     a1[i] = -a1[i]
-                    # end
                 end
+                a3 = a3.normalize
+
                 
-
-                # if dir_axis.size != 1 && dir_axis.map {|e| e[0] == :Z }.any?
-                #     plain_cross = true
-                # end
-
-                # if dir_axis.size != 1 && dir_axis.map {|e| e[0] == :Y || e[0] == :X }.all?
-                #     plain_cross = false
-                # end
 
                 euler_angles.each_with_index do |e, i|
                     if e % Math::PI == 0
@@ -102,76 +84,50 @@ class OxDNAMaker
                     if e.abs < 10e-5 #&& e > 0
                         euler_angles[i] = 0
                     end
-                    # if plain_cross
-                    #     euler_angles[i] /= Math::PI/4
-                    # else
-                        # euler_angles[i] /= Math::PI/2
-                    # end
-
 
                 end
                 euler_angles = Vector[euler_angles[0], euler_angles[1], euler_angles[2]].normalize
-                # if idx == 276
-                #     byebug
-                # end
-                # euler_angles = euler_angles.map {|e| (e / euler_angles.sum).abs} if euler_angles.count(0) == 2
-   
                 curr_R = (rotation_matrix(dir_Z, [euler_angles[2], "bp"]) * rotation_matrix(dir_Y, [euler_angles[1], "bp"])) * rotation_matrix(dir_X, [euler_angles[0], "bp"])
-                a3 = a3.normalize
-                
-                # a1 = curr_R * a1
-                # a3 = curr_R * a3
-                # if dir_axis.size == 1
-                    if dir_axis.sort != dir_axis_prv.sort && dir_axis.size == 1
-                        a3 = curr_R * a3
-                        # a1 = curr_R * a1
-                        # a1 = a1.normalize
-                        # a1 = curr_R * a1
-                        # byebug
-                        # a1 = positions[idx]
-                        # a1 = a3
-                        # a1 = curr_R * a1
-                        # a1 = Vector[positions[idx][0], positions[idx][1], positions[idx][2]]
-                        # v1 -= a3 * a3.inner_product(a3)
-                        # v1 /= Math.sqrt(v1.inner_product(v1))
-                        # a1 = v1
-                        # a1 = r * a1
-                        # rb = start_pos
-                        # a3 = dir 
-                    end
-                # end
-                # a1 = curr_R * a1
-                # curr_R0 = binding.local_variable_get("r0_#{dir_ch}")
-                # curr_R = binding.local_variable_get("r_#{dir_ch}")
-                # a3 = dir_vec >= 0 ? binding.local_variable_get("dir_#{dir_ch}") : -binding.local_variable_get("dir_#{dir_ch}")
-                # is_y = dir_ch != :Y ? false : true
+                if dir_axis.keys != dir_axis_prv.keys && dir_axis.size == 1
+                    v1 = Vector[rand, rand, rand]
+                    v1 -= a3 * a3.inner_product(v1)
+                    v1 /= Math.sqrt(v1.inner_product(v1))
+                    a1 = v1
+                end
             end
-            # byebug
-            position, a1, a3, rb, position_d, a1_d, a3_d = generate(Vector[pos[0], pos[1], pos[2]], a3, curr_R, r0, a1, a3, rb)
+
+            position = (rb - CM_CENTER_DS * a1)
+            a1 = curr_R * a1
+            a1 = a1.normalize
+            rb += a3 * BASE_BASE
+            a1_d = -a1
+            a3_d = -a3
+            position_d = (rb - CM_CENTER_DS * a1_d)
+
+    
             scaffold_positions << position
             scaffold_a1s << a1
             scaffold_a3s << a3
             scaffold_nt_hash[idx+1] = [position_d, a1_d, a3_d]
         end
-        # staples_idxs.each do |staple_idxs|
-        #     staple_positions, staple_a1s, staple_a3s = [], [], []
-        #     staple_idxs.each do |idx|
-        #         next if idx.nil?
+        staples_idxs.each do |staple_idxs|
+            staple_positions, staple_a1s, staple_a3s = [], [], []
+            staple_idxs.each do |idx|
+                next if idx.nil?
                 
-        #         complimentary_data = scaffold_nt_hash[idx]
-        #         staple_positions << complimentary_data[0]
-        #         staple_a1s << complimentary_data[1]
-        #         staple_a3s << complimentary_data[2]
-        #     end
-        #     staples_positions << staple_positions
-        #     staples_a1s << staple_a1s
-        #     staples_a3s << staple_a3s
-        # end
-
+                complimentary_data = scaffold_nt_hash[idx]
+                staple_positions << complimentary_data[0]
+                staple_a1s << complimentary_data[1]
+                staple_a3s << complimentary_data[2]
+            end
+            staples_positions << staple_positions
+            staples_a1s << staple_a1s
+            staples_a3s << staple_a3s
+        end
 
         [scaffold_positions, scaffold_a1s, scaffold_a3s, staples_positions, staples_a1s, staples_a3s]
     end
-    ### TODO fix repeated points in graph.rb
+    
     def group_positions(positions)
         return positions unless positions[0].is_a? Numeric
 
@@ -193,28 +149,6 @@ class OxDNAMaker
         new_positions
     end
 
-    def generate(start_pos, dir, r, r0, a1=nil, a3=nil, rb=nil)
-        start_pos_d = start_pos
-
-        if a1.nil?
-            v1 = Vector[rand, rand, rand]
-            v1 -= dir * dir.inner_product(v1)
-            v1 /= Math.sqrt(v1.inner_product(v1))
-            a1 = v1
-            a1 = r * a1
-            rb = start_pos
-            a3 = dir
-        else
-            start_pos = (rb - CM_CENTER_DS * a1)
-            a1 = r * a1
-            rb += a3 * BASE_BASE
-        end
-        a1_d = -a1
-        a3_d = -a3
-        start_pos_d = (rb - CM_CENTER_DS * a1_d)
-
-        [start_pos, a1, a3, rb, start_pos_d, a1_d, a3_d]
-    end
 
     def rotation_matrix(axis, angles)
         if angles.kind_of?(Array)
