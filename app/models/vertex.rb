@@ -95,6 +95,10 @@ class Vertex
     @z = iz * qw + iw * -qz + ix * -qy - iy * -qx
   end
 
+  def euler_angles
+    [Math.atan2(@x, @y), Math.atan2(@y, Math.sqrt(@x**2 + @z**2)), Math.atan2(@z, Math.sqrt(@x**2 + @z**2))]
+  end
+
   def self.string_of_vertices(vertices)
     res = '('
     vertices.each do |v|

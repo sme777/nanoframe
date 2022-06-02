@@ -567,12 +567,12 @@ class Graph
 
     sampled_points = []
     last_corners = nil
-    
+    byebug
     normalized_vertices.each_with_index do |vertex, i|
       next_vert = normalized_vertices[(i + 1) % normalized_vertices.size]
       next_next_vert = normalized_vertices[(i + 2) % normalized_vertices.size]
       dr_ch = Edge.new(vertex, next_vert).directional_change
-      edge_sampled_points = Vertex.linspace(dr_ch, 31, vertex, next_vert)[1..]
+      edge_sampled_points = Vertex.linspace(dr_ch, 30, vertex, next_vert)
       
       edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert])[-6...]
       edge_sampled_points[...3] = last_corners unless last_corners.nil?
