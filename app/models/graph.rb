@@ -31,7 +31,7 @@ class Graph
       @vertex_cuts << e.v1 if !@vertex_cuts.include?(e.v1)
       @vertex_cuts << e.v2 if !@vertex_cuts.include?(e.v2)
     end
-    # @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 2)
+    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
     @staple_colors = generate_staple_colors
     # write_staples(@staples, @staple_colors)
     # write_nfr
@@ -582,7 +582,7 @@ class Graph
     end
 
     sampled_points = Vertex.flatten(sampled_points)
-    freq = (@scaff_length / sampled_points.size).floor.zero? ? 2 : (@scaff_length / sampled_points.size).floor
+    freq = 30 #(@scaff_length / sampled_points.size).floor.zero? ? 2 : (@scaff_length / sampled_points.size).floor
     [sorted_vertices, normalized_vertices, sampled_points, freq]
   end
 

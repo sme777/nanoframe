@@ -6,7 +6,7 @@ class OxDNAMaker
     BASE_BASE = 0.3897628551303122
 
     def setup(positions, staples_idxs)
-        positions = group_positions(positions) #[600...900]
+        positions = group_positions(positions)#[...210]
         scaffold_positions, scaffold_a1s, scaffold_a3s = [], [], []
         scaffold_nt_hash = {}
         staples_positions, staples_a1s, staples_a3s = [], [], []
@@ -89,9 +89,9 @@ class OxDNAMaker
                 euler_angles = Vector[euler_angles[0], euler_angles[1], euler_angles[2]].normalize
                 curr_R = (rotation_matrix(dir_Z, [euler_angles[2], "bp"]) * rotation_matrix(dir_Y, [euler_angles[1], "bp"])) * rotation_matrix(dir_X, [euler_angles[0], "bp"])
                 if dir_axis.keys != dir_axis_prv.keys && dir_axis.size == 1
-                    v1 = Vector[rand, rand, rand]
+                    v1 = a1#Vector[rand, rand, rand]
                     v1 -= a3 * a3.inner_product(v1)
-                    v1 /= Math.sqrt(v1.inner_product(v1))
+                    v1 = v1.normalize
                     a1 = v1
                 end
             end

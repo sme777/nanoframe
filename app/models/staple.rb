@@ -4,6 +4,7 @@ class Staple
   attr_accessor :sequence, :front, :back, :type, :next, :prev, :linear_points, :interpolated_points, :scaffold_idxs
 
   def initialize(args)
+    
     if args.size == 3
       @sequence = args[:sequence]
       @linear_points = args[:linear_points]
@@ -11,7 +12,7 @@ class Staple
     else
       @front = args[:front]
       @back = args[:back]
-      @buffer = 0 #args[:buffer] || 0
+      @buffer = 0#args[:buffer] || 0
       @type = args[:type]
       
       start_pos = args[:start_pos]
@@ -20,12 +21,12 @@ class Staple
       @prev = nil
   
       @sequence = if front == back
-                    convert(front.sequence[start_pos...end_pos] + buffer_bp)
+                    convert(front.sequence[start_pos...end_pos])
                   else
                     convert(front.sequence[start_pos...] + buffer_bp + back.sequence[...end_pos])
                   end
       @scaffold_idxs = if front == back
-                        front.scaffold_idxs[start_pos...end_pos] + [nil] * @buffer
+                        front.scaffold_idxs[start_pos...end_pos] #+ [nil] * @buffer
                       else
                         front.scaffold_idxs[start_pos...] + [nil] * @buffer + back.scaffold_idxs[...end_pos]
                       end
@@ -142,9 +143,23 @@ class Staple
     elsif starting_vertex.x == 0 && ending_vertex.x == 0
       side = :S5
       # builder += 'S5-'
-    elsif starting_vertex.x == @width && ending_vertex.z == @width
+    elsif starting_vertex.x == @width && ending_vertex.x == @width
       side = :S6
       # builder += 'S6-'
+    else
+      if starting_vertex.z == 0
+        side = :S1
+      elsif starting_vertex.z == -@depth
+        side = :S2
+      elsif starting_vertex.y == 0
+        side = :S3
+      elsif starting_vertex.y == @height
+        side = :S4
+      elsif starting_vertex.x == 0
+        side = :S5
+      elsif starting_vertex.x == @width
+        side = :S6
+      end
     end
 
     row, col = row_and_col

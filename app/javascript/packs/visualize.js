@@ -67,12 +67,11 @@ if (signOutBtn != null || boxState != null) {
   }
 
   function adjustSplitPosition(points) {
-    for (let i = 1; i < points.length; i += 3) {
-      points[i] -= 20;
-      points[i+1] += 20;
-      if (i != 2) {
-        points[i+2] -= 70;
-      }
+    for (let i = 0; i < points.length; i += 3) {
+      points[i] -= 10;
+      points[i+1] -= 40;
+      points[i+2] += 30;
+
       
     }
     return points;

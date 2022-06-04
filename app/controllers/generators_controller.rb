@@ -186,11 +186,11 @@ class GeneratorsController < ApplicationController
     # file_path = "#{user_dir}/#{filename}"
     file = File.open("#{Rails.root.join('tmp').to_s}/#{filename}.csv", 'w')
     # file = File.open("app/assets/temp/#{filename}.csv", 'w')
-    file.write("name,color,sequence,length")
+    file.write("name,sequence,length")
     file.write("\n")
     staples.each_with_index do |staple, idx|
       staple_color = staple_colors[idx]
-      file.write("#{staple.name},#{Graph.rgb_to_hex(staple_color)},#{staple.sequence},#{staple.sequence.size}")
+      file.write("#{staple.name},#{staple.sequence},#{staple.sequence.size}")
       file.write("\n")
     end
     file.close

@@ -146,7 +146,7 @@ class Breaker
   end
 
   def generate_staple_strands(vertices, staple_len_map)
-
+    # byebug
     edges = generate_shape_edges(vertices)
     # byebug
     staples = []
@@ -425,7 +425,7 @@ class Breaker
     edges = []
     ### add extra checks for moving directions
     seq_count = 0
-    position_idx = 1
+    position_idx = 0
     vertices.each_with_index do |v, i|
       this_edge = Edge.new(v, vertices[(i + 1) % vertices.size])
       this_step = moving_step(this_edge)
