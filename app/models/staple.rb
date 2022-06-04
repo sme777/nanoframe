@@ -31,7 +31,6 @@ class Staple
                         front.scaffold_idxs[start_pos...] + [nil] * @buffer + back.scaffold_idxs[...end_pos]
                       end
       @linear_points = compute_positions(start_pos, end_pos)
-      @interpolated_points = interpolate_positions(@linear_points)
     end
   end
 
@@ -68,21 +67,7 @@ class Staple
     if @type == :extension
       dr_ch, dr_vec = @front.directional_change_vec
       points = Vertex.linspace(dr_ch, @front.sequence.size, @front.v1, @front.v2)[start_pos...end_pos]
-      # byebug
-      
-      # start_mid_vec = Vertex.new(0, 0, 0)
-      # start_mid_vec.instance_variable_set("@#{dr_ch}",
-      #                                     @front.v1.instance_variable_get("@#{dr_ch}") - dr_vec * (start_pos.to_f / @front.sequence.size))
-      # start_point = dr_vec < 0 ? @front.v1 - start_mid_vec : @front.v1 + start_mid_vec
 
-      # end_mid_vec = Vertex.new(0, 0, 0)
-      # end_mid_vec.instance_variable_set("@#{dr_ch}",
-      #                                   @front.v1.instance_variable_get("@#{dr_ch}") - dr_vec * (end_pos.to_f / @front.sequence.size))
-      # end_point = dr_vec < 0 ? @front.v1 - end_mid_vec : @front.v1 + end_mid_vec
-
-      # points = Vertex.linspace(dr_ch, (start_pos - end_pos).abs, start_point, end_point)
-      # points
-      # adjust(points)
     elsif @type == :reflection || @type == :refraction || @type == :extension
       dr_ch, dr_vec = @front.directional_change_vec
       start_mid_vec = Vertex.new(@front.v1.x, @front.v1.y, @front.v1.z)
@@ -98,19 +83,10 @@ class Staple
       end_point = end_mid_vec
 
       points = []
-      # byebug
-
       points.concat(Vertex.linspace(dr_ch, (@front.sequence.size - start_pos), start_point, @front.v2))
       points.concat(Vertex.linspace(dr_ch2, end_pos, @back.v1, end_point)[1...])
       adjust(points)
-      # curve = CatmullRomCurve3.new(points)
-      # curve.generate(2)
     end
-  end
-
-  def interpolate_positions(points)
-    spline = CatmullRomCurve3.new(points, false)
-    spline.generate(2)
   end
 
   def self.complementary_bp
@@ -123,29 +99,22 @@ class Staple
   end
 
   def name
-    # builder = "#{@type.to_s}-"
     starting_vertex = @front.v1
     ending_vertex = @back.v2
     side = "potato"
 
     if starting_vertex.z == 0 && ending_vertex.z == 0
       side = :S1
-      # builder += 'S1-'
     elsif starting_vertex.z == -@depth && ending_vertex.z == -@depth
       side = :S2
-      # builder += 'S2-'
     elsif starting_vertex.y == 0 && ending_vertex.y == 0
       side = :S3
-      # builder += 'S3-'
     elsif starting_vertex.y == @height && ending_vertex.y == @height
       side = :S4
-      # builder += 'S4-'
     elsif starting_vertex.x == 0 && ending_vertex.x == 0
       side = :S5
-      # builder += 'S5-'
     elsif starting_vertex.x == @width && ending_vertex.x == @width
       side = :S6
-      # builder += 'S6-'
     else
       if starting_vertex.z == 0
         side = :S1
@@ -164,7 +133,6 @@ class Staple
 
     row, col = row_and_col
     "#{@type}-#{side}-R#{row}-C#{col}"
-    # builder += "R#{row}-C#{col}"
   end
 
   def adjust(points)
@@ -229,9 +197,6 @@ class Staple
         col = (@front.v1.x / dist2wseg).abs.floor + 1
       end
     when :S3, :S4
-
-
-      
       row = (@front.v1.z / dist2dseg).abs.ceil
       col = (@front.v1.x / dist2wseg).abs.ceil
     when :S5, :S6

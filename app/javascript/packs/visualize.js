@@ -228,7 +228,7 @@ if (signOutBtn != null || boxState != null) {
 
     return [positions, colors];
   }
-  let linear_points, interpolated_points;
+  let linear_points;
   let start, end;
   let colors, staples_colors;
 
@@ -270,9 +270,7 @@ if (signOutBtn != null || boxState != null) {
     }
 
     linear_points = graph_json["linear_points"];
-    console.log(linear_points.length)
     globalPositions = linear_points;
-    interpolated_points = graph_json["interpolated_points"];
     colors = graph_json["colors"];
     staples_colors = graph_json["staple_colors"];
     start = graph_json["start"];
@@ -280,7 +278,6 @@ if (signOutBtn != null || boxState != null) {
     let doubleLinearPoints = linear_points.concat(linear_points);
     let doubleColors = colors.concat(colors);
     generateDisplay(linear_points, "linear", colors);
-    generateDisplay(interpolated_points, "interpolated", colors);
 
     let group1LinearPoints = doubleLinearPoints.slice(start * 3, end * 3);
     let group2LinearPoints = doubleLinearPoints.slice(end * 3, linear_points.length + start * 3);
@@ -289,22 +286,14 @@ if (signOutBtn != null || boxState != null) {
     generateDisplay(group2LinearPoints, "linear", doubleColors.slice(end * 3, linear_points.length + start * 3), true);
     
     let stapleLinearGroup = new THREE.Group();
-    let stapleInterpolatedGroup = new THREE.Group();
     stapleLinearGroup.visible = false;
-    stapleInterpolatedGroup.visible = false;
 
     generateStapleGroup(staples.linear, stapleLinearGroup);
-    generateStapleGroup(staples.interpolated, stapleInterpolatedGroup); // TODO Fix
 
     linearGroup.add(stapleLinearGroup);
-    interpolatedGroup.add(stapleInterpolatedGroup);
     new THREE.Box3()
       .setFromObject(linearGroup)
       .getCenter(linearGroup.position)
-      .multiplyScalar(-1);
-    new THREE.Box3()
-      .setFromObject(interpolatedGroup)
-      .getCenter(interpolatedGroup.position)
       .multiplyScalar(-1);
     currentGroup = linearGroup;
     scene.add(currentGroup);

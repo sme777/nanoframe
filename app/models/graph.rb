@@ -174,12 +174,11 @@ class Graph
     scaffold_idxs = []
     @staples.each do |staple|
       staple_lin_points << Vertex.flatten(staple.linear_points)
-      staple_int_points << Vertex.flatten(staple.interpolated_points)
       staple_names << staple.name
       staple_sequences << staple.sequence
       scaffold_idxs << staple.scaffold_idxs
     end
-    JSON.generate({linear: staple_lin_points, interpolated: staple_int_points, colors: @staple_colors.flatten,
+    JSON.generate({linear: staple_lin_points, colors: @staple_colors.flatten,
                     names: staple_names, sequences: staple_sequences, scaffold_idxs: scaffold_idxs })
   end
 

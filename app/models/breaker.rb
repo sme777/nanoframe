@@ -381,7 +381,6 @@ class Breaker
   end
 
   def update_boundary_strands(edges, staples, bridge_len)
-    # byebug
     edges.each do |edge|
       edge.assoc_strands.each do |staple_id|
         staple = ObjectSpace._id2ref(staple_id)
@@ -393,22 +392,17 @@ class Breaker
           front_idxs = staple.scaffold_idxs[cutoff...]
 
           back_lin_positions = staple.linear_points[...cutoff]
-          back_int_positions = staple.interpolated_points[...cutoff]
           front_lin_positions = staple.linear_points[cutoff...]
-          front_int_positions = staple.interpolated_points[cutoff...]
-          # back_lin_positions
           prev_staple = ObjectSpace._id2ref(staple.prev)
           next_staple = ObjectSpace._id2ref(staple.next)
 
           prev_staple.sequence = prev_staple.sequence + back_sequence
           prev_staple.scaffold_idxs = prev_staple.scaffold_idxs + back_idxs
           prev_staple.linear_points = prev_staple.linear_points.concat(back_lin_positions)
-          prev_staple.interpolated_points = prev_staple.interpolated_points.concat(back_int_positions)
 
           next_staple.sequence = front_sequence + next_staple.sequence 
           next_staple.scaffold_idxs = front_idxs + next_staple.scaffold_idxs
           next_staple.linear_points = front_lin_positions.concat(next_staple.linear_points)
-          next_staple.interpolated_points = front_int_positions.concat(next_staple.interpolated_points)
           # need to update positions as well
           prev_staple.next = next_staple.object_id
           next_staple.prev = prev_staple.object_id
