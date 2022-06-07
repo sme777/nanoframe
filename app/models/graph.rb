@@ -6,22 +6,23 @@ class Graph
   include ActiveModel::Serialization
 
   attr_accessor :vertices, :edges, :sets, :route, :planes, :vertices, :edges, :vertex_cuts, :staples, :staple_colors, :boundary_edges
-
+  attr_accessor :points, :colors
   # dimension[0] -> width
   # dimension[1] -> height
   # dimension[2] -> depth
-  def initialize(id, dimensions, shape, segments, scaff_length)
+  def initialize(id, dimensions, shape, scaffold)
+    # byebug
     setup_dimensions(dimensions, shape)
     @generator_id = id
-    @segments = segments.to_i
-    @scaff_length = scaff_length
-    @staple_breaker = Breaker.new(id, dimensions, shape, segments, scaff_length)
+    @segments = dimensions["divisions"].to_i + 1
+    @scaff_length = scaffold.size
+    @staple_breaker = Breaker.new(id, dimensions, shape, @segments, @scaff_length)
     v_and_e = create_vertices_and_edges(shape)
     @vertices = v_and_e[0]
     @edges = v_and_e[1]
     @template_planes = find_four_planes
     @planes, @raw_planes = find_plane_combination(@template_planes)
-    @sorted_vertices, @normalized_vertices, @linear_points, @sampling_frequency = generate_spline_points
+    @sorted_vertices, @normalized_vertices, @points, @sampling_frequency = generate_points
     @colors = generate_colors   
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
@@ -45,37 +46,6 @@ class Graph
   #   staples = staple_breaker.update_boundary_strands(boundary_edges, staples)
   #   staples
   # end
-
-  def write_nfr
-    # byebug
-    hash = {}
-    hash[:name] = "M13mp18"
-    hash[:sequence] = Generator.m13_scaffold
-    hash[:vertex_cuts] = @vertex_cuts.size
-    hash[:dimension] = [@width, @height, @depth]
-    hash[:points] = {linear: @linear_points, interpolated: @interpolated_points}
-    hash[:colors] = {linear: @colors, interpolated: @colors}
-    
-    staple_arr = []
-    @staples.each_with_index do |st, idx|
-      st_hash = {}
-      st_hash[:name] = st.name
-      st_hash[:sequence] = st.sequence
-      st_hash[:points] = {linear: Vertex.flatten(st.linear_points), interpolated: Vertex.flatten(st.interpolated_points)}
-      st_hash[:colors] = {linear: @staple_colors[idx], interpolated: @staple_colors[idx]}
-      staple_arr << st_hash
-    end
-
-    hash[:staples] = staple_arr
-    hash[:bridge_length] = 3
-    hash[:graph] = to_hash
-    
-    filename = "test.json"
-    file = File.open("app/assets/results/#{filename}", 'w')
-    file.write(JSON.generate(hash))
-    file.close
-
-  end
 
   def write_staples(staples, colors)
     filename = "#{@width}x#{@height}x#{@depth}-#{@segments - 1}-#{Time.now}"
@@ -102,9 +72,9 @@ class Graph
   def setup_dimensions(dimensions, shape)
     case shape
     when :cube
-      @width = dimensions[0]
-      @height = dimensions[1]
-      @depth = dimensions[2]
+      @width = dimensions["width"].to_f
+      @height = dimensions["height"].to_f
+      @depth = dimensions["depth"].to_f
     when :tetrahedron
       @radius = dimensions[0]
     end
@@ -180,6 +150,15 @@ class Graph
     end
     JSON.generate({linear: staple_lin_points, colors: @staple_colors.flatten,
                     names: staple_names, sequences: staple_sequences, scaffold_idxs: scaffold_idxs })
+  end
+
+  def staples_hash
+    staples_data = []
+    @staples.each do |staple|
+      staples_data << {positions: staple.points.map {|point| [point.x, point.y, point.z]}, color: [rand, rand, rand],
+                        name: staple.name, sequence: staple.sequence, indices: staple.scaffold_idxs}
+    end
+    {data: staples_data}
   end
 
   def connect_vertices(vs)
@@ -554,11 +533,12 @@ class Graph
     end
   end
 
-  def generate_spline_points
+  def generate_points
 
     plane_copy = Marshal.load(Marshal.dump(@planes))
     sorted_vertices = Routing.sort_sets(plane_copy)
     normalized_vertices = Marshal.load(Marshal.dump(sorted_vertices))
+
     sorted_vertices = Routing.normalize(sorted_vertices, @width / @segments.to_f, @height / @segments.to_f,
                                             @depth / @segments.to_f, false)
     normalized_vertices = Routing.normalize(normalized_vertices, @width / @segments.to_f, @height / @segments.to_f,
@@ -580,7 +560,7 @@ class Graph
       sampled_points.concat(edge_sampled_points) # TODO change 30 to edge length
     end
 
-    sampled_points = Vertex.flatten(sampled_points)
+    sampled_points = sampled_points.map {|point| [point.x, point.y, point.z]}#Vertex.flatten(sampled_points)
     freq = 30 #(@scaff_length / sampled_points.size).floor.zero? ? 2 : (@scaff_length / sampled_points.size).floor
     [sorted_vertices, normalized_vertices, sampled_points, freq]
   end
@@ -662,7 +642,7 @@ class Graph
     (0...@scaff_length).each do |i|
       t = i.to_f / @scaff_length
       # colors.concat([t / 4, t / 1.5 + 0.15, t + 0.2])
-      colors.concat([t + 0.2, t + 0.2, t / 8]) #yellow
+      colors << [t + 0.2, t + 0.2, t / 8] #yellow
     end
     colors
   end
@@ -687,7 +667,7 @@ class Graph
       staple_color_g = rand
       staple_color_b = rand
       staple_color = []
-      staple.linear_points.size.times do |i|
+      staple.points.size.times do |i|
         staple_color.concat([staple_color_r, staple_color_g, staple_color_b])
       end
       staple_colors << staple_color
@@ -712,6 +692,9 @@ class Graph
 
     # plane_arr = []
     graph_hash = {}
+    # byebug
+    graph_hash[:start] = @start_idx * @sampling_frequency
+    graph_hash[:end] = (@start_idx + @group1.size) * @sampling_frequency
     graph_hash[:boundary_edges] = boundary_edges.each {|edge| edge.to_hash}
     @planes.each do |plane|
       p = Plane.new(plane, plane.object_id)

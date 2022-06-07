@@ -44,7 +44,12 @@
                 <div class="row box-state-container">
                     <div class="form-floating nopad-container">
                         <input type="text" class="form-control" id="dimension_info"
-                            value="<%= @generator.width.to_i %>x<%= @generator.height.to_i %>x<%= @generator.depth.to_i %>x<%= @generator.divisions %>"
+                        <%
+=begin%>
+ <%= @generator.width.to_i %>x<%= @generator.height.to_i %>x<%= @generator.depth.to_i %>x<%= @generator.divisions %> 
+<%
+=end%>
+                            value="?"
                             disabled>
                         <label for="dimension_info">Dimensions</label>
                     </div>
@@ -133,9 +138,12 @@
         </div>
     </div>
     <script type="text/javascript">
-        var graph_json = JSON.parse( <%= @graph_json.to_json.html_safe %> );
-        var staples = JSON.parse( <%= @staples_json.to_json.html_safe %> );
+        var scaffoldPositions = <%= @positions %>;
+        var scaffoldColors = <%= @colors %>;
         var scaffold = "<%= @scaffold %>";
+        var start = <%= @start %>;
+        var end = <%= @end %>;
+        var staples = JSON.parse(<%= @staples.to_json.html_safe %>); 
         var signOutBtn = null;
         var generatorSize = null;
         var boxState = 1;

@@ -11,29 +11,6 @@ class Generator < ApplicationRecord
   has_one_attached :staples_csv
 
   attr_accessor :atom_count
-  def scaffold(sequence, coordinates)
-    @dna = []
-    @atom_count = 0
-    @sequence = sequence
-    @coordinates = coordinates
-    @graph = nil
-    index = 0
-    sequence.each do |tide|
-      @atom_count += case tide
-                     when 'A'
-                       32
-                     when 'T'
-                       32
-                     when 'G'
-                       33
-                     else
-                       30
-                     end
-
-      @dna.push(Nucleotide.new(tide, @coordinates[index, index + 3], index))
-      index += 3
-    end
-  end
 
   def self.generate_objects(step_size, loopout_length, min_len, max_len, scaff_length)
     min_len = min_len.to_i
@@ -71,50 +48,8 @@ class Generator < ApplicationRecord
   end
 
   def route
-    shape_name = shape.match(/(^.*)\s/).captures.first.downcase
-    case shape_name
-    when 'cube'
-      @graph = Graph.new(id, [width, height, depth], :cube, divisions + 1, scaffold_length)
-    when '2'
-      @graph = Graph.new(id, [radius], :tetrahedron, divisions + 1, scaffold_length)
-    when '3'
-      @graph = Graph.new(id, [radius], :octahedron, divisions + 1, scaffold_length)
-    when '4'
-      @graph = Graph.new(id, [radius], :icosahedron, divisions + 1, scaffold_length)
-    when '5'
-      @graph = Graph.new(id, [radius], :dodecahedron, divisions + 1, scaffold_length)
-    when '6'
-      @graph = Graph.new(id, [radius], :truncated_tetrahedron, divisions + 1, scaffold_length)
-    when '7'
-      @graph = Graph.new(id, [radius], :cuboctahedron, divisions + 1, scaffold_length)
-    when '8'
-      @graph = Graph.new(id, [radius], :truncated_cube, divisions + 1, scaffold_length)
-    when '9'
-      @graph = Graph.new(id, [radius], :truncated_octahedron, divisions + 1, scaffold_length)
-    when '10'
-      @graph = Graph.new(id, [radius], :rhombicuboctahedron, divisions + 1, scaffold_length)
-    when '11'
-      @graph = Graph.new(id, [radius], :truncated_cuboctahedron, divisions + 1, scaffold_length)
-    when '12'
-      @graph = Graph.new(id, [radius], :snub_cube, divisions + 1, scaffold_length)
-    when '13'
-      @graph = Graph.new(id, [radius], :icosidodecahedron, divisions + 1, scaffold_length)
-    when '14'
-      @graph = Graph.new(id, [radius], :truncated_dodecahedron, divisions + 1, scaffold_length)
-    when '15'
-      @graph = Graph.new(id, [radius], :truncated_icosahedron, divisions + 1, scaffold_length)
-    when '16'
-      @graph = Graph.new(id, [radius], :rhombicosidodecahedron, divisions + 1, scaffold_length)
-    when '17'
-      @graph = Graph.new(id, [radius], :truncated_icosidodecahedron, divisions + 1, scaffold_length)
-    when '18'
-      @graph = Graph.new(id, [radius], :snub_dodecahedron, divisions + 1, scaffold_length)
-    end
-  end
-
-  def oxdna
-    maker = OxDNAMaker.new
-    stuff = maker.generate("AAATTTCCCGGG")
+    shape_name = shape.match(/(^.*)\s/).captures.first.downcase.parameterize(separator: '_').to_sym
+    @graph = Graph.new(id, dimensions, shape_name, scaffold)
   end
 
   def update_bridge_length(length)
@@ -156,7 +91,7 @@ class Generator < ApplicationRecord
     @graph.to_json
   end
 
-  def self.m13_scaffold
+  def self.m13mp18_p7249
     file = File.read('app/assets/scaffolds/7249.txt')
   end
 
@@ -189,6 +124,56 @@ class Generator < ApplicationRecord
       filename = "guest_#{__id__}"
     end
     filename
+  end
+
+
+  def oxdna(scaffold, staples, filename)
+    oxdna_maker = OxDNAMaker.new
+    staples_idxs = staples["scaffold_idxs"]
+    staples_sequences = staples["sequences"]
+    scaffold_positions = scaffold["points"]
+    scaffold_positions, scaffold_a1s, scaffold_a3s, staples_positions, staples_a1s, staples_a3s = oxdna_maker.setup(scaffold_positions, staples_idxs[...staples_idxs.size-1])
+    dat_file = "#{Rails.root.join('tmp').to_s}/#{filename}.dat"
+    top_file = "#{Rails.root.join('tmp').to_s}/#{filename}.top"
+    f = File.open(dat_file, 'w')
+    f.write("t = 0\n")
+    f.write("b = 1000.0 1000.0 1000.0\n")
+    f.write("E = 0. 0. 0.\n")
+    scaffold_positions.each_with_index do |pos, i|
+      f.write("#{scaffold_positions[i][0]} #{scaffold_positions[i][1]} #{scaffold_positions[i][2]} #{scaffold_a1s[i][0]} #{scaffold_a1s[i][1]} #{scaffold_a1s[i][2]} #{scaffold_a3s[i][0]} #{scaffold_a3s[i][1]} #{scaffold_a3s[i][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
+    end
+
+    staples_positions.each_with_index do |position, idx|
+      j = 0
+      while j < position.size
+        f.write("#{staples_positions[idx][j][0]} #{staples_positions[idx][j][1]} #{staples_positions[idx][j][2]} #{staples_a1s[idx][j][0]} #{staples_a1s[idx][j][1]} #{staples_a1s[idx][j][2]} #{staples_a3s[idx][j][0]} #{staples_a3s[idx][j][1]} #{staples_a3s[idx][j][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
+        j += 1
+      end
+    end
+
+    f = File.open(top_file, 'w')
+    f.write("#{scaffold_positions.size + staples_positions.size} #{staples_sequences.size + 1}\n")
+    i = 0
+    scaffold_positions.each_with_index do |position, idx|
+      f.write("1 #{@scaffold_sequence[idx]} #{i - 1} #{i + 1 < position.size ? i + 1 : -1}\n")
+      i += 1
+    end
+
+    k = 2
+    staples_positions.each_with_index do |position, idx|
+      seq = staples_sequences[idx]
+      j = 0
+      while j < position.size
+        
+        f.write("#{k} #{seq[j]} #{j != 0 ? i - 1 : -1} #{j != (position.size - 1) ? i + 1 : -1}\n")
+        j += 1
+        i += 1
+      end
+      k += 1
+    end
+
+    f.close
+    [dat_file, top_file]
   end
 
   def pdb(filename)
@@ -260,76 +245,12 @@ class Generator < ApplicationRecord
     filename
   end
 
-  def oxview(filename)
-    filename = __id__.to_s
-    file = File.open("app/assets/results/#{filename}.oxview", 'w')
-    dateNow = DateTime.now.strftime('%FT%T%:z')
-    date = `"date": "#{dateNow}"`
-    file.write('{')
-    file.write('"box": [1000, 1000, 1000],')
-    file.write('"systems": [{')
-    file.write('"id": 0,')
-    file.write('"strands": [{')
-    file.write('"id": 0,')
-    file.write('"monomers": [')
-    # loop for all strands
-    byebug
-    dna = @dna
-    dna_len = dna.length - 1
-    dir = 1
-    rip1 = 0.012972598874543932.to_s
-    rip2 = 0.8444614293366373
-    rip3 = 0.5355880438590741.to_s
-
-    (0..dna_len).each do |i|
-      dir = -dir if (i % 20).zero?
-      nucleotide = dna[i]
-      file.write('{')
-      file.write("\"id\": #{dna_len - i},")
-      file.write("\"type\": \"#{nucleotide.base}\",")
-      file.write('"class": "DNA",')
-      file.write("\"p\": [#{nucleotide.x},#{nucleotide.y},#{nucleotide.z}],")
-      # start backbone and stacking vectors
-      # file.write('"a1": [' + (0.6*nucleotide.x).to_s + ',' + (0.6*nucleotide.y).to_s + ',' + nucleotide.z.to_s + '],')
-      # file.write('"a1": [' + Math.sin(nucleotide.x).to_s + ',' + Math.cos(nucleotide.y).to_s + ',' + nucleotide.z.to_s + '],')
-      # file.write('"a3": [' + (1.34*nucleotide.x).to_s + ',' + (1.34*nucleotide.y).to_s + ',' + (1.34*nucleotide.z).to_s + '],')
-      rot1 = Math.sin(i * 15 * Math::PI / 180)
-      rot2 = Math.cos(i * 15 * Math::PI / 180)
-      leftover = (rot1 * rot1 + rot2 * rot2) > 1 ? 1 : (rot1 * rot1 + rot2 * rot2)
-      rot3 = Math.sqrt(leftover).to_s
-      rot1 = rot1.to_s
-      rot2 = rot2.to_s
-      file.write("\"a1\": [#{rot1}, #{rot2}, #{rot3}],")
-      file.write("\"a3\": [#{rip1}, #{-dir * rip2}, #{rip3}],")
-      # end backbone and sstacking vectors
-      if i == dna_len
-        file.write('"n3": -1,')
-      else
-        file.write("\"n3\": #{dna_len - i - 1},")
-      end
-      if i.zero?
-        file.write('"n5": 0,')
-      else
-        file.write("\"n5\": #{dna_len - i + 1},")
-      end
-      file.write('"cluster": 3,')
-      file.write("\"bp\": #{dna_len + 1 - i}")
-      if i == dna_len
-        file.write('}')
-      else
-        file.write('},')
-      end
-    end
-    file.write('],')
-    file.write('"end3": 0,')
-    file.write(`"end5": #{dna_len} ,`)
-    file.write('"class": "NucleicAcidStrand"')
-    file.write('}]')
-    file.write('}],')
-    file.write('"forces": []')
-    file.write('}')
+  def nfr(filename)
+    # byebug
+    file = File.open("app/assets/results/#{filename}", 'w')
+    file.write(JSON.generate(attributes))
     file.close
-    filename
+
   end
 
   def csv; end

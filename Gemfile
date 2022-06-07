@@ -82,5 +82,10 @@ group :test do
   gem 'webdrivers'
 end
 
+group :tools do
+  gem 'squasher', '>= 0.6.0'
+  gem 'capistrano'
+end
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: %i[mingw mswin x64_mingw jruby]

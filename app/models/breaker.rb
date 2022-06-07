@@ -15,13 +15,13 @@ class Breaker
   def setup_dimensions(dimensions, _shape)
     case @shape
     when :cube
-      @width = dimensions[0]
-      @height = dimensions[1]
-      @depth = dimensions[2]
+      @width = dimensions["width"].to_f
+      @height = dimensions["height"].to_f
+      @depth = dimensions["depth"].to_f
 
-      @w_step = ((dimensions[0] / SSDNA_NT_DIST) / @segments).floor
-      @h_step = ((dimensions[1] / SSDNA_NT_DIST) / @segments).floor
-      @d_step = ((dimensions[2] / SSDNA_NT_DIST) / @segments).floor
+      @w_step = ((@width / SSDNA_NT_DIST) / @segments).floor
+      @h_step = ((@height / SSDNA_NT_DIST) / @segments).floor
+      @d_step = ((@depth / SSDNA_NT_DIST) / @segments).floor
     when :tetrahedron
       @radius = dimensions[0]
     end
@@ -391,18 +391,18 @@ class Breaker
           front_sequence = staple.sequence[cutoff...]
           front_idxs = staple.scaffold_idxs[cutoff...]
 
-          back_lin_positions = staple.linear_points[...cutoff]
-          front_lin_positions = staple.linear_points[cutoff...]
+          back_lin_positions = staple.points[...cutoff]
+          front_lin_positions = staple.points[cutoff...]
           prev_staple = ObjectSpace._id2ref(staple.prev)
           next_staple = ObjectSpace._id2ref(staple.next)
 
           prev_staple.sequence = prev_staple.sequence + back_sequence
           prev_staple.scaffold_idxs = prev_staple.scaffold_idxs + back_idxs
-          prev_staple.linear_points = prev_staple.linear_points.concat(back_lin_positions)
+          prev_staple.points = prev_staple.points.concat(back_lin_positions)
 
           next_staple.sequence = front_sequence + next_staple.sequence 
           next_staple.scaffold_idxs = front_idxs + next_staple.scaffold_idxs
-          next_staple.linear_points = front_lin_positions.concat(next_staple.linear_points)
+          next_staple.points = front_lin_positions.concat(next_staple.points)
           # need to update positions as well
           prev_staple.next = next_staple.object_id
           next_staple.prev = prev_staple.object_id

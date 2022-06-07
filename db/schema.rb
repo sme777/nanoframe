@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_05_26_025928) do
+ActiveRecord::Schema.define(version: 2022_06_05_185015) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,28 +44,19 @@ ActiveRecord::Schema.define(version: 2022_05_26_025928) do
   end
 
   create_table "generators", force: :cascade do |t|
-    t.float "height"
-    t.float "width"
-    t.float "depth"
-    t.float "radius"
-    t.integer "scaffold_length"
     t.string "shape"
-    t.string "json"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "vertices"
-    t.string "routing"
     t.integer "user_id"
-    t.string "staples"
-    t.integer "divisions"
     t.string "scaffold_name"
     t.integer "vertex_cuts"
     t.integer "bridge_length"
-    t.string "color_palette"
-    t.string "staple_obj"
-    t.string "edges_obj"
-    t.string "graph_id"
-    t.string "sequence"
+    t.jsonb "dimensions", default: "{}"
+    t.string "scaffold"
+    t.float "colors", default: [], array: true
+    t.float "positions", default: [], array: true
+    t.jsonb "staples", default: "{}"
+    t.jsonb "routing", default: "{}"
   end
 
   create_table "playground_items", force: :cascade do |t|

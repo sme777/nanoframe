@@ -1,14 +1,13 @@
 # frozen_string_literal: true
 
 class Staple
-  attr_accessor :sequence, :front, :back, :type, :next, :prev, :linear_points, :interpolated_points, :scaffold_idxs
+  attr_accessor :sequence, :front, :back, :type, :next, :prev, :points, :interpolated_points, :scaffold_idxs
 
   def initialize(args)
     
     if args.size == 3
       @sequence = args[:sequence]
-      @linear_points = args[:linear_points]
-      @interpolated_points = args[:interpolated_points]
+      @points = args[:points]
     else
       @front = args[:front]
       @back = args[:back]
@@ -30,7 +29,7 @@ class Staple
                       else
                         front.scaffold_idxs[start_pos...] + [nil] * @buffer + back.scaffold_idxs[...end_pos]
                       end
-      @linear_points = compute_positions(start_pos, end_pos)
+      @points = compute_positions(start_pos, end_pos)
     end
   end
 

@@ -4,7 +4,6 @@ import { Line2 } from "./threejs/Line2";
 import { LineMaterial } from "./threejs/LineMaterial";
 import { LineGeometry } from "./threejs/LineGeometry";
 
-console.log(graph_json['boundary_edges'])
 if (signOutBtn != null || boxState != null) {
   let size = 1;
   let visualize = true;
@@ -14,9 +13,9 @@ if (signOutBtn != null || boxState != null) {
   }
   let insetWidth, insetHeight, camera2;
   let firstStartPoint, firstEndPoint, lastStartPoint, lastEndPoint;
-  let id, segments, scaffold_length;
+  let id
   let canvas, zoomUpdate;
-  let line0, line1, line2, line3, line4, line5, line6, line7;
+  let line0, line1, line4, line5, line6, line7;
   let canvasContainer, canvasContainerWidth, canvasContainerHeight;
   let routingColors;
   let isInterpolated;
@@ -37,9 +36,7 @@ if (signOutBtn != null || boxState != null) {
 
   let currentGroup;
 
-  let toggle = 0;
   let sphereInter;
-  let globalPositions;
   let matLine = new LineMaterial({
     color: 0xffffff,
     linewidth: 5,
@@ -56,16 +53,6 @@ if (signOutBtn != null || boxState != null) {
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
 
-  for (let i = 0; i < scaffold_length; i++) {
-    if (i % 2 == 0) {
-      sequence.push("T");
-    } else if (i % 3 == 0) {
-      sequence.push("C");
-    } else {
-      sequence.push("G");
-    }
-  }
-
   function adjustSplitPosition(points) {
     for (let i = 0; i < points.length; i += 3) {
       points[i] -= 10;
@@ -79,7 +66,6 @@ if (signOutBtn != null || boxState != null) {
 
   function generateDisplay(
     positions = linear_points,
-    type = "linear",
     colors = colors,
     split = false,
     fullDisplay = true
@@ -100,8 +86,7 @@ if (signOutBtn != null || boxState != null) {
     } else {
       colors = findColorSequnece(start, positions.length, divisions);
     }
-
-    if (split && (positions.length > linear_points.length / 2)){ 
+    if (split && (positions.length > scaffoldPositions.length / 2)){ 
       positions = adjustSplitPosition(positions);
     }
 
@@ -111,14 +96,11 @@ if (signOutBtn != null || boxState != null) {
 
       line0 = new Line2(geometry, matLine);
       if (fullDisplay) {
-        if (type === "linear") {
-          let _ = split ? splitLinearGroup.add(line0) : linearGroup.add(line0);
-        } else if (type == "interpolated") {
-          let _ = split ? splitInterpolatedGroup.add(line0) : interpolatedGroup.add(line0);
-        }
+        let _ = split ? splitLinearGroup.add(line0) : linearGroup.add(line0);
+
       }
 
-      if (split && (positions.length < linear_points.length / 2 )){
+      if (split && (positions.length < scaffoldPositions.length / 2 )){
         line0.geometry.center()
       }
   }
@@ -152,17 +134,6 @@ if (signOutBtn != null || boxState != null) {
     }
     return subarray;
   }
-
-
-  function vectorizePoints(points) {
-    let newPoints = [];
-    for (let i = 0; i < points.length / 3; i += 3) {
-      newPoints.push([points[i], points[i+1], points[i+2]]);
-    }
-    return newPoints;
-  }
-
-  
 
 
   /**
@@ -228,9 +199,6 @@ if (signOutBtn != null || boxState != null) {
 
     return [positions, colors];
   }
-  let linear_points;
-  let start, end;
-  let colors, staples_colors;
 
   for (let i = 0; i < size; i++) {
     if (!visualize) {
@@ -240,8 +208,6 @@ if (signOutBtn != null || boxState != null) {
       canvas = document.getElementById("visualize-webgl");
     }
 
-    scaffold_length = graph_json["scaffold_length"];
-    segments = graph_json["segments"];
 
     canvasContainer = document.querySelector(".canvas-container");
     canvasContainerWidth = canvasContainer.offsetWidth;
@@ -269,26 +235,20 @@ if (signOutBtn != null || boxState != null) {
       camera2.position.copy(camera.position);
     }
 
-    linear_points = graph_json["linear_points"];
-    globalPositions = linear_points;
-    colors = graph_json["colors"];
-    staples_colors = graph_json["staple_colors"];
-    start = graph_json["start"];
-    end = graph_json["end"];
-    let doubleLinearPoints = linear_points.concat(linear_points);
-    let doubleColors = colors.concat(colors);
-    generateDisplay(linear_points, "linear", colors);
+    let doublePoints = scaffoldPositions.concat(scaffoldPositions);
+    let doubleColors = scaffoldColors.concat(scaffoldColors);
+    generateDisplay(scaffoldPositions.flat(), scaffoldColors.flat());
 
-    let group1LinearPoints = doubleLinearPoints.slice(start * 3, end * 3);
-    let group2LinearPoints = doubleLinearPoints.slice(end * 3, linear_points.length + start * 3);
-
-    generateDisplay(group1LinearPoints, "linear", doubleColors.slice(start * 3, end * 3), true);
-    generateDisplay(group2LinearPoints, "linear", doubleColors.slice(end * 3, linear_points.length + start * 3), true);
+    let group1LinearPoints = doublePoints.slice(start, end);
+    let group2LinearPoints = doublePoints.slice(end, scaffoldPositions.length + start);
+    
+    generateDisplay(group1LinearPoints.flat(), doubleColors.slice(start, end).flat(), true);
+    generateDisplay(group2LinearPoints.flat(), doubleColors.slice(end, scaffoldPositions.length + start).flat(), true);
     
     let stapleLinearGroup = new THREE.Group();
     stapleLinearGroup.visible = false;
 
-    generateStapleGroup(staples.linear, stapleLinearGroup);
+    generateStapleGroup(staples, stapleLinearGroup);
 
     linearGroup.add(stapleLinearGroup);
     new THREE.Box3()
@@ -359,57 +319,29 @@ if (signOutBtn != null || boxState != null) {
 
     requestAnimationFrame(render);
 
-    function clearPoints(points) {
-      let newPoints = [];
-      let last = new THREE.Vector3();
-      for (let i = 0; i < points.length; i += 3) {
-        if (last == undefined || last == null) {
-          newPoints.push(points[i]);
-          newPoints.push(points[i+1]);
-          newPoints.push(points[i+2]);
-        } else if (!(last.x == points[i] && last.y == points[i+1] && last.z == points[i+2])) {
-          newPoints.push(points[i]);
-          newPoints.push(points[i+1]);
-          newPoints.push(points[i+2]);
-          last.x = points[i];
-          last.y = points[i+1];
-          last.z = points[i+2];
-        }
-      }
-      return newPoints;
-    }
-
 
     function generateStapleGroup(staples, group) {
-      let pointer = 0
-      for (let i = 0; i < staples.length; i++) {
-        if (pointer > staples_colors.length) continue; // TODO fix for interpolated
-        let staple_points = staples[i];
-        let staple_colors = staples_colors.slice(pointer, pointer + staples[i].length); //Array(staples[i].length).fill(0);
-        
-        pointer += staples[i].length;
+      for (let i = 0; i < staples.data.length; i++) {
+        let staplePositions = staples.data[i].positions;
+        let stapleColors = [].concat(...Array(staplePositions.length).fill(staples.data[i].color));
         let geometry = new LineGeometry();
-        geometry.setPositions(staple_points);
-        geometry.setColors(staple_colors);
+        geometry.setPositions(staplePositions.flat());
+        geometry.setColors(stapleColors.flat());
 
-        let staple_line = new Line2(geometry, matLine);
+        let stapleLine = new Line2(geometry, matLine);
 
-        camera.lookAt(staple_line.position);
+        camera.lookAt(stapleLine.position);
 
-        let staple_geo = new THREE.BufferGeometry();
-        staple_geo.setAttribute(
+        let stapleGeo = new THREE.BufferGeometry();
+        stapleGeo.setAttribute(
           "position",
-          new THREE.Float32BufferAttribute(staple_points, 3)
+          new THREE.Float32BufferAttribute(staplePositions, 3)
         );
-        staple_geo.setAttribute(
+        stapleGeo.setAttribute(
           "color",
-          new THREE.Float32BufferAttribute(staple_colors, 3)
+          new THREE.Float32BufferAttribute(stapleColors, 3)
         );
-        let staple_line1 = new THREE.Line(staple_geo, matLineBasic);
-        staple_line1.computeLineDistances();
-        staple_line1.visible = false;
-        group.add(staple_line);
-        // scene.add(staple_line1)
+        group.add(stapleLine);
       }
     }
 
@@ -442,11 +374,11 @@ if (signOutBtn != null || boxState != null) {
     function findIndex(pos) {
       let min = Infinity;
       let idx = null;
-      for (let i = 0; i < globalPositions.length; i += 3) {
+      for (let i = 0; i < scaffoldPositions.length; i += 3) {
         let temp =
-          Math.abs(pos.x - globalPositions[i]) +
-          Math.abs(pos.y - globalPositions[i + 1]) +
-          Math.abs(pos.z - globalPositions[i + 2]);
+          Math.abs(pos.x - scaffoldPositions[i]) +
+          Math.abs(pos.y - scaffoldPositions[i + 1]) +
+          Math.abs(pos.z - scaffoldPositions[i + 2]);
         if (temp < min) {
           min = temp;
           idx = Math.floor(i / 3);
@@ -488,10 +420,10 @@ if (signOutBtn != null || boxState != null) {
           sphereInter.position.copy(intersections[0].point);
           const line = intersections[0].object;
           const idx = findIndex(intersections[0].point);
-          const colorsCopy = [...colors]
-          colorsCopy[colors[idx * 3]] = 0;
-          colorsCopy[colors[idx * 3 + 1]] = 0;
-          colorsCopy[colors[idx * 3 + 2]] = 0;
+          const colorsCopy = [...scaffoldColors]
+          colorsCopy[scaffoldColors[idx * 3]] = 0;
+          colorsCopy[scaffoldColors[idx * 3 + 1]] = 0;
+          colorsCopy[scaffoldColors[idx * 3 + 2]] = 0;
           if (idx != null) {
             document.querySelector(".sequence-base").value = sequence[idx];
             document.querySelector(".sequence-id").value = idx;
@@ -511,7 +443,7 @@ if (signOutBtn != null || boxState != null) {
         renderer.render(scene, camera2);
         renderer.setScissorTest(false);
       }
-      toggle += clock.getDelta();
+
       requestAnimationFrame(render);
     }
     if (visualize) {
@@ -528,7 +460,6 @@ if (signOutBtn != null || boxState != null) {
           boxLabel.innerHTML = "Close Form";
           scene.remove(currentGroup);
           isSplit = true;
-          // console.log(splitLinearGroup)
           currentGroup = isInterpolated ? splitInterpolatedGroup : splitLinearGroup;
           scene.add(currentGroup)
 

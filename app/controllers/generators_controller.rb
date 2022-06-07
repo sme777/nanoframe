@@ -37,71 +37,33 @@ class GeneratorsController < ApplicationController
   def visualize
     # byebug
     @color_palettes = Generator.color_palettes
-    if params[:regenerate] || @generator.routing.nil?
-      @graph = @generator.route
-      @graph_json = @graph.to_json
-      @staples_json = @graph.staples_json
-      @scaffold = Generator.m13_scaffold
-      write_staples_to_s3(@graph.staples, @graph.staple_colors)
-      Generator.find(@generator.id).update(routing: @graph_json, 
-          staples: @staples_json, 
-          vertex_cuts: @graph.vertex_cuts.size,
+    if params[:regenerate] || @generator.routing == "{}"
+      graph = @generator.route
+      routing = graph.to_hash
+      @positions = graph.points
+      @colors = graph.colors
+      @vertex_cuts = graph.vertex_cuts
+      @staples = graph.staples_hash
+      # write_staples_to_s3(@graph.staples, @graph.staple_colors)
+      Generator.find(@generator.id).update(
+            routing: routing, 
+            positions: @positions, 
+            colors: @colors,
+            vertex_cuts: @vertex_cuts,
+            staples: @staples
           )
 
 
       redirect_to "/nanobot/#{@generator.id}/visualize" unless @generator.routing.nil?
     else
-      @graph_json = @generator.routing
-      @staples_json = @generator.staples
-      # byebug
-      oxdna_maker = OxDNAMaker.new
-      scaffold_sequence = Generator.m13_scaffold
-      staples_idxs = JSON.parse(@staples_json)["scaffold_idxs"]
-      staples_sequences = JSON.parse(@staples_json)["sequences"]
-      # byebug
-      poss, a1s, a3s, poss_ds, a1s_ds, a3s_ds = oxdna_maker.setup(JSON.parse(@graph_json)["linear_points"], staples_idxs[...staples_idxs.size-1])
-      # byebug
-      f = File.open("app/assets/results/controller_test.dat", 'w')
-      f.write("t = 0\n")
-      f.write("b = 1000.0 1000.0 1000.0\n")
-      f.write("E = 0. 0. 0.\n")
-      poss.each_with_index do |pos, i|
-        f.write("#{poss[i][0]} #{poss[i][1]} #{poss[i][2]} #{a1s[i][0]} #{a1s[i][1]} #{a1s[i][2]} #{a3s[i][0]} #{a3s[i][1]} #{a3s[i][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
-      end
-
-      poss_ds.each_with_index do |poss, idx|
-        j = 0
-        while j < poss.size
-          f.write("#{poss_ds[idx][j][0]} #{poss_ds[idx][j][1]} #{poss_ds[idx][j][2]} #{a1s_ds[idx][j][0]} #{a1s_ds[idx][j][1]} #{a1s_ds[idx][j][2]} #{a3s_ds[idx][j][0]} #{a3s_ds[idx][j][1]} #{a3s_ds[idx][j][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
-          j += 1
-        end
-      end
-
-      f.close
-
-      f = File.open("app/assets/results/controller_test.top", 'w')
-      f.write("#{poss.size + poss_ds.size} 2\n")
-      i = 0
-      poss.each_with_index do |pos, idx|
-        f.write("1 #{scaffold_sequence[idx]} #{i - 1} #{i + 1 < poss.size ? i + 1 : -1}\n")
-        i += 1
-      end
-
-      k = 2
-      poss_ds.each_with_index do |poss, idx|
-        seq = staples_sequences[idx]
-        j = 0
-        while j < poss.size
-          
-          f.write("#{k} #{seq[j]} #{j != 0 ? i - 1 : -1} #{j != (poss.size - 1) ? i + 1 : -1}\n")
-          j += 1
-          i += 1
-        end
-        k += 1
-      end
-
-      f.close
-      @scaffold = Generator.m13_scaffold
+      @positions = @generator.positions
+      @colors = @generator.colors
+      @vertex_cuts = @generator.vertex_cuts
+      @scaffold = @generator.scaffold
+      @staples = JSON.generate(@generator.staples)
+      @start = @generator.routing["start"]
+      @end = @generator.routing["end"]
+      @generator.nfr("sample_nfr.json")
     end
   end
 
@@ -126,8 +88,13 @@ class GeneratorsController < ApplicationController
 
   def create
     generator_fields = generator_params
-    generator_fields[:scaffold_length] = Generator.scaffolds_to_length.stringify_keys[generator_fields[:scaffold_name]] 
-    @generator = Generator.new(generator_fields)
+    dimensions = {height: generator_fields[:height], width: generator_fields[:width], depth: generator_fields[:depth], divisions: generator_fields[:divisions]}
+    if Generator.scaffolds[generator_fields[:scaffold_name].to_sym].nil?
+
+    else
+      scaffold = Generator.public_send(generator_fields[:scaffold_name].parameterize(separator: "_"))
+    end
+    @generator = Generator.new({shape: generator_fields[:shape], dimensions: dimensions, scaffold: scaffold, scaffold_name: generator_fields[:scaffold_name]})
     @generator.user_id = @current_user.id unless @current_user.nil?
 
     if @generator.save
