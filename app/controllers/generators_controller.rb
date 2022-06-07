@@ -42,7 +42,7 @@ class GeneratorsController < ApplicationController
       routing = graph.to_hash
       @positions = graph.points
       @colors = graph.colors
-      @vertex_cuts = graph.vertex_cuts
+      @vertex_cuts = graph.vertex_cuts.size
       @staples = graph.staples_hash
       # write_staples_to_s3(@graph.staples, @graph.staple_colors)
       Generator.find(@generator.id).update(
@@ -63,7 +63,6 @@ class GeneratorsController < ApplicationController
       @staples = JSON.generate(@generator.staples)
       @start = @generator.routing["start"]
       @end = @generator.routing["end"]
-      @generator.nfr("sample_nfr.json")
     end
   end
 

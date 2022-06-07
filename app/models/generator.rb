@@ -48,7 +48,6 @@ class Generator < ApplicationRecord
   end
 
   def route
-    shape_name = shape.match(/(^.*)\s/).captures.first.downcase.parameterize(separator: '_').to_sym
     @graph = Graph.new(id, dimensions, shape_name, scaffold)
   end
 
@@ -89,6 +88,13 @@ class Generator < ApplicationRecord
 
   def to_json(*_args)
     @graph.to_json
+  end
+
+  def get_dimensions
+    case shape_name
+    when :cube
+      "#{dimensions["width"]}x#{dimensions["height"]}x#{dimensions["depth"]}x4"
+    end
   end
 
   def self.m13mp18_p7249
@@ -397,6 +403,10 @@ class Generator < ApplicationRecord
       arr[shape] = shape
     end
     arr
+  end
+
+  def shape_name
+    shape.match(/(^.*)\s/).captures.first.downcase.parameterize(separator: '_').to_sym
   end
 
   def is_current_bridge_length(val)

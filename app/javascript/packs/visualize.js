@@ -18,21 +18,16 @@ if (signOutBtn != null || boxState != null) {
   let line0, line1, line4, line5, line6, line7;
   let canvasContainer, canvasContainerWidth, canvasContainerHeight;
   let routingColors;
-  let isInterpolated;
   let isSplit;
-  let sequence = [];
+
 
   
   let linearGroup = new THREE.Group();
   linearGroup.name = "Linear";
-  let interpolatedGroup = new THREE.Group();
-  interpolatedGroup.name = "Interpolated";
   
   let splitLinearGroup = new THREE.Group();
   splitLinearGroup.name = "Linear Open";
 
-  let splitInterpolatedGroup = new THREE.Group();
-  splitInterpolatedGroup.name = "Interpolated Open";
 
   let currentGroup;
 
@@ -107,14 +102,8 @@ if (signOutBtn != null || boxState != null) {
 
   function updateDisplay(scene) {
     scene.remove(currentGroup);
-    
-    if (isInterpolated) {
-      currentGroup = isSplit ? splitInterpolatedGroup : interpolatedGroup;
-      scene.add(currentGroup);
-    } else {
-      currentGroup = isSplit ? splitLinearGroup : linearGroup;
-      scene.add(currentGroup);
-    }
+    currentGroup = isSplit ? splitLinearGroup : linearGroup;
+    scene.add(currentGroup);
   }
 
   /**
@@ -241,7 +230,7 @@ if (signOutBtn != null || boxState != null) {
 
     let group1LinearPoints = doublePoints.slice(start, end);
     let group2LinearPoints = doublePoints.slice(end, scaffoldPositions.length + start);
-    
+
     generateDisplay(group1LinearPoints.flat(), doubleColors.slice(start, end).flat(), true);
     generateDisplay(group2LinearPoints.flat(), doubleColors.slice(end, scaffoldPositions.length + start).flat(), true);
     
@@ -257,7 +246,6 @@ if (signOutBtn != null || boxState != null) {
       .multiplyScalar(-1);
     currentGroup = linearGroup;
     scene.add(currentGroup);
-
 
     let controls = new OrbitControls(camera, renderer.domElement);
     controls.minDistance = 10;
@@ -374,14 +362,14 @@ if (signOutBtn != null || boxState != null) {
     function findIndex(pos) {
       let min = Infinity;
       let idx = null;
-      for (let i = 0; i < scaffoldPositions.length; i += 3) {
+      for (let i = 0; i < scaffoldPositions.length; i += 1) {
         let temp =
-          Math.abs(pos.x - scaffoldPositions[i]) +
-          Math.abs(pos.y - scaffoldPositions[i + 1]) +
-          Math.abs(pos.z - scaffoldPositions[i + 2]);
+          Math.abs(pos.x - scaffoldPositions[i][0]) +
+          Math.abs(pos.y - scaffoldPositions[i][1]) +
+          Math.abs(pos.z - scaffoldPositions[i][2]);
         if (temp < min) {
           min = temp;
-          idx = Math.floor(i / 3);
+          idx = Math.floor(i);
         }
       }
       return idx;
@@ -420,12 +408,8 @@ if (signOutBtn != null || boxState != null) {
           sphereInter.position.copy(intersections[0].point);
           const line = intersections[0].object;
           const idx = findIndex(intersections[0].point);
-          const colorsCopy = [...scaffoldColors]
-          colorsCopy[scaffoldColors[idx * 3]] = 0;
-          colorsCopy[scaffoldColors[idx * 3 + 1]] = 0;
-          colorsCopy[scaffoldColors[idx * 3 + 2]] = 0;
           if (idx != null) {
-            document.querySelector(".sequence-base").value = sequence[idx];
+            document.querySelector(".sequence-base").value = scaffold[idx];
             document.querySelector(".sequence-id").value = idx;
           }
         } else {
@@ -451,23 +435,20 @@ if (signOutBtn != null || boxState != null) {
       const boxLabel = document.getElementById("box-state-label");
       const stapleToggler = document.getElementById("box-state-staples");
       const stapleTogglerLabel = document.getElementById("box-state-staples-label");
-      const interpolationToggler = document.getElementById(
-        "box-state-interpolated"
-      );
 
       box.addEventListener("click", () => {
         if (box.checked) {
           boxLabel.innerHTML = "Close Form";
           scene.remove(currentGroup);
           isSplit = true;
-          currentGroup = isInterpolated ? splitInterpolatedGroup : splitLinearGroup;
+          currentGroup = splitLinearGroup;
           scene.add(currentGroup)
 
         } else {
           boxLabel.innerHTML = "Open Form";
           isSplit = false;
           scene.remove(currentGroup);
-          currentGroup = isInterpolated ? interpolatedGroup : linearGroup;
+          currentGroup = linearGroup;
           scene.add(currentGroup);
         }
       });
@@ -478,18 +459,9 @@ if (signOutBtn != null || boxState != null) {
         } else {
           stapleTogglerLabel.innerHTML = "Show Staples";
         }
-
-        if (isInterpolated) {
-          stapleInterpolatedGroup.visible = !stapleInterpolatedGroup.visible;
-        } else {
           stapleLinearGroup.visible = !stapleLinearGroup.visible;
-        }
       });
 
-      interpolationToggler.addEventListener("click", () => {
-        isInterpolated = !isInterpolated;
-        updateDisplay(scene);
-      });
     }
   }
 }
