@@ -102,28 +102,28 @@ class Generator < ApplicationRecord
   end
 
   def self.supported_files
-    ["staples", "nfr", "oxdna", "pdb", "bundle"]
+    ["staples_csv", "nfr", "oxdna", "pdb", "bundle"]
   end
 
   def self.color_palettes
     ['Leather Vintage', 'Cold Breeze', 'Pink Forest', 'Customize...']
   end
 
-  # @note using tabs instead of spaces causes pdb loading issues
-  def normalize(seq)
-    start = seq.first
-    arr = []
-    (1..seq.length - 1).each do |i|
-      tide = seq[i]
-      tide.x -= start.x
-      tide.y -= start.y
-      tide.z -= start.z
-      arr << tide
+  def rgb2hex(rgb)
+    r, g, b = rgb
+    r = (r * 255).round
+    g = (g * 255).round
+    b = (b * 255).round
+    hex = ""
+    [r, g, b].each do |c|
+      h = c.to_s(16)
+      if c < 16
+        hex += "0#{h}"
+      else
+        hex += h
+      end
     end
-    start.x = 0
-    start.y = 0
-    start.z = 0
-    [start] + arr
+    "0x#{hex}"
   end
 
   def filename(logged, user_id)
@@ -136,8 +136,19 @@ class Generator < ApplicationRecord
     filename
   end
 
-  def staples(filename)
-
+  def staples_csv(filename)
+    csv_file = "#{Rails.root.join('tmp').to_s}/#{filename}.csv"
+    file = File.open(csv_file, 'w')
+    file.write("name,color,sequence,length\n")
+    staples = self.staples["data"]
+    staples.each_with_index do |staple, idx|
+      color = staple["color"]
+      sequence = staple["sequence"]
+      name = staple["name"]
+      file.write("#{name},#{rgb2hex(color)},#{sequence},#{sequence.size}\n")
+    end
+    file.close
+    ["#{filename}.csv"]
   end
 
 
@@ -263,7 +274,8 @@ class Generator < ApplicationRecord
   end
 
   def nfr(filename)
-    file = File.open("#{Rails.root.join('tmp').to_s}/#{filename}.nfr", 'w')
+    nfr_file = "#{Rails.root.join('tmp').to_s}/#{filename}.nfr"
+    file = File.open(nfr_file, 'w')
     file.write(JSON.generate(attributes))
     file.close
     ["#{filename}.nfr"]

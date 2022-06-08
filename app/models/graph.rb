@@ -33,9 +33,6 @@ class Graph
       @vertex_cuts << e.v2 if !@vertex_cuts.include?(e.v2)
     end
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
-    @staple_colors = generate_staple_colors
-    # write_staples(@staples, @staple_colors)
-    # write_nfr
   end
 
 
@@ -47,27 +44,6 @@ class Graph
   #   staples
   # end
 
-  def write_staples(staples, colors)
-    filename = "#{@width}x#{@height}x#{@depth}-#{@segments - 1}-#{Time.now}"
-    file = File.open("app/assets/results/#{filename}.csv", 'w')
-    file.write("name,color,sequence,length")
-    file.write("\n")
-    staples.each_with_index do |staple, idx|
-      staple_color = colors[idx]
-      file.write("#{staple.name},#{rgb_to_hex(staple_color)},#{staple.sequence},#{staple.sequence.size}")
-      file.write("\n")
-    end
-    file.close
-    filename
-  end
-
-  def self.rgb_to_hex(rgb_color)
-    red = (rgb_color[0] * 255).to_i.to_s(16)
-    green = (rgb_color[1] * 255).to_i.to_s(16)
-    blue = (rgb_color[2] * 255).to_i.to_s(16)
-    hex = sprintf("#%02s%02s%02s", red, green, blue)
-    hex
-  end
 
   def setup_dimensions(dimensions, shape)
     case shape
@@ -135,22 +111,6 @@ class Graph
     {staples: Marshal.dump(@staples), boundary_edges: Marshal.dump(@boundary_edges),}
   end
 
-
-  def staples_json
-    staple_lin_points = []
-    staple_int_points = []
-    staple_names = []
-    staple_sequences = []
-    scaffold_idxs = []
-    @staples.each do |staple|
-      staple_lin_points << Vertex.flatten(staple.linear_points)
-      staple_names << staple.name
-      staple_sequences << staple.sequence
-      scaffold_idxs << staple.scaffold_idxs
-    end
-    JSON.generate({linear: staple_lin_points, colors: @staple_colors.flatten,
-                    names: staple_names, sequences: staple_sequences, scaffold_idxs: scaffold_idxs })
-  end
 
   def staples_hash
     staples_data = []
@@ -659,26 +619,6 @@ class Graph
     edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_len_map)
   end
 
-  def generate_staple_colors
-    staple_colors = []
-
-    @staples.each do |staple|
-      staple_color_r = rand
-      staple_color_g = rand
-      staple_color_b = rand
-      staple_color = []
-      staple.points.size.times do |i|
-        staple_color.concat([staple_color_r, staple_color_g, staple_color_b])
-      end
-      staple_colors << staple_color
-    end
-
-    # (0...@scaff_length * 1.2).each do |i|
-    #   t = i.to_f / @scaff_length
-    #   staple_colors.concat([t, 0.5, t])
-    # end
-    staple_colors
-  end
 
 
   def open_structure(ratio = 1 / 3.to_f)
@@ -704,16 +644,6 @@ class Graph
 
     graph_hash
 
-  end
-
-  # Generates JSON file of the graph
-  def to_json(*_args)
-    return nil if @planes.nil?
-    
-    JSON.generate({ "scaffold_length": @scaff_length, "linear_points": @linear_points, 
-                    "vertices": @sorted_vertices, "colors": @colors,
-                    "staple_colors": @staple_colors.flatten, "start": @start_idx * @sampling_frequency, 
-                    "end": (@start_idx + @group1.size) * @sampling_frequency})
   end
 
 end
