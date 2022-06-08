@@ -101,6 +101,10 @@ class Generator < ApplicationRecord
     file = File.read('app/assets/scaffolds/7249.txt')
   end
 
+  def self.supported_files
+    ["staples", "nfr", "oxdna", "pdb", "bundle"]
+  end
+
   def self.color_palettes
     ['Leather Vintage', 'Cold Breeze', 'Pink Forest', 'Customize...']
   end
@@ -132,12 +136,18 @@ class Generator < ApplicationRecord
     filename
   end
 
+  def staples(filename)
 
-  def oxdna(scaffold, staples, filename)
+  end
+
+
+  def oxdna(filename)
     oxdna_maker = OxDNAMaker.new
-    staples_idxs = staples["scaffold_idxs"]
-    staples_sequences = staples["sequences"]
-    scaffold_positions = scaffold["points"]
+    scaffold_positions = self.positions
+    scaffold_sequence = self.scaffold
+    staples = self.staples
+    staples_idxs = staples["data"].map {|e| e["indices"]}
+    staples_sequences = staples["data"].map {|e| e["sequence"]}
     scaffold_positions, scaffold_a1s, scaffold_a3s, staples_positions, staples_a1s, staples_a3s = oxdna_maker.setup(scaffold_positions, staples_idxs[...staples_idxs.size-1])
     dat_file = "#{Rails.root.join('tmp').to_s}/#{filename}.dat"
     top_file = "#{Rails.root.join('tmp').to_s}/#{filename}.top"
@@ -156,12 +166,13 @@ class Generator < ApplicationRecord
         j += 1
       end
     end
+    f.close
 
     f = File.open(top_file, 'w')
-    f.write("#{scaffold_positions.size + staples_positions.size} #{staples_sequences.size + 1}\n")
+    f.write("#{scaffold_positions.size + (staples_positions.map {|e| e.size}).sum} #{staples_sequences.size + 1}\n")
     i = 0
     scaffold_positions.each_with_index do |position, idx|
-      f.write("1 #{@scaffold_sequence[idx]} #{i - 1} #{i + 1 < position.size ? i + 1 : -1}\n")
+      f.write("1 #{scaffold_sequence[idx]} #{i - 1} #{i + 1 < scaffold_positions.size ? i + 1 : -1}\n")
       i += 1
     end
 
@@ -179,7 +190,7 @@ class Generator < ApplicationRecord
     end
 
     f.close
-    [dat_file, top_file]
+    ["#{filename}.dat", "#{filename}.top"]
   end
 
   def pdb(filename)
@@ -252,18 +263,11 @@ class Generator < ApplicationRecord
   end
 
   def nfr(filename)
-    # byebug
-    file = File.open("app/assets/results/#{filename}", 'w')
+    file = File.open("#{Rails.root.join('tmp').to_s}/#{filename}.nfr", 'w')
     file.write(JSON.generate(attributes))
     file.close
-
+    ["#{filename}.nfr"]
   end
-
-  def csv; end
-
-  def fasta; end
-
-  def txt; end
 
   def cadnano; end
 

@@ -12,30 +12,46 @@ class GeneratorsController < ApplicationController
     @scaffolds = Generator.scaffolds
   end
 
-  def custom; end
-
-  def synthesize
-    @generator = Generator.find(params[:id])
-    byebug
-    sequence = JSON.parse(@generator.json)['sequence']
-    coordinates = JSON.parse(@generator.vertices)['points']
-    @generator.scaffold(sequence, coordinates)
-    # @generator.route
-    # @generator.feedback_control(coordinates)
-    session[:filename] = @generator.filename(logged_in?, session[:user_id])
-    render :synthesize
-  end
 
   def routing
     @generator = Generator.find(generator_id)
-    @graph_json = @generator.routing
-    @staples_json = @generator.staples
-    @scaffold = Generator.m13_scaffold
+    @positions = @generator.positions
+    @colors = @generator.colors
+    @scaffold = @generator.scaffold
+    @staples = JSON.generate(@generator.staples)
+    @dimensions = @generator.dimensions
+    @supported_files = Generator.supported_files
+  end
 
+  def download
+    type = params[:type]
+
+    if !type.nil?
+      filename = @generator.filename(logged_in?, session[:user_id])
+      files = @generator.send(type, filename)
+      zipfile_name = "#{Rails.root.join('tmp').to_s}/#{filename}.zip"
+      if files.size == 1
+        File.open("#{Rails.root.join('tmp').to_s}/#{files[0]}", 'r') do |f|
+          send_data f.read, type: 'text/json', filename: files[0]
+        end
+        File.delete("#{Rails.root.join('tmp').to_s}/#{files[0]}")
+      else
+        Zip::File.open(zipfile_name, create: true) do |zipfile|
+          files.each do |f|
+            zipfile.add(f, File.join(Rails.root.join('tmp').to_s, f))
+          end
+        end
+        File.open("#{Rails.root.join('tmp').to_s}/#{filename}.zip", 'r') do |f|
+          send_data f.read, type: 'application/zip', filename: "#{filename}.zip"
+        end
+        File.delete("#{Rails.root.join('tmp').to_s}/#{filename}.zip")
+      end
+
+    end
+    
   end
 
   def visualize
-    # byebug
     @color_palettes = Generator.color_palettes
     if params[:regenerate] || @generator.routing == "{}"
       graph = @generator.route
@@ -52,8 +68,6 @@ class GeneratorsController < ApplicationController
             vertex_cuts: @vertex_cuts,
             staples: @staples
           )
-
-
       redirect_to "/nanobot/#{@generator.id}/visualize" unless @generator.routing.nil?
     else
       @positions = @generator.positions

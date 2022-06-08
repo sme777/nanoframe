@@ -22,7 +22,7 @@
 
         <div class="col-md-6">
             <div class="forward-container">
-                <a class="route-arrow forwardbtn btn btn-link" href="/nanobot/<%= @generator.id%>/synthesize">Synthesize &rarr;</a>
+                <a class="route-arrow backbtn btn btn-link" href="/nanobot/<%= @generator.id%>/compile">Save &rarr;</a>
             </div>
         </div>
     </div>
@@ -49,11 +49,6 @@
         </div>
         <div class="col-md-10">
             <div class="router-container">
-                <%
-=begin%>
- <div class="datGUIRouting"></div> 
-<%
-=end%>
                 <canvas id="router-webgl"></canvas>
             </div>
         </div>
@@ -74,25 +69,33 @@
         <div class="col-md-4">
         </div>
     </div>
-    
+
     <div class="table-container">
         <div class="row">
             <div class="col-md-8">
                 <h2>Staple Strands Sequences</h2>
             </div>
-            <div class="col-md-4 staple-download">
-                <%
-=begin%>
- <%= form_tag download_staples_path, method: :post do %>
-                <%= hidden_field_tag "staples", "", id: "staples_field" %>
-                <%= hidden_field_tag "descriptions", "", id: "staples_descriptions_field" %>
-                <%= submit_tag "Download", class: "btn btn-outline-primary" %>
-                <% end %> 
-<%
-=end%>
+            <div class="col-md-4">
+                <div class="download-file-container">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-dark dropdown-toggle" type="button" id="download-file-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Download Files
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <% @supported_files.each do |file| %>
+                                <li>
+                                    <%= form_with(url: "/nanobot/#{@generator.id}/routing", method: :post) do |f| %>
+                                        <%= hidden_field_tag 'type', file %>
+                                        <%= button_tag file, class: "dropdown-item"%>
+                                    <% end %>
+                                </li>
+                            <% end %>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
-        
+
         <table class="table table-striped col-md-12" id="staples_table">
             <thead>
                 <tr>
@@ -109,14 +112,14 @@
     </div>
 
     <script type="text/javascript">
-        var graphJSON = JSON.parse(<%= @graph_json.to_json.html_safe %>);
-        var staples = JSON.parse(<%= @staples_json.to_json.html_safe %>);
-        var dimensions = <%= [@generator.width, @generator.height, @generator.depth] %>
-        var segments = <%= @generator.divisions %>
+        var scaffoldPositions = <%= @positions %> ;
+        var scaffoldColors = <%= @colors %> ;
         var scaffold = "<%= @scaffold %>";
+        var staples = JSON.parse( <%= @staples.to_json.html_safe %> );
+        var dimensions = <%= @dimensions.to_json.html_safe %> ;
     </script>
 
     <%= render "layouts/footer"%>
-    <%= javascript_pack_tag 'routing2', 'routingControls', 'data-turbolinks-track': 'reload'%>
+    <%= javascript_pack_tag 'routing2', 'data-turbolinks-track': 'reload'%>
 
 </body>

@@ -25,8 +25,7 @@ Rails.application.routes.draw do
   # get '/auth/google_oauth2/callback', to: 'users#google_oauth2', as: :google_oauth2_callback
   # get '/auth/github/callback', to: 'users#github', as: :github_callback
 
-  get '/nanobot/:id/synthesize' => 'generators#synthesize'
-  post '/nanobot/:id/routing' => 'generators#routing'
+  post '/nanobot/:id/routing' => 'generators#download'
   get '/nanobot/:id/routing' => 'generators#routing'
   post '/nanobot/:id/visualize' => 'generators#visualize', as: 'generate_routing'
   get '/nanobot/:id/visualize' => 'generators#visualize'
@@ -42,11 +41,8 @@ Rails.application.routes.draw do
   post '/nanobot/:id/staples' => 'downloads#download_staples', as: 'download_staples'
   get '/nanobot/:id/nfr' => 'downloads#download_nfr'
   get '/nanobot/:id/pdb' => 'downloads#download_pdb'
-  get '/nanobot/:id/oxview' => 'downloads#download_oxview'
-  get '/nanobot/:id/txt' => 'downloads#download_txt'
+  get '/nanobot/:id/oxdna' => 'downloads#download_oxdna'
   get '/nanobot/:id/cadnano' => 'downloads#download_cadnano'
-  get '/nanobot/:id/csv' => 'downloads#download_csv'
-  get '/nanobot/:id/fasta' => 'downloads#download_fasta'
   get '/nanobot/:id/bundle' => 'downloads#download_bundle'
   # resources :generators
   get 'nanobot/generator' => 'generators#generator', as: 'shape_generator'

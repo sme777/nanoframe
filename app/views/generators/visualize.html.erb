@@ -16,18 +16,13 @@
     <div class="row outer-menu-container">
         <div class="col-md-6">
             <div class="back-container">
-                <a class="generator-arrow btn btn-link backbtn" href="/nanobot">&larr; Back</a>
+                <a href="/nanobot" class="generator-arrow btn btn-link backbtn">&larr; Back</a>
             </div>
         </div>
 
         <div class="col-md-6">
             <div class="forward-container">
-                <form action="/nanobot/<%= @generator.id%>/routing" method="POST">
-                    <input type="hidden" name="authenticity_token" value="<%=form_authenticity_token%>">
-                    <input type="hidden" id="set-values" name="vertices" value="">
-                    <button type="submit" id="routing-btn" class="btn btn-link forwardbtn route-arrow">Routing
-                        &rarr;</button>
-                </form>
+                <a href="/nanobot/<%= @generator.id%>/routing" class="btn btn-link forwardbtn route-arrow" id="routing-btn">Routing &rarr;</a>
 
             </div>
         </div>
@@ -113,11 +108,11 @@
                 <div class="seqeunce-name">
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Base</span>
-                        <input type="text" class="form-control sequence-base" value="" disabled>
+                        <input type="text" class="form-control sequence-base" value="<%= @scaffold[0]%>" disabled>
                     </div>
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Position</span>
-                        <input type="text" class="form-control sequence-id" value="" disabled>
+                        <input type="text" class="form-control sequence-id" value="1" disabled>
                     </div>
                     <div class="input-group input-group-sm">
                         <span class="input-group-text">Side</span>

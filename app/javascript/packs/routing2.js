@@ -5,14 +5,6 @@ import { Line2 } from "./threejs/Line2";
 import { LineMaterial } from "./threejs/LineMaterial";
 import { LineGeometry } from "./threejs/LineGeometry";
 
-/**
- * Setup variables from the backend
- */
-const linearPoints = graphJSON["linear_points"];
-const interpolatedPoints = graphJSON["interpolated_points"];
-const scaffoldPallete = graphJSON["colors"];
-const staplesColors = graphJSON["staple_colors"];
-
 
 /**
  * Setup DOM elements
@@ -26,12 +18,12 @@ let insetHeight = canvasContainerHeight / 4;
 let currentOffsetGroup;
 
 let t = "";
-for (var i = 0; i < staples.names.length; i++) {
+for (var i = 0; i < staples.data.length; i++) {
   var tr = "<tr>";
   tr += "<td>" + (i + 1) + "</td>";
-  tr += "<td>" + staples.names[i] + "</td>";
-  tr += "<td>" + staples.sequences[i] + "</td>";
-  tr += "<td>" + staples.sequences[i].length + "</td>";
+  tr += "<td>" + staples.data[i].name + "</td>";
+  tr += "<td>" + staples.data[i].sequence + "</td>";
+  tr += "<td>" + staples.data[i].sequence.length + "</td>";
   tr += "</tr>";
   t += tr;
 }
@@ -104,13 +96,13 @@ scene.add(camera);
  */
 const linearGroup = new THREE.Group();
 const linearRoutingGeometry = new LineGeometry();
-linearRoutingGeometry.setPositions(linearPoints);
-linearRoutingGeometry.setColors(scaffoldPallete);
+linearRoutingGeometry.setPositions(scaffoldPositions.flat());
+linearRoutingGeometry.setColors(scaffoldColors.flat());
 const linearLine = new Line2(linearRoutingGeometry, matLine);
 linearLine.layers.set(1);
 
 linearGroup.add(linearLine);
-generateStapleGroup(staples.linear, linearGroup)
+generateStapleGroup(staples, linearGroup)
 new THREE.Box3()
 .setFromObject(linearGroup)
 .getCenter(linearGroup.position)
@@ -118,21 +110,6 @@ new THREE.Box3()
 linearGroup.layers.enable(1);
 
 currentOffsetGroup = linearGroup;
-
-const interpolatedGroup = new THREE.Group();
-const interpolatedRoutingGeometry = new LineGeometry();
-interpolatedRoutingGeometry.setPositions(interpolatedPoints);
-interpolatedRoutingGeometry.setColors(scaffoldPallete);
-const interpolatedLine = new Line2(interpolatedRoutingGeometry, matLine);
-interpolatedLine.layers.set(1);
-
-interpolatedGroup.add(interpolatedLine);
-generateStapleGroup(staples.interpolated, interpolatedGroup)
-new THREE.Box3()
-.setFromObject(interpolatedGroup)
-.getCenter(interpolatedGroup.position)
-.multiplyScalar(-1);
-interpolatedGroup.layers.set(1);
 
 scene.add(currentOffsetGroup);
 
@@ -213,14 +190,12 @@ Object.assign(THREE.PlaneBufferGeometry.prototype, {
 let planeGrids = [];
 let currentGrid;
 
-console.log(graphJSON);
 const planeGeom = new THREE.PlaneBufferGeometry(dimensions[0], dimensions[1], 50, 50).toGrid();
 const gridPlane = new THREE.LineSegments(planeGeom, new THREE.LineBasicMaterial({color: 0x696969}));
 gridPlane.quaternion.copy(camera.quaternion);
 const maxDistance = Math.max(dimensions[0], dimensions[1]);
 camera.fov =  2 * Math.atan( maxDistance / ( 2 * camera.position.distanceTo(gridPlane.position) ) ) * ( 180 / Math.PI );
 scene.add(gridPlane)
-console.log(staples)
 
 /**
  * Setup event listeners
@@ -256,32 +231,28 @@ requestAnimationFrame(render);
 // console.log(planeCross);
 
 function generateStapleGroup(staples, group) {
-    let pointer = 0
-    for (let i = 0; i < staples.length; i++) {
-      if (pointer > staplesColors.length) continue; // TODO fix for interpolated
-      let staplePoints = staples[i];
-      let stapleColors = staplesColors.slice(pointer, pointer + staples[i].length); //Array(staples[i].length).fill(0);
-      
-      pointer += staples[i].length;
-      let geometry = new LineGeometry();
-      geometry.setPositions(staplePoints);
-      geometry.setColors(stapleColors);
+  for (let i = 0; i < staples.data.length; i++) {
+    let staplePositions = staples.data[i].positions;
+    let stapleColors = [].concat(...Array(staplePositions.length).fill(staples.data[i].color));
+    let geometry = new LineGeometry();
+    geometry.setPositions(staplePositions.flat());
+    geometry.setColors(stapleColors.flat());
 
-      let stapleLine = new Line2(geometry, matLine);
-      stapleLine.layers.set(1);
-      camera.lookAt(stapleLine.position);
+    let stapleLine = new Line2(geometry, matLine);
 
-      let stapleGeo = new THREE.BufferGeometry();
-      stapleGeo.setAttribute(
-        "position",
-        new THREE.Float32BufferAttribute(staplePoints, 3)
-      );
-      stapleGeo.setAttribute(
-        "color",
-        new THREE.Float32BufferAttribute(stapleColors, 3)
-      );
-      group.add(stapleLine);
-    }
+    camera.lookAt(stapleLine.position);
+
+    let stapleGeo = new THREE.BufferGeometry();
+    stapleGeo.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(staplePositions, 3)
+    );
+    stapleGeo.setAttribute(
+      "color",
+      new THREE.Float32BufferAttribute(stapleColors, 3)
+    );
+    group.add(stapleLine);
+  }
   }
 
 
