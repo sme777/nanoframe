@@ -47,7 +47,6 @@ ActiveRecord::Schema.define(version: 2022_06_05_185015) do
     t.string "shape"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "user_id"
     t.string "scaffold_name"
     t.integer "vertex_cuts"
     t.integer "bridge_length"
@@ -75,11 +74,8 @@ ActiveRecord::Schema.define(version: 2022_06_05_185015) do
     t.string "password_digest"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provider"
-    t.string "uid"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "generators", "users"
 end
