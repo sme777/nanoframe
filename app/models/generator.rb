@@ -283,7 +283,13 @@ class Generator < ApplicationRecord
 
   def cadnano; end
 
-  def bundle; end
+  def bundle(filename)
+    oxdna_files = oxdna(filename)
+    nfr_file = nfr(filename)
+    staples_file = staples_csv(filename)
+    # pdb_file = pdb(filename)
+    [oxdna_files, nfr_file, staples_file].flatten #, pdb_file]
+  end
 
   def self.scaffolds
     {

@@ -28,10 +28,6 @@ class GeneratorsController < ApplicationController
 
     if !type.nil?
 
-      if type == "bundle"
-       
-      else
-
         filename = @generator.filename(logged_in?, session[:user_id])
         files = @generator.send(type, filename)
         zipfile_name = "#{Rails.root.join('tmp').to_s}/#{filename}.zip"
@@ -51,7 +47,6 @@ class GeneratorsController < ApplicationController
           end
           File.delete("#{Rails.root.join('tmp').to_s}/#{filename}.zip")
         end
-      end
 
     end
     

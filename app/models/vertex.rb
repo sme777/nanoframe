@@ -148,4 +148,7 @@ class Vertex
   overload_operator :*
   overload_operator :-
   overload_operator :/
+  # overload_operator :abs
+  # overload_operator :floor
+  # overload_operator :ceil
 end
