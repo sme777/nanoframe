@@ -276,10 +276,10 @@ if (signOutBtn != null || boxState != null) {
       if (i - 3 > 0) {
         planeGeometry.rotateY(Math.PI / 2);
         if (i % 2 == 0) {
-          plane2D.position.x += 25;
+          plane2D.position.x -= 25;
           plane2D.name = "S5";
         } else {
-          plane2D.position.x -= 25;
+          plane2D.position.x += 25;
           plane2D.name = "S6";
         }
         

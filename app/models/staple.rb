@@ -129,8 +129,26 @@ class Staple
         side = :S6
       end
     end
-
-    row, col = row_and_col
+    side = Routing.find_plane_number(@front.v1, @front.v2, [50, 50, 50])
+    hor, vert, hor_dist, vert_dist = nil, nil, nil, nil
+    case side
+    when :S1, :S2
+      hor = "x"
+      vert = "y"
+      hor_dist = @width / @segments
+      vert_dist = @height / @segments
+    when :S3, :S4
+      hor = "x"
+      vert = "z"
+      hor_dist = @width / @segments
+      vert_dist = @depth / @segments
+    when :S5, :S6
+      hor = "z"
+      vert = "y"
+      hor_dist = @depth / @segments
+      vert_dist = @height / @segments
+    end
+    row, col = row_and_col(hor, vert, hor_dist, vert_dist)
     "#{@type}-#{side}-R#{row}-C#{col}"
   end
 
@@ -156,52 +174,81 @@ class Staple
     points
   end
 
-  def row_and_col
-    side = Routing.find_plane_number(@front.v1, @front.v2, [50, 50, 50])
-    dist2wseg = @width / @segments
-    dist2hseg = @height / @segments
-    dist2dseg = @depth / @segments
-    case side
-    when :S1, :S2
-      if @type == :reflection
-        edge_row = (@front.v1.y / dist2hseg).abs.floor + 1
-        edge_col = (@front.v1.x / dist2wseg).abs.floor + 1
+  def row_and_col(hor, vert, hor_dist, vert_dist)
 
-        front_dir, front_dir_ch = @front.directional_change_vec
-        back_dir, back_dir_ch = @back.directional_change_vec
+    front_start_hor = @front.v1.instance_variable_get("@#{hor}")
+    front_end_hor = @front.v2.instance_variable_get("@#{hor}")
+    front_start_vert = @front.v1.instance_variable_get("@#{vert}")
+    front_end_vert = @front.v2.instance_variable_get("@#{vert}")
 
-        if front_dir_ch > 0
-          if back_dir_ch > 0
-            col = edge_col - 1
-            row = edge_row
+    back_start_hor = @back.v1.instance_variable_get("@#{hor}")
+    back_end_hor = @back.v2.instance_variable_get("@#{hor}")
+    back_start_vert = @back.v1.instance_variable_get("@#{vert}")
+    back_end_vert = @back.v2.instance_variable_get("@#{vert}")
+
+    if @type == :reflection
+      row, col = nil, nil
+      if front_start_hor > back_end_hor
+        if front_start_vert > back_end_vert
+          if @front.directional_change == hor.to_sym
+            row = (front_start_vert / hor_dist).abs.floor
+            col = (front_start_hor / vert_dist).abs.floor
           else
-            col = edge_col - 1
-            row = edge_row - 1
+            row = (front_start_vert / hor_dist).abs.floor
+            col = (back_start_hor / vert_dist).abs.floor
           end
         else
-          if back_dir_ch > 0
-            col = edge_col
-            row = edge_row
+          if @front.directional_change == hor.to_sym
+            row = (back_end_vert / hor_dist).abs.floor
+            col = (front_start_hor / vert_dist).abs.floor
           else
-            col = edge_col
-            row = edge_row - 1
+            row = (back_start_vert / hor_dist).abs.floor
+            col = (front_start_hor / vert_dist).abs.floor
           end
-        end
 
-      elsif @type == :refraction
-        row = (@front.v1.y / dist2hseg).abs.floor + 1
-        col = (@front.v1.x / dist2wseg).abs.floor + 1
+        end
       else
-        row = (@front.v1.y / dist2hseg).abs.floor + 1
-        col = (@front.v1.x / dist2wseg).abs.floor + 1
+        if front_start_vert > back_end_vert
+          if @front.directional_change == hor.to_sym
+            row = (front_start_vert / hor_dist).abs.floor 
+            col = (back_start_hor / vert_dist).abs.floor
+          else
+            row = (front_start_vert / hor_dist).abs.floor 
+            col = (back_end_hor / vert_dist).abs.floor
+          end
+        else
+          if @front.directional_change == hor.to_sym
+            row = (back_end_vert / hor_dist).abs.floor
+            col = (back_end_hor / vert_dist).abs.floor
+          else
+            row = (back_end_vert / hor_dist).abs.floor
+            col = (back_end_hor / vert_dist).abs.floor
+          end
+
+        end
       end
-    when :S3, :S4
-      row = (@front.v1.z / dist2dseg).abs.ceil
-      col = (@front.v1.x / dist2wseg).abs.ceil
-    when :S5, :S6
-      row = (@front.v1.y / dist2hseg).abs.ceil
-      col = (@front.v1.z / dist2dseg).abs.ceil
+    elsif @type == :refraction
+      if front_start_vert.abs == hor_dist * @segments || front_end_vert.abs == hor_dist * @segments
+        row = @segments
+        col = (front_start_hor / vert_dist).abs.floor
+      elsif front_start_vert == 0 || front_end_vert == 0
+        row = 1
+        col = (front_start_hor / vert_dist).abs.floor
+      elsif front_start_hor.abs == vert_dist * @segments || front_end_hor.abs == vert_dist * @segments
+        row = (front_start_vert / hor_dist).abs.floor
+        col = @segments
+      elsif front_start_hor == 0 || front_end_hor == 0
+        row = (front_start_vert / hor_dist).abs.floor
+        col = 1
+      end
+      
+    else
+      row = (front_start_vert / hor_dist).abs.floor + 1
+      col = (front_start_hor / vert_dist).abs.floor + 1
     end
+    row = 1 if row == 0
+    col = 1 if row == 0
+    
     [row, col]
   end
 end
