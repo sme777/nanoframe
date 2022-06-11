@@ -19,7 +19,8 @@ if (signOutBtn != null || boxState != null) {
   let canvasContainer, canvasContainerWidth, canvasContainerHeight;
   let routingColors;
   let isSplit;
-
+  let xGroup1Count, yGroup1Count, zGroup1Count;
+  let xGroup2Count, yGroup2Count, zGroup2Count;
 
   
   let linearGroup = new THREE.Group();
@@ -48,19 +49,72 @@ if (signOutBtn != null || boxState != null) {
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
 
-  function adjustSplitPosition(points) {
-    for (let i = 0; i < points.length; i += 3) {
-      points[i] -= 10;
-      points[i+1] -= 40;
-      points[i+2] += 30;
+  function adjustSplitPosition(points, group) {
+    let delta = 15;
+    if (group === "group1") {
+      for (let i = 0; i < points.length; i += 3) {
+        if (xGroup1Count > xGroup2Count) {
+          points[i] -= delta;
+        } else {
+          points[i] += delta;
+        }
 
-      
+        // if (yGroup1Count > yGroup2Count) {
+        //   points[i+1] += delta;
+        // } else {
+        //   points[i+1] -= delta;
+        // }
+        
+        if (zGroup1Count > zGroup2Count) {
+          points[i+2] -= delta;
+        } else {
+          points[i+2] += delta;
+        }
+      }
+
+
+
+    } else {
+      for (let i = 0; i < points.length; i += 3) {
+        if (xGroup1Count > xGroup2Count) {
+          points[i] += delta;
+        } else {
+          points[i] -= delta;
+        }
+
+        // if (yGroup1Count > yGroup2Count) {
+        //   points[i+1] -= delta;
+        // } else {
+        //   points[i+1] += delta;
+        // }
+
+        if (zGroup1Count > zGroup2Count) {
+          points[i+2] += delta;
+        } else {
+          points[i+2] -= delta;
+        }
+      }
     }
+
+
+
+
+    // console.log(left)
+    // for (let i = 0; i < points.length; i += 3) {
+    //   if (left) {
+    //     points[i] -= delta;
+    //     points[i+1] += delta;
+    //   } else {
+    //     points[i] += delta;
+    //     points[i+1] -= delta;
+    //   }  
+    // }
+    // console.log(points)
     return points;
   }
 
   function generateDisplay(
-    positions = linear_points,
+    positions,
     colors = colors,
     split = false,
     fullDisplay = true
@@ -81,23 +135,27 @@ if (signOutBtn != null || boxState != null) {
     } else {
       colors = findColorSequnece(start, positions.length, divisions);
     }
-    if (split && (positions.length > scaffoldPositions.length / 2)){ 
-      positions = adjustSplitPosition(positions);
+    if (split) {
+      positions = adjustSplitPosition(positions, split);
+      // if (positions.length > scaffoldPositions.flat().length / 2) { 
+      //   positions = adjustSplitPosition(positions);
+      // } else {
+        
+      // }
     }
 
     const geometry = new LineGeometry();
     geometry.setPositions(positions);
     geometry.setColors(colors);
 
-      line0 = new Line2(geometry, matLine);
-      if (fullDisplay) {
-        let _ = split ? splitLinearGroup.add(line0) : linearGroup.add(line0);
+    line0 = new Line2(geometry, matLine);
+    if (fullDisplay) {
+      let _ = split ? splitLinearGroup.add(line0) : linearGroup.add(line0);
+    }
 
-      }
-
-      if (split && (positions.length < scaffoldPositions.length / 2 )){
-        line0.geometry.center()
-      }
+      // if (split && (positions.length < scaffoldPositions.length / 2 )){
+      //   line0.geometry.center()
+      // }
   }
 
   function updateDisplay(scene) {
@@ -125,6 +183,31 @@ if (signOutBtn != null || boxState != null) {
   }
 
 
+  function findBorderPointCount(positions) {
+    let xCountFront = 0;
+    let yCountFront = 0;
+    let zCountFront = 0;
+    let xCountBack = 0;
+    let yCountBack = 0;
+    let zCountBack = 0;
+    
+    for (let i = 0; i < positions.length; i++) {
+      if (positions[i][0] == 0) {
+        xCountFront += 1;
+      } else if (positions[i][0] == 50) {
+        xCountBack += 1;
+      } else if (positions[i][1] == 0) {
+        yCountBack += 1;
+      } else if (positions[i][1] == 50) {
+        yCountFront += 1;
+      } else if (positions[i][2] == 0) {
+        zCountBack += 1;
+      } else if (positions[i][2] == -50) {
+        zCountFront += 1;
+      }
+    }
+    return [xCountFront - xCountBack, yCountFront - yCountBack, zCountFront - zCountBack];
+  }
   /**
    *
    * @param {*} scene
@@ -231,9 +314,19 @@ if (signOutBtn != null || boxState != null) {
     let group1LinearPoints = doublePoints.slice(start, end);
     let group2LinearPoints = doublePoints.slice(end, scaffoldPositions.length + start);
 
-    generateDisplay(group1LinearPoints.flat(), doubleColors.slice(start, end).flat(), true);
-    generateDisplay(group2LinearPoints.flat(), doubleColors.slice(end, scaffoldPositions.length + start).flat(), true);
+    [xGroup1Count, yGroup1Count, zGroup1Count] = findBorderPointCount(group1LinearPoints);
+    [xGroup2Count, yGroup2Count, zGroup2Count] = findBorderPointCount(group2LinearPoints);
+    console.log(findBorderPointCount(group1LinearPoints), group1LinearPoints.length);
+    console.log(findBorderPointCount(group2LinearPoints), group2LinearPoints.length);
+    generateDisplay(group1LinearPoints.flat(), doubleColors.slice(start, end).flat(), "group1");
+    generateDisplay(group2LinearPoints.flat(), doubleColors.slice(end, scaffoldPositions.length + start).flat(), "group2");
     
+    new THREE.Box3()
+      .setFromObject(splitLinearGroup)
+      .getCenter(splitLinearGroup.position)
+      .multiplyScalar(-1);
+
+
     let stapleLinearGroup = new THREE.Group();
     stapleLinearGroup.visible = false;
 
