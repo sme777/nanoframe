@@ -599,8 +599,8 @@ class Graph
 
   def generate_colors
     colors = []
-    (0...@scaff_length).each do |i|
-      t = i.to_f / @scaff_length
+    (0...@points.size).each do |i|
+      t = i.to_f / @points.size
       # colors.concat([t / 4, t / 1.5 + 0.15, t + 0.2])
       colors << [t + 0.2, t + 0.2, t / 8] #yellow
     end

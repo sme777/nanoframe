@@ -129,42 +129,42 @@ if (signOutBtn != null || boxState != null) {
    *
    * @param {*} scene
    */
-  function connectEnds(scene) {
-    let [positions, colors] = getCurvePoints(lastStartPoint, firstEndPoint);
-    let geometry = new LineGeometry();
-    geometry.setPositions(positions);
-    geometry.setColors(colors);
-    line4 = new Line2(geometry, matLine);
-    line4.computeLineDistances();
-    line4.scale.set(1, 1, 1);
-    scene.add(line4);
-    let geo = new THREE.BufferGeometry();
-    geo.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(positions, 3)
-    );
-    geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-    line5 = new THREE.Line(geo, matLineBasic);
-    scene.add(line5);
+  // function connectEnds(scene) {
+  //   let [positions, colors] = getCurvePoints(lastStartPoint, firstEndPoint);
+  //   let geometry = new LineGeometry();
+  //   geometry.setPositions(positions);
+  //   geometry.setColors(colors);
+  //   line4 = new Line2(geometry, matLine);
+  //   line4.computeLineDistances();
+  //   line4.scale.set(1, 1, 1);
+  //   scene.add(line4);
+  //   let geo = new THREE.BufferGeometry();
+  //   geo.setAttribute(
+  //     "position",
+  //     new THREE.Float32BufferAttribute(positions, 3)
+  //   );
+  //   geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+  //   line5 = new THREE.Line(geo, matLineBasic);
+  //   scene.add(line5);
 
-    let [positions2, colors2] = getCurvePoints(lastEndPoint, firstStartPoint);
-    geometry = new LineGeometry();
-    geometry.setPositions(positions2);
-    geometry.setColors(colors2);
+  //   let [positions2, colors2] = getCurvePoints(lastEndPoint, firstStartPoint);
+  //   geometry = new LineGeometry();
+  //   geometry.setPositions(positions2);
+  //   geometry.setColors(colors2);
 
-    line6 = new Line2(geometry, matLine);
-    line6.computeLineDistances();
-    line6.scale.set(1, 1, 1);
-    scene.add(line6);
-    geo = new THREE.BufferGeometry();
-    geo.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(positions2, 3)
-    );
-    geo.setAttribute("color", new THREE.Float32BufferAttribute(colors2, 3));
-    line7 = new THREE.Line(geo, matLineBasic);
-    scene.add(line7);
-  }
+  //   line6 = new Line2(geometry, matLine);
+  //   line6.computeLineDistances();
+  //   line6.scale.set(1, 1, 1);
+  //   scene.add(line6);
+  //   geo = new THREE.BufferGeometry();
+  //   geo.setAttribute(
+  //     "position",
+  //     new THREE.Float32BufferAttribute(positions2, 3)
+  //   );
+  //   geo.setAttribute("color", new THREE.Float32BufferAttribute(colors2, 3));
+  //   line7 = new THREE.Line(geo, matLineBasic);
+  //   scene.add(line7);
+  // }
 
   function getCurvePoints(start, end) {
     let positions = [];
@@ -321,6 +321,7 @@ if (signOutBtn != null || boxState != null) {
         camera.lookAt(stapleLine.position);
 
         let stapleGeo = new THREE.BufferGeometry();
+
         stapleGeo.setAttribute(
           "position",
           new THREE.Float32BufferAttribute(staplePositions, 3)
