@@ -58,12 +58,6 @@ if (signOutBtn != null || boxState != null) {
         } else {
           points[i] += delta;
         }
-
-        // if (yGroup1Count > yGroup2Count) {
-        //   points[i+1] += delta;
-        // } else {
-        //   points[i+1] -= delta;
-        // }
         
         if (zGroup1Count > zGroup2Count) {
           points[i+2] -= delta;
@@ -71,9 +65,6 @@ if (signOutBtn != null || boxState != null) {
           points[i+2] += delta;
         }
       }
-
-
-
     } else {
       for (let i = 0; i < points.length; i += 3) {
         if (xGroup1Count > xGroup2Count) {
@@ -81,12 +72,6 @@ if (signOutBtn != null || boxState != null) {
         } else {
           points[i] -= delta;
         }
-
-        // if (yGroup1Count > yGroup2Count) {
-        //   points[i+1] -= delta;
-        // } else {
-        //   points[i+1] += delta;
-        // }
 
         if (zGroup1Count > zGroup2Count) {
           points[i+2] += delta;
@@ -96,20 +81,6 @@ if (signOutBtn != null || boxState != null) {
       }
     }
 
-
-
-
-    // console.log(left)
-    // for (let i = 0; i < points.length; i += 3) {
-    //   if (left) {
-    //     points[i] -= delta;
-    //     points[i+1] += delta;
-    //   } else {
-    //     points[i] += delta;
-    //     points[i+1] -= delta;
-    //   }  
-    // }
-    // console.log(points)
     return points;
   }
 
@@ -135,14 +106,14 @@ if (signOutBtn != null || boxState != null) {
     } else {
       colors = findColorSequnece(start, positions.length, divisions);
     }
-    if (split) {
-      positions = adjustSplitPosition(positions, split);
-      // if (positions.length > scaffoldPositions.flat().length / 2) { 
-      //   positions = adjustSplitPosition(positions);
-      // } else {
+    // if (split) {
+    //   positions = adjustSplitPosition(positions, split);
+    //   // if (positions.length > scaffoldPositions.flat().length / 2) { 
+    //   //   positions = adjustSplitPosition(positions);
+    //   // } else {
         
-      // }
-    }
+    //   // }
+    // }
 
     const geometry = new LineGeometry();
     geometry.setPositions(positions);
@@ -208,68 +179,35 @@ if (signOutBtn != null || boxState != null) {
     }
     return [xCountFront - xCountBack, yCountFront - yCountBack, zCountFront - zCountBack];
   }
-  /**
-   *
-   * @param {*} scene
-   */
-  // function connectEnds(scene) {
-  //   let [positions, colors] = getCurvePoints(lastStartPoint, firstEndPoint);
-  //   let geometry = new LineGeometry();
-  //   geometry.setPositions(positions);
-  //   geometry.setColors(colors);
-  //   line4 = new Line2(geometry, matLine);
-  //   line4.computeLineDistances();
-  //   line4.scale.set(1, 1, 1);
-  //   scene.add(line4);
-  //   let geo = new THREE.BufferGeometry();
-  //   geo.setAttribute(
-  //     "position",
-  //     new THREE.Float32BufferAttribute(positions, 3)
-  //   );
-  //   geo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-  //   line5 = new THREE.Line(geo, matLineBasic);
-  //   scene.add(line5);
 
-  //   let [positions2, colors2] = getCurvePoints(lastEndPoint, firstStartPoint);
-  //   geometry = new LineGeometry();
-  //   geometry.setPositions(positions2);
-  //   geometry.setColors(colors2);
 
-  //   line6 = new Line2(geometry, matLine);
-  //   line6.computeLineDistances();
-  //   line6.scale.set(1, 1, 1);
-  //   scene.add(line6);
-  //   geo = new THREE.BufferGeometry();
-  //   geo.setAttribute(
-  //     "position",
-  //     new THREE.Float32BufferAttribute(positions2, 3)
-  //   );
-  //   geo.setAttribute("color", new THREE.Float32BufferAttribute(colors2, 3));
-  //   line7 = new THREE.Line(geo, matLineBasic);
-  //   scene.add(line7);
-  // }
+  function connectEnds(start, end, elevation) {
+    let middle = (new THREE.Vector3()).addVectors(start, end).divideScalar(2);
+    let firstControlPoint =  (new THREE.Vector3()).addVectors(start, middle).divideScalar(2).add(new THREE.Vector3(0, elevation, 0));
+    let secondControlPoint = (new THREE.Vector3()).addVectors(middle, end).divideScalar(2).add(new THREE.Vector3(0, elevation, 0));
+    const curve = new THREE.CubicBezierCurve3(
+      start,
+      firstControlPoint,
+      secondControlPoint,
+      end
+    );
 
-  function getCurvePoints(start, end) {
-    let positions = [];
-    let colors = [];
-    const divisions = 96;
-    const point = new THREE.Vector3();
-    const spline = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(start[0], start[1], start[2]),
-      new THREE.Vector3(end[0], end[1], end[2]),
-    ]);
-    for (let i = 0, l = divisions; i < l; i++) {
-      const t = i / l;
-      spline.getPoint(t, point);
-      positions.push(
-        point.x + (Math.random() - 0.5),
-        point.y + (Math.random() - 0.5),
-        point.z + (Math.random() - 0.5)
-      );
-      colors.push(t, 0.5, t);
+    const points = curve.getPoints(49);
+    const geometry = new LineGeometry();
+    geometry.setPositions(points.map(e => [e.x, e.y, e.z]).flat());
+    const colors = () => {
+      let gradients = [];
+      for (let i = 0; i < 50; i++) {
+        gradients.push(i / 50 + 0.4);
+        gradients.push(i / 50 + 0.2);
+        gradients.push(i / 50 / 4);
+      }
+      return gradients;
     }
+    geometry.setColors(colors());
 
-    return [positions, colors];
+    const line = new Line2(geometry, matLine);
+    return line;
   }
 
   for (let i = 0; i < size; i++) {
@@ -313,18 +251,29 @@ if (signOutBtn != null || boxState != null) {
 
     let group1LinearPoints = doublePoints.slice(start, end);
     let group2LinearPoints = doublePoints.slice(end, scaffoldPositions.length + start);
-
     [xGroup1Count, yGroup1Count, zGroup1Count] = findBorderPointCount(group1LinearPoints);
     [xGroup2Count, yGroup2Count, zGroup2Count] = findBorderPointCount(group2LinearPoints);
-    console.log(findBorderPointCount(group1LinearPoints), group1LinearPoints.length);
-    console.log(findBorderPointCount(group2LinearPoints), group2LinearPoints.length);
-    generateDisplay(group1LinearPoints.flat(), doubleColors.slice(start, end).flat(), "group1");
-    generateDisplay(group2LinearPoints.flat(), doubleColors.slice(end, scaffoldPositions.length + start).flat(), "group2");
+    group1LinearPoints = adjustSplitPosition(group1LinearPoints.flat(), "group1");
+    group2LinearPoints = adjustSplitPosition(group2LinearPoints.flat(), "group2");
+    generateDisplay(group1LinearPoints, doubleColors.slice(start, end).flat(), "group1");
+    generateDisplay(group2LinearPoints, doubleColors.slice(end, scaffoldPositions.length + start).flat(), "group2");
     
     new THREE.Box3()
       .setFromObject(splitLinearGroup)
       .getCenter(splitLinearGroup.position)
       .multiplyScalar(-1);
+
+    const startVec1 = new THREE.Vector3(group1LinearPoints.at(0), group1LinearPoints.at(1), group1LinearPoints.at(2));
+    const endVec1 = new THREE.Vector3(group2LinearPoints.at(-3), group2LinearPoints.at(-2), group2LinearPoints.at(-1));
+    const connectionLine1 = connectEnds(startVec1, endVec1, 10);
+
+    const startVec2 = new THREE.Vector3(group1LinearPoints.at(-3), group1LinearPoints.at(-2), group1LinearPoints.at(-1));
+    const endVec2 = new THREE.Vector3(group2LinearPoints.at(0), group2LinearPoints.at(1), group2LinearPoints.at(2));
+    const connectionLine2 = connectEnds(startVec2, endVec2, 10);
+
+    splitLinearGroup.add(connectionLine1);
+    splitLinearGroup.add(connectionLine2);
+
 
 
     let stapleLinearGroup = new THREE.Group();
