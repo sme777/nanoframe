@@ -11,7 +11,7 @@ class Staple
     else
       @front = args[:front]
       @back = args[:back]
-      @buffer = 0#args[:buffer] || 0
+      @buffer = args[:buffer] || 0
       @type = args[:type]
       
       start_pos = args[:start_pos]
@@ -248,7 +248,7 @@ class Staple
     end
     row = 1 if row == 0
     col = 1 if row == 0
-    
+
     [row, col]
   end
 end

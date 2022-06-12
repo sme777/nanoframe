@@ -11,7 +11,6 @@ class Graph
   # dimension[1] -> height
   # dimension[2] -> depth
   def initialize(id, dimensions, shape, scaffold)
-    # byebug
     setup_dimensions(dimensions, shape)
     @generator_id = id
     @segments = dimensions["divisions"].to_i + 1
@@ -26,7 +25,6 @@ class Graph
     @colors = generate_colors   
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
-    # byebug
     @vertex_cuts = []
     @boundary_edges.each do |e| 
       @vertex_cuts << e.v1 if !@vertex_cuts.include?(e.v1)
@@ -506,7 +504,6 @@ class Graph
 
     sampled_points = []
     last_corners = nil
-    # byebug
     normalized_vertices.each_with_index do |vertex, i|
       next_vert = normalized_vertices[(i + 1) % normalized_vertices.size]
       next_next_vert = normalized_vertices[(i + 2) % normalized_vertices.size]
@@ -615,7 +612,6 @@ class Graph
       staple_adj_len_arr = @staple_breaker.staples_postprocess(staple_len_arr)
       staple_len_map[side] = staple_adj_len_arr
     end
-    # byebug
     edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_len_map)
   end
 
@@ -632,7 +628,6 @@ class Graph
 
     # plane_arr = []
     graph_hash = {}
-    # byebug
     graph_hash[:start] = @start_idx * @sampling_frequency
     graph_hash[:end] = (@start_idx + @group1.size) * @sampling_frequency
     graph_hash[:boundary_edges] = boundary_edges.each {|edge| edge.to_hash}

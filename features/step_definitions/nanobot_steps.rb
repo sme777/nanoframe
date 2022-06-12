@@ -17,7 +17,6 @@ When(/I click on '(.*)'/) do |_btn|
 end
 
 Then(/the '(.*)' button should (not?) be disabled/) do |btn, disabled|
-  # byebug
   if disabled
     expect(find_by_id("#{btn.downcase}-btn")).not_to be_disabled
   else

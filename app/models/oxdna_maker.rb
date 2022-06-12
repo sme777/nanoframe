@@ -112,13 +112,19 @@ class OxDNAMaker
         end
         staples_idxs.each do |staple_idxs|
             staple_positions, staple_a1s, staple_a3s = [], [], []
-            staple_idxs.each do |idx|
-                next if idx.nil?
-                
-                complimentary_data = scaffold_nt_hash[idx]
-                staple_positions << complimentary_data[0]
-                staple_a1s << complimentary_data[1]
-                staple_a3s << complimentary_data[2]
+            staple_idxs.each_with_index do |idx, i|
+                if idx.nil?
+                    prev_complimentary_data = scaffold_nt_hash[staple_idxs[i-1]] 
+                    next_complimentary_data = scaffold_nt_hash[staple_idxs[i+1]]
+                    staple_positions << (prev_complimentary_data[0] + next_complimentary_data[0]) / 2
+                    staple_a1s << (prev_complimentary_data[1] + next_complimentary_data[1]) / 2
+                    staple_a3s << (prev_complimentary_data[2] + next_complimentary_data[2]) / 2
+                else
+                    complimentary_data = scaffold_nt_hash[idx]
+                    staple_positions << complimentary_data[0]
+                    staple_a1s << complimentary_data[1]
+                    staple_a3s << complimentary_data[2]
+                end
             end
             staples_positions << staple_positions
             staples_a1s << staple_a1s

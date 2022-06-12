@@ -38,7 +38,6 @@ RSpec.describe Atom, type: :model do
     #   Routing.normalize(@vs, 10, 10, 10)
     #   constraints = breaker.staples_preprocess(:S1)
     #   staple_len_arr = breaker.staples_postprocess(breaker.ilp(constraints, :S1))
-    #   byebug
     #   _, staples = breaker.generate_staple_strands(@vs, staple_len_arr)
     # end
 
@@ -61,7 +60,6 @@ RSpec.describe Atom, type: :model do
     #   staple_len_arr = breaker.staples_postprocess(breaker.ilp(constraints))
 
     #   staples = breaker.generate_staple_strands(@vs, staple_len_arr)
-    #   byebug
     # end
   end
 end

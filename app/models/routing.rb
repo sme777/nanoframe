@@ -46,7 +46,6 @@ module Routing
 
   def self.get_edge_from_set(set)
     vectors = []
-    # byebug
     set.e.reverse_each do |edge|
       vectors << edge.v1 unless equals(edge.v1, vectors)
 
@@ -70,22 +69,6 @@ module Routing
     end
 
     return vectors unless corners
-
-    # vectors.each_with_index do |vector, i|
-    #     prev_edge = Edge.new(vectors[(i - 1) % vectors.size], vector)
-    #     next_edge = Edge.new(vector, vectors[(i + 1) % vectors.size])
-    #     pe_dc, pe_vec = prev_edge.directional_change_vec
-    #     ne_dc, ne_vec = next_edge.directional_change_vec
-    #     cdr, cpe, cne = change_dir(pe_dc, ne_dc)
-    #     next unless !cdr.nil?
-    #     dpe_dc, dne_dc = corner_change(cdr, cpe, cne, pe_vec, ne_vec)
-    #     cpe_dc = vector.instance_variable_get("@#{cpe}")
-    #     cne_dc = vector.instance_variable_get("@#{cne}")
-    #     vector.instance_variable_set("@#{cpe}", cpe_dc + dpe_dc)
-    #     vector.instance_variable_set("@#{cne}", cne_dc + dne_dc)
-
-    # end
-
     vectors
   end
 

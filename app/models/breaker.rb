@@ -79,7 +79,6 @@ class Breaker
   end
 
   def break_long_extension(length)
-    # byebug
     return [(length / 2).floor, (length / 2).ceil] if length / 2 >= 20 && length / 2 <= 60
 
     break_long_extension(length / 2) * 2
@@ -146,9 +145,7 @@ class Breaker
   end
 
   def generate_staple_strands(vertices, staple_len_map)
-    # byebug
     edges = generate_shape_edges(vertices)
-    # byebug
     staples = []
 
     edges.each do |edge|
@@ -168,14 +165,13 @@ class Breaker
         if ext_b_hor == [0] && ext_b_vert == [0]
           staple = Staple.new({
             front: edge, back: adjacent, start_pos: refr/2, end_pos: refr2/2,
-            type: :refraction, buffer: 2
+            type: :refraction, buffer: 0 # changed from 2
         }) #edge, adjacent, refr / 2, refr2 / 2, :refraction, 2)
           staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
           edge.assoc_strands << staple.object_id
           staples << staple
         else
           dir_ch = edge.directional_change
-          # byebug
           if (dir_ch == :x && ext_b_hor != [0]) ||
               (dir_ch == :y && ext_b_vert != [0]) ||
               (dir_ch == :z && ext_b_vert != [0] && (curr_side == :S3 || curr_side == :S4)) || 
@@ -215,11 +211,10 @@ class Breaker
                 stp.prev = extension_staples[idx - 1].object_id
               end
             end
-            # byebug
             staples.concat(extension_staples)
             staple = Staple.new({
               front: edge, back: adjacent, start_pos: start, end_pos: refr2/2,
-              type: :refraction, buffer: 2
+              type: :refraction, buffer: 0 # changed from 2
             })
             # staple = Staple.new(edge, adjacent, start, refr2 / 2, :refraction, 2)
             staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
@@ -237,7 +232,6 @@ class Breaker
           end
         end
       else
-        # byebug
         adjacent = ObjectSpace._id2ref(edge.adjacent_edges.first)
         if ext_hor == [0] && ext_vert == [0]
           # staple = Staple.new(edge, adjacent, refl2, refl2, :reflection, 1)
@@ -249,13 +243,11 @@ class Breaker
           edge.assoc_strands << staple.object_id
           staples << staple
         else
-          # byebug
           dir_ch = edge.directional_change
           if (dir_ch == :x && ext_hor != [0]) ||
             (dir_ch == :y && ext_vert != [0]) ||
             (dir_ch == :z && ext_vert != [0] && (curr_side == :S3 || curr_side == :S4)) || 
             (dir_ch == :z && ext_hor != [0] && (curr_side == :S5 || curr_side == :S6))
-            # byebug
             start = refl2
             
             case dir_ch
@@ -270,7 +262,6 @@ class Breaker
             # extensions = ext_b_hor != [0] ? ext_b_hor : ext_b_vert
             extension_staples = []
             extensions.each do |ext|
-              # byebug
               # staple = Staple.new(edge, edge, start, start + ext, :extension)
               staple = Staple.new({
                 front: edge, back: edge, start_pos: start, end_pos: start+ext,
@@ -302,7 +293,6 @@ class Breaker
             staples << staple
         
           else
-            # byebug
             # cut_size = refl2 > 
             min_size = [refl1, refl2].min
             max_size = [refl1, refl2].max
@@ -359,12 +349,9 @@ class Breaker
         if staple1.type == :extension
 
           if staple2.type == :reflection || staple2.type == :refraction
-            # byebug
             if staple1.front == staple2.back
-              # byebug
               staple1.next = staple2.object_id
             elsif staple1.back == staple2.front
-              # byebug
               staple1.prev = staple2.object_id
             end
           end
