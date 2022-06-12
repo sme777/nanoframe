@@ -106,14 +106,6 @@ if (signOutBtn != null || boxState != null) {
     } else {
       colors = findColorSequnece(start, positions.length, divisions);
     }
-    // if (split) {
-    //   positions = adjustSplitPosition(positions, split);
-    //   // if (positions.length > scaffoldPositions.flat().length / 2) { 
-    //   //   positions = adjustSplitPosition(positions);
-    //   // } else {
-        
-    //   // }
-    // }
 
     const geometry = new LineGeometry();
     geometry.setPositions(positions);
@@ -123,10 +115,6 @@ if (signOutBtn != null || boxState != null) {
     if (fullDisplay) {
       let _ = split ? splitLinearGroup.add(line0) : linearGroup.add(line0);
     }
-
-      // if (split && (positions.length < scaffoldPositions.length / 2 )){
-      //   line0.geometry.center()
-      // }
   }
 
   function updateDisplay(scene) {

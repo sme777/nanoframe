@@ -427,6 +427,10 @@ class Generator < ApplicationRecord
     arr
   end
 
+  def self.supported_shapes
+    ["Cube (P1)"]
+  end
+
   def shape_name
     shape.match(/(^.*)\s/).captures.first.downcase.parameterize(separator: '_').to_sym
   end

@@ -102,21 +102,27 @@ class GeneratorsController < ApplicationController
 
   def create
     generator_fields = generator_params
-    dimensions = {height: generator_fields[:height], width: generator_fields[:width], depth: generator_fields[:depth], divisions: generator_fields[:divisions]}
-    if Generator.scaffolds[generator_fields[:scaffold_name].to_sym].nil?
-
-    else
-      scaffold = Generator.public_send(generator_fields[:scaffold_name].parameterize(separator: "_"))
-    end
-    @generator = Generator.new({shape: generator_fields[:shape], dimensions: dimensions, scaffold: scaffold, scaffold_name: generator_fields[:scaffold_name]})
-    @generator.user_id = @current_user.id unless @current_user.nil?
-
-    if @generator.save
-      session['id'] = @generator.id
-      redirect_to "/nanobot/#{@generator.id}/visualize"
-    else
-      flash[:message] = 'Could Not Complete Request'
+    if !Generator.supported_shapes.include?(generator_fields[:shape])
+      flash[:danger] = "#{generator_fields[:shape]} is currently not supported."
       redirect_to '/nanobot'
+    else
+    
+      dimensions = {height: generator_fields[:height], width: generator_fields[:width], depth: generator_fields[:depth], divisions: generator_fields[:divisions]}
+      if Generator.scaffolds[generator_fields[:scaffold_name].to_sym].nil?
+
+      else
+        scaffold = Generator.public_send(generator_fields[:scaffold_name].parameterize(separator: "_"))
+      end
+      @generator = Generator.new({shape: generator_fields[:shape], dimensions: dimensions, scaffold: scaffold, scaffold_name: generator_fields[:scaffold_name]})
+      @generator.user_id = @current_user.id unless @current_user.nil?
+
+      if @generator.save
+        session['id'] = @generator.id
+        redirect_to "/nanobot/#{@generator.id}/visualize"
+      else
+        flash[:message] = 'Could Not Complete Request'
+        redirect_to '/nanobot'
+      end
     end
   end
 
