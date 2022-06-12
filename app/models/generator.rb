@@ -428,7 +428,7 @@ class Generator < ApplicationRecord
   end
 
   def shape_name
-    self.shape.match(/(^.*)\s/).captures.first.downcase.parameterize(separator: '_').to_sym
+    shape.match(/(^.*)\s/).captures.first.downcase.parameterize(separator: '_').to_sym
   end
 
   def is_current_bridge_length(val)

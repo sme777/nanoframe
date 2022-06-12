@@ -17,16 +17,11 @@ class ApplicationController < ActionController::Base
   end
 
   def set_generator
-    if is_active_generator?
       begin
         @generator = Generator.find(generator_id)
       rescue ActiveRecord::RecordNotFound
         @generator = Generator.new
       end
-
-    else
-      @generator = Generator.new
-    end
   end
 
   def set_user
