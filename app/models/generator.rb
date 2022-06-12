@@ -80,7 +80,7 @@ class Generator < ApplicationRecord
     staples.each_with_index do |staple, idx|
       file.write("#{descriptions[idx]} , #{staple}")
       file.write("\n")
-      count += 1shape_name
+      count += 1
     end
     file.close
     filename
