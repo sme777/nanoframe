@@ -72,6 +72,25 @@
                     <label id="box-state-staples-label" class="btn btn-outline-secondary" for="box-state-staples">Show
                         Staples</label><br>
                 </div>
+
+                <div class="row box-state-container">
+                        <div class="dropdown download-file-container">
+                            <button class="btn btn-outline-secondary dropdown-toggle file-dropdown-menu" type="button" id="download-file-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                Download Files
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark file-dropdown-menu">
+                                <% @supported_files.each do |file| %>
+                                    <li>
+                                        <%= form_with(url: "/nanobot/#{@generator.id}/visualize", method: :post) do |f| %>
+                                            <%= hidden_field_tag 'type', file %>
+                                            <%= button_tag file, class: "dropdown-item"%>
+                                        <% end %>
+                                    </li>
+                                <% end %>
+                            </ul>
+                        </div>
+                </div>
+
             </div>
             <div class="modifications-container">
 

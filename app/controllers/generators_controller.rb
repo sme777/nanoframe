@@ -54,6 +54,7 @@ class GeneratorsController < ApplicationController
 
   def visualize
     @color_palettes = Generator.color_palettes
+    @supported_files = Generator.supported_files
     if params[:regenerate] || @generator.routing == "{}"
       graph = @generator.route
       routing = graph.to_hash
@@ -78,6 +79,10 @@ class GeneratorsController < ApplicationController
       @staples = JSON.generate(@generator.staples)
       @start = @generator.routing["start"]
       @end = @generator.routing["end"]
+    end
+
+    if params[:type]
+      download
     end
   end
 
