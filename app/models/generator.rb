@@ -48,6 +48,7 @@ class Generator < ApplicationRecord
   end
 
   def route
+    byebug
     @graph = Graph.new(id, dimensions, shape_name, scaffold)
   end
 
@@ -428,7 +429,7 @@ class Generator < ApplicationRecord
   end
 
   def shape_name
-    shape.match(/(^.*)\s/).captures.first.downcase.parameterize(separator: '_').to_sym
+    self.shape.match(/(^.*)\s/).captures.first.downcase.parameterize(separator: '_').to_sym
   end
 
   def is_current_bridge_length(val)
