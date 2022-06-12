@@ -48,7 +48,6 @@ class Generator < ApplicationRecord
   end
 
   def route
-    byebug
     @graph = Graph.new(id, dimensions, shape_name, scaffold)
   end
 
@@ -81,7 +80,7 @@ class Generator < ApplicationRecord
     staples.each_with_index do |staple, idx|
       file.write("#{descriptions[idx]} , #{staple}")
       file.write("\n")
-      count += 1
+      count += 1shape_name
     end
     file.close
     filename
