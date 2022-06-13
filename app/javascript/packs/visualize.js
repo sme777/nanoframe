@@ -251,12 +251,12 @@ if (signOutBtn != null || boxState != null) {
       .getCenter(splitLinearGroup.position)
       .multiplyScalar(-1);
 
-    const startVec1 = new THREE.Vector3(group1LinearPoints.at(0), group1LinearPoints.at(1), group1LinearPoints.at(2));
-    const endVec1 = new THREE.Vector3(group2LinearPoints.at(-3), group2LinearPoints.at(-2), group2LinearPoints.at(-1));
+    const startVec1 = new THREE.Vector3(group1LinearPoints[0], group1LinearPoints[1], group1LinearPoints[2]);
+    const endVec1 = new THREE.Vector3(group2LinearPoints[group2LinearPoints.length - 3], group2LinearPoints[group2LinearPoints.length - 2], group2LinearPoints[group2LinearPoints.length - 1]);
     const connectionLine1 = connectEnds(startVec1, endVec1, 10);
 
-    const startVec2 = new THREE.Vector3(group1LinearPoints.at(-3), group1LinearPoints.at(-2), group1LinearPoints.at(-1));
-    const endVec2 = new THREE.Vector3(group2LinearPoints.at(0), group2LinearPoints.at(1), group2LinearPoints.at(2));
+    const startVec2 = new THREE.Vector3(group1LinearPoints[group1LinearPoints.length - 3], group1LinearPoints[group1LinearPoints.length - 2], group1LinearPoints[group1LinearPoints.length - 1]);
+    const endVec2 = new THREE.Vector3(group2LinearPoints[0], group2LinearPoints[1], group2LinearPoints[2]);
     const connectionLine2 = connectEnds(startVec2, endVec2, 10);
 
     splitLinearGroup.add(connectionLine1);
