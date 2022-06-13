@@ -3,7 +3,7 @@
 require 'json'
 
 class Edge
-  attr_accessor :v1, :v2, :sequence, :adjacent_edges, :next, :prev, :assoc_strands, :scaffold_idxs
+  attr_accessor :v1, :v2, :sequence, :adjacent_edges, :next, :prev, :assoc_strands, :scaffold_idxs, :complementary_rotation_labels
 
   def initialize(v1, v2)
     @v1 = v1
@@ -11,6 +11,7 @@ class Edge
     @adjacent_edges = []
     @assoc_strands = []
     @scaffold_idxs = []
+    @complementary_rotation_labels = []
   end
 
   def string

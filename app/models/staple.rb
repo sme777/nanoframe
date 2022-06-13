@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class Staple
-  attr_accessor :sequence, :front, :back, :type, :next, :prev, :points, :interpolated_points, :scaffold_idxs
+  attr_accessor :sequence, :front, :back, :type, :next, :prev, :points, :interpolated_points, :scaffold_idxs, :complementary_rotation_labels
 
   def initialize(args)
-    
+    setup_dimensions([50, 50, 50], 5, :cube)
     if args.size == 3
       @sequence = args[:sequence]
       @points = args[:points]
@@ -19,16 +19,27 @@ class Staple
       @next = nil
       @prev = nil
   
-      @sequence = if front == back
-                    convert(front.sequence[start_pos...end_pos])
-                  else
-                    convert(front.sequence[start_pos...] + buffer_bp + back.sequence[...end_pos])
-                  end
-      @scaffold_idxs = if front == back
-                        front.scaffold_idxs[start_pos...end_pos] #+ [nil] * @buffer
-                      else
-                        front.scaffold_idxs[start_pos...] + [nil] * @buffer + back.scaffold_idxs[...end_pos]
-                      end
+
+      if @front == @back
+        @sequence = convert(front.sequence[start_pos...end_pos])
+        @scaffold_idxs = front.scaffold_idxs[start_pos...end_pos]
+        @complementary_rotation_labels = front.complementary_rotation_labels[start_pos...end_pos]
+      else
+        @sequence = convert(front.sequence[start_pos...] + buffer_bp + back.sequence[...end_pos])
+        @scaffold_idxs = front.scaffold_idxs[start_pos...] + [nil] * @buffer + back.scaffold_idxs[...end_pos]
+        @complementary_rotation_labels = front.complementary_rotation_labels[start_pos...] + [nil] * @buffer + back.complementary_rotation_labels[...end_pos]
+      end
+
+      # @sequence = if front == back
+      #               convert(front.sequence[start_pos...end_pos])
+      #             else
+      #               convert(front.sequence[start_pos...] + buffer_bp + back.sequence[...end_pos])
+      #             end
+      # @scaffold_idxs = if front == back
+      #                   front.scaffold_idxs[start_pos...end_pos] #+ [nil] * @buffer
+      #                 else
+      #                   front.scaffold_idxs[start_pos...] + [nil] * @buffer + back.scaffold_idxs[...end_pos]
+      #                 end
       @points = compute_positions(start_pos, end_pos)
     end
   end
@@ -62,11 +73,10 @@ class Staple
     bpb
   end
 
-  def compute_positions(start_pos, end_pos, _sample = 10)
+  def compute_positions(start_pos, end_pos, extendable=nil, _sample = 10)
     if @type == :extension
       dr_ch, dr_vec = @front.directional_change_vec
       points = Vertex.linspace(dr_ch, @front.sequence.size, @front.v1, @front.v2)[start_pos...end_pos]
-
     elsif @type == :reflection || @type == :refraction || @type == :extension
       dr_ch, dr_vec = @front.directional_change_vec
       start_mid_vec = Vertex.new(@front.v1.x, @front.v1.y, @front.v1.z)
@@ -86,6 +96,49 @@ class Staple
       points.concat(Vertex.linspace(dr_ch2, end_pos, @back.v1, end_point)[1...])
       adjust(points)
     end
+
+
+  end
+
+  def update_extendable_staples
+    extendable_start = @complementary_rotation_labels.first < 6
+    extendable_end = @complementary_rotation_labels.last < 6
+    extendable = nil
+    if extendable_start
+      extendable = :start
+    elsif extendable_end
+      extendable = :end
+    end
+
+    extention_points = []
+    if extendable == :start
+      extention_points = compute_extension_positions(@points.first)
+      @points = extention_points.concat(@points)
+    elsif extendable == :end
+      extention_points = compute_extension_positions(@points.last)
+      @points = @points.concat(extention_points)
+    end
+    
+  end
+
+  def compute_extension_positions(point)
+    side = find_side(point, point)
+    case side
+    when :S1
+      Vertex.linspace(:z, 6, point, Vertex.new(point.x, point.y, point.z + 3))[1...]
+    when :S2
+      Vertex.linspace(:z, 6, point, Vertex.new(point.x, point.y, point.z - 3))[1...]
+    when :S3
+      Vertex.linspace(:y, 6, point, Vertex.new(point.x, point.y - 3, point.z))[1...]
+    when :S4
+      Vertex.linspace(:y, 6, point, Vertex.new(point.x, point.y + 3, point.z))[1...]
+    when :S5
+      Vertex.linspace(:x, 6, point, Vertex.new(point.x - 3, point.y, point.z))[1...]
+    when :S6
+      Vertex.linspace(:x, 6, point, Vertex.new(point.x + 3, point.y, point.z))[1...]
+    else
+      []
+    end
   end
 
   def self.complementary_bp
@@ -97,39 +150,41 @@ class Staple
     }
   end
 
-  def name
-    starting_vertex = @front.v1
-    ending_vertex = @back.v2
-    side = "potato"
-
-    if starting_vertex.z == 0 && ending_vertex.z == 0
+  def find_side(v1, v2)
+    if v1.z == 0 && v2.z == 0
       side = :S1
-    elsif starting_vertex.z == -@depth && ending_vertex.z == -@depth
+    elsif v1.z == -@depth && v2.z == -@depth
       side = :S2
-    elsif starting_vertex.y == 0 && ending_vertex.y == 0
+    elsif v1.y == 0 && v2.y == 0
       side = :S3
-    elsif starting_vertex.y == @height && ending_vertex.y == @height
+    elsif v1.y == @height && v2.y == @height
       side = :S4
-    elsif starting_vertex.x == 0 && ending_vertex.x == 0
+    elsif v1.x == 0 && v2.x == 0
       side = :S5
-    elsif starting_vertex.x == @width && ending_vertex.x == @width
+    elsif v1.x == @width && v2.x == @width
       side = :S6
     else
-      if starting_vertex.z == 0
+      if v1.z == 0
         side = :S1
-      elsif starting_vertex.z == -@depth
+      elsif v1.z == -@depth
         side = :S2
-      elsif starting_vertex.y == 0
+      elsif v1.y == 0
         side = :S3
-      elsif starting_vertex.y == @height
+      elsif v1.y == @height
         side = :S4
-      elsif starting_vertex.x == 0
+      elsif v1.x == 0
         side = :S5
-      elsif starting_vertex.x == @width
+      elsif v1.x == @width
         side = :S6
       end
     end
-    side = Routing.find_plane_number(@front.v1, @front.v2, [50, 50, 50])
+
+  end
+
+  def name
+    starting_vertex = @front.v1
+    ending_vertex = @back.v2
+    side = find_side(starting_vertex, ending_vertex)
     hor, vert, hor_dist, vert_dist = nil, nil, nil, nil
     case side
     when :S1, :S2

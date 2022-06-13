@@ -21,7 +21,7 @@ class Graph
     @edges = v_and_e[1]
     @template_planes = find_four_planes
     @planes, @raw_planes = find_plane_combination(@template_planes)
-    @sorted_vertices, @normalized_vertices, @points, @sampling_frequency = generate_points
+    @sorted_vertices, @normalized_vertices, @points, @sampling_frequency, @scaffold_rotation_labels = generate_points
     @colors = generate_colors   
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
@@ -31,6 +31,7 @@ class Graph
       @vertex_cuts << e.v2 if !@vertex_cuts.include?(e.v2)
     end
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
+    @staples.each {|staple| staple.update_extendable_staples}
   end
 
 
@@ -518,8 +519,9 @@ class Graph
     end
 
     sampled_points = sampled_points.map {|point| [point.x, point.y, point.z]}#Vertex.flatten(sampled_points)
+    scaffold_rotation_labels = ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9] * (sampled_points.size / 10).ceil)[...sampled_points.size]
     freq = 30 #(@scaff_length / sampled_points.size).floor.zero? ? 2 : (@scaff_length / sampled_points.size).floor
-    [sorted_vertices, normalized_vertices, sampled_points, freq]
+    [sorted_vertices, normalized_vertices, sampled_points, freq, scaffold_rotation_labels]
   end
 
 
@@ -612,7 +614,7 @@ class Graph
       staple_adj_len_arr = @staple_breaker.staples_postprocess(staple_len_arr)
       staple_len_map[side] = staple_adj_len_arr
     end
-    edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_len_map)
+    edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_len_map, @scaffold_rotation_labels)
   end
 
 

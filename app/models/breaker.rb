@@ -144,8 +144,8 @@ class Breaker
      problem.value_of(z2), problem.value_of(z3), problem.value_of(z4)]
   end
 
-  def generate_staple_strands(vertices, staple_len_map)
-    edges = generate_shape_edges(vertices)
+  def generate_staple_strands(vertices, staple_len_map, scaffold_rotation_labels)
+    edges = generate_shape_edges(vertices, scaffold_rotation_labels)
     staples = []
 
     edges.each do |edge|
@@ -375,8 +375,10 @@ class Breaker
           cutoff = (staple.sequence.size / 2 - bridge_len)
           back_sequence = staple.sequence[...cutoff]
           back_idxs = staple.scaffold_idxs[...cutoff]
+          back_rotation_labels = staple.complementary_rotation_labels[...cutoff]
           front_sequence = staple.sequence[cutoff...]
           front_idxs = staple.scaffold_idxs[cutoff...]
+          front_rotation_labels = staple.complementary_rotation_labels[cutoff...]
 
           back_lin_positions = staple.points[...cutoff]
           front_lin_positions = staple.points[cutoff...]
@@ -385,10 +387,13 @@ class Breaker
 
           prev_staple.sequence = prev_staple.sequence + back_sequence
           prev_staple.scaffold_idxs = prev_staple.scaffold_idxs + back_idxs
+          prev_staple.complementary_rotation_labels = prev_staple.scaffold_idxs + back_rotation_labels
           prev_staple.points = prev_staple.points.concat(back_lin_positions)
+          
 
           next_staple.sequence = front_sequence + next_staple.sequence 
           next_staple.scaffold_idxs = front_idxs + next_staple.scaffold_idxs
+          next_staple.complementary_rotation_labels = next_staple.scaffold_idxs + front_rotation_labels
           next_staple.points = front_lin_positions.concat(next_staple.points)
           # need to update positions as well
           prev_staple.next = next_staple.object_id
@@ -401,7 +406,7 @@ class Breaker
     staples
   end
 
-  def generate_shape_edges(vertices)
+  def generate_shape_edges(vertices, scaffold_rotation_labels)
     sequence = IO.read('./app/assets/scaffolds/7249.txt')
     edges = []
     ### add extra checks for moving directions
@@ -410,18 +415,21 @@ class Breaker
     vertices.each_with_index do |v, i|
       this_edge = Edge.new(v, vertices[(i + 1) % vertices.size])
       this_step = moving_step(this_edge)
-      seq = if i == vertices.size - 1
-              sequence[seq_count...sequence.size]
-            else
-              sequence[seq_count...(seq_count + this_step)]
-            end
-
+      if i == vertices.size - 1
+        seq = sequence[seq_count...sequence.size]
+        edge_rotation_labels = scaffold_rotation_labels[seq_count...sequence.size]
+      else
+        seq = sequence[seq_count...(seq_count + this_step)]
+        edge_rotation_labels = scaffold_rotation_labels[seq_count...(seq_count + this_step)]
+      end
+       
       edge_idxs = []
       seq.size.times { |k| edge_idxs << position_idx + k }
       position_idx += seq.size
       seq_count += this_step
       this_edge.sequence = seq
       this_edge.scaffold_idxs = edge_idxs
+      this_edge.complementary_rotation_labels = edge_rotation_labels.map {|e| 9 - e }
       edges << this_edge
     end
 
@@ -446,6 +454,7 @@ class Breaker
     end
     edges
   end
+
 
   def moving_step(edge)
     w_step = (@width / (@segments * SSDNA_NT_DIST)).floor
