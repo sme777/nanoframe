@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import oc from "three-orbit-controls";
+import { MeshLine, MeshLineMaterial } from 'three.meshline';
 import { Line2 } from "./threejs/Line2";
 import { LineMaterial } from "./threejs/LineMaterial";
 import { LineGeometry } from "./threejs/LineGeometry";
@@ -179,23 +180,13 @@ if (signOutBtn != null || boxState != null) {
       secondControlPoint,
       end
     );
-
-    const points = curve.getPoints(49);
-    const geometry = new LineGeometry();
-    geometry.setPositions(points.map(e => [e.x, e.y, e.z]).flat());
-    const colors = () => {
-      let gradients = [];
-      for (let i = 0; i < 50; i++) {
-        gradients.push(i / 50 + 0.4);
-        gradients.push(i / 50 + 0.2);
-        gradients.push(i / 50 / 4);
-      }
-      return gradients;
-    }
-    geometry.setColors(colors());
-
-    const line = new Line2(geometry, matLine);
-    return line;
+    const line = new MeshLine();
+    const material = new MeshLineMaterial({color: new THREE.Color( 0xFFC54D ), 
+                                            transparent: true, opacity: 0.75, 
+                                            resolution: new THREE.Vector2(canvasContainerWidth, canvasContainerHeight)
+                                          });
+    line.setPoints(curve.getPoints(49), p => 0.8);
+    return new THREE.Mesh(line, material);
   }
 
   for (let i = 0; i < size; i++) {
@@ -469,7 +460,7 @@ if (signOutBtn != null || boxState != null) {
 
       box.addEventListener("click", () => {
         if (box.checked) {
-          boxLabel.innerHTML = "Close Form";
+          boxLabel.innerHTML = "Closed Form";
           scene.remove(currentGroup);
           isSplit = true;
           currentGroup = splitLinearGroup;
