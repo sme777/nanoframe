@@ -83,8 +83,8 @@ group :test do
 end
 
 group :tools do
-  gem 'squasher', '>= 0.6.0'
   gem 'capistrano'
+  gem 'squasher', '>= 0.6.0'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

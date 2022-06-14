@@ -32,7 +32,7 @@ Rails.application.routes.draw do
   get '/nanobot/:id/compile' => 'generators#compile'
   post '/nanobot/:id/compile' => 'generators#signup_and_save'
   get '/contact/new' => 'users#get_contact'
-  post '/nanobot/:id/update_generator' => 'generators#update_generator' , as: 'update_generator'
+  post '/nanobot/:id/update_generator' => 'generators#update_generator', as: 'update_generator'
   # ajax requests
   get '/checkemail' => 'users#check_email', :defaults => { format: :json }
   get '/checkusername' => 'users#check_username', :defaults => { format: :json }

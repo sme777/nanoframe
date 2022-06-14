@@ -12,7 +12,6 @@ class GeneratorsController < ApplicationController
     @scaffolds = Generator.scaffolds
   end
 
-
   def routing
     @generator = Generator.find(generator_id)
     @positions = @generator.positions
@@ -26,36 +25,35 @@ class GeneratorsController < ApplicationController
   def download
     type = params[:type]
 
-    if !type.nil?
+    unless type.nil?
 
-        filename = @generator.filename(logged_in?, session[:user_id])
-        files = @generator.send(type, filename)
-        zipfile_name = "#{Rails.root.join('tmp').to_s}/#{filename}.zip"
-        if files.size == 1
-          File.open("#{Rails.root.join('tmp').to_s}/#{files[0]}", 'r') do |f|
-            send_data f.read, type: 'application/json', filename: files[0]
-          end
-          File.delete("#{Rails.root.join('tmp').to_s}/#{files[0]}")
-        else
-          Zip::File.open(zipfile_name, create: true) do |zipfile|
-            files.each do |f|
-              zipfile.add(f, File.join(Rails.root.join('tmp').to_s, f))
-            end
-          end
-          File.open("#{Rails.root.join('tmp').to_s}/#{filename}.zip", 'r') do |f|
-            send_data f.read, type: 'application/zip', filename: "#{filename}.zip"
-          end
-          File.delete("#{Rails.root.join('tmp').to_s}/#{filename}.zip")
+      filename = @generator.filename(logged_in?, session[:user_id])
+      files = @generator.send(type, filename)
+      zipfile_name = "#{Rails.root.join('tmp')}/#{filename}.zip"
+      if files.size == 1
+        File.open("#{Rails.root.join('tmp')}/#{files[0]}", 'r') do |f|
+          send_data f.read, type: 'application/json', filename: files[0]
         end
+        File.delete("#{Rails.root.join('tmp')}/#{files[0]}")
+      else
+        Zip::File.open(zipfile_name, create: true) do |zipfile|
+          files.each do |f|
+            zipfile.add(f, File.join(Rails.root.join('tmp').to_s, f))
+          end
+        end
+        File.open("#{Rails.root.join('tmp')}/#{filename}.zip", 'r') do |f|
+          send_data f.read, type: 'application/zip', filename: "#{filename}.zip"
+        end
+        File.delete("#{Rails.root.join('tmp')}/#{filename}.zip")
+      end
 
     end
-    
   end
 
   def visualize
     @color_palettes = Generator.color_palettes
     @supported_files = Generator.supported_files
-    if params[:regenerate] || @generator.routing == "{}"
+    if params[:regenerate] || @generator.routing == '{}'
       graph = @generator.route
       routing = graph.to_hash
       @positions = graph.points
@@ -64,12 +62,12 @@ class GeneratorsController < ApplicationController
       @staples = graph.staples_hash
       # write_staples_to_s3(@graph.staples, @graph.staple_colors)
       Generator.find(@generator.id).update(
-            routing: routing, 
-            positions: @positions, 
-            colors: @colors,
-            vertex_cuts: @vertex_cuts,
-            staples: @staples
-          )
+        routing: routing,
+        positions: @positions,
+        colors: @colors,
+        vertex_cuts: @vertex_cuts,
+        staples: @staples
+      )
       redirect_to "/nanobot/#{@generator.id}/visualize" unless @generator.routing.nil?
     else
       @positions = @generator.positions
@@ -77,17 +75,14 @@ class GeneratorsController < ApplicationController
       @vertex_cuts = @generator.vertex_cuts
       @scaffold = @generator.scaffold
       @staples = JSON.generate(@generator.staples)
-      @start = @generator.routing["start"]
-      @end = @generator.routing["end"]
+      @start = @generator.routing['start']
+      @end = @generator.routing['end']
     end
 
-    if params[:type]
-      download
-    end
+    download if params[:type]
   end
 
   def update_generator
-    
     if params[:bridge_length] && !@generator.is_current_bridge_length(params[:bridge_length])
       new_staples = @generator.update_bridge_length
       Generator.find(@generator.id).update(staples: new_staples)
@@ -111,14 +106,16 @@ class GeneratorsController < ApplicationController
       flash[:danger] = "#{generator_fields[:shape]} is currently not supported."
       redirect_to '/nanobot'
     else
-    
-      dimensions = {height: generator_fields[:height], width: generator_fields[:width], depth: generator_fields[:depth], divisions: generator_fields[:divisions]}
+
+      dimensions = { height: generator_fields[:height], width: generator_fields[:width],
+                     depth: generator_fields[:depth], divisions: generator_fields[:divisions] }
       if Generator.scaffolds[generator_fields[:scaffold_name].to_sym].nil?
 
       else
-        scaffold = Generator.public_send(generator_fields[:scaffold_name].parameterize(separator: "_"))
+        scaffold = Generator.public_send(generator_fields[:scaffold_name].parameterize(separator: '_'))
       end
-      @generator = Generator.new({shape: generator_fields[:shape], dimensions: dimensions, scaffold: scaffold, scaffold_name: generator_fields[:scaffold_name]})
+      @generator = Generator.new({ shape: generator_fields[:shape], dimensions: dimensions, scaffold: scaffold,
+                                   scaffold_name: generator_fields[:scaffold_name] })
       @generator.user_id = @current_user.id unless @current_user.nil?
 
       if @generator.save
@@ -168,17 +165,16 @@ class GeneratorsController < ApplicationController
   end
 
   def write_staples_to_s3(staples, staple_colors)
-
-    if @current_user.nil?
-      user_dir = "anon"
-    else
-      user_dir = @current_user.username
-    end
+    user_dir = if @current_user.nil?
+                 'anon'
+               else
+                 @current_user.username
+               end
     filename = "#{@generator.width}x#{@generator.height}x#{@generator.depth}-#{@generator.divisions}-#{Time.now}"
     # file_path = "#{user_dir}/#{filename}"
-    file = File.open("#{Rails.root.join('tmp').to_s}/#{filename}.csv", 'w')
+    file = File.open("#{Rails.root.join('tmp')}/#{filename}.csv", 'w')
     # file = File.open("app/assets/temp/#{filename}.csv", 'w')
-    file.write("name,sequence,length")
+    file.write('name,sequence,length')
     file.write("\n")
     staples.each_with_index do |staple, idx|
       staple_color = staple_colors[idx]
@@ -187,9 +183,10 @@ class GeneratorsController < ApplicationController
     end
     file.close
     @generator.staples_csv.attach(
-      io: File.open("#{Rails.root.join('tmp').to_s}/#{filename}.csv"), 
+      io: File.open("#{Rails.root.join('tmp')}/#{filename}.csv"),
       filename: "#{filename}.csv",
-      content_type: "text/csv")
+      content_type: 'text/csv'
+    )
   end
 
   private

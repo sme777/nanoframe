@@ -61,7 +61,7 @@ module Routing
     [vectors[...-1], last_vertex]
   end
 
-  def self.normalize(vectors, wsl, hsl, dsl, corners=true)
+  def self.normalize(vectors, wsl, hsl, dsl, corners = true)
     vectors.each do |vector|
       vector.x *= wsl
       vector.y *= hsl
@@ -69,6 +69,7 @@ module Routing
     end
 
     return vectors unless corners
+
     vectors
   end
 
@@ -91,29 +92,29 @@ module Routing
   def self.corner_change(cdr, _cpe, _cne, dpe, dne)
     shift_val = 0.5
     if cdr == :hor
-      if dpe < 0 && dne < 0
+      if dpe.negative? && dne.negative?
         dpe_shift = -shift_val
         dne_shift = shift_val
-      elsif dpe > 0 && dne > 0
+      elsif dpe.positive? && dne.positive?
         dpe_shift = shift_val
         dne_shift = -shift_val
-      elsif dpe < 0 && dne > 0
+      elsif dpe.negative? && dne.positive?
         dpe_shift = -shift_val
         dne_shift = -shift_val
-      elsif dpe > 0 && dne < 0
+      elsif dpe.positive? && dne.negative?
         dpe_shift = shift_val
         dne_shift = shift_val
       end
-    elsif dne > 0 && dpe > 0
+    elsif dne.positive? && dpe.positive?
       dpe_shift = shift_val
       dne_shift = -shift_val
-    elsif dne < 0 && dpe < 0
+    elsif dne.negative? && dpe.negative?
       dpe_shift = -shift_val
       dne_shift = shift_val
-    elsif dne > 0 && dpe < 0
+    elsif dne.positive? && dpe.negative?
       dpe_shift = -shift_val
       dne_shift = -shift_val
-    elsif dne < 0 && dpe > 0
+    elsif dne.negative? && dpe.positive?
       dpe_shift = shift_val
       dne_shift = shift_val
     end
@@ -121,11 +122,11 @@ module Routing
   end
 
   def self.outgoer?(v, width, height, depth)
-    if v.x % width == 0 && (v.y % height == 0 || v.z % depth == 0)
+    if (v.x % width).zero? && ((v.y % height).zero? || (v.z % depth).zero?)
       true
-    elsif v.y % width == 0 && (v.x % height == 0 || v.z % depth == 0)
+    elsif (v.y % width).zero? && ((v.x % height).zero? || (v.z % depth).zero?)
       true
-    elsif v.z % width == 0 && (v.x % height == 0 || v.y % depth == 0)
+    elsif (v.z % width).zero? && ((v.x % height).zero? || (v.y % depth).zero?)
       true
     else
       false
@@ -168,7 +169,7 @@ module Routing
     first_partition.each do |p1_edge|
       second_partition.each do |p2_edge|
         vertex = p1_edge.shared_vertex?(p2_edge)
-        if !!vertex && !on_boundary?(vertex, 200, 200, 200)          
+        if !vertex.nil? && !on_boundary?(vertex, 200, 200, 200)
           boundary_edges << p1_edge unless boundary_edges.include?(p1_edge)
           boundary_edges << p2_edge unless boundary_edges.include?(p2_edge)
         end

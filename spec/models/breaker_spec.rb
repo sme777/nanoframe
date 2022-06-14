@@ -46,7 +46,7 @@ RSpec.describe Atom, type: :model do
     #   Routing.normalize(@vs, 10, 10, 10)
     #   constraints = breaker.staples_preprocess(:S1)
     #   staple_len_arr = breaker.staples_postprocess(breaker.ilp(constraints, :S1))
-      
+
     #   edges, staples = breaker.generate_staple_strands(@vs, staple_len_arr)
     #   _, first_parititon, second_partition, boundary_edges = Routing.find_strongest_connected_components(edges,
     #                                                                                                 1/3.to_f, [20, 20, 20])

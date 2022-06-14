@@ -5,7 +5,7 @@ require 'json'
 class Vertex
   attr_accessor :x, :y, :z
 
-  def initialize(x=0, y=0, z=0)
+  def initialize(x = 0, y = 0, z = 0)
     @x = x
     @y = y
     @z = z
@@ -45,7 +45,7 @@ class Vertex
 
   # Euclidian distance from origin
   def distance
-    Math.sqrt((@x ** 2) + (@y ** 2) + (@z ** 2))
+    Math.sqrt((@x**2) + (@y**2) + (@z**2))
   end
 
   def normalize
@@ -57,8 +57,8 @@ class Vertex
   end
 
   def angleTo(v)
-    denom = Math.sqrt((distance ** 2) * (v.distance) **2)
-    if denom == 0
+    denom = Math.sqrt((distance**2) * v.distance**2)
+    if denom.zero?
       Math::PI / 2
     else
       theta = dot(v) / denom
@@ -68,12 +68,13 @@ class Vertex
   end
 
   def cross_vectors(v)
-    ax, ay, az = @x, @y, @z
+    ax = @x
+    ay = @y
+    az = @z
 
     @x = ay * v.z - az * v.y
     @y = az * v.x - ax * v.z
     @z = ax * v.y - ay * v.x
-
   end
 
   def apply_axis_angle(axis, angle)

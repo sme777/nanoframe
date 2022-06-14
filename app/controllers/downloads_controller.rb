@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'zip'
 
 class DownloadsController < ApplicationController
@@ -13,11 +14,11 @@ class DownloadsController < ApplicationController
       # staple_coordinates = json_obj['sPositions']
       # @generator.scaffold(scaffold_sequence, scaffold_coordinates)
       # @generator.staples(staple_sequence, staple_coordinates)
-      files = @generator.send(type.to_s, @generator.positions, @generator.scaffold, @generator.staples, "test")
+      files = @generator.send(type.to_s, @generator.positions, @generator.scaffold, @generator.staples, 'test')
       # file = File.open("app/assets/results/test.#{type}")
       # files.each do |filename|
       # FileUtils.mkdir_p()
-      zipfile_name = "#{Rails.root.join('tmp').to_s}/test.zip"
+      zipfile_name = "#{Rails.root.join('tmp')}/test.zip"
       if files.size == 1
 
       else
@@ -27,7 +28,7 @@ class DownloadsController < ApplicationController
           end
         end
       end
-      send_data("#{Rails.root.join('tmp').to_s}/test.zip")
+      send_data("#{Rails.root.join('tmp')}/test.zip")
       redirect_to "/nanobot/#{@generator.id}/routing"
     end
   end
