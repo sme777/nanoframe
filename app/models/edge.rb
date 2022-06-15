@@ -3,7 +3,8 @@
 require 'json'
 
 class Edge
-  attr_accessor :v1, :v2, :sequence, :adjacent_edges, :next, :prev, :assoc_strands, :scaffold_idxs, :complementary_rotation_labels
+  attr_accessor :v1, :v2, :sequence, :adjacent_edges, :next, :prev, :assoc_strands, :scaffold_idxs,
+                :complementary_rotation_labels
 
   def initialize(v1, v2)
     @v1 = v1
@@ -55,18 +56,14 @@ class Edge
       @v2
     elsif @v1 == e.v2 || @v1 == e.v1
       @v1
-    else
-      nil
     end
   end
 
   def self.to_vertices(edges)
     vertices = []
-    edges.each_with_index do |edge, idx|
-      if !vertices.include?(edge.v1)
-        vertices << edge.v1
-      end
-      
+    edges.each_with_index do |edge, _idx|
+      vertices << edge.v1 unless vertices.include?(edge.v1)
+
       vertices << edge.v2
     end
     vertices

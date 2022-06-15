@@ -5,15 +5,16 @@ require 'json'
 class Graph
   include ActiveModel::Serialization
 
-  attr_accessor :vertices, :edges, :sets, :route, :planes, :vertices, :edges, :vertex_cuts, :staples, :staple_colors, :boundary_edges
-  attr_accessor :points, :colors
+  attr_accessor :vertices, :edges, :sets, :route, :planes, :vertex_cuts, :staples, :staple_colors, :boundary_edges,
+                :points, :colors
+
   # dimension[0] -> width
   # dimension[1] -> height
   # dimension[2] -> depth
   def initialize(id, dimensions, shape, scaffold)
     setup_dimensions(dimensions, shape)
     @generator_id = id
-    @segments = dimensions["divisions"].to_i + 1
+    @segments = dimensions['divisions'].to_i + 1
     @scaff_length = scaffold.size
     @staple_breaker = Breaker.new(id, dimensions, shape, @segments, @scaff_length)
     v_and_e = create_vertices_and_edges(shape)
@@ -22,18 +23,17 @@ class Graph
     @template_planes = find_four_planes
     @planes, @raw_planes = find_plane_combination(@template_planes)
     @sorted_vertices, @normalized_vertices, @points, @sampling_frequency, @scaffold_rotation_labels = generate_points
-    @colors = generate_colors   
+    @colors = generate_colors
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
     @vertex_cuts = []
-    @boundary_edges.each do |e| 
-      @vertex_cuts << e.v1 if !@vertex_cuts.include?(e.v1)
-      @vertex_cuts << e.v2 if !@vertex_cuts.include?(e.v2)
+    @boundary_edges.each do |e|
+      @vertex_cuts << e.v1 unless @vertex_cuts.include?(e.v1)
+      @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
-    @staples.each {|staple| staple.update_extendable_staples}
+    # @staples.each(&:update_extendable_staples)
   end
-
 
   # def self.update_bridge_length(generator)
   #   staples = nil
@@ -43,13 +43,12 @@ class Graph
   #   staples
   # end
 
-
   def setup_dimensions(dimensions, shape)
     case shape
     when :cube
-      @width = dimensions["width"].to_f
-      @height = dimensions["height"].to_f
-      @depth = dimensions["depth"].to_f
+      @width = dimensions['width'].to_f
+      @height = dimensions['height'].to_f
+      @depth = dimensions['depth'].to_f
     when :tetrahedron
       @radius = dimensions[0]
     end
@@ -107,17 +106,16 @@ class Graph
   end
 
   def modifications_objects
-    {staples: Marshal.dump(@staples), boundary_edges: Marshal.dump(@boundary_edges),}
+    { staples: Marshal.dump(@staples), boundary_edges: Marshal.dump(@boundary_edges) }
   end
-
 
   def staples_hash
     staples_data = []
     @staples.each do |staple|
-      staples_data << {positions: staple.points.map {|point| [point.x, point.y, point.z]}, color: [rand, rand, rand],
-                        name: staple.name, sequence: staple.sequence, indices: staple.scaffold_idxs}
+      staples_data << { positions: staple.points.map { |point| [point.x, point.y, point.z] }, color: [rand, rand, rand],
+                        name: staple.name, sequence: staple.sequence, indices: staple.scaffold_idxs }
     end
-    {data: staples_data}
+    { data: staples_data }
   end
 
   def connect_vertices(vs)
@@ -493,13 +491,12 @@ class Graph
   end
 
   def generate_points
-
     plane_copy = Marshal.load(Marshal.dump(@planes))
     sorted_vertices = Routing.sort_sets(plane_copy)
     normalized_vertices = Marshal.load(Marshal.dump(sorted_vertices))
 
     sorted_vertices = Routing.normalize(sorted_vertices, @width / @segments.to_f, @height / @segments.to_f,
-                                            @depth / @segments.to_f, false)
+                                        @depth / @segments.to_f, false)
     normalized_vertices = Routing.normalize(normalized_vertices, @width / @segments.to_f, @height / @segments.to_f,
                                             @depth / @segments.to_f)
 
@@ -510,35 +507,33 @@ class Graph
       next_next_vert = normalized_vertices[(i + 2) % normalized_vertices.size]
       dr_ch = Edge.new(vertex, next_vert).directional_change
       edge_sampled_points = Vertex.linspace(dr_ch, 30, vertex, next_vert)
-      
+
       edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert])[-6...]
       edge_sampled_points[...3] = last_corners unless last_corners.nil?
       edge_sampled_points[-3...] = edge_corners[...3]
       last_corners = edge_corners[3...]
-      sampled_points.concat(edge_sampled_points) # TODO change 30 to edge length
+      sampled_points.concat(edge_sampled_points) # TODO: change 30 to edge length
     end
 
-    sampled_points = sampled_points.map {|point| [point.x, point.y, point.z]}#Vertex.flatten(sampled_points)
-    scaffold_rotation_labels = ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9] * (sampled_points.size / 10).ceil)[...sampled_points.size]
-    freq = 30 #(@scaff_length / sampled_points.size).floor.zero? ? 2 : (@scaff_length / sampled_points.size).floor
+    sampled_points = sampled_points.map { |point| [point.x, point.y, point.z] } # Vertex.flatten(sampled_points)
+    scaffold_rotation_labels = ([0, 1, 2, 3, 4, 5, 6, 7, 8,
+                                 9] * (sampled_points.size / 10).ceil)[...sampled_points.size]
+    freq = 30 # (@scaff_length / sampled_points.size).floor.zero? ? 2 : (@scaff_length / sampled_points.size).floor
     [sorted_vertices, normalized_vertices, sampled_points, freq, scaffold_rotation_labels]
   end
 
-
-  def rounded_corner_points(vertices, radius=1, smoothness=6, closed=true)
+  def rounded_corner_points(vertices, radius = 1, smoothness = 6, closed = true)
     min_vector = (vertices[0] - vertices[1])
     min_length = min_vector.distance
-    vertices.each_with_index do |v, idx|
+    vertices.each_with_index do |_v, idx|
       next unless idx > 1 && idx != vertices.size - 1
-      min_length = [min_length, (vertices[i] - vertices[i+1]).distance].min
+
+      min_length = [min_length, (vertices[i] - vertices[i + 1]).distance].min
     end
 
-    if closed
-      min_length = [min_length, (vertices[vertices.size - 1] - vertices[0]).distance].min
-    end
+    min_length = [min_length, (vertices[vertices.size - 1] - vertices[0]).distance].min if closed
 
     radius = radius > min_length * 0.5 ? min_length * 0.5 : radius
-
 
     start_idx = 1
     end_idx = vertices.size - 2
@@ -550,7 +545,7 @@ class Graph
 
     i = start_idx
     while i < end_idx
-      i_start = i - 1 < 0 ? vertices.size - 1 : i - 1
+      i_start = (i - 1).negative? ? vertices.size - 1 : i - 1
       i_mid = i
       i_end = i + 1 > vertices.size - 1 ? 0 : i + 1
       p_start = vertices[i_start]
@@ -564,7 +559,7 @@ class Graph
       half_angle = angle * 0.5
 
       side_length = radius / Math.tan(half_angle)
-      center_length = Math.sqrt(side_length ** 2 + radius ** 2)
+      center_length = Math.sqrt(side_length**2 + radius**2)
 
       start_key_point = v_start_mid * side_length
       center_key_point = v_center * center_length
@@ -591,39 +586,34 @@ class Graph
     end
 
     positions
-
   end
-
-
 
   def generate_colors
     colors = []
     (0...@points.size).each do |i|
       t = i.to_f / @points.size
       # colors.concat([t / 4, t / 1.5 + 0.15, t + 0.2])
-      colors << [t + 0.2, t + 0.2, t / 8] #yellow
+      colors << [t + 0.2, t + 0.2, t / 8] # yellow
     end
     colors
   end
 
   def generate_staples
     staple_len_map = {}
-    [:S1, :S2, :S3, :S4, :S5, :S6].each do |side|
+    %i[S1 S2 S3 S4 S5 S6].each do |side|
       constraints = @staple_breaker.staples_preprocess(side)
       staple_len_arr = @staple_breaker.ilp(constraints, side)
       staple_adj_len_arr = @staple_breaker.staples_postprocess(staple_len_arr)
       staple_len_map[side] = staple_adj_len_arr
     end
-    edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_len_map, @scaffold_rotation_labels)
+    edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_len_map,
+                                                             @scaffold_rotation_labels)
   end
-
-
 
   def open_structure(ratio = 1 / 3.to_f)
     start_idx, first_parititon, second_partition, boundary_edges = Routing.find_strongest_connected_components(@sorted_edges,
-                                                                                                    ratio, [@width, @height, @depth])
+                                                                                                               ratio, [@width, @height, @depth])
   end
-
 
   def to_hash
     return nil if @planes.nil?
@@ -632,7 +622,7 @@ class Graph
     graph_hash = {}
     graph_hash[:start] = @start_idx * @sampling_frequency
     graph_hash[:end] = (@start_idx + @group1.size) * @sampling_frequency
-    graph_hash[:boundary_edges] = boundary_edges.each {|edge| edge.to_hash}
+    graph_hash[:boundary_edges] = boundary_edges.each(&:to_hash)
     @planes.each do |plane|
       p = Plane.new(plane, plane.object_id)
       graph_hash[p.name] = p.to_hash
@@ -640,7 +630,5 @@ class Graph
     end
 
     graph_hash
-
   end
-
 end

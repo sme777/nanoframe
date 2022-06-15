@@ -9,7 +9,7 @@ module SeedData
   end
 
   def self.items
-    [   
+    [
       {
         name: 'Cube (P1)',
         dimensions: '30x30x140x3',
