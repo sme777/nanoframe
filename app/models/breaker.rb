@@ -369,8 +369,13 @@ class Breaker
         next_staple = ObjectSpace._id2ref(staple.next)
 
         # Create two staples from the broken one
-        cutoff2 = prev_staple.type == :reflection ? ((prev_staple.sequence.size - prev_staple.buffer) / 2 + prev_staple.buffer + bridge_len) : ((prev_staple.sequence.size + back_sequence.size) / 2).floor
+        begin
+          
 
+        cutoff2 = prev_staple.type == :reflection ? ((prev_staple.sequence.size - prev_staple.buffer) / 2 + prev_staple.buffer + bridge_len) : ((prev_staple.sequence.size + back_sequence.size) / 2).floor
+      rescue => exception
+          byebug
+      end
         if cutoff2 < 15 || prev_staple.sequence.size < 20
           back_staple_labels = prev_staple.complementary_rotation_labels + back_rotation_labels
           back_staple_seq = prev_staple.sequence + back_sequence
@@ -397,6 +402,7 @@ class Breaker
                                    complementary_rotation_labels: back_staple_labels,
                                    front: staple.front,
                                    back: staple.back,
+                                   buffer: prev_staple.buffer,
                                    clone: true,
                                    type: :reflection })
 
@@ -409,7 +415,7 @@ class Breaker
           ObjectSpace._id2ref(prev_staple.prev).next = back_staple.object_id
         end
 
-        cutoff2 = next_staple.type == :reflection ? ((prev_staple.sequence.size - prev_staple.buffer) / 2 - prev_staple.buffer - bridge_len) : ((front_sequence.size + next_staple.sequence.size) / 2).floor
+        cutoff2 = next_staple.type == :reflection ? ((next_staple.sequence.size - next_staple.buffer) / 2 + next_staple.buffer + bridge_len) : ((front_sequence.size + next_staple.sequence.size) / 2).floor
         if cutoff2 < 10 || next_staple.sequence.size < 20
           front_staple_labels = front_rotation_labels + next_staple.complementary_rotation_labels
           front_staple_seq = front_sequence + next_staple.sequence
@@ -437,6 +443,7 @@ class Breaker
                                     complementary_rotation_labels: front_staple_labels,
                                     front: staple.front,
                                     back: staple.back,
+                                    buffer: next_staple.buffer,
                                     clone: true,
                                     type: :reflection })
         residual_staples << front_staple

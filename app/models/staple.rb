@@ -11,6 +11,7 @@ class Staple
       @points = args[:points]
       @scaffold_idxs = args[:scaffold_idxs]
       @complementary_rotation_labels = args[:complementary_rotation_labels]
+      @buffer = args[:buffer]
       @front = args[:front]
       @back = args[:back]
       @type = args[:type]
