@@ -181,8 +181,7 @@ if (signOutBtn != null || boxState != null) {
       end
     );
     const line = new MeshLine();
-    const material = new MeshLineMaterial({color: new THREE.Color( 0xFFC54D ), 
-                                            transparent: true, opacity: 0.75, 
+    const material = new MeshLineMaterial({color: new THREE.Color( 0xFFC54D ),
                                             resolution: new THREE.Vector2(canvasContainerWidth, canvasContainerHeight)
                                           });
     line.setPoints(curve.getPoints(49), p => 0.8);
