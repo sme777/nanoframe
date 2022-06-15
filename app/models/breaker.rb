@@ -373,7 +373,7 @@ class Breaker
         next_staple = ObjectSpace._id2ref(staple.next)
 
         # Create two staples from the broken one
-        cutoff2 = prev_staple.type == :reflection ? (prev_staple.sequence.size / 2 + bridge_len) : ((prev_staple.sequence.size + back_sequence.size) / 2).floor
+        cutoff2 = prev_staple.type == :reflection ? ((prev_staple.sequence.size - prev_staple.buffer) / 2 + prev_staple.buffer + bridge_len) : ((prev_staple.sequence.size + back_sequence.size) / 2).floor
 
         if cutoff2 < 15 || prev_staple.sequence.size < 20
           back_staple_labels = prev_staple.complementary_rotation_labels + back_rotation_labels
@@ -383,22 +383,17 @@ class Breaker
 
           staples.delete(prev_staple)
         else
-          begin
-            adjusted_shift = prev_staple.sequence.size - (cutoff2 - back_sequence.size).abs
-            back_staple_labels = prev_staple.complementary_rotation_labels[adjusted_shift...] + back_rotation_labels
-            back_staple_seq = prev_staple.sequence[adjusted_shift...] + back_sequence
-            back_staple_pos = prev_staple.points[adjusted_shift...] + back_lin_positions
-            back_staple_idx = prev_staple.scaffold_idxs[adjusted_shift...] + back_idxs
-            byebug if  prev_staple.complementary_rotation_labels[...adjusted_shift].last.nil? || back_staple_labels.last.nil?
-            prev_staple.complementary_rotation_labels = prev_staple.complementary_rotation_labels[...adjusted_shift]
-            prev_staple.sequence = prev_staple.sequence[...adjusted_shift]
-            prev_staple.scaffold_idxs = prev_staple.scaffold_idxs[...adjusted_shift]
+          adjusted_shift = prev_staple.sequence.size - (cutoff2 - back_sequence.size).abs
+          back_staple_labels = prev_staple.complementary_rotation_labels[adjusted_shift...] + back_rotation_labels
+          back_staple_seq = prev_staple.sequence[adjusted_shift...] + back_sequence
+          back_staple_pos = prev_staple.points[adjusted_shift...] + back_lin_positions
+          back_staple_idx = prev_staple.scaffold_idxs[adjusted_shift...] + back_idxs
 
-            prev_staple.points = prev_staple.points[...adjusted_shift]
-          rescue StandardError => e
-            byebug
-          end
-          # staples.delete(prev_staple)
+          prev_staple.complementary_rotation_labels = prev_staple.complementary_rotation_labels[...adjusted_shift]
+          prev_staple.sequence = prev_staple.sequence[...adjusted_shift]
+          prev_staple.scaffold_idxs = prev_staple.scaffold_idxs[...adjusted_shift]
+
+          prev_staple.points = prev_staple.points[...adjusted_shift]
         end
         back_staple = Staple.new({ sequence: back_staple_seq,
                                    points: back_staple_pos,
@@ -417,9 +412,8 @@ class Breaker
           back_staple.prev = prev_staple.prev
           ObjectSpace._id2ref(prev_staple.prev).next = back_staple.object_id
         end
-        byebug if prev_staple.complementary_rotation_labels.nil? || back_staple_labels.nil?
-        # end
-        cutoff2 = next_staple.type == :reflection ? (next_staple.sequence.size / 2 - bridge_len) : ((front_sequence.size + next_staple.sequence.size) / 2).floor
+
+        cutoff2 = next_staple.type == :reflection ? ((prev_staple.sequence.size - prev_staple.buffer) / 2 - prev_staple.buffer - bridge_len) : ((front_sequence.size + next_staple.sequence.size) / 2).floor
         if cutoff2 < 10 || next_staple.sequence.size < 20
           front_staple_labels = front_rotation_labels + next_staple.complementary_rotation_labels
           front_staple_seq = front_sequence + next_staple.sequence
@@ -434,17 +428,12 @@ class Breaker
           front_staple_seq = front_sequence + next_staple.sequence[...adjusted_shift]
           front_staple_pos = front_lin_positions + next_staple.points[...adjusted_shift]
           front_staple_idx = front_idxs + next_staple.scaffold_idxs[...adjusted_shift]
-          byebug if next_staple.complementary_rotation_labels[adjusted_shift...].last.nil? || front_staple_labels.last.nil?
           next_staple.complementary_rotation_labels = next_staple.complementary_rotation_labels[adjusted_shift...]
           next_staple.sequence = next_staple.sequence[adjusted_shift...]
           next_staple.scaffold_idxs = next_staple.scaffold_idxs[adjusted_shift...]
 
           next_staple.points = next_staple.points[adjusted_shift...]
-          # staples.delete(prev_staple)
         end
-        byebug if next_staple.complementary_rotation_labels.nil? || front_staple_labels.nil?
-
-        byebug if next_staple.sequence.size != next_staple.points.size
 
         front_staple = Staple.new({ sequence: front_staple_seq,
                                     points: front_staple_pos,
@@ -459,7 +448,6 @@ class Breaker
           next_staple.prev = front_staple.object_id
           front_staple.next = next_staple.object_id
         else
-          # next_staple.prev = front_staple.object_id
           front_staple.next = next_staple.next
           ObjectSpace._id2ref(next_staple.prev).prev = front_staple.object_id
         end

@@ -32,7 +32,7 @@ class Graph
       @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
-    @staples.each(&:update_extendable_staples)
+    # @staples.each(&:update_extendable_staples)
   end
 
   # def self.update_bridge_length(generator)

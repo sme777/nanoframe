@@ -2,7 +2,7 @@
 
 class Staple
   attr_accessor :sequence, :front, :back, :type, :next, :prev, :points, :interpolated_points, :scaffold_idxs,
-                :complementary_rotation_labels
+                :complementary_rotation_labels, :buffer
 
   def initialize(args)
     setup_dimensions([50, 50, 50], 5, :cube)
@@ -99,14 +99,13 @@ class Staple
 
       points = []
       points.concat(Vertex.linspace(dr_ch, (@front.sequence.size - start_pos), start_point, @front.v2))
-      # points.concat([points.last] * @buffer)
-      points.concat(Vertex.linspace(dr_ch2, end_pos+1, @back.v1, end_point)[1...]) #
+      points.concat(Vertex.linspace(dr_ch2, end_pos + 1, @back.v1, end_point)[1...])
       adjust(points)
     end
   end
 
   def update_extendable_staples
-    extendable_start = @complementary_rotation_labels.first.nil? || @complementary_rotation_labels.first < 6 
+    extendable_start = @complementary_rotation_labels.first.nil? || @complementary_rotation_labels.first < 6
     # byebug if @complementary_rotation_labels.last.nil?
     extendable_end = @complementary_rotation_labels.last.nil? || @complementary_rotation_labels.last < 6
     extendable = nil
