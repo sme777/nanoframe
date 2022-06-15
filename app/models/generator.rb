@@ -155,7 +155,7 @@ class Generator < ApplicationRecord
     staples_idxs = staples['data'].map { |e| e['indices'] }
     staples_sequences = staples['data'].map { |e| e['sequence'] }
     scaffold_positions, scaffold_a1s, scaffold_a3s, staples_positions, staples_a1s, staples_a3s = oxdna_maker.setup(
-      scaffold_positions, staples_idxs[...staples_idxs.size - 1]
+      scaffold_positions, staples_idxs[...staples_idxs.size]
     )
     dat_file = "#{Rails.root.join('tmp')}/#{filename}.dat"
     top_file = "#{Rails.root.join('tmp')}/#{filename}.top"

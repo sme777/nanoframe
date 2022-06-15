@@ -166,7 +166,7 @@ class Breaker
           staple = Staple.new({
                                 front: edge, back: adjacent, start_pos: refr / 2, end_pos: refr2 / 2,
                                 type: :refraction, buffer: 0 # changed from 2
-                              }) # edge, adjacent, refr / 2, refr2 / 2, :refraction, 2)
+                              })
           staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
           edge.assoc_strands << staple.object_id
         else
@@ -194,7 +194,6 @@ class Breaker
                                     end_pos: start + ext,
                                     type: :extension
                                   })
-              # edge, edge, start, start + ext, :extension)
               staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
               edge.assoc_strands << staple.object_id
               extension_staples << staple
@@ -202,7 +201,6 @@ class Breaker
             end
 
             extension_staples.each_with_index do |stp, idx|
-              # next unless stp != extension_staples.last || stp !
               stp.next = extension_staples[idx + 1].object_id if stp != extension_staples.last
               stp.prev = extension_staples[idx - 1].object_id if stp != extension_staples.first
             end
@@ -211,14 +209,12 @@ class Breaker
                                   front: edge, back: adjacent, start_pos: start, end_pos: refr2 / 2,
                                   type: :refraction, buffer: 0 # changed from 2
                                 })
-            # staple = Staple.new(edge, adjacent, start, refr2 / 2, :refraction, 2)
             staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
           else
             staple = Staple.new({
                                   front: edge, back: adjacent, start_pos: refr / 2, end_pos: refr2 / 2,
                                   type: :reflection, buffer: 1
                                 })
-            # staple = Staple.new(edge, adjacent, refr / 2, refr2 / 2, :reflection, 1)
 
             staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
             edge.assoc_strands << staple.object_id

@@ -30,21 +30,18 @@ class Staple
         @scaffold_idxs = front.scaffold_idxs[start_pos...end_pos]
         @complementary_rotation_labels = front.complementary_rotation_labels[start_pos...end_pos]
       else
-        @sequence = convert(front.sequence[start_pos...] + buffer_bp + back.sequence[...end_pos])
-        @scaffold_idxs = front.scaffold_idxs[start_pos...] + [nil] * @buffer + back.scaffold_idxs[...end_pos]
-        @complementary_rotation_labels = front.complementary_rotation_labels[start_pos...] + [nil] * @buffer + back.complementary_rotation_labels[...end_pos]
+        # provide loopout length for dynamic length configuration
+        if front.scaffold_idxs.include?(7248) && back.scaffold_idxs.include?(0)
+          @sequence = convert(front.sequence[start_pos...start_pos+15] + buffer_bp + back.sequence[...end_pos])
+          @scaffold_idxs = front.scaffold_idxs[start_pos...start_pos+15] + [nil] * @buffer + back.scaffold_idxs[...end_pos]
+          @complementary_rotation_labels = front.complementary_rotation_labels[start_pos...start_pos+15] + [nil] * @buffer + back.complementary_rotation_labels[...end_pos]
+        else
+          @sequence = convert(front.sequence[start_pos...] + buffer_bp + back.sequence[...end_pos])
+          @scaffold_idxs = front.scaffold_idxs[start_pos...] + [nil] * @buffer + back.scaffold_idxs[...end_pos]
+          @complementary_rotation_labels = front.complementary_rotation_labels[start_pos...] + [nil] * @buffer + back.complementary_rotation_labels[...end_pos]
+        end
       end
 
-      # @sequence = if front == back
-      #               convert(front.sequence[start_pos...end_pos])
-      #             else
-      #               convert(front.sequence[start_pos...] + buffer_bp + back.sequence[...end_pos])
-      #             end
-      # @scaffold_idxs = if front == back
-      #                   front.scaffold_idxs[start_pos...end_pos] #+ [nil] * @buffer
-      #                 else
-      #                   front.scaffold_idxs[start_pos...] + [nil] * @buffer + back.scaffold_idxs[...end_pos]
-      #                 end
       @points = compute_positions(start_pos, end_pos)
     end
   end
@@ -98,7 +95,12 @@ class Staple
       end_point = end_mid_vec
 
       points = []
-      points.concat(Vertex.linspace(dr_ch, (@front.sequence.size - start_pos), start_point, @front.v2))
+      if @front.scaffold_idxs.include?(7248)
+        points.concat(Vertex.linspace(dr_ch, (30), start_point, @front.v2))
+      else
+        points.concat(Vertex.linspace(dr_ch, (@front.sequence.size - start_pos), start_point, @front.v2))
+      end
+      
       points.concat(Vertex.linspace(dr_ch2, end_pos + 1, @back.v1, end_point)[1...])
       adjust(points)
     end
@@ -106,7 +108,6 @@ class Staple
 
   def update_extendable_staples
     extendable_start = @complementary_rotation_labels.first.nil? || @complementary_rotation_labels.first < 6
-    # byebug if @complementary_rotation_labels.last.nil?
     extendable_end = @complementary_rotation_labels.last.nil? || @complementary_rotation_labels.last < 6
     extendable = nil
     if extendable_start
