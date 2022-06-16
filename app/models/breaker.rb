@@ -369,14 +369,10 @@ class Breaker
         next_staple = ObjectSpace._id2ref(staple.next)
 
         # Create two staples from the broken one
-        begin
-          
-
-        cutoff2 = prev_staple.type == :reflection ? ((prev_staple.sequence.size - prev_staple.buffer) / 2 + prev_staple.buffer + bridge_len) : ((prev_staple.sequence.size + back_sequence.size) / 2).floor
-      rescue => exception
-          byebug
-      end
-        if cutoff2 < 15 || prev_staple.sequence.size < 20
+        cutoff2 = prev_staple.type == :reflection ? ((prev_staple.points.size) / 2 + bridge_len) : ((prev_staple.sequence.size + back_sequence.size) / 2)
+        
+        # Toggle parameters cutoff2 and prev staple length
+        if cutoff2 < 20 || prev_staple.sequence.size < 25
           back_staple_labels = prev_staple.complementary_rotation_labels + back_rotation_labels
           back_staple_seq = prev_staple.sequence + back_sequence
           back_staple_pos = prev_staple.points + back_lin_positions
@@ -414,9 +410,9 @@ class Breaker
           back_staple.prev = prev_staple.prev
           ObjectSpace._id2ref(prev_staple.prev).next = back_staple.object_id
         end
-
-        cutoff2 = next_staple.type == :reflection ? ((next_staple.sequence.size - next_staple.buffer) / 2 + next_staple.buffer + bridge_len) : ((front_sequence.size + next_staple.sequence.size) / 2).floor
-        if cutoff2 < 10 || next_staple.sequence.size < 20
+        # Toggle parameters cutoff2 and prev staple length
+        cutoff2 = next_staple.type == :reflection ? ((next_staple.points.size) / 2 + next_staple.buffer + bridge_len) : ((front_sequence.size + next_staple.sequence.size) / 2)
+        if cutoff2 < 20 || next_staple.sequence.size < 25
           front_staple_labels = front_rotation_labels + next_staple.complementary_rotation_labels
           front_staple_seq = front_sequence + next_staple.sequence
           front_staple_pos = front_lin_positions + next_staple.points

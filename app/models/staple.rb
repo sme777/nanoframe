@@ -84,25 +84,29 @@ class Staple
     when :reflection, :refraction, :extension
       dr_ch, dr_vec = @front.directional_change_vec
       start_mid_vec = Vertex.new(@front.v1.x, @front.v1.y, @front.v1.z)
+      adj_start_seq = @front.scaffold_idxs.include?(7248) ? 30 : @front.sequence.size
       start_mid_vec.instance_variable_set("@#{dr_ch}",
-                                          @front.v1.instance_variable_get("@#{dr_ch}") - dr_vec * (start_pos.to_f / @front.sequence.size))
+                                          @front.v1.instance_variable_get("@#{dr_ch}") - dr_vec * (start_pos.to_f / adj_start_seq))
       start_point = start_mid_vec
 
       dr_ch2, dr_vec2 = @back.directional_change_vec
 
       end_mid_vec = Vertex.new(@back.v1.x, @back.v1.y, @back.v1.z)
+      adj_back_seq = @back.scaffold_idxs.include?(7248) ? 30 : @back.sequence.size
       end_mid_vec.instance_variable_set("@#{dr_ch2}",
-                                        @back.v1.instance_variable_get("@#{dr_ch2}") - dr_vec2 * (end_pos.to_f / @back.sequence.size))
+                                        @back.v1.instance_variable_get("@#{dr_ch2}") - dr_vec2 * (end_pos.to_f / adj_back_seq))
       end_point = end_mid_vec
 
       points = []
       if @front.scaffold_idxs.include?(7248)
-        points.concat(Vertex.linspace(dr_ch, (30), start_point, @front.v2))
+        points.concat(Vertex.linspace(dr_ch, (15 + @buffer), start_point, @front.v2))
       else
-        points.concat(Vertex.linspace(dr_ch, (@front.sequence.size - start_pos), start_point, @front.v2))
+        points.concat(Vertex.linspace(dr_ch, (@front.sequence.size - start_pos + @buffer), start_point, @front.v2))
       end
-      
+
       points.concat(Vertex.linspace(dr_ch2, end_pos + 1, @back.v1, end_point)[1...])
+      # points.concat(points.last * buffer)
+      
       adjust(points)
     end
   end
