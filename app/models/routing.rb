@@ -210,13 +210,25 @@ module Routing
       :S1
     elsif v1.z == -dims[2] && v2.z == -dims[2]
       :S2
-    elsif v1.y == dims[1] && v2.y == dims[1]
-      :S3
     elsif v1.y.zero? && v2.y.zero?
+      :S3
+    elsif v1.y == dims[1] && v2.y == dims[1]
       :S4
     elsif v1.x.zero? && v2.x.zero?
       :S5
-    else
+    elsif v1.x == dims[0] && v2.x == dims[0]
+      :S6
+    elsif v1.z.zero?
+      :S1
+    elsif v1.z == -dims[2]
+      :S2
+    elsif v1.y.zero?
+      :S3
+    elsif v1.y == dims[1]
+      :S4
+    elsif v1.x.zero?
+      :S5
+    elsif v1.x == dims[0]
       :S6
     end
   end

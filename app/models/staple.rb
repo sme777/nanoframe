@@ -114,12 +114,16 @@ class Staple
   def update_extendable_staples
     extendable_start = @complementary_rotation_labels.first.nil? || @complementary_rotation_labels.first < 6
     extendable_end = @complementary_rotation_labels.last.nil? || @complementary_rotation_labels.last < 6
-    extendable = nil
-    if extendable_start
-      extendable = :start
-    elsif extendable_end
-      extendable = :end
-    end
+    extendable = extendable_start ? :start : (extendable_end ? :end : nil)
+    # if extendable_start
+    #   @front.extendable = true
+    #   @front.extendable_staple = self.object_id
+    # end
+
+    # if extendable_end
+    #   @back.extendable = true
+    #   @back.extendable_staple = self.object_id
+    # end
 
     extention_points = []
     case extendable
@@ -131,9 +135,25 @@ class Staple
       @points.concat(extention_points)
     end
   end
+  
+  def update_extendable_edges
+    extendable_start = @complementary_rotation_labels.first.nil? || @complementary_rotation_labels.first < 6
+    extendable_end = @complementary_rotation_labels.last.nil? || @complementary_rotation_labels.last < 6
+    extendable = nil
+    if extendable_start
+      @front.extendable = true
+      @front.extendable_staple = self.object_id
+    end
+
+    if extendable_end
+      @back.extendable = true
+      @back.extendable_staple = self.object_id
+    end
+
+  end
 
   def compute_extension_positions(point)
-    side = find_side(point, point)
+    side = Routing.find_plane_number(point, point, [50,50,50])
     case side
     when :S1
       Vertex.linspace(:z, 6, point, Vertex.new(point.x, point.y, point.z + 3))[1...]
@@ -161,38 +181,11 @@ class Staple
     }
   end
 
-  def find_side(v1, v2)
-    if v1.z.zero? && v2.z.zero?
-      side = :S1
-    elsif v1.z == -@depth && v2.z == -@depth
-      side = :S2
-    elsif v1.y.zero? && v2.y.zero?
-      side = :S3
-    elsif v1.y == @height && v2.y == @height
-      side = :S4
-    elsif v1.x.zero? && v2.x.zero?
-      side = :S5
-    elsif v1.x == @width && v2.x == @width
-      side = :S6
-    elsif v1.z.zero?
-      side = :S1
-    elsif v1.z == -@depth
-      side = :S2
-    elsif v1.y.zero?
-      side = :S3
-    elsif v1.y == @height
-      side = :S4
-    elsif v1.x.zero?
-      side = :S5
-    elsif v1.x == @width
-      side = :S6
-    end
-  end
 
   def name
     starting_vertex = @front.v1
     ending_vertex = @back.v2
-    side = find_side(starting_vertex, ending_vertex)
+    side = Routing.find_plane_number(starting_vertex, ending_vertex, [50, 50, 50])
     hor = nil
     vert = nil
     hor_dist = nil

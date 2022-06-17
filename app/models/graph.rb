@@ -32,7 +32,8 @@ class Graph
       @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
-    # @staples.each(&:update_extendable_staples)
+    @staples.each(&:update_extendable_edges)
+    edge_extendability_map(@sorted_edges)
   end
 
   # def self.update_bridge_length(generator)
@@ -42,6 +43,131 @@ class Graph
   #   staples = staple_breaker.update_boundary_strands(boundary_edges, staples)
   #   staples
   # end
+
+  def crawl_extendable_edges
+    feasible_edges = @sorted_edges.clone
+    infeasible_edges = []
+    @sorted_edges.each do |edge|
+      if infeasible_edges.include?(edge)
+        next
+      end
+
+      if !edge.extendable
+        infeasible_edges << edge
+        sym_edges = complementary_edges(edge)
+        sym_edges.each do |sym_edge|
+          infeasible_edges << sym_edge if !infeasible_edges.include?(sym_edge)
+        end
+        next
+      end
+
+      side = Routing.find_plane_number(edge.v1, edge.v2, [50, 50, 50])
+      case side
+      when :S1
+        if edge.directional_change_vec == :x
+
+        else
+
+        end
+      when :S2
+
+      when :S3
+
+      when :S4
+
+      when :S5
+
+      when :S6
+
+      end
+    end
+    feasible_edges.map {|e| e.extendable_staple }
+  end
+
+  def find_sym_edges(edge_ids)
+    # byebug
+    edges = edge_ids.map {|e| ObjectSpace._id2ref(e)}
+    edges.each do |edge|
+      byebug
+      # edge = ObjectSpace._id2ref(edge_id)
+      if ((20 <= edge.v1.x) && (edge.v1.x <= 30) && (20 <= edge.v2.x) && (edge.v2.x <= 30)) || 
+          ((20 <= edge.v1.y) && (edge.v1.y <= 30) && (20 <= edge.v2.y) && (edge.v2.y <= 30))
+         edges.delete(edge)
+      end
+      ch, dt = edge.directional_change_vec
+      
+      if  ch == :x
+        com_edge = Edge.find_edge(Vertex.new((edge.v1.x-20)%50, edge.v1.y, edge.v1.z), Vertex.new((edge.v2.x-20)%50, edge.v2.y, edge.v2.z), @sorted_edges)
+        if !edges.include?(com_edge)
+          edges.delete(edge)
+        end
+      else
+        com_edge = Edge.find_edge(Vertex.new(edge.v1.x, (edge.v1.y-20)%50, edge.v1.z), Vertex.new(edge.v2.x, (edge.v2.y-20)%50, edge.v2.z), @sorted_edges)
+        if !edges.include?(com_edge)
+          edges.delete(edge)
+        end
+      end
+    end
+    edges
+  end
+
+
+  def edge_extendability_map(edges)
+
+    map = {}
+    
+    @sorted_edges.each do |edge|
+      side = Routing.find_plane_number(edge.v1, edge.v2, [@width, @height, @depth])
+      next if !edge.extendable
+      map[edge.object_id] = 0
+      case side
+      when :S1
+        map[edge.object_id] += 1
+          
+        s2_edge = Edge.find_edge(Vertex.new(edge.v1.x, edge.v1.y, -@depth), Vertex.new(edge.v2.x, edge.v2.y, -@depth), edges) || Edge.find_edge(Vertex.new(edge.v2.x, edge.v2.y, -@depth), Vertex.new(edge.v1.x, edge.v1.y, -@depth), edges) 
+        if s2_edge.extendable
+          map[edge.object_id] += 1
+        end
+
+        s3_edge = Edge.find_edge(Vertex.new(edge.v1.x, @height, -edge.v1.y), Vertex.new(edge.v2.x, @height, -edge.v2.y), edges) || Edge.find_edge(Vertex.new(edge.v2.x, @height, -edge.v2.y), Vertex.new(edge.v1.x, @height, -edge.v1.y), edges)
+        if s3_edge.extendable
+          map[edge.object_id] += 1
+        end
+
+        s4_edge = Edge.find_edge(Vertex.new(edge.v1.x, 0, -edge.v1.y), Vertex.new(edge.v2.x, 0, -edge.v2.y), edges) || Edge.find_edge(Vertex.new(edge.v2.x, 0, -edge.v2.y), Vertex.new(edge.v1.x, 0, -edge.v1.y), edges)
+
+        if s4_edge.extendable
+          map[edge.object_id] += 1
+        end
+
+        s5_edge = Edge.find_edge(Vertex.new(0, edge.v1.y, -edge.v1.x), Vertex.new(0, edge.v2.y, -edge.v2.x), edges) || Edge.find_edge(Vertex.new(0, edge.v2.y, -edge.v2.x), Vertex.new(0, edge.v1.y, -edge.v1.x), edges)
+
+        if s5_edge.extendable
+          map[edge.object_id] += 1
+        end
+
+        s6_edge = Edge.find_edge(Vertex.new(@width, edge.v1.y, -edge.v1.x), Vertex.new(@width, edge.v2.y, -edge.v2.x), edges) || Edge.find_edge(Vertex.new(@width, edge.v2.y, -edge.v2.x), Vertex.new(@width, edge.v1.y, -edge.v1.x), edges)
+        if s6_edge.extendable
+          map[edge.object_id] += 1
+        end 
+      
+      end
+      # byebug
+    end
+    arr = (map.filter {|k, v| k if v == 6}).keys
+    arr = find_sym_edges(arr)
+    arr.each do |edge|
+      s2_edge = Edge.find_edge(Vertex.new(edge.v1.x, edge.v1.y, -@depth), Vertex.new(edge.v2.x, edge.v2.y, -@depth), edges) || Edge.find_edge(Vertex.new(edge.v2.x, edge.v2.y, -@depth), Vertex.new(edge.v1.x, edge.v1.y, -@depth), edges) 
+      s3_edge = Edge.find_edge(Vertex.new(edge.v1.x, @height, -edge.v1.y), Vertex.new(edge.v2.x, @height, -edge.v2.y), edges) || Edge.find_edge(Vertex.new(edge.v2.x, @height, -edge.v2.y), Vertex.new(edge.v1.x, @height, -edge.v1.y), edges)
+      s4_edge = Edge.find_edge(Vertex.new(edge.v1.x, 0, -edge.v1.y), Vertex.new(edge.v2.x, 0, -edge.v2.y), edges) || Edge.find_edge(Vertex.new(edge.v2.x, 0, -edge.v2.y), Vertex.new(edge.v1.x, 0, -edge.v1.y), edges)
+      s5_edge = Edge.find_edge(Vertex.new(0, edge.v1.y, -edge.v1.x), Vertex.new(0, edge.v2.y, -edge.v2.x), edges) || Edge.find_edge(Vertex.new(0, edge.v2.y, -edge.v2.x), Vertex.new(0, edge.v1.y, -edge.v1.x), edges)
+      s6_edge = Edge.find_edge(Vertex.new(@width, edge.v1.y, -edge.v1.x), Vertex.new(@width, edge.v2.y, -edge.v2.x), edges) || Edge.find_edge(Vertex.new(@width, edge.v2.y, -edge.v2.x), Vertex.new(@width, edge.v1.y, -edge.v1.x), edges)
+      [edge, s2_edge, s3_edge, s4_edge, s5_edge, s6_edge].each do |s|
+        ObjectSpace._id2ref(s.extendable_staple).update_extendable_staples
+      end
+    end
+    # arr.each {|e| ObjectSpace._id2ref(e).extendable_staple.update_extendable_staples|}
+  end
 
   def setup_dimensions(dimensions, shape)
     case shape
