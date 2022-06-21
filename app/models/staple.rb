@@ -2,7 +2,7 @@
 
 class Staple
   attr_accessor :sequence, :front, :back, :type, :next, :prev, :points, :interpolated_points, :scaffold_idxs,
-                :complementary_rotation_labels, :buffer
+                :complementary_rotation_labels, :buffer, :starting_vertex, :ending_vertex
 
   def initialize(args)
     setup_dimensions([50, 50, 50], 5, :cube)
@@ -15,6 +15,8 @@ class Staple
       @front = args[:front]
       @back = args[:back]
       @type = args[:type]
+      @starting_vertex = @points.first
+      @ending_vertex = @points.last
     else
       @front = args[:front]
       @back = args[:back]
@@ -25,7 +27,8 @@ class Staple
       end_pos = args[:end_pos]
       @next = nil
       @prev = nil
-
+      @starting_vertex = nil
+      @ending_vertex = nil
       if @front == @back
         @sequence = convert(front.sequence[start_pos...end_pos])
         @scaffold_idxs = front.scaffold_idxs[start_pos...end_pos]
@@ -77,18 +80,18 @@ class Staple
   end
 
   def compute_positions(start_pos, end_pos, _extendable = nil, _sample = 10)
-    case @type
-    when :extension
-      dr_ch, dr_vec = @front.directional_change_vec
-      points = Vertex.linspace(dr_ch, @front.sequence.size, @front.v1, @front.v2)[start_pos...end_pos]
-    when :reflection, :refraction, :extension
+    # case @type
+    # when :extension
+    #   dr_ch, dr_vec = @front.directional_change_vec
+    #   points = Vertex.linspace(dr_ch, @front.sequence.size, @front.v1, @front.v2)[start_pos...end_pos]
+    # when :reflection, :refraction, :extension
       dr_ch, dr_vec = @front.directional_change_vec
       start_mid_vec = Vertex.new(@front.v1.x, @front.v1.y, @front.v1.z)
       adj_start_seq = @front.scaffold_idxs.include?(7248) ? 30 : @front.sequence.size
       start_mid_vec.instance_variable_set("@#{dr_ch}",
                                           @front.v1.instance_variable_get("@#{dr_ch}") - dr_vec * (start_pos.to_f / adj_start_seq))
       start_point = start_mid_vec
-
+      @starting_vertex = start_mid_vec
       dr_ch2, dr_vec2 = @back.directional_change_vec
 
       end_mid_vec = Vertex.new(@back.v1.x, @back.v1.y, @back.v1.z)
@@ -96,7 +99,7 @@ class Staple
       end_mid_vec.instance_variable_set("@#{dr_ch2}",
                                         @back.v1.instance_variable_get("@#{dr_ch2}") - dr_vec2 * (end_pos.to_f / adj_back_seq))
       end_point = end_mid_vec
-
+      @ending_vertex = end_mid_vec
       points = []
       if @front.scaffold_idxs.include?(7248)
         points.concat(Vertex.linspace(dr_ch, (15 + @buffer), start_point, @front.v2))
@@ -108,13 +111,13 @@ class Staple
       # points.concat(points.last * buffer)
       
       adjust(points)
-    end
+    # end
   end
 
-  def update_extendable_staples
-    extendable_start = @complementary_rotation_labels.first.nil? || @complementary_rotation_labels.first < 6
-    extendable_end = @complementary_rotation_labels.last.nil? || @complementary_rotation_labels.last < 6
-    extendable = extendable_start ? :start : (extendable_end ? :end : nil)
+  def update_extendable_staples(out_side)
+    # extendable_start = @complementary_rotation_labels.first.nil? || @complementary_rotation_labels.first < 6
+    # extendable_end = @complementary_rotation_labels.last.nil? || @complementary_rotation_labels.last < 6
+    # extendable = extendable_start ? :start : (extendable_end ? :end : nil)
     # if extendable_start
     #   @front.extendable = true
     #   @front.extendable_staple = self.object_id
@@ -124,9 +127,9 @@ class Staple
     #   @back.extendable = true
     #   @back.extendable_staple = self.object_id
     # end
-
+    
     extention_points = []
-    case extendable
+    case out_side
     when :start
       extention_points = compute_extension_positions(@points.first)
       @points = extention_points.concat(@points)
@@ -142,12 +145,12 @@ class Staple
     extendable = nil
     if extendable_start
       @front.extendable = true
-      @front.extendable_staple = self.object_id
+      @front.extendable_staple = self
     end
 
     if extendable_end
       @back.extendable = true
-      @back.extendable_staple = self.object_id
+      @back.extendable_staple = self
     end
 
   end
@@ -302,5 +305,29 @@ class Staple
     col = 1 if row.zero?
 
     [row, col]
+  end
+
+
+  def self.find_staple(starting_vertex, ending_vertex, staples)
+    staples.each do |staple|
+      if (staple.starting_vertex == starting_vertex && staple.ending_vertex == ending_vertex) && staple.complementary_rotation_labels.first < 6 
+        return [:start, staple]
+      end
+      
+      if (staple.starting_vertex == ending_vertex && staple.ending_vertex == starting_vertex) && staple.complementary_rotation_labels.last < 6 
+        return [:end, staple]
+      end
+
+      # prev_staple = ObjectSpace._id2ref(staple.prev)
+      # next_staple = ObjectSpace._id2ref(staple.next)
+      # if prev_staple.ending_vertex == starting_vertex && prev_staple.complementary_rotation_labels.last < 6 
+      #   return [:end, prev_staple]
+      # end
+
+      # if next_staple.starting_vertex == ending_vertex && next_staple.complementary_rotation_labels.first < 6
+      #   return [:start, next_staple]
+      # end
+    end
+    [nil, nil]
   end
 end
