@@ -463,6 +463,56 @@ class Breaker
     staples.concat(residual_staples)
   end
 
+
+  def break_refraction_staples(staples)
+    new_staples = []
+    staples.each do |staple|
+      next unless staple.type == :refraction
+      
+      mid = staple.sequence.size / 2
+      front_staple = Staple.new({
+        sequence: staple.sequence[...mid],
+        points: staple.points[...mid],
+        scaffold_idxs: staple.points[...mid],
+        complementary_rotation_labels: staple.points[...mid],
+        front: staple.front,
+        back: staple.back,
+        buffer: staple.buffer,
+        clone: true,
+        type: :mod_refraction
+      })
+      back_staple = Staple.new({
+        sequence: staple.sequence[mid...],
+        points: staple.points[mid...],
+        scaffold_idxs: staple.points[mid...],
+        complementary_rotation_labels: staple.points[mid...],
+        front: staple.front,
+        back: staple.back,
+        buffer: staple.buffer,
+        clone: true,
+        type: :mod_refraction
+      })
+      front_staple.prev = staple.prev
+      front_staple.next = back_staple.object_id
+
+      back_staple.prev = front_staple.object_id
+      back_staple.next = staple.next
+
+      if staple.inner_refraction?
+        front_staple.update_extendable_staples(:out, :end)
+        back_staple.update_extendable_staples(:out, :start)
+      else
+        front_staple.update_extendable_staples(:in, :end)
+        back_staple.update_extendable_staples(:in, :start)
+      end
+
+      new_staples << front_staple
+      new_staples << back_staple
+    end
+    staples.concat(new_staples)
+  end
+
+
   def generate_shape_edges(vertices, scaffold_rotation_labels)
     sequence = IO.read('./app/assets/scaffolds/7249.txt')
     edges = []

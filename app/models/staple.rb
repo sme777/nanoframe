@@ -114,7 +114,7 @@ class Staple
     # end
   end
 
-  def update_extendable_staples(out_side)
+  def update_extendable_staples(extension_dir, extension_side)
     # extendable_start = @complementary_rotation_labels.first.nil? || @complementary_rotation_labels.first < 6
     # extendable_end = @complementary_rotation_labels.last.nil? || @complementary_rotation_labels.last < 6
     # extendable = extendable_start ? :start : (extendable_end ? :end : nil)
@@ -127,16 +127,26 @@ class Staple
     #   @back.extendable = true
     #   @back.extendable_staple = self.object_id
     # end
+    extension_points = []
+    if extension_dir == :in
+      if extension_side == :start
+        extension_points = compute_extension_positions(@points.first, -1)
+        @points = extension_points.concat(@points)
+      elsif extension_side == :end
+        extension_points = compute_extension_positions(@points.last, -1)
+        @points = @points.concat(extension_points)
+      end
+      
+    elsif extension_dir == :out
+      if extension_side == :start
+        extension_points = compute_extension_positions(@points.first, 1)
+        @points = extension_points.concat(@points)
+      elsif extension_side == :end
+        extension_points = compute_extension_positions(@points.last, 1)
+        @points.concat(extension_points)
+      end
+    end    
     
-    extention_points = []
-    case out_side
-    when :start
-      extention_points = compute_extension_positions(@points.first)
-      @points = extention_points.concat(@points)
-    when :end
-      extention_points = compute_extension_positions(@points.last)
-      @points.concat(extention_points)
-    end
   end
   
   def update_extendable_edges
@@ -155,21 +165,26 @@ class Staple
 
   end
 
-  def compute_extension_positions(point)
-    side = Routing.find_plane_number(point, point, [50,50,50])
+  def compute_extension_positions(point, dir)
+    # rounded_point = Vertex.new(point.x.abs)
+    rounded_x = point.x.abs.floor == 0 ? 0 : point.x
+    rounded_y = point.y.abs.floor == 0 ? 0 : point.y
+    rounded_z = point.z.abs.floor == 0 ? 0 : point.z
+    rounded_point = Vertex.new(rounded_x, rounded_y, rounded_z)
+    side = Routing.find_plane_number(rounded_point, rounded_point, [@width, @height, @depth])
     case side
     when :S1
-      Vertex.linspace(:z, 6, point, Vertex.new(point.x, point.y, point.z + 3))[1...]
+      Vertex.linspace(:z, 6, point, Vertex.new(point.x, point.y, point.z + 3 * dir))[1...]
     when :S2
-      Vertex.linspace(:z, 6, point, Vertex.new(point.x, point.y, point.z - 3))[1...]
+      Vertex.linspace(:z, 6, point, Vertex.new(point.x, point.y, point.z - 3 * dir))[1...]
     when :S3
-      Vertex.linspace(:y, 6, point, Vertex.new(point.x, point.y - 3, point.z))[1...]
+      Vertex.linspace(:y, 6, point, Vertex.new(point.x, point.y - 3 * dir, point.z))[1...]
     when :S4
-      Vertex.linspace(:y, 6, point, Vertex.new(point.x, point.y + 3, point.z))[1...]
+      Vertex.linspace(:y, 6, point, Vertex.new(point.x, point.y + 3 * dir, point.z))[1...]
     when :S5
-      Vertex.linspace(:x, 6, point, Vertex.new(point.x - 3, point.y, point.z))[1...]
+      Vertex.linspace(:x, 6, point, Vertex.new(point.x - 3 * dir, point.y, point.z))[1...]
     when :S6
-      Vertex.linspace(:x, 6, point, Vertex.new(point.x + 3, point.y, point.z))[1...]
+      Vertex.linspace(:x, 6, point, Vertex.new(point.x + 3 * dir, point.y, point.z))[1...]
     else
       []
     end
@@ -188,7 +203,7 @@ class Staple
   def name
     starting_vertex = @front.v1
     ending_vertex = @back.v2
-    side = Routing.find_plane_number(starting_vertex, ending_vertex, [50, 50, 50])
+    side = Routing.find_plane_number(starting_vertex, ending_vertex, [@width, @height, @depth])
     hor = nil
     vert = nil
     hor_dist = nil
@@ -219,7 +234,7 @@ class Staple
     when :extension
       dir = @front.directional_change
       points.each { |p| p.instance_variable_set("@#{dir}", p.instance_variable_get("@#{dir}") + 0.5) }
-    when :refraction, :reflection
+    when :reflection
       dir_front, dir_front_ch = @front.directional_change_vec
       dir_back, dir_back_ch = @back.directional_change_vec
 
@@ -231,9 +246,56 @@ class Staple
         p.instance_variable_set("@#{cpe}", cpe_dc + dpe_dc)
         p.instance_variable_set("@#{cne}", cne_dc + dne_dc)
       end
-
+    when :refraction
+      if inner_refraction?
+        # needs to be on the outside
+      else
+        # needs to be on the inside
+      end
     end
     points
+  end
+
+  def inner_refraction?
+    inner = true
+    side = Routing.find_plane_number(@front.v1, @front.v2, [@width, @height, @depth])
+    w_step = @width / @segments
+    h_step = @height / @segments
+    d_step = @depth / @segments
+    case side
+    when :S1, :S2
+      if @front.directional_change == :x
+        if @front.v2.y == h_step || @front.v2.y == (@segments - 1) * h_step 
+          inner = false
+        end
+      else
+        if @front.v2.x == w_step || @front.v2.x == (@segments - 1) * w_step 
+          inner = false
+        end
+      end
+    when :S3, :S4
+      if @front.directional_change == :x
+        if @front.v2.z == d_step || @front.v2.z == (@segments - 1) * d_step 
+          inner = false
+        end
+      else
+        if @front.v2.x == w_step || @front.v2.x == (@segments - 1) * w_step 
+          inner = false
+        end
+      end
+
+    when :S5, :S6
+      if @front.directional_change == :z
+        if @front.v2.y == h_step || @front.v2.y == (@segments - 1) * h_step 
+          inner = false
+        end
+      else
+        if @front.v2.z == d_step || @front.v2.z == (@segments - 1) * d_step 
+          inner = false
+        end
+      end
+    end
+    inner
   end
 
   def row_and_col(hor, vert, hor_dist, vert_dist)
