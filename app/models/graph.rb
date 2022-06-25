@@ -32,70 +32,13 @@ class Graph
       @vertex_cuts << e.v1 unless @vertex_cuts.include?(e.v1)
       @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
-    @staples = @staple_breaker.break_refraction_staples(@staples)
+    # @staples = @staple_breaker.break_refraction_staples(@staples)
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
-    # @staples.each {|staple| staple.adjust}
+    @staples.each {|staple| staple.update_interior_extension }
     # byebug
-    # extendable_staples = find_extendable_staples(@staples.filter {|staple| staple.type == :reflection })
-    # extendable_staples.each {|staple_side, staple| staple.update_extendable_staples(staple_side)}
-    # @staples.each(&:update_extendable_edges)
-    # edge_extendability_map(@sorted_edges)
+    # @staples.each {|staple| staple.adjust}
   end
 
-
-  # def find_extendable_staples(staples)
-  #   staple_map = {}
-    
-  #   staples.each do |staple|
-  #     # byebug
-  #     side = Routing.find_plane_number(staple.starting_vertex, staple.ending_vertex, [@width, @height, @depth])
-  #     staple_map[staple.object_id] = [0, []]
-  #     if side != :S1
-  #       next
-  #     end
-  #     staple_map[staple.object_id][0] += 1
-  #     staple_map[staple.object_id][1] << [:start, staple.object_id]
-
-  #     s2_starting_vertex = Vertex.new(staple.starting_vertex.x, staple.starting_vertex.y, -@depth)
-  #     s2_ending_vertex = Vertex.new(staple.ending_vertex.x, staple.ending_vertex.y, -@depth)
-  #     s2_side, s2_staple = Staple.find_staple(s2_starting_vertex, s2_ending_vertex, staples)
-  #     if staples.include?(s2_staple)
-  #       staple_map[staple.object_id][0] += 1
-  #       staple_map[staple.object_id][1] << [s2_side, s2_staple.object_id]
-  #     end
-  #     s3_starting_vertex = Vertex.new(staple.starting_vertex.x, @height, -staple.starting_vertex.y)
-  #     s3_ending_vertex = Vertex.new(staple.ending_vertex.x, @height, -staple.ending_vertex.y)
-  #     s3_side, s3_staple = Staple.find_staple(s3_starting_vertex, s3_ending_vertex, staples)
-  #     if staples.include?(s3_staple)
-  #       staple_map[staple.object_id][0] += 1
-  #       staple_map[staple.object_id][1] << [s3_side, s3_staple.object_id]
-  #     end
-  #     s4_starting_vertex = Vertex.new(staple.starting_vertex.x, 0, -staple.starting_vertex.y)
-  #     s4_ending_vertex = Vertex.new(staple.ending_vertex.x, 0, -staple.ending_vertex.y)
-  #     s4_side, s4_staple = Staple.find_staple(s4_starting_vertex, s4_ending_vertex, staples)
-  #     if staples.include?(s4_staple)
-  #       staple_map[staple.object_id][0] += 1
-  #       staple_map[staple.object_id][1] << [s4_side, s4_staple.object_id]
-  #     end
-  #     s5_starting_vertex = Vertex.new(0, staple.starting_vertex.y, -staple.starting_vertex.x)
-  #     s5_ending_vertex = Vertex.new(0, staple.ending_vertex.y, -staple.ending_vertex.x)
-  #     s5_side, s5_staple = Staple.find_staple(s5_starting_vertex, s5_ending_vertex, staples)
-  #     if staples.include?(s5_staple)
-  #       staple_map[staple.object_id][0] += 1
-  #       staple_map[staple.object_id][1] << [s5_side, s5_staple.object_id]
-  #     end
-  #     s6_starting_vertex = Vertex.new(@width, staple.starting_vertex.y, -staple.starting_vertex.x)
-  #     s6_ending_vertex = Vertex.new(@width, staple.ending_vertex.y, -staple.ending_vertex.x)
-  #     s6_side, s6_staple = Staple.find_staple(s6_starting_vertex, s6_ending_vertex, staples)
-  #     if staples.include?(s6_staple)
-  #       staple_map[staple.object_id][0] += 1
-  #       staple_map[staple.object_id][1] << [s6_side, s6_staple.object_id]
-  #     end
-  #   end
-  #   filtered_staple_map = staple_map.filter {|k,v| v[0] == 6 || v[0] == 5}
-  #   filtered_staple_ids = filtered_staple_map.map {|k,v| v[1]}.flatten(1) || []
-  #   filtered_staple_ids.map {|staple_side, staple_id| [staple_side, ObjectSpace._id2ref(staple_id)]}
-  # end
 
 
   def setup_dimensions(dimensions, shape)

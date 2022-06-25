@@ -7,7 +7,7 @@ class OxDNAMaker
   CM_CENTER_DS = POS_BASE + 0.2
   BASE_BASE = 0.3897628551303122
 
-  def setup(positions, staples_idxs)
+  def setup(positions, staples_idxs, staples_points)
     positions = group_positions(positions) # [...210]
     scaffold_positions = []
     scaffold_a1s = []
@@ -48,7 +48,7 @@ class OxDNAMaker
     v1 /= Math.sqrt(v1.inner_product(v1))
     a1 = v1
     rb = Vector[positions[0][0], positions[0][1], positions[0][2]]
-
+    # rbs = [rb]
     curr_R0 = r0
     curr_R = binding.local_variable_get("r_#{dir_ch}")
 
@@ -110,22 +110,81 @@ class OxDNAMaker
       scaffold_positions << position
       scaffold_a1s << a1
       scaffold_a3s << a3
-      scaffold_nt_hash[idx] = [position_d, a1_d, a3_d]
+      scaffold_nt_hash[idx] = [position_d, a1_d, a3_d, rb]
+      # rbs << rb
     end
-    staples_idxs.each do |staple_idxs|
+    staples_idxs.each_with_index do |staple_idxs, j|
+      staple_points = staples_points[j]
       staple_positions = []
       staple_a1s = []
       staple_a3s = []
+      covered = false
+      
       staple_idxs.each_with_index do |idx, i|
-        if idx.nil?
+        
+        if idx == "skip"
           prev_complimentary_data = scaffold_nt_hash[staple_idxs[i - 1]]
           next_complimentary_data = scaffold_nt_hash[staple_idxs[i + 1]]
           staple_positions << (prev_complimentary_data[0] + next_complimentary_data[0]) / 2
           staple_a1s << (prev_complimentary_data[1] + next_complimentary_data[1]) / 2
           staple_a3s << (prev_complimentary_data[2] + next_complimentary_data[2]) / 2
+        elsif idx == "eout"
+          
+        elsif idx == "ein"
+          next if covered
+          orth, side = orthogonal_dimension(staple_points[i-1], staple_points[i-2])
+          if orth == :x
+            if side == :S5
+              a3 = dir_X
+            elsif side == :S6
+              a3 = -dir_X
+            end
+            ein_rot = r_X
+          elsif orth == :y
+            if side == :S3
+              a3 = dir_Y
+            elsif side == :S4
+              a3 = -dir_Y
+            end
+            ein_rot = r_Y
+          elsif orth == :z
+            if side == :S1
+              a3 = -dir_Z
+            elsif side == :S2
+              a3 = dir_Z
+            end
+            ein_rot = r_Z
+          end
+
+          ein_positions = []
+          ein_a1s = []
+          ein_a3s = []
+          if i - 1 < 0
+            mod_i = staple_idxs.index { |n| n.instance_of?(Integer) }
+            last_rb = scaffold_nt_hash[staple_idxs[mod_i]][3]
+            v1 = scaffold_nt_hash[staple_idxs[mod_i]][1]
+          else
+            last_rb = scaffold_nt_hash[staple_idxs[i - 1]][3]
+            v1 = scaffold_nt_hash[staple_idxs[i - 1]][1]
+          end
+          v1 -= a3 * a3.inner_product(v1)
+          v1 = v1.normalize
+          a1 = v1
+          while i < staple_idxs.size
+            position = (last_rb - CM_CENTER_DS * a1)
+            a1 = ein_rot * a1
+            last_rb += a3 * BASE_BASE
+            ein_positions << position
+            ein_a1s << a1
+            ein_a3s << a3
+            i += 1
+          end
+          covered = true
+          staple_positions.concat(ein_positions)
+          staple_a1s.concat(ein_a1s)
+          staple_a3s.concat(ein_a3s)
         else
           complimentary_data = scaffold_nt_hash[(idx-1) % scaffold_nt_hash.size]
-          # byebug if complimentary_data.nil?
           staple_positions << complimentary_data[0]
           staple_a1s << complimentary_data[1]
           staple_a3s << complimentary_data[2]
@@ -137,6 +196,10 @@ class OxDNAMaker
     end
 
     [scaffold_positions, scaffold_a1s, scaffold_a3s, staples_positions, staples_a1s, staples_a3s]
+  end
+
+  def orthogonal_dimension(v1, v2)
+    Plane.orthogonal_dimension(Vertex.new(v1[0], v1[1], v1[2]), Vertex.new(v2[0], v2[1], v2[2]))
   end
 
   def group_positions(positions)

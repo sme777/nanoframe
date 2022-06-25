@@ -154,8 +154,9 @@ class Generator < ApplicationRecord
     staples = self.staples
     staples_idxs = staples['data'].map { |e| e['indices'] }
     staples_sequences = staples['data'].map { |e| e['sequence'] }
+    staples_points = staples['data'].map { |e| e['positions'] }
     scaffold_positions, scaffold_a1s, scaffold_a3s, staples_positions, staples_a1s, staples_a3s = oxdna_maker.setup(
-      scaffold_positions, staples_idxs[...staples_idxs.size]
+      scaffold_positions, staples_idxs, staples_points
     )
     dat_file = "#{Rails.root.join('tmp')}/#{filename}.dat"
     top_file = "#{Rails.root.join('tmp')}/#{filename}.top"
@@ -166,7 +167,7 @@ class Generator < ApplicationRecord
     scaffold_positions.each_with_index do |_pos, i|
       f.write("#{scaffold_positions[i][0]} #{scaffold_positions[i][1]} #{scaffold_positions[i][2]} #{scaffold_a1s[i][0]} #{scaffold_a1s[i][1]} #{scaffold_a1s[i][2]} #{scaffold_a3s[i][0]} #{scaffold_a3s[i][1]} #{scaffold_a3s[i][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
     end
-
+    byebug
     staples_positions.each_with_index do |position, idx|
       j = 0
       while j < position.size
