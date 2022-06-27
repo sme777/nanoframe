@@ -128,35 +128,36 @@ class OxDNAMaker
           staple_positions << (prev_complimentary_data[0] + next_complimentary_data[0]) / 2
           staple_a1s << (prev_complimentary_data[1] + next_complimentary_data[1]) / 2
           staple_a3s << (prev_complimentary_data[2] + next_complimentary_data[2]) / 2
-        when 'eout'
+        # when 'eout', 'e'
 
-        when 'ein'
+        when 'ein', 'eout'
           next if covered
 
           orth, side = orthogonal_dimension(staple_points[i - 1], staple_points[i - 2])
+          delta = idx == 'ein' ? 1 : -1
           case orth
           when :x
             case side
             when :S5
-              a3 = dir_X
+              a3 = dir_X * delta
             when :S6
-              a3 = -dir_X
+              a3 = -dir_X * delta
             end
             ein_rot = r_X
           when :y
             case side
             when :S3
-              a3 = dir_Y
+              a3 = dir_Y * delta
             when :S4
-              a3 = -dir_Y
+              a3 = -dir_Y * delta
             end
             ein_rot = r_Y
           when :z
             case side
             when :S1
-              a3 = -dir_Z
+              a3 = -dir_Z * delta
             when :S2
-              a3 = dir_Z
+              a3 = dir_Z * delta
             end
             ein_rot = r_Z
           end
@@ -177,6 +178,7 @@ class OxDNAMaker
           a1 = v1
           while i < staple_idxs.size
             position = (last_rb - CM_CENTER_DS * a1)
+            byebug if ein_rot.nil?
             a1 = ein_rot * a1
             last_rb += a3 * BASE_BASE
             ein_positions << position

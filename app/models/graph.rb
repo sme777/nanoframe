@@ -105,8 +105,8 @@ class Graph
   def staples_hash
     staples_data = []
     @staples.each do |staple|
-      staples_data << { positions: staple.points.map { |point| [point.x, point.y, point.z] }, color: [rand, rand, rand],
-                        name: staple.name, sequence: staple.sequence, indices: staple.scaffold_idxs }
+      staples_data << { positions: staple.points.map { |point| [point.x, point.y, point.z] }, original_positions: staple.original_points.map { |point| [point.x, point.y, point.z] },
+                        color: [rand, rand, rand], name: staple.name, sequence: staple.sequence, indices: staple.scaffold_idxs }
     end
     { data: staples_data }
   end

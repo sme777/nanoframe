@@ -154,7 +154,8 @@ class Generator < ApplicationRecord
     staples = self.staples
     staples_idxs = staples['data'].map { |e| e['indices'] }
     staples_sequences = staples['data'].map { |e| e['sequence'] }
-    staples_points = staples['data'].map { |e| e['positions'] }
+    staples_points = staples['data'].map { |e| e['original_positions'] }
+    # byebug
     scaffold_positions, scaffold_a1s, scaffold_a3s, staples_positions, staples_a1s, staples_a3s = oxdna_maker.setup(
       scaffold_positions, staples_idxs, staples_points
     )
