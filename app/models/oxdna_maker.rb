@@ -119,38 +119,43 @@ class OxDNAMaker
       staple_a1s = []
       staple_a3s = []
       covered = false
-      
+
       staple_idxs.each_with_index do |idx, i|
-        
-        if idx == "skip"
+        case idx
+        when 'skip'
           prev_complimentary_data = scaffold_nt_hash[staple_idxs[i - 1]]
           next_complimentary_data = scaffold_nt_hash[staple_idxs[i + 1]]
           staple_positions << (prev_complimentary_data[0] + next_complimentary_data[0]) / 2
           staple_a1s << (prev_complimentary_data[1] + next_complimentary_data[1]) / 2
           staple_a3s << (prev_complimentary_data[2] + next_complimentary_data[2]) / 2
-        elsif idx == "eout"
-          
-        elsif idx == "ein"
+        when 'eout'
+
+        when 'ein'
           next if covered
-          orth, side = orthogonal_dimension(staple_points[i-1], staple_points[i-2])
-          if orth == :x
-            if side == :S5
+
+          orth, side = orthogonal_dimension(staple_points[i - 1], staple_points[i - 2])
+          case orth
+          when :x
+            case side
+            when :S5
               a3 = dir_X
-            elsif side == :S6
+            when :S6
               a3 = -dir_X
             end
             ein_rot = r_X
-          elsif orth == :y
-            if side == :S3
+          when :y
+            case side
+            when :S3
               a3 = dir_Y
-            elsif side == :S4
+            when :S4
               a3 = -dir_Y
             end
             ein_rot = r_Y
-          elsif orth == :z
-            if side == :S1
+          when :z
+            case side
+            when :S1
               a3 = -dir_Z
-            elsif side == :S2
+            when :S2
               a3 = dir_Z
             end
             ein_rot = r_Z
@@ -159,7 +164,7 @@ class OxDNAMaker
           ein_positions = []
           ein_a1s = []
           ein_a3s = []
-          if i - 1 < 0
+          if (i - 1).negative?
             mod_i = staple_idxs.index { |n| n.instance_of?(Integer) }
             last_rb = scaffold_nt_hash[staple_idxs[mod_i]][3]
             v1 = scaffold_nt_hash[staple_idxs[mod_i]][1]
@@ -184,7 +189,7 @@ class OxDNAMaker
           staple_a1s.concat(ein_a1s)
           staple_a3s.concat(ein_a3s)
         else
-          complimentary_data = scaffold_nt_hash[(idx-1) % scaffold_nt_hash.size]
+          complimentary_data = scaffold_nt_hash[(idx - 1) % scaffold_nt_hash.size]
           staple_positions << complimentary_data[0]
           staple_a1s << complimentary_data[1]
           staple_a3s << complimentary_data[2]

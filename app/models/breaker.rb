@@ -364,37 +364,46 @@ class Breaker
         front_rotation_labels = staple.complementary_rotation_labels[cutoff...]
 
         back_lin_positions = staple.points[...cutoff]
+        back_lin_original_positions = staple.original_points[...cutoff]
         front_lin_positions = staple.points[cutoff...]
+        front_lin_original_positions = staple.original_points[cutoff...]
+
         prev_staple = ObjectSpace._id2ref(staple.prev)
         next_staple = ObjectSpace._id2ref(staple.next)
 
         # Create two staples from the broken one
-        cutoff2 = prev_staple.type == :reflection ? ((prev_staple.points.size) / 2 + bridge_len) : ((prev_staple.sequence.size + back_sequence.size) / 2)
+        cutoff2 = prev_staple.type == :reflection ? (prev_staple.points.size / 2 + bridge_len) : ((prev_staple.sequence.size + back_sequence.size) / 2)
         staple_type = nil
         # Toggle parameters cutoff2 and prev staple length
         if cutoff2 < 20 || prev_staple.sequence.size < 25
           back_staple_labels = prev_staple.complementary_rotation_labels + back_rotation_labels
           back_staple_seq = prev_staple.sequence + back_sequence
           back_staple_pos = prev_staple.points + back_lin_positions
+          back_staple_original_pos = prev_staple.original_points + back_lin_original_positions
           back_staple_idx = prev_staple.scaffold_idxs + back_idxs
-          staple_type = :mod_refraction
+          staple_type = :temp
           staples.delete(prev_staple)
         else
           adjusted_shift = prev_staple.sequence.size - (cutoff2 - back_sequence.size).abs
           back_staple_labels = prev_staple.complementary_rotation_labels[adjusted_shift...] + back_rotation_labels
           back_staple_seq = prev_staple.sequence[adjusted_shift...] + back_sequence
           back_staple_pos = prev_staple.points[adjusted_shift...] + back_lin_positions
+          back_staple_original_pos = prev_staple.original_points[adjusted_shift...] + back_lin_original_positions
           back_staple_idx = prev_staple.scaffold_idxs[adjusted_shift...] + back_idxs
-          staple_type = :mod_reflection
+          staple_type = :temp
 
           prev_staple.complementary_rotation_labels = prev_staple.complementary_rotation_labels[...adjusted_shift]
           prev_staple.sequence = prev_staple.sequence[...adjusted_shift]
           prev_staple.scaffold_idxs = prev_staple.scaffold_idxs[...adjusted_shift]
           prev_staple.points = prev_staple.points[...adjusted_shift]
-          prev_staple.type = :mod_refraction
+          prev_staple.original_points = prev_staple.original_points[...adjusted_shift]
+          prev_staple.type = :temp
         end
+
+        # byebug if back_staple_original_pos.size != back_staple_pos.size
         back_staple = Staple.new({ sequence: back_staple_seq,
                                    points: back_staple_pos,
+                                   original_points: back_staple_original_pos,
                                    scaffold_idxs: back_staple_idx,
                                    complementary_rotation_labels: back_staple_labels,
                                    front: staple.front,
@@ -412,14 +421,15 @@ class Breaker
           ObjectSpace._id2ref(prev_staple.prev).next = back_staple.object_id
         end
         # Toggle parameters cutoff2 and prev staple length
-        cutoff2 = next_staple.type == :reflection ? ((next_staple.points.size) / 2 + next_staple.buffer + bridge_len) : ((front_sequence.size + next_staple.sequence.size) / 2)
+        cutoff2 = next_staple.type == :reflection ? (next_staple.points.size / 2 + next_staple.buffer + bridge_len) : ((front_sequence.size + next_staple.sequence.size) / 2)
         staple_type = nil
         if cutoff2 < 20 || next_staple.sequence.size < 25
           front_staple_labels = front_rotation_labels + next_staple.complementary_rotation_labels
           front_staple_seq = front_sequence + next_staple.sequence
           front_staple_pos = front_lin_positions + next_staple.points
+          front_staple_original_pos = front_lin_original_positions + next_staple.original_points
           front_staple_idx = front_idxs + next_staple.scaffold_idxs
-          staple_type = :mod_refraction
+          staple_type = :temp
           staples.delete(next_staple)
 
         else
@@ -427,17 +437,20 @@ class Breaker
           front_staple_labels = front_rotation_labels + next_staple.complementary_rotation_labels[...adjusted_shift]
           front_staple_seq = front_sequence + next_staple.sequence[...adjusted_shift]
           front_staple_pos = front_lin_positions + next_staple.points[...adjusted_shift]
+          front_staple_original_pos = front_lin_original_positions + next_staple.original_points[...adjusted_shift]
           front_staple_idx = front_idxs + next_staple.scaffold_idxs[...adjusted_shift]
-          staple_type = :mod_reflection
+          staple_type = :temp
 
           next_staple.complementary_rotation_labels = next_staple.complementary_rotation_labels[adjusted_shift...]
           next_staple.sequence = next_staple.sequence[adjusted_shift...]
           next_staple.scaffold_idxs = next_staple.scaffold_idxs[adjusted_shift...]
           next_staple.points = next_staple.points[adjusted_shift...]
+          next_staple.original_points = next_staple.original_points[adjusted_shift...]
+          next_staple.type = :temp # next_staple.type == :refraction ? :mod_refraction : :mod_reflection
         end
-
         front_staple = Staple.new({ sequence: front_staple_seq,
                                     points: front_staple_pos,
+                                    original_points: front_staple_original_pos,
                                     scaffold_idxs: front_staple_idx,
                                     complementary_rotation_labels: front_staple_labels,
                                     front: staple.front,
@@ -463,55 +476,107 @@ class Breaker
     staples.concat(residual_staples)
   end
 
-
   def break_refraction_staples(staples)
     new_staples = []
+    removed_staples = []
     staples.each do |staple|
-      next unless staple.type == :refraction
-      
-      mid = staple.sequence.size / 2
+      corner_vertex, corner_idx = staple.find_corner_vertex
+      byebug if staple.type == :refraction && corner_idx.nil?
+
+      if corner_idx.nil?
+        staple.type = :mod_reflection if staple.type == :temp
+        if !removed_staples.include?(staple.object_id)
+          new_staples << staple
+        end
+        next
+      end
       front_staple = Staple.new({
-        sequence: staple.sequence[...mid],
-        points: staple.points[...mid],
-        scaffold_idxs: staple.points[...mid],
-        complementary_rotation_labels: staple.points[...mid],
-        front: staple.front,
-        back: staple.back,
-        buffer: staple.buffer,
-        clone: true,
-        type: :mod_refraction
-      })
+                                  sequence: staple.sequence[...corner_idx + 1],
+                                  points: staple.points[...corner_idx + 1],
+                                  original_points: staple.original_points[...corner_idx + 1],
+                                  scaffold_idxs: staple.scaffold_idxs[...corner_idx + 1],
+                                  complementary_rotation_labels: staple.complementary_rotation_labels[...corner_idx + 1],
+                                  front: staple.front,
+                                  back: staple.back,
+                                  buffer: staple.buffer,
+                                  clone: true,
+                                  type: :mod_refraction
+                                })
       back_staple = Staple.new({
-        sequence: staple.sequence[mid...],
-        points: staple.points[mid...],
-        scaffold_idxs: staple.points[mid...],
-        complementary_rotation_labels: staple.points[mid...],
-        front: staple.front,
-        back: staple.back,
-        buffer: staple.buffer,
-        clone: true,
-        type: :mod_refraction
-      })
+                                 sequence: staple.sequence[corner_idx + 1...],
+                                 points: staple.points[corner_idx + 1...],
+                                 original_points: staple.original_points[corner_idx + 1...],
+                                 scaffold_idxs: staple.scaffold_idxs[corner_idx + 1...],
+                                 complementary_rotation_labels: staple.complementary_rotation_labels[corner_idx + 1...],
+                                 front: staple.front,
+                                 back: staple.back,
+                                 buffer: staple.buffer,
+                                 clone: true,
+                                 type: :mod_refraction
+                               })
+
       front_staple.prev = staple.prev
       front_staple.next = back_staple.object_id
+      prev_staple = ObjectSpace._id2ref(staple.prev)
+      prev_staple.next = front_staple.object_id
 
       back_staple.prev = front_staple.object_id
       back_staple.next = staple.next
+      next_staple = ObjectSpace._id2ref(staple.next)
+      next_staple.prev = back_staple.object_id
 
-      if staple.inner_refraction?
-        front_staple.update_extendable_staples(:out, :end)
-        back_staple.update_extendable_staples(:out, :start)
+      front_staple.update_exterior_extension(:end)
+      back_staple.update_exterior_extension(:start)
+
+      if front_staple.sequence.size < 30
+        front_prev_staple = ObjectSpace._id2ref(front_staple.prev)
+        merged_front_staple = merge_staples(front_prev_staple, front_staple, :mod_refraction)
+        new_staples << merged_front_staple
+        removed_staples << front_prev_staple
+        removed_staples << front_staple
       else
-        front_staple.update_extendable_staples(:in, :end)
-        back_staple.update_extendable_staples(:in, :start)
+        new_staples << front_staple
       end
 
-      new_staples << front_staple
-      new_staples << back_staple
+      if back_staple.sequence.size < 30
+        back_next_staple = ObjectSpace._id2ref(back_staple.next)
+        merged_back_staple = merge_staples(back_staple, back_next_staple, :mod_refraction)
+        new_staples << merged_back_staple
+        removed_staples << back_next_staple
+        removed_staples << back_staple
+      else
+        new_staples << back_staple
+      end
     end
-    staples.concat(new_staples)
+    # byebug
+    new_staples.filter { |stp| !removed_staples.include?(stp) }
   end
 
+  def merge_staples(st1, st2, type)
+
+    staple = Staple.new({
+                          sequence: st1.sequence + st2.sequence,
+                          points: st1.points + st2.points,
+                          original_points: st1.original_points + st2.original_points,
+                          scaffold_idxs: st1.scaffold_idxs + st2.scaffold_idxs,
+                          complementary_rotation_labels: st1.complementary_rotation_labels + st2.complementary_rotation_labels,
+                          front: st1.front,
+                          back: st1.back,
+                          buffer: st1.buffer + st2.buffer,
+                          clone: true,
+                          type: type
+                        })
+
+    staple.prev = st1.prev
+    staple.next = st2.next
+
+    prev_staple = ObjectSpace._id2ref(st1.prev)
+    next_staple = ObjectSpace._id2ref(st2.next)
+
+    prev_staple.next = staple.object_id
+    next_staple.prev = staple.object_id
+    staple
+  end
 
   def generate_shape_edges(vertices, scaffold_rotation_labels)
     sequence = IO.read('./app/assets/scaffolds/7249.txt')

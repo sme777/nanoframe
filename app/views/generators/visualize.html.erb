@@ -161,11 +161,28 @@
     <div class="col-md-1">
     </div>
 
+    <div class="table-container">
+        <h2>Staple Strands Sequences</h2>
+
+        <table class="table table-striped col-md-12" id="staples_table">
+            <thead>
+                <tr>
+                    <th>Staple #</th>
+                    <th>ID</th>
+                    <th>Sequence</th>
+                    <th>Length (bp)</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
 
 
 
     <%= render "layouts/footer"%>
-    <%= javascript_pack_tag 'visualize', 'data-turbolinks-track': 'reload'%>
+    <%= javascript_pack_tag 'visualize', 'stapleTable', 'data-turbolinks-track': 'reload'%>
 </body>
 
 </html>

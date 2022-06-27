@@ -25,21 +25,16 @@ class Graph
     @sorted_vertices, @normalized_vertices, @points, @sampling_frequency, @scaffold_rotation_labels = generate_points
     @colors = generate_colors
     @sorted_edges, @staples = generate_staples
-    # byebug
     @start_idx, @group1, @group2, @boundary_edges = open_structure
     @vertex_cuts = []
     @boundary_edges.each do |e|
       @vertex_cuts << e.v1 unless @vertex_cuts.include?(e.v1)
       @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
-    # @staples = @staple_breaker.break_refraction_staples(@staples)
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
-    @staples.each {|staple| staple.update_interior_extension }
-    # byebug
-    # @staples.each {|staple| staple.adjust}
+    @staples = @staple_breaker.break_refraction_staples(@staples)
+    @staples.each(&:update_interior_extension)
   end
-
-
 
   def setup_dimensions(dimensions, shape)
     case shape

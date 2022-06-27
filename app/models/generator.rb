@@ -167,7 +167,7 @@ class Generator < ApplicationRecord
     scaffold_positions.each_with_index do |_pos, i|
       f.write("#{scaffold_positions[i][0]} #{scaffold_positions[i][1]} #{scaffold_positions[i][2]} #{scaffold_a1s[i][0]} #{scaffold_a1s[i][1]} #{scaffold_a1s[i][2]} #{scaffold_a3s[i][0]} #{scaffold_a3s[i][1]} #{scaffold_a3s[i][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
     end
-    byebug
+    # byebug
     staples_positions.each_with_index do |position, idx|
       j = 0
       while j < position.size

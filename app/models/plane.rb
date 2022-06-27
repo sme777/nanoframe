@@ -28,13 +28,12 @@ class Plane
   # For simple cuboid when all planes are
   def self.orthogonal_dimension(v1, v2)
     side = Routing.find_plane_number(v1, v2, [50, 50, 50])
-    if v1.x - v2.x == 0 && (v1.x == 0 || v1.x.abs == 50)
+    if (v1.x - v2.x).zero? && (v1.x.zero? || v1.x.abs == 50)
       [:x, side]
-    elsif v1.y - v2.y == 0 && (v1.y == 0 || v1.y.abs == 50)
+    elsif (v1.y - v2.y).zero? && (v1.y.zero? || v1.y.abs == 50)
       [:y, side]
-    elsif v1.z - v2.z == 0 && (v1.z == 0 || v1.z.abs == 50)
+    elsif (v1.z - v2.z).zero? && (v1.z.zero? || v1.z.abs == 50)
       [:z, side]
     end
   end
-
 end
