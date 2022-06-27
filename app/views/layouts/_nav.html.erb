@@ -1,16 +1,29 @@
-    <div class="menu-items">
-        <ul class="nav nav-tabs justify-content-end">
-            <li class="nav-item">
-                <a class="nav-link <%= "active nanofont" if tab=="home"%>" href="/">Home</a>
+<nav class="navbar navbar-expand-custom navbar-mainbg">
+    <a class="navbar-brand navbar-logo" id="navbarDTALogo" href="/">NanoFrame</a>
+    <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false"
+        aria-label="Toggle navigation">
+        <i class="fas fa-bars text-white"></i>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto">
+            <div class="hori-selector">
+                <div class="left"></div>
+                <div class="right"></div>
+            </div>
+            <li class="nav-item <%= "active" if tab=="home"%>">
+                <a class="nav-link" href="/"><i class="fas fa-user"></i>Home</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link <%= "active nanofont" if tab=="bot"%>" href="/nanobot">Synthesizer</a>
+            <li class="nav-item <%= "active" if tab=="bot"%>">
+                <a class="nav-link" href="/nanobot"><i class="fas fa-flask"></i>Synthesizer</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link <%= "active nanofont" if tab=="playground"%>" href="/playground">Playground</a>
+            <li class="nav-item <%= "active" if tab=="playground"%>">
+                <a class="nav-link" href="/playground"><i class="fas fa-puzzle-piece"></i>Playground</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link <%= "active nanofont" if tab=="other"%>" href="/miscellaneous">Miscellaneous</a>
+            <li class="nav-item <%= "active" if tab=="other"%>">
+                <a class="nav-link" href="/miscellaneous"><i class="fas fa-book"></i>Guides</a>
             </li>
         </ul>
     </div>
+</nav>
+
+<%= javascript_pack_tag "navbar" %>
