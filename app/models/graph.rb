@@ -501,10 +501,10 @@ class Graph
       dr_ch = Edge.new(vertex, next_vert).directional_change
       edge_sampled_points = Vertex.linspace(dr_ch, 30, vertex, next_vert)
 
-      edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert])[-6...]
-      edge_sampled_points[...3] = last_corners unless last_corners.nil?
-      edge_sampled_points[-3...] = edge_corners[...3]
-      last_corners = edge_corners[3...]
+      edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert])[-8...]
+      edge_sampled_points[...4] = last_corners unless last_corners.nil?
+      edge_sampled_points[-4...] = edge_corners[...4]
+      last_corners = edge_corners[4...]
       sampled_points.concat(edge_sampled_points) # TODO: change 30 to edge length
     end
 
@@ -515,7 +515,7 @@ class Graph
     [sorted_vertices, normalized_vertices, sampled_points, freq, scaffold_rotation_labels]
   end
 
-  def rounded_corner_points(vertices, radius = 1, smoothness = 6, closed = true)
+  def rounded_corner_points(vertices, radius = 1.5, smoothness = 8, closed = true)
     min_vector = (vertices[0] - vertices[1])
     min_length = min_vector.distance
     vertices.each_with_index do |_v, idx|
@@ -586,7 +586,9 @@ class Graph
     (0...@points.size).each do |i|
       t = i.to_f / @points.size
       # colors.concat([t / 4, t / 1.5 + 0.15, t + 0.2])
-      colors << [t + 0.2, t + 0.2, t / 8] # yellow
+      # colors << [t + 0.2, t + 0.2, t / 8] # yellow
+      colors << [t / 3, t/3 + 0.3, t/3]
+      
     end
     colors
   end
