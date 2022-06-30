@@ -4,19 +4,20 @@ require 'json'
 
 class Graph
   include ActiveModel::Serialization
-
+  SSDNA_NT_DIST = 0.332
   attr_accessor :vertices, :edges, :sets, :route, :planes, :vertex_cuts, :staples, :staple_colors, :boundary_edges,
-                :points, :colors
+                :points, :colors, :shape, :segments, :scaff_length
 
   # dimension[0] -> width
   # dimension[1] -> height
   # dimension[2] -> depth
   def initialize(id, dimensions, shape, scaffold)
     setup_dimensions(dimensions, shape)
+    @shape = shape
     @generator_id = id
     @segments = dimensions['divisions'].to_i + 1
     @scaff_length = scaffold.size
-    @staple_breaker = Breaker.new(id, dimensions, shape, @segments, @scaff_length)
+    @staple_breaker = Breaker.new(self)
     v_and_e = create_vertices_and_edges(shape)
     @vertices = v_and_e[0]
     @edges = v_and_e[1]
@@ -25,6 +26,7 @@ class Graph
     @sorted_vertices, @normalized_vertices, @points, @sampling_frequency, @scaffold_rotation_labels = generate_points
     @colors = generate_colors
     @sorted_edges, @staples = generate_staples
+    # byebug
     @start_idx, @group1, @group2, @boundary_edges = open_structure
     @vertex_cuts = []
     @boundary_edges.each do |e|
@@ -44,6 +46,10 @@ class Graph
       @depth = dimensions['depth'].to_f
     when :tetrahedron
       @radius = dimensions[0]
+    end
+    # byebug
+    dimensions.each do |k, v|
+      self.class.send(:attr_accessor, "#{k}")
     end
   end
 
@@ -483,6 +489,14 @@ class Graph
     end
   end
 
+  def sample_dir_map
+    {
+      :x => (@width / @segments / SSDNA_NT_DIST).floor,
+      :y => (@height / @segments / SSDNA_NT_DIST).floor,
+      :z => (@depth / @segments / SSDNA_NT_DIST).floor
+    }
+  end
+
   def generate_points
     plane_copy = Marshal.load(Marshal.dump(@planes))
     sorted_vertices = Routing.sort_sets(plane_copy)
@@ -499,7 +513,8 @@ class Graph
       next_vert = normalized_vertices[(i + 1) % normalized_vertices.size]
       next_next_vert = normalized_vertices[(i + 2) % normalized_vertices.size]
       dr_ch = Edge.new(vertex, next_vert).directional_change
-      edge_sampled_points = Vertex.linspace(dr_ch, 30, vertex, next_vert)
+      # samples = dr_ch == :x ? @width / @segments / SSDNA_NT_DIST
+      edge_sampled_points = Vertex.linspace(dr_ch, sample_dir_map[dr_ch], vertex, next_vert)
 
       edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert])[-8...]
       edge_sampled_points[...4] = last_corners unless last_corners.nil?

@@ -5,38 +5,31 @@ require 'ruby-cbc'
 class Breaker
   SSDNA_NT_DIST = 0.332
 
-  def initialize(id, dimensions, shape, segments, scaff_length)
-    @shape = shape
-    @generator_id = id
-    @segments = segments
-    @scaff_length = scaff_length
-    setup_dimensions(dimensions, shape)
+  def initialize(graph)
+    # @shape = shape
+    # @generator_id = id
+    # @segments = segments
+    # @scaff_length = scaff_length
+    @graph = graph
+    setup_step_sizes
+    # setup_dimensions(dimensions, shape)
   end
 
-  def setup_dimensions(dimensions, _shape)
-    case @shape
-    when :cube
-      @width = dimensions['width'].to_f
-      @height = dimensions['height'].to_f
-      @depth = dimensions['depth'].to_f
-
-      @w_step = ((@width / SSDNA_NT_DIST) / @segments).floor
-      @h_step = ((@height / SSDNA_NT_DIST) / @segments).floor
-      @d_step = ((@depth / SSDNA_NT_DIST) / @segments).floor
-    when :tetrahedron
-      @radius = dimensions[0]
-    end
+  def setup_step_sizes
+      @w_step = ((@graph.width / SSDNA_NT_DIST) / @graph.segments).floor
+      @h_step = ((@graph.height / SSDNA_NT_DIST) / @graph.segments).floor
+      @d_step = ((@graph.depth / SSDNA_NT_DIST) / @graph.segments).floor
   end
 
   # S1 = front; S2 = back; S3 = top; S4 = bottom; S5 = left; S6 = right
   def staples_preprocess(side)
     contraints = {}
-    case @shape
+    case @graph.shape
     when :cube
 
-      w_constraint = ((@width / @segments) / SSDNA_NT_DIST).floor >= 60
-      h_constraint = ((@height / @segments) / SSDNA_NT_DIST).floor >= 60
-      d_constraint = ((@depth / @segments) / SSDNA_NT_DIST).floor >= 60
+      w_constraint = ((@graph.width / @graph.segments) / SSDNA_NT_DIST).floor >= 60
+      h_constraint = ((@graph.height / @graph.segments) / SSDNA_NT_DIST).floor >= 60
+      d_constraint = ((@graph.depth / @graph.segments) / SSDNA_NT_DIST).floor >= 60
       case side
       when :S1, :S2
         contraints[:z1] = w_constraint
@@ -61,7 +54,7 @@ class Breaker
   end
 
   def staples_postprocess(arr)
-    case @shape
+    case @graph.shape
     when :cube
       #   arr = [@ext_b_hor, @ext_b_vert, @ext_hor, @ext_vert]
       arr.each_with_index do |ext, i|
@@ -87,12 +80,12 @@ class Breaker
 
   def ilp(constraints, side)
     model = Cbc::Model.new
-    s = @segments
+    s = @graph.segments
     s2 = s**2
     x, y, x1, x2, z1, z2, z3, z4 = model.int_var_array(8, 0..Cbc::INF)
     model.maximize(2 * s2 * x + 4 * s * y + 2 * s * z1 + 2 * s * z2 + (s2 - s) * z3 + (s2 - s) * z4)
     h_step, v_step = step_size(side)
-
+    # byebug
     # x, y mandatory restraints
     model.enforce(x >= 20)
     model.enforce(y >= 20)
@@ -109,7 +102,7 @@ class Breaker
     model.enforce(x1 + x2 >= x)
     model.enforce(x1 + x2 <= x)
 
-    model.enforce(2 * s2 * x + 4 * s * y + 2 * s * z1 + 2 * s * z2 + (s2 - s) * z3 + (s2 - s) * z4 <= @scaff_length)
+    model.enforce(2 * s2 * x + 4 * s * y + 2 * s * z1 + 2 * s * z2 + (s2 - s) * z3 + (s2 - s) * z4 <= @graph.scaff_length)
     # z1, z2, z3, z4 filtered restraints
     model.enforce(z1 >= 0)
     if constraints[:z1]
@@ -140,7 +133,7 @@ class Breaker
     end
     problem = model.to_problem
     Thread.new { problem.solve }.join
-    [problem.value_of(x), problem.value_of(x1), problem.value_of(x2), problem.value_of(y), problem.value_of(z1),
+    [problem.value_of(x), problem.value_of(x1), problem.value_of(x2), problem.value_of(y)+1, problem.value_of(z1),
      problem.value_of(z2), problem.value_of(z3), problem.value_of(z4)]
   end
 
@@ -165,9 +158,9 @@ class Breaker
         if ext_b_hor == [0] && ext_b_vert == [0]
           staple = Staple.new({
                                 front: edge, back: adjacent, start_pos: refr / 2, end_pos: refr2 / 2,
-                                type: :refraction, buffer: 0 # changed from 2
+                                type: :refraction, buffer: 0, graph: @graph # changed from 2
                               })
-          staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
+          # staple.setup_dimensions([@graph.width, @graph.height, @graph.depth], @segments, @shape)
           edge.assoc_strands << staple.object_id
         else
           dir_ch = edge.directional_change
@@ -179,9 +172,9 @@ class Breaker
             start = refl2
             case dir_ch
             when :x
-              extension = ext_b_hor
+              extensions = ext_b_hor
             when :y
-              extension = ext_b_vert
+              extensions = ext_b_vert
             when :z
               extensions = %i[S3 S4].include?(curr_side) ? ext_b_vert : ext_b_hor
             end
@@ -192,9 +185,9 @@ class Breaker
                                     back: edge,
                                     start_pos: start,
                                     end_pos: start + ext,
-                                    type: :extension
+                                    type: :extension, graph: @graph
                                   })
-              staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
+              # staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
               edge.assoc_strands << staple.object_id
               extension_staples << staple
               start += ext
@@ -207,16 +200,16 @@ class Breaker
             staples.concat(extension_staples)
             staple = Staple.new({
                                   front: edge, back: adjacent, start_pos: start, end_pos: refr2 / 2,
-                                  type: :refraction, buffer: 0 # changed from 2
+                                  type: :refraction, buffer: 0, graph: @graph # changed from 2
                                 })
-            staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
+            # staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
           else
             staple = Staple.new({
                                   front: edge, back: adjacent, start_pos: refr / 2, end_pos: refr2 / 2,
-                                  type: :reflection, buffer: 1
+                                  type: :reflection, buffer: 1, graph: @graph
                                 })
 
-            staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
+            # staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
             edge.assoc_strands << staple.object_id
           end
         end
@@ -226,7 +219,7 @@ class Breaker
           # staple = Staple.new(edge, adjacent, refl2, refl2, :reflection, 1)
           staple = Staple.new({
                                 front: edge, back: adjacent, start_pos: refl2, end_pos: refl2,
-                                type: :reflection, buffer: 1
+                                type: :reflection, buffer: 1, graph: @graph
                               })
         else
           dir_ch = edge.directional_change
@@ -238,22 +231,23 @@ class Breaker
 
             case dir_ch
             when :x
-              extension = ext_hor
+              extensions = ext_hor
             when :y
-              extension = ext_vert
+              extensions = ext_vert
             when :z
               extensions = %i[S3 S4].include?(curr_side) ? ext_vert : ext_hor
             end
 
             # extensions = ext_b_hor != [0] ? ext_b_hor : ext_b_vert
             extension_staples = []
+            byebug if extensions.nil?
             extensions.each do |ext|
               # staple = Staple.new(edge, edge, start, start + ext, :extension)
               staple = Staple.new({
                                     front: edge, back: edge, start_pos: start, end_pos: start + ext,
-                                    type: :extension
+                                    type: :extension, graph: @graph
                                   })
-              staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
+              # staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
               edge.assoc_strands << staple.object_id
               extension_staples << staple
               start += ext
@@ -268,15 +262,15 @@ class Breaker
             # staple = Staple.new(edge, adjacent, start, refl2, :reflection, 1)
             staple = Staple.new({
                                   front: edge, back: adjacent, start_pos: start, end_pos: refl2,
-                                  type: :reflection, buffer: 1
+                                  type: :reflection, buffer: 1, graph: @graph
                                 })
 
           else
             # cut_size = refl2 >
             min_size = [refl1, refl2].min
             max_size = [refl1, refl2].max
-            size1 = edge.sequence.size < max_size ? max_size : min_size
-            size2 = edge.sequence.size >= max_size ? max_size : min_size
+            size1 = edge.sequence.size >= max_size ? max_size : min_size
+            size2 = edge.sequence.size < max_size ? max_size : min_size
             # if edge.sequence.size < max_size
             #   staple = Staple.new(edge, adjacent, min_size, max_size, :reflection, 1)
             # else
@@ -284,11 +278,11 @@ class Breaker
             # end
             staple = Staple.new({
                                   front: edge, back: adjacent, start_pos: size1, end_pos: size2,
-                                  type: :reflection, buffer: 1
+                                  type: :reflection, buffer: 1, graph: @graph
                                 })
           end
         end
-        staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
+        # staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
         edge.assoc_strands << staple.object_id
       end
       staples << staple
@@ -298,11 +292,11 @@ class Breaker
   end
 
   def edge_side(edge)
-    Routing.find_plane_number(edge.v1, edge.v2, [@width, @height, @depth])
+    Routing.find_plane_number(edge.v1, edge.v2, [@graph.width, @graph.height, @graph.depth])
   end
 
   def step_size(side)
-    case @shape
+    case @graph.shape
     when :cube
       case side
       when :S1, :S2
@@ -410,7 +404,8 @@ class Breaker
                                    back: staple.back,
                                    buffer: prev_staple.buffer,
                                    clone: true,
-                                   type: staple_type })
+                                   type: staple_type,
+                                   graph: @graph})
 
         residual_staples << back_staple
         if staples.include?(prev_staple)
@@ -457,7 +452,7 @@ class Breaker
                                     back: staple.back,
                                     buffer: next_staple.buffer,
                                     clone: true,
-                                    type: staple_type })
+                                    type: staple_type, graph: @graph })
         residual_staples << front_staple
         if staples.include?(prev_staple)
           next_staple.prev = front_staple.object_id
@@ -483,7 +478,7 @@ class Breaker
       corner_vertex, corner_idx = staple.find_corner_vertex
       byebug if staple.type == :refraction && corner_idx.nil?
 
-      if corner_idx.nil?
+      if corner_idx.nil? || corner_idx + 1 >= staple.sequence.size
         staple.type = :mod_reflection if staple.type == :temp
         if !removed_staples.include?(staple.object_id)
           new_staples << staple
@@ -500,7 +495,7 @@ class Breaker
                                   back: staple.back,
                                   buffer: staple.buffer,
                                   clone: true,
-                                  type: :mod_refraction
+                                  type: :mod_refraction, graph: @graph
                                 })
       back_staple = Staple.new({
                                  sequence: staple.sequence[corner_idx + 1...],
@@ -512,7 +507,7 @@ class Breaker
                                  back: staple.back,
                                  buffer: staple.buffer,
                                  clone: true,
-                                 type: :mod_refraction
+                                 type: :mod_refraction, graph: @graph
                                })
 
       front_staple.prev = staple.prev
@@ -524,10 +519,14 @@ class Breaker
       back_staple.next = staple.next
       next_staple = ObjectSpace._id2ref(staple.next)
       next_staple.prev = back_staple.object_id
-
+      begin
+        
       front_staple.update_exterior_extension(:end)
       back_staple.update_exterior_extension(:start)
-
+    rescue => exception
+      byebug    
+    end
+    
       if front_staple.sequence.size < 30
         front_prev_staple = ObjectSpace._id2ref(front_staple.prev)
         merged_front_staple = merge_staples(front_prev_staple, front_staple, :mod_refraction)
@@ -564,7 +563,8 @@ class Breaker
                           back: st1.back,
                           buffer: st1.buffer + st2.buffer,
                           clone: true,
-                          type: type
+                          type: type,
+                          graph: @graph
                         })
 
     staple.prev = st1.prev
@@ -628,9 +628,9 @@ class Breaker
   end
 
   def moving_step(edge)
-    w_step = (@width / (@segments * SSDNA_NT_DIST)).floor
-    h_step = (@height / (@segments * SSDNA_NT_DIST)).floor
-    d_step = (@depth / (@segments * SSDNA_NT_DIST)).floor
+    w_step = (@graph.width / (@graph.segments * SSDNA_NT_DIST)).floor
+    h_step = (@graph.height / (@graph.segments * SSDNA_NT_DIST)).floor
+    d_step = (@graph.depth / (@graph.segments * SSDNA_NT_DIST)).floor
 
     case edge.directional_change
     when :x
@@ -644,9 +644,9 @@ class Breaker
 
   def on_boundary?(v)
     # TODO: fix for plane roatation
-    (approx(v.x, @width) && approx(v.y, @height)) ||
-      (approx(v.x, @width) && approx(v.z, @depth)) ||
-      (approx(v.y, @height) && approx(v.z, @depth))
+    (approx(v.x, @graph.width) && approx(v.y, @graph.height)) ||
+      (approx(v.x, @graph.width) && approx(v.z, @graph.depth)) ||
+      (approx(v.y, @graph.height) && approx(v.z, @graph.depth))
   end
 
   def approx(val, divisor)
