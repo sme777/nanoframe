@@ -13,3 +13,9 @@
  *= require_tree .
  *= require_self
  */
+ @media (prefers-reduced-motion: reduce) {
+    .collapsing {
+        transition-property: height, visibility;
+        transition-duration: .35s;
+    }
+}

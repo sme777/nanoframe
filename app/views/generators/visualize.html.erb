@@ -1,10 +1,6 @@
-<head>
-    <title>NanoFrame</title>
-    <%= render "layouts/scripts"%>
-    <%= stylesheet_link_tag 'application', media: 'all' %>
-</head>
 
-<body>
+
+<%= stylesheet_link_tag 'application', media: 'all' %>
     <input type="hidden" id="generator-container" value="<%= @graph_json %>">
     <input type="hidden" id="generator-id-container" value="<%= @generator.id %>">
     <input type="hidden" id="staples-container" value="<%= @staples %>">
@@ -22,7 +18,8 @@
 
         <div class="col-md-6">
             <div class="forward-container">
-                <a href="/nanobot/<%= @generator.id%>/routing" class="btn btn-link forwardbtn route-arrow" id="routing-btn">Routing &rarr;</a>
+                <a href="/nanobot/<%= @generator.id%>/routing" class="btn btn-link forwardbtn route-arrow"
+                    id="routing-btn">Routing &rarr;</a>
 
             </div>
         </div>
@@ -39,8 +36,7 @@
                 <div class="row box-state-container">
                     <div class="form-floating nopad-container">
                         <input type="text" class="form-control" id="dimension_info"
-                            value="<%= @generator.get_dimensions %>"
-                            disabled>
+                            value="<%= @generator.get_dimensions %>" disabled>
                         <label for="dimension_info">Dimensions</label>
                     </div>
                 </div>
@@ -74,21 +70,22 @@
                 </div>
 
                 <div class="row box-state-container">
-                        <div class="dropdown download-file-container">
-                            <button class="btn btn-outline-secondary dropdown-toggle file-dropdown-menu" type="button" id="download-file-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                Download Files
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-dark file-dropdown-menu">
-                                <% @supported_files.each do |file| %>
-                                    <li>
-                                        <%= form_with(url: "/nanobot/#{@generator.id}/visualize", method: :post) do |f| %>
-                                            <%= hidden_field_tag 'type', file %>
-                                            <%= button_tag file, class: "dropdown-item"%>
-                                        <% end %>
-                                    </li>
+                    <div class="dropdown download-file-container">
+                        <button class="btn btn-outline-secondary dropdown-toggle file-dropdown-menu" type="button"
+                            id="download-file-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Download Files
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark file-dropdown-menu">
+                            <% @supported_files.each do |file| %>
+                            <li>
+                                <%= form_with(url: "/nanobot/#{@generator.id}/visualize", method: :post) do |f| %>
+                                <%= hidden_field_tag 'type', file %>
+                                <%= button_tag file, class: "dropdown-item"%>
                                 <% end %>
-                            </ul>
-                        </div>
+                            </li>
+                            <% end %>
+                        </ul>
+                    </div>
                 </div>
 
             </div>
@@ -142,12 +139,12 @@
         </div>
     </div>
     <script type="text/javascript">
-        var scaffoldPositions = <%= @positions %>;
-        var scaffoldColors = <%= @colors %>;
+        var scaffoldPositions = <%= @positions %> ;
+        var scaffoldColors = <%= @colors %> ;
         var scaffold = "<%= @scaffold %>";
-        var start = <%= @start %>;
-        var end = <%= @end %>;
-        var staples = JSON.parse(<%= @staples.to_json.html_safe %>); 
+        var start = <%= @start %> ;
+        var end = <%= @end %> ;
+        var staples = <%= @staples.to_json.html_safe %>;
         var signOutBtn = null;
         var generatorSize = null;
         var boxState = 1;
@@ -158,31 +155,37 @@
             <canvas id="visualize-webgl"></canvas>
         </div>
     </div>
-    <div class="col-md-1">
-    </div>
 
     <div class="table-container">
-        <h2>Staple Strands Sequences</h2>
-
-        <table class="table table-striped col-md-12" id="staples_table">
-            <thead>
-                <tr>
-                    <th>Staple #</th>
-                    <th>ID</th>
-                    <th>Sequence</th>
-                    <th>Length (bp)</th>
-                </tr>
-            </thead>
-            <tbody>
-
-            </tbody>
-        </table>
+            <button class="btn btn btn-outline-dark" type="button" data-bs-toggle="collapse" data-bs-target="#staple_table_container" aria-expanded="false" aria-controls="staple_table_container">
+                Staple Strands Sequences
+            </button>
+            <div class="collapse" id="staple_table_container">
+            <table class="table table-striped table-hover col-md-12" id="staples_table">
+                <thead>
+                    <tr>
+                        <th>Staple #</th>
+                        <th>ID</th>
+                        <th>Color</th>
+                        <th>Sequence</th>
+                        <th>Length (bp)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% @staples['data'].each_with_index do |staple, idx| %>
+                        <tr>
+                            <td><%= idx+1 %></td>
+                            <td><%= staple["name"] %></td>
+                            <td><%= Generator.rgb2hex(staple["color"]) %></td>
+                            <td><%= staple["sequence"] %></td>
+                            <td><%= staple["sequence"].size %></td>
+                        </tr>
+                    <% end %>
+                </tbody>
+            </table>
+            </div>
     </div>
-
 
 
     <%= render "layouts/footer"%>
-    <%= javascript_pack_tag 'visualize', 'stapleTable', 'data-turbolinks-track': 'reload'%>
-</body>
-
-</html>
+    <%= javascript_pack_tag 'visualize', 'data-turbolinks-track': 'reload'%>
