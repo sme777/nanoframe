@@ -74,7 +74,7 @@ class GeneratorsController < ApplicationController
       @colors = @generator.colors
       @vertex_cuts = @generator.vertex_cuts
       @scaffold = @generator.scaffold
-      @staples = JSON.generate(@generator.staples)
+      @staples = @generator.staples
       @start = @generator.routing['start']
       @end = @generator.routing['end']
     end

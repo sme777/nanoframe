@@ -105,7 +105,7 @@ class Generator < ApplicationRecord
     ['Leather Vintage', 'Cold Breeze', 'Pink Forest', 'Customize...']
   end
 
-  def rgb2hex(rgb)
+  def self.rgb2hex(rgb)
     r, g, b = rgb
     r = (r * 255).round
     g = (g * 255).round
@@ -141,7 +141,7 @@ class Generator < ApplicationRecord
       color = staple['color']
       sequence = staple['sequence']
       name = staple['name']
-      file.write("#{name},#{rgb2hex(color)},#{sequence},#{sequence.size}\n")
+      file.write("#{name},#{Generator.rgb2hex(color)},#{sequence},#{sequence.size}\n")
     end
     file.close
     ["#{filename}.csv"]

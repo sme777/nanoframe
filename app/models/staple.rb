@@ -5,7 +5,7 @@ class Staple
                 :complementary_rotation_labels, :buffer, :starting_vertex, :ending_vertex, :original_points
 
   def initialize(args)
-    setup_dimensions([50, 50, 50], 5, :cube)
+    # setup_dimensions([], 5, :cube)
     if args[:clone]
       @sequence = args[:sequence]
       @points = args[:points]
@@ -16,6 +16,7 @@ class Staple
       @front = args[:front]
       @back = args[:back]
       @type = args[:type]
+      @graph = args[:graph]
       @starting_vertex = @points.first
       @ending_vertex = @points.last
     else
@@ -23,23 +24,27 @@ class Staple
       @back = args[:back]
       @buffer = args[:buffer] || 0
       @type = args[:type]
-
+      @graph = args[:graph]
       start_pos = args[:start_pos]
       end_pos = args[:end_pos]
       @next = nil
       @prev = nil
       @starting_vertex = nil
       @ending_vertex = nil
+
+      # buffer_type = type == :refraction
       if @front == @back
         @sequence = convert(front.sequence[start_pos...end_pos])
         @scaffold_idxs = front.scaffold_idxs[start_pos...end_pos]
         @complementary_rotation_labels = front.complementary_rotation_labels[start_pos...end_pos]
-      elsif front.scaffold_idxs.include?(7248) && back.scaffold_idxs.include?(0)
-        # provide loopout length for dynamic length configuration
-        @sequence = convert(front.sequence[start_pos...start_pos + 15] + buffer_bp + back.sequence[...end_pos])
-        @scaffold_idxs = front.scaffold_idxs[start_pos...start_pos + 15] + ['skip'] * @buffer + back.scaffold_idxs[...end_pos]
-        @complementary_rotation_labels = front.complementary_rotation_labels[start_pos...start_pos + 15] + [nil] * @buffer + back.complementary_rotation_labels[...end_pos]
+      # elsif front.scaffold_idxs.include?(7248) && back.scaffold_idxs.include?(0)
+      #   # provide loopout length for dynamic length configuration
+      #   @sequence = convert(front.sequence[start_pos...start_pos + 15] + buffer_bp + back.sequence[...end_pos])
+      #   @scaffold_idxs = front.scaffold_idxs[start_pos...start_pos + 15] + ['skip'] * @buffer + back.scaffold_idxs[...end_pos]
+      #   @complementary_rotation_labels = front.complementary_rotation_labels[start_pos...start_pos + 15] + [nil] * @buffer + back.complementary_rotation_labels[...end_pos]
       else
+        # byebug if front.sequence[start_pos...].nil? || back.sequence[...end_pos].nil?
+        # corner_nt_idx = type == :refraction ? -2 : -1
         @sequence = convert(front.sequence[start_pos...] + buffer_bp + back.sequence[...end_pos])
         @scaffold_idxs = front.scaffold_idxs[start_pos...] + ['skip'] * @buffer + back.scaffold_idxs[...end_pos]
         @complementary_rotation_labels = front.complementary_rotation_labels[start_pos...] + [nil] * @buffer + back.complementary_rotation_labels[...end_pos]
@@ -50,17 +55,17 @@ class Staple
     end
   end
 
-  def setup_dimensions(dimensions, segments, shape)
-    case shape
-    when :cube
-      @width = dimensions[0]
-      @height = dimensions[1]
-      @depth = dimensions[2]
-      @segments = segments
-    when :tetrahedron
-      @radius = dimensions[0]
-    end
-  end
+  # def setup_dimensions(dimensions, segments, shape)
+  #   case shape
+  #   when :cube
+  #     @width = dimensions[0]
+  #     @height = dimensions[1]
+  #     @depth = dimensions[2]
+  #     @segments = segments
+  #   when :tetrahedron
+  #     @radius = dimensions[0]
+  #   end
+  # end
 
   def convert(edge_seq)
     sequence = ''
@@ -131,14 +136,20 @@ class Staple
     when :start
       orth, side = Plane.orthogonal_dimension(@original_points[1], @original_points[1])
       extension_points = compute_outer_extension_positions(@points[0], orth, side)
+      original_extension_points = compute_outer_extension_positions(@original_points[0], orth, side)
       @points = extension_points + @points
+      @original_points = original_extension_points + @original_points
       @scaffold_idxs = ['eout'] * extension_points.size + @scaffold_idxs
+      @complementary_rotation_labels = [nil] * extension_points.size + @complementary_rotation_labels
       @sequence = 'T' * extension_points.size + @sequence
     when :end
       orth, side = Plane.orthogonal_dimension(@original_points[-2], @original_points[-2])
       extension_points = compute_outer_extension_positions(@points[-1], orth, side)
+      original_extension_points = compute_outer_extension_positions(@original_points[-1], orth, side)
       @points += extension_points
+      @original_points += original_extension_points
       @scaffold_idxs += ['eout'] * extension_points.size
+      @complementary_rotation_labels += [nil] * extension_points.size
       @sequence += 'T' * extension_points.size
     end
   end
@@ -146,11 +157,11 @@ class Staple
   def find_corner_vertex
     @original_points.each_with_index do |point, idx|
       count = 0
-      count += 1 if point.x.zero? || point.x == @width
+      count += 1 if point.x.zero? || point.x == @graph.width
 
-      count += 1 if point.y.zero? || point.y == @height
+      count += 1 if point.y.zero? || point.y == @graph.height
 
-      count += 1 if point.z.abs.zero? || point.z.abs == @depth
+      count += 1 if point.z.abs.zero? || point.z.abs == @graph.depth
 
       return [point, idx] if count == 2
     end
@@ -185,7 +196,7 @@ class Staple
 
   def compute_extension_positions(point, dir)
     rounded_point = rounded_vertex(point)
-    side = Routing.find_plane_number(rounded_point, rounded_point, [@width, @height, @depth])
+    side = Routing.find_plane_number(rounded_point, rounded_point, [@graph.width, @graph.height, @graph.depth])
     case side
     when :S1
       Vertex.linspace(:z, 11, point, Vertex.new(point.x, point.y, point.z + 3 * dir))[1...]
@@ -214,9 +225,10 @@ class Staple
   end
 
   def name
+    # byebug
     starting_vertex = @front.v1
     ending_vertex = @back.v2
-    side = Routing.find_plane_number(starting_vertex, ending_vertex, [@width, @height, @depth])
+    side = Routing.find_plane_number(starting_vertex, ending_vertex, [@graph.width, @graph.height, @graph.depth])
     hor = nil
     vert = nil
     hor_dist = nil
@@ -225,18 +237,18 @@ class Staple
     when :S1, :S2
       hor = 'x'
       vert = 'y'
-      hor_dist = @width / @segments
-      vert_dist = @height / @segments
+      hor_dist = @graph.width / @graph.segments
+      vert_dist = @graph.height / @graph.segments
     when :S3, :S4
       hor = 'x'
       vert = 'z'
-      hor_dist = @width / @segments
-      vert_dist = @depth / @segments
+      hor_dist = @graph.width / @graph.segments
+      vert_dist = @graph.depth / @graph.segments
     when :S5, :S6
       hor = 'z'
       vert = 'y'
-      hor_dist = @depth / @segments
-      vert_dist = @height / @segments
+      hor_dist = @graph.depth / @graph.segments
+      vert_dist = @graph.height / @graph.segments
     end
     row, col = row_and_col(hor, vert, hor_dist, vert_dist)
     "#{@type}-#{side}-R#{row}-C#{col}"
@@ -265,37 +277,8 @@ class Staple
     points
   end
 
-  def inner_refraction?
-    inner = true
-    side = Routing.find_plane_number(@front.v1, @front.v2, [@width, @height, @depth])
-    w_step = @width / @segments
-    h_step = @height / @segments
-    d_step = @depth / @segments
-    case side
-    when :S1, :S2
-      if @front.directional_change == :x
-        inner = false if @front.v2.y == h_step || @front.v2.y == (@segments - 1) * h_step
-      elsif @front.v2.x == w_step || @front.v2.x == (@segments - 1) * w_step
-        inner = false
-      end
-    when :S3, :S4
-      if @front.directional_change == :x
-        inner = false if @front.v2.z == d_step || @front.v2.z == (@segments - 1) * d_step
-      elsif @front.v2.x == w_step || @front.v2.x == (@segments - 1) * w_step
-        inner = false
-      end
-
-    when :S5, :S6
-      if @front.directional_change == :z
-        inner = false if @front.v2.y == h_step || @front.v2.y == (@segments - 1) * h_step
-      elsif @front.v2.z == d_step || @front.v2.z == (@segments - 1) * d_step
-        inner = false
-      end
-    end
-    inner
-  end
-
   def row_and_col(hor, vert, hor_dist, vert_dist)
+
     front_start_hor = @front.v1.instance_variable_get("@#{hor}")
     front_end_hor = @front.v2.instance_variable_get("@#{hor}")
     front_start_vert = @front.v1.instance_variable_get("@#{vert}")

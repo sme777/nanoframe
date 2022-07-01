@@ -4,19 +4,20 @@ require 'json'
 
 class Graph
   include ActiveModel::Serialization
-
+  SSDNA_NT_DIST = 0.332
   attr_accessor :vertices, :edges, :sets, :route, :planes, :vertex_cuts, :staples, :staple_colors, :boundary_edges,
-                :points, :colors
+                :points, :colors, :shape, :segments, :scaff_length
 
   # dimension[0] -> width
   # dimension[1] -> height
   # dimension[2] -> depth
   def initialize(id, dimensions, shape, scaffold)
     setup_dimensions(dimensions, shape)
+    @shape = shape
     @generator_id = id
     @segments = dimensions['divisions'].to_i + 1
     @scaff_length = scaffold.size
-    @staple_breaker = Breaker.new(id, dimensions, shape, @segments, @scaff_length)
+    @staple_breaker = Breaker.new(self)
     v_and_e = create_vertices_and_edges(shape)
     @vertices = v_and_e[0]
     @edges = v_and_e[1]
@@ -25,15 +26,16 @@ class Graph
     @sorted_vertices, @normalized_vertices, @points, @sampling_frequency, @scaffold_rotation_labels = generate_points
     @colors = generate_colors
     @sorted_edges, @staples = generate_staples
+    # byebug
     @start_idx, @group1, @group2, @boundary_edges = open_structure
     @vertex_cuts = []
     @boundary_edges.each do |e|
       @vertex_cuts << e.v1 unless @vertex_cuts.include?(e.v1)
       @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
-    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
+    # @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
     @staples = @staple_breaker.break_refraction_staples(@staples)
-    @staples.each(&:update_interior_extension)
+    # @staples.each(&:update_interior_extension)
   end
 
   def setup_dimensions(dimensions, shape)
@@ -44,6 +46,10 @@ class Graph
       @depth = dimensions['depth'].to_f
     when :tetrahedron
       @radius = dimensions[0]
+    end
+    # byebug
+    dimensions.each do |k, v|
+      self.class.send(:attr_accessor, "#{k}")
     end
   end
 
@@ -483,6 +489,14 @@ class Graph
     end
   end
 
+  def sample_dir_map
+    {
+      :x => (@width / @segments / SSDNA_NT_DIST).floor,
+      :y => (@height / @segments / SSDNA_NT_DIST).floor,
+      :z => (@depth / @segments / SSDNA_NT_DIST).floor
+    }
+  end
+
   def generate_points
     plane_copy = Marshal.load(Marshal.dump(@planes))
     sorted_vertices = Routing.sort_sets(plane_copy)
@@ -499,15 +513,17 @@ class Graph
       next_vert = normalized_vertices[(i + 1) % normalized_vertices.size]
       next_next_vert = normalized_vertices[(i + 2) % normalized_vertices.size]
       dr_ch = Edge.new(vertex, next_vert).directional_change
-      edge_sampled_points = Vertex.linspace(dr_ch, 30, vertex, next_vert)
+      # samples = dr_ch == :x ? @width / @segments / SSDNA_NT_DIST
+      corner_nt = on_boundary?(next_vert) ? 1 : 0
+      edge_sampled_points = Vertex.linspace(dr_ch, sample_dir_map[dr_ch] + corner_nt, vertex, next_vert)
 
-      edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert])[-6...]
-      edge_sampled_points[...3] = last_corners unless last_corners.nil?
-      edge_sampled_points[-3...] = edge_corners[...3]
-      last_corners = edge_corners[3...]
+      edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert])[-8...]
+      edge_sampled_points[...4] = last_corners unless last_corners.nil?
+      edge_sampled_points[-4...] = edge_corners[...4]
+      last_corners = edge_corners[4...]
       sampled_points.concat(edge_sampled_points) # TODO: change 30 to edge length
     end
-
+    # byebug
     sampled_points = sampled_points.map { |point| [point.x, point.y, point.z] } # Vertex.flatten(sampled_points)
     scaffold_rotation_labels = ([0, 1, 2, 3, 4, 5, 6, 7, 8,
                                  9] * (sampled_points.size / 10).ceil)[...sampled_points.size]
@@ -515,7 +531,7 @@ class Graph
     [sorted_vertices, normalized_vertices, sampled_points, freq, scaffold_rotation_labels]
   end
 
-  def rounded_corner_points(vertices, radius = 1, smoothness = 6, closed = true)
+  def rounded_corner_points(vertices, radius = 1.5, smoothness = 8, closed = true)
     min_vector = (vertices[0] - vertices[1])
     min_length = min_vector.distance
     vertices.each_with_index do |_v, idx|
@@ -581,12 +597,25 @@ class Graph
     positions
   end
 
+  def on_boundary?(v)
+    # TODO: fix for plane roatation
+    (approx(v.x, @width) && approx(v.y, @height)) ||
+      (approx(v.x, @width) && approx(v.z, @depth)) ||
+      (approx(v.y, @height) && approx(v.z, @depth))
+  end
+
+  def approx(val, divisor)
+    (val.ceil % divisor).zero? || (val.floor % divisor).zero?
+  end
+
   def generate_colors
     colors = []
     (0...@points.size).each do |i|
       t = i.to_f / @points.size
       # colors.concat([t / 4, t / 1.5 + 0.15, t + 0.2])
-      colors << [t + 0.2, t + 0.2, t / 8] # yellow
+      # colors << [t + 0.2, t + 0.2, t / 8] # yellow
+      colors << [t / 3, t/3 + 0.3, t/3]
+      
     end
     colors
   end
@@ -601,6 +630,7 @@ class Graph
     end
     edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_len_map,
                                                              @scaffold_rotation_labels)
+        # byebug                                                   byebug
   end
 
   def open_structure(ratio = 1 / 3.to_f)
