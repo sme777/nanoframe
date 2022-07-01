@@ -33,9 +33,9 @@ class Graph
       @vertex_cuts << e.v1 unless @vertex_cuts.include?(e.v1)
       @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
-    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
+    # @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
     @staples = @staple_breaker.break_refraction_staples(@staples)
-    @staples.each(&:update_interior_extension)
+    # @staples.each(&:update_interior_extension)
   end
 
   def setup_dimensions(dimensions, shape)
@@ -514,7 +514,8 @@ class Graph
       next_next_vert = normalized_vertices[(i + 2) % normalized_vertices.size]
       dr_ch = Edge.new(vertex, next_vert).directional_change
       # samples = dr_ch == :x ? @width / @segments / SSDNA_NT_DIST
-      edge_sampled_points = Vertex.linspace(dr_ch, sample_dir_map[dr_ch], vertex, next_vert)
+      corner_nt = on_boundary?(next_vert) ? 1 : 0
+      edge_sampled_points = Vertex.linspace(dr_ch, sample_dir_map[dr_ch] + corner_nt, vertex, next_vert)
 
       edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert])[-8...]
       edge_sampled_points[...4] = last_corners unless last_corners.nil?
@@ -522,7 +523,7 @@ class Graph
       last_corners = edge_corners[4...]
       sampled_points.concat(edge_sampled_points) # TODO: change 30 to edge length
     end
-
+    # byebug
     sampled_points = sampled_points.map { |point| [point.x, point.y, point.z] } # Vertex.flatten(sampled_points)
     scaffold_rotation_labels = ([0, 1, 2, 3, 4, 5, 6, 7, 8,
                                  9] * (sampled_points.size / 10).ceil)[...sampled_points.size]
@@ -596,6 +597,17 @@ class Graph
     positions
   end
 
+  def on_boundary?(v)
+    # TODO: fix for plane roatation
+    (approx(v.x, @width) && approx(v.y, @height)) ||
+      (approx(v.x, @width) && approx(v.z, @depth)) ||
+      (approx(v.y, @height) && approx(v.z, @depth))
+  end
+
+  def approx(val, divisor)
+    (val.ceil % divisor).zero? || (val.floor % divisor).zero?
+  end
+
   def generate_colors
     colors = []
     (0...@points.size).each do |i|
@@ -618,6 +630,7 @@ class Graph
     end
     edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_len_map,
                                                              @scaffold_rotation_labels)
+        # byebug                                                   byebug
   end
 
   def open_structure(ratio = 1 / 3.to_f)
