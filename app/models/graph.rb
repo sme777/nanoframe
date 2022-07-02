@@ -513,25 +513,38 @@ class Graph
       next_vert = normalized_vertices[(i + 1) % normalized_vertices.size]
       next_next_vert = normalized_vertices[(i + 2) % normalized_vertices.size]
       dr_ch = Edge.new(vertex, next_vert).directional_change
-      # samples = dr_ch == :x ? @width / @segments / SSDNA_NT_DIST
-      corner_nt = on_boundary?(next_vert) ? 1 : 0
-      edge_sampled_points = Vertex.linspace(dr_ch, sample_dir_map[dr_ch] + corner_nt, vertex, next_vert)
 
-      edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert])[-8...]
-      edge_sampled_points[...4] = last_corners unless last_corners.nil?
-      edge_sampled_points[-4...] = edge_corners[...4]
-      last_corners = edge_corners[4...]
-      sampled_points.concat(edge_sampled_points) # TODO: change 30 to edge length
+      corner_nt = on_boundary?(next_vert) ? 7 : 6 # POTENTIAL SOLUTION: set sampling frequency same, but for refractions add nil for last index, then take average.
+      edge_sampled_points = Vertex.linspace(dr_ch, sample_dir_map[dr_ch] , vertex, next_vert)
+      # byebug if corner_nt == 1
+      
+
+      edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert], corner_nt)[-corner_nt...]
+      # byebug if corner_nt == 7
+      edge_sampled_points[...(corner_nt/2.0).floor] = last_corners unless last_corners.nil?
+      edge_sampled_points[-(corner_nt/2.0).floor...] = edge_corners[...(corner_nt/2.0).ceil]
+      last_corners = edge_corners[(corner_nt/2.0).ceil...]
+      sampled_points.concat(edge_sampled_points)
     end
     # byebug
+    
+    # sampled_points.each_with_index do |sample, idx|
+    #   byebug if sampled_points[idx].nil? || sampled_points[idx+1].nil?
+    #   if sampled_points[idx]== sampled_points[idx+1]
+    #     byebug
+    #   end
+    # end
+
     sampled_points = sampled_points.map { |point| [point.x, point.y, point.z] } # Vertex.flatten(sampled_points)
     scaffold_rotation_labels = ([0, 1, 2, 3, 4, 5, 6, 7, 8,
                                  9] * (sampled_points.size / 10).ceil)[...sampled_points.size]
     freq = 30 # (@scaff_length / sampled_points.size).floor.zero? ? 2 : (@scaff_length / sampled_points.size).floor
+
+
     [sorted_vertices, normalized_vertices, sampled_points, freq, scaffold_rotation_labels]
   end
 
-  def rounded_corner_points(vertices, radius = 1.5, smoothness = 8, closed = true)
+  def rounded_corner_points(vertices, smoothness = 6, radius = 1, closed = true)
     min_vector = (vertices[0] - vertices[1])
     min_length = min_vector.distance
     vertices.each_with_index do |_v, idx|

@@ -220,7 +220,8 @@ class Staple
       "A": 'T',
       "T": 'A',
       "G": 'C',
-      "C": 'G'
+      "C": 'G',
+      "Z": "Z"
     }
   end
 

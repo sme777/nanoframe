@@ -578,6 +578,7 @@ class Breaker
     staple
   end
 
+
   def generate_shape_edges(vertices, scaffold_rotation_labels)
     sequence = IO.read('./app/assets/scaffolds/7249.txt')
     edges = []
@@ -594,12 +595,17 @@ class Breaker
       else
         seq = sequence[seq_count...(seq_count + this_step)]
         edge_rotation_labels = scaffold_rotation_labels[seq_count...(seq_count + this_step)]
+
       end
+      # if this_step.odd?
+      #   seq[0] = "Z"
+      # end
 
       edge_idxs = []
       seq.size.times { |k| edge_idxs << position_idx + k }
-      position_idx += seq.size
-      seq_count += this_step
+      corner_seq = on_boundary?(this_edge.v2) ? 1 : 0
+      position_idx += seq.size + corner_seq
+      seq_count += this_step + corner_seq
       this_edge.sequence = seq
       this_edge.scaffold_idxs = edge_idxs
       # byebug if edge_rotation_labels.nil?
@@ -631,10 +637,10 @@ class Breaker
 
   def moving_step(edge)
 
-    corner_nt = on_boundary?(edge.v2) ? 1 : 0
-    w_step = (@graph.width / (@graph.segments * SSDNA_NT_DIST)).floor + corner_nt
-    h_step = (@graph.height / (@graph.segments * SSDNA_NT_DIST)).floor + corner_nt
-    d_step = (@graph.depth / (@graph.segments * SSDNA_NT_DIST)).floor + corner_nt
+    
+    w_step = (@graph.width / (@graph.segments * SSDNA_NT_DIST)).floor 
+    h_step = (@graph.height / (@graph.segments * SSDNA_NT_DIST)).floor
+    d_step = (@graph.depth / (@graph.segments * SSDNA_NT_DIST)).floor 
 
     case edge.directional_change
     when :x

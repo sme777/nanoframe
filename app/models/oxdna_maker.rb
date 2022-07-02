@@ -8,7 +8,7 @@ class OxDNAMaker
   BASE_BASE = 0.3897628551303122
 
   def setup(positions, staples_idxs, staples_points)
-    positions = group_positions(positions) # [...210]
+    # positions = group_positions(positions) # [...210]
     scaffold_positions = []
     scaffold_a1s = []
     scaffold_a3s = []
@@ -56,6 +56,7 @@ class OxDNAMaker
     current_prime_dir = :X
     prev_prime_dir = :X
     positions.each_with_index do |pos, idx|
+        
       dir_axis, largest_delta_idx = directional_change_axis(positions[idx], positions[idx - 1]) unless idx < 1
       unless idx < 2
         dir_axis_prv, largest_delta_prv_idx = directional_change_axis(positions[idx - 1],
@@ -209,26 +210,26 @@ class OxDNAMaker
     Plane.orthogonal_dimension(Vertex.new(v1[0], v1[1], v1[2]), Vertex.new(v2[0], v2[1], v2[2]))
   end
 
-  def group_positions(positions)
-    return positions unless positions[0].is_a? Numeric
+  # def group_positions(positions)
+  #   return positions unless positions[0].is_a? Numeric
 
-    new_positions = []
-    i = 0
-    while i < positions.size
-      new_positions << [positions[i], positions[i + 1], positions[i + 2]]
-      if i + 5 > positions.size - 1
-        i += 3
-        next
-      end
+  #   new_positions = []
+  #   i = 0
+  #   while i < positions.size
+  #     new_positions << [positions[i], positions[i + 1], positions[i + 2]]
+  #     if i + 5 > positions.size - 1
+  #       i += 3
+  #       next
+  #     end
 
-      i += if positions[i] == positions[i + 3] && positions[i + 1] == positions[i + 4] && positions[i + 2] == positions[i + 5]
-             6
-           else
-             3
-           end
-    end
-    new_positions
-  end
+  #     i += if positions[i] == positions[i + 3] && positions[i + 1] == positions[i + 4] && positions[i + 2] == positions[i + 5]
+  #            6
+  #          else
+  #            3
+  #          end
+  #   end
+  #   new_positions
+  # end
 
   def rotation_matrix(axis, angles)
     angle = if angles.is_a?(Array)
