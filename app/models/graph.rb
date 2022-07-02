@@ -33,7 +33,7 @@ class Graph
       @vertex_cuts << e.v1 unless @vertex_cuts.include?(e.v1)
       @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
-    # @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
+    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
     @staples = @staple_breaker.break_refraction_staples(@staples)
     # @staples.each(&:update_interior_extension)
   end

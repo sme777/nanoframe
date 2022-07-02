@@ -325,15 +325,15 @@ class Staple
 
       end
     when :refraction
-      if front_start_vert.abs == hor_dist * @segments || front_end_vert.abs == hor_dist * @segments
-        row = @segments
+      if front_start_vert.abs == hor_dist * @graph.segments || front_end_vert.abs == hor_dist * @graph.segments
+        row = @graph.segments
         col = (front_start_hor / vert_dist).abs.floor
       elsif front_start_vert.zero? || front_end_vert.zero?
         row = 1
         col = (front_start_hor / vert_dist).abs.floor
-      elsif front_start_hor.abs == vert_dist * @segments || front_end_hor.abs == vert_dist * @segments
+      elsif front_start_hor.abs == vert_dist * @graph.segments || front_end_hor.abs == vert_dist * @graph.segments
         row = (front_start_vert / hor_dist).abs.floor
-        col = @segments
+        col = @graph.segments
       elsif front_start_hor.zero? || front_end_hor.zero?
         row = (front_start_vert / hor_dist).abs.floor
         col = 1

@@ -367,7 +367,7 @@ class Breaker
         next_staple = ObjectSpace._id2ref(staple.next)
 
         # Create two staples from the broken one
-        cutoff2 = (prev_staple.type == :reflection || prev_staple.type == :mod_reflection) ? (prev_staple.points.size / 2 + bridge_len) : ((prev_staple.sequence.size + back_sequence.size) / 2)
+        cutoff2 = (prev_staple.type == :reflection) ? (prev_staple.points.size / 2 + bridge_len) : ((prev_staple.sequence.size + back_sequence.size) / 2)
         staple_type = nil
         # Toggle parameters cutoff2 and prev staple length
         if cutoff2 < 20 || prev_staple.sequence.size < 25
@@ -376,7 +376,7 @@ class Breaker
           back_staple_pos = prev_staple.points + back_lin_positions
           back_staple_original_pos = prev_staple.original_points + back_lin_original_positions
           back_staple_idx = prev_staple.scaffold_idxs + back_idxs
-          staple_type = prev_staple.type
+          staple_type = prev_staple.type == :refraction ? :mod_refraction : :mod_reflection#prev_staple.type
           staples.delete(prev_staple)
         else
           adjusted_shift = prev_staple.sequence.size - (cutoff2 - back_sequence.size).abs
@@ -417,7 +417,7 @@ class Breaker
           ObjectSpace._id2ref(prev_staple.prev).next = back_staple.object_id
         end
         # Toggle parameters cutoff2 and prev staple length
-        cutoff2 = (next_staple.type == :reflection || next_staple.type == :mod_reflection) ? (next_staple.points.size / 2 + next_staple.buffer + bridge_len) : ((front_sequence.size + next_staple.sequence.size) / 2)
+        cutoff2 = (next_staple.type == :reflection) ? (next_staple.points.size / 2 + next_staple.buffer + bridge_len) : ((front_sequence.size + next_staple.sequence.size) / 2)
         staple_type = nil
         if cutoff2 < 20 || next_staple.sequence.size < 25
           front_staple_labels = front_rotation_labels + next_staple.complementary_rotation_labels
@@ -425,7 +425,7 @@ class Breaker
           front_staple_pos = front_lin_positions + next_staple.points
           front_staple_original_pos = front_lin_original_positions + next_staple.original_points
           front_staple_idx = front_idxs + next_staple.scaffold_idxs
-          staple_type = :mod_reflection
+          staple_type = next_staple.type == :refraction ? :mod_refraction : :mod_reflection #:mod_reflection
           staples.delete(next_staple)
 
         else
@@ -455,16 +455,16 @@ class Breaker
                                     clone: true,
                                     type: staple_type, graph: @graph })
         residual_staples << front_staple
-        if staples.include?(prev_staple)
+        if staples.include?(next_staple)
           next_staple.prev = front_staple.object_id
           front_staple.next = next_staple.object_id
         else
           front_staple.next = next_staple.next
-          ObjectSpace._id2ref(next_staple.prev).prev = front_staple.object_id
+          ObjectSpace._id2ref(next_staple.next).prev = front_staple.object_id
         end
 
-        back_staple.next = !front_staple.nil? ? front_staple.object_id : next_staple.object_id
-        front_staple.prev = !back_staple.nil? ? back_staple.object_id : prev_staple.object_id
+        back_staple.next = front_staple.object_id #!front_staple.nil? ? front_staple.object_id : next_staple.object_id
+        front_staple.prev = back_staple.object_id #!back_staple.nil? ? back_staple.object_id : prev_staple.object_id
 
         staples.delete(staple)
       end
@@ -480,7 +480,7 @@ class Breaker
       corner_vertex, corner_idx = staple.find_corner_vertex
 
       if corner_idx.nil? 
-        staple.type = :mod_reflection if staple.type == :temp
+        #staple.type = :mod_reflection #if staple.type == :temp
         if !removed_staples.include?(staple)
           new_staples << staple
         end
