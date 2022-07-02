@@ -539,7 +539,7 @@ class Breaker
       
       if back_staple.sequence.size < 30
         back_next_staple = ObjectSpace._id2ref(back_staple.next)
-        merged_back_staple = merge_staples(back_staple, back_next_staple, :mod_start_refraction)
+        merged_back_staple = merge_staples(back_staple, back_next_staple, :mod_refraction)
         new_staples << merged_back_staple
         removed_staples << back_next_staple
       else
