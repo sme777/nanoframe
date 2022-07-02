@@ -55,6 +55,18 @@ class Staple
     end
   end
 
+  # def setup_dimensions(dimensions, segments, shape)
+  #   case shape
+  #   when :cube
+  #     @width = dimensions[0]
+  #     @height = dimensions[1]
+  #     @depth = dimensions[2]
+  #     @segments = segments
+  #   when :tetrahedron
+  #     @radius = dimensions[0]
+  #   end
+  # end
+
   def convert(edge_seq)
     sequence = ''
     seq = edge_seq.split('')
@@ -98,7 +110,7 @@ class Staple
     points.concat(Vertex.linspace(dr_ch2, end_pos + 1, @back.v1, end_point)[1...])
   end
 
-  def update_interior_extension(particle_barcode)
+  def update_interior_extension
     return if @type == :refraction || @type == :mod_refraction
 
     extendable_start = @complementary_rotation_labels.first.nil? || @complementary_rotation_labels.first >= 5
@@ -109,16 +121,14 @@ class Staple
       extension_points = compute_extension_positions(@points.first, -1)
       @points = extension_points + @points
       @scaffold_idxs = ['ein'] * extension_points.size + @scaffold_idxs
-      @sequence = "#{convert(Staple.particle_barcodes[particle_barcode])}TT" + @sequence
-      @type = :inner_start_reflection
+      @sequence = 'A' * extension_points.size + @sequence
+
     elsif extendable_end
       extension_points = compute_extension_positions(@points.last, -1)
       @points += extension_points
       @scaffold_idxs += ['ein'] * extension_points.size
-      @sequence += "TT#{convert(Staple.particle_barcodes[particle_barcode])}"
-      @type = :inner_end_reflection
+      @sequence += 'A' * extension_points.size
     end
-    
   end
 
   def update_exterior_extension(extension_side)
@@ -131,7 +141,7 @@ class Staple
       @original_points = original_extension_points + @original_points
       @scaffold_idxs = ['eout'] * extension_points.size + @scaffold_idxs
       @complementary_rotation_labels = [nil] * extension_points.size + @complementary_rotation_labels
-      @sequence = "#{Staple.orthogonal_barcodes.sample}TT" + @sequence
+      @sequence = 'T' * extension_points.size + @sequence
     when :end
       orth, side = Plane.orthogonal_dimension(@original_points[-2], @original_points[-2])
       extension_points = compute_outer_extension_positions(@points[-1], orth, side)
@@ -140,7 +150,7 @@ class Staple
       @original_points += original_extension_points
       @scaffold_idxs += ['eout'] * extension_points.size
       @complementary_rotation_labels += [nil] * extension_points.size
-      @sequence += "TT#{Staple.orthogonal_barcodes.sample}"
+      @sequence += 'T' * extension_points.size
     end
   end
 
@@ -337,49 +347,5 @@ class Staple
     col = 1 if row.zero?
 
     [row, col]
-  end
-
-  def self.particle_barcodes
-    {
-      :gold => 'GATGAGTG'
-    }
-  end
-
-  def self.orthogonal_barcodes
-    [
-      'CTCATACC',
-      'ACCTCTTC',
-      'TATTCTAC',
-      'CAATTCTT',
-      'ATACCTCC',
-      'TCAACAAC',
-      'CCTTATCC',
-      'CTTCTATT',
-      'ACTTAACT',
-      'AACTCAAA',
-      'CATACACT',
-      'TACAATCA',
-      'ATCACTTC',
-      'CAATCCTA',
-      'CACCCACT',
-      'CCTTACCT',
-      'CACCCAAA',
-      'TCACTTAC',
-      'CAACATTT',
-      'TCCCTAAC',
-      'CTATCACA',
-      'CCAATTCA',
-      'ATCATCTA',
-      'CACTCCAC',
-      'TATCCCAA',
-      'ATTCCAAT',
-      'TTAACACA',
-      'CCCACTAA',
-      'TAACAACC',
-      'ACCACCTT',
-      'CATCCAAA',
-      'TTCTCTAT',
-      'ACTCACCT'
-    ]
   end
 end

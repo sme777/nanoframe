@@ -35,7 +35,7 @@ class Graph
     end
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
     @staples = @staple_breaker.break_refraction_staples(@staples)
-    @staples.each { |staple| staple.update_interior_extension(:gold)}
+    # @staples.each(&:update_interior_extension)
   end
 
   def setup_dimensions(dimensions, shape)
