@@ -33,9 +33,9 @@ class Graph
       @vertex_cuts << e.v1 unless @vertex_cuts.include?(e.v1)
       @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
-    # @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
-    # @staples = @staple_breaker.break_refraction_staples(@staples)
-    @staples.each {|staple| staple.update_interior_extension(:gold)}
+    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
+    @staples = @staple_breaker.break_refraction_staples(@staples)
+    # @staples.each {|staple| staple.update_interior_extension(:gold)}
   end
 
   def setup_dimensions(dimensions, shape)
@@ -48,8 +48,8 @@ class Graph
       @radius = dimensions[0]
     end
     # byebug
-    dimensions.each do |k, v|
-      self.class.send(:attr_accessor, "#{k}")
+    dimensions.each do |k, _v|
+      self.class.send(:attr_accessor, k.to_s)
     end
   end
 
@@ -111,7 +111,11 @@ class Graph
   def staples_hash
     staples_data = []
     @staples.each do |staple|
-      staples_data << { positions: staple.points.map { |point| [point.x, point.y, point.z] }, original_positions: staple.original_points.map { |point| [point.x, point.y, point.z] },
+      staples_data << { positions: staple.points.map do |point|
+                                     [point.x, point.y, point.z]
+                                   end, original_positions: staple.original_points.map do |point|
+                                                              [point.x, point.y, point.z]
+                                                            end,
                         color: [rand, rand, rand], name: staple.name, sequence: staple.sequence, indices: staple.scaffold_idxs }
     end
     { data: staples_data }
@@ -491,9 +495,9 @@ class Graph
 
   def sample_dir_map
     {
-      :x => (@width / @segments / SSDNA_NT_DIST).floor,
-      :y => (@height / @segments / SSDNA_NT_DIST).floor,
-      :z => (@depth / @segments / SSDNA_NT_DIST).floor
+      x: (@width / @segments / SSDNA_NT_DIST).floor,
+      y: (@height / @segments / SSDNA_NT_DIST).floor,
+      z: (@depth / @segments / SSDNA_NT_DIST).floor
     }
   end
 
@@ -515,24 +519,22 @@ class Graph
       dr_ch = Edge.new(vertex, next_vert).directional_change
 
       corner_nt = on_boundary?(next_vert) ? 7 : 6 # POTENTIAL SOLUTION: set sampling frequency same, but for refractions add nil for last index, then take average.
-      edge_sampled_points = Vertex.linspace(dr_ch, sample_dir_map[dr_ch] , vertex, next_vert)
+      edge_sampled_points = Vertex.linspace(dr_ch, sample_dir_map[dr_ch], vertex, next_vert)
       # byebug if corner_nt == 1
-      
 
       edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert], corner_nt)[-corner_nt...]
       # byebug if corner_nt == 7
-      edge_sampled_points[...(corner_nt/2.0).floor] = last_corners unless last_corners.nil?
-      edge_sampled_points[-(corner_nt/2.0).floor...] = edge_corners[...(corner_nt/2.0).ceil]
-      last_corners = edge_corners[(corner_nt/2.0).ceil...]
+      edge_sampled_points[...(corner_nt / 2.0).floor] = last_corners unless last_corners.nil?
+      edge_sampled_points[-(corner_nt / 2.0).floor...] = edge_corners[...(corner_nt / 2.0).ceil]
+      last_corners = edge_corners[(corner_nt / 2.0).ceil...]
       sampled_points.concat(edge_sampled_points)
     end
     # byebug
-    
+
     sampled_points = sampled_points.map { |point| [point.x, point.y, point.z] } # Vertex.flatten(sampled_points)
     scaffold_rotation_labels = ([0, 1, 2, 3, 4, 5, 6, 7, 8,
                                  9] * (sampled_points.size / 10).ceil)[...sampled_points.size]
     freq = 30 # (@scaff_length / sampled_points.size).floor.zero? ? 2 : (@scaff_length / sampled_points.size).floor
-
 
     [sorted_vertices, normalized_vertices, sampled_points, freq, scaffold_rotation_labels]
   end
@@ -620,8 +622,7 @@ class Graph
       t = i.to_f / @points.size
       # colors.concat([t / 4, t / 1.5 + 0.15, t + 0.2])
       # colors << [t + 0.2, t + 0.2, t / 8] # yellow
-      colors << [t / 3, t/3 + 0.3, t/3]
-      
+      colors << [t / 3, t / 3 + 0.3, t / 3]
     end
     colors
   end
@@ -636,7 +637,7 @@ class Graph
     end
     edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_len_map,
                                                              @scaffold_rotation_labels)
-        # byebug                                                   byebug
+    # byebug                                                   byebug
   end
 
   def open_structure(ratio = 1 / 3.to_f)

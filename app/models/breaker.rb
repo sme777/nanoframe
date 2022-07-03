@@ -16,9 +16,9 @@ class Breaker
   end
 
   def setup_step_sizes
-      @w_step = ((@graph.width / SSDNA_NT_DIST) / @graph.segments).floor
-      @h_step = ((@graph.height / SSDNA_NT_DIST) / @graph.segments).floor
-      @d_step = ((@graph.depth / SSDNA_NT_DIST) / @graph.segments).floor
+    @w_step = ((@graph.width / SSDNA_NT_DIST) / @graph.segments).floor
+    @h_step = ((@graph.height / SSDNA_NT_DIST) / @graph.segments).floor
+    @d_step = ((@graph.depth / SSDNA_NT_DIST) / @graph.segments).floor
   end
 
   # S1 = front; S2 = back; S3 = top; S4 = bottom; S5 = left; S6 = right
@@ -348,7 +348,7 @@ class Breaker
     edges.each do |edge|
       edge.assoc_strands.each do |staple_id|
         staple = ObjectSpace._id2ref(staple_id)
-        next unless staple.type == :reflection && staples.include?(staple) 
+        next unless staple.type == :reflection && staples.include?(staple)
 
         cutoff = (staple.sequence.size / 2 - bridge_len)
         back_sequence = staple.sequence[...cutoff]
@@ -367,7 +367,7 @@ class Breaker
         next_staple = ObjectSpace._id2ref(staple.next)
 
         # Create two staples from the broken one
-        cutoff2 = (prev_staple.type == :reflection) ? (prev_staple.points.size / 2 + bridge_len) : ((prev_staple.sequence.size + back_sequence.size) / 2)
+        cutoff2 = prev_staple.type == :reflection ? (prev_staple.points.size / 2 + bridge_len) : ((prev_staple.sequence.size + back_sequence.size) / 2)
         staple_type = nil
         # Toggle parameters cutoff2 and prev staple length
         if cutoff2 < 20 || prev_staple.sequence.size < 25
@@ -376,7 +376,7 @@ class Breaker
           back_staple_pos = prev_staple.points + back_lin_positions
           back_staple_original_pos = prev_staple.original_points + back_lin_original_positions
           back_staple_idx = prev_staple.scaffold_idxs + back_idxs
-          staple_type = prev_staple.type == :refraction ? :mod_refraction : :mod_reflection#prev_staple.type
+          staple_type = prev_staple.type == :refraction ? :mod_refraction : :mod_reflection # prev_staple.type
           staples.delete(prev_staple)
         else
           adjusted_shift = prev_staple.sequence.size - (cutoff2 - back_sequence.size).abs
@@ -406,7 +406,7 @@ class Breaker
                                    buffer: prev_staple.buffer,
                                    clone: true,
                                    type: staple_type,
-                                   graph: @graph})
+                                   graph: @graph })
 
         residual_staples << back_staple
         if staples.include?(prev_staple)
@@ -417,7 +417,7 @@ class Breaker
           ObjectSpace._id2ref(prev_staple.prev).next = back_staple.object_id
         end
         # Toggle parameters cutoff2 and prev staple length
-        cutoff2 = (next_staple.type == :reflection) ? (next_staple.points.size / 2 + next_staple.buffer + bridge_len) : ((front_sequence.size + next_staple.sequence.size) / 2)
+        cutoff2 = next_staple.type == :reflection ? (next_staple.points.size / 2 + next_staple.buffer + bridge_len) : ((front_sequence.size + next_staple.sequence.size) / 2)
         staple_type = nil
         if cutoff2 < 20 || next_staple.sequence.size < 25
           front_staple_labels = front_rotation_labels + next_staple.complementary_rotation_labels
@@ -425,7 +425,7 @@ class Breaker
           front_staple_pos = front_lin_positions + next_staple.points
           front_staple_original_pos = front_lin_original_positions + next_staple.original_points
           front_staple_idx = front_idxs + next_staple.scaffold_idxs
-          staple_type = next_staple.type == :refraction ? :mod_refraction : :mod_reflection #:mod_reflection
+          staple_type = next_staple.type == :refraction ? :mod_refraction : :mod_reflection # :mod_reflection
           staples.delete(next_staple)
 
         else
@@ -442,7 +442,7 @@ class Breaker
           next_staple.scaffold_idxs = next_staple.scaffold_idxs[adjusted_shift...]
           next_staple.points = next_staple.points[adjusted_shift...]
           next_staple.original_points = next_staple.original_points[adjusted_shift...]
-          next_staple.type = next_staple.type 
+          next_staple.type = next_staple.type
         end
         front_staple = Staple.new({ sequence: front_staple_seq,
                                     points: front_staple_pos,
@@ -463,8 +463,8 @@ class Breaker
           ObjectSpace._id2ref(next_staple.next).prev = front_staple.object_id
         end
 
-        back_staple.next = front_staple.object_id #!front_staple.nil? ? front_staple.object_id : next_staple.object_id
-        front_staple.prev = back_staple.object_id #!back_staple.nil? ? back_staple.object_id : prev_staple.object_id
+        back_staple.next = front_staple.object_id # !front_staple.nil? ? front_staple.object_id : next_staple.object_id
+        front_staple.prev = back_staple.object_id # !back_staple.nil? ? back_staple.object_id : prev_staple.object_id
 
         staples.delete(staple)
       end
@@ -478,38 +478,36 @@ class Breaker
     removed_staples = []
     staples.each do |staple|
       corner_vertex, corner_idx = staple.find_corner_vertex
-
-      if corner_idx.nil? 
-        #staple.type = :mod_reflection #if staple.type == :temp
-        if !removed_staples.include?(staple)
-          new_staples << staple
-        end
+      # byebug
+      if corner_idx.nil?
+        # staple.type = :mod_reflection #if staple.type == :temp
+        new_staples << staple unless removed_staples.include?(staple)
         next
       end
       front_staple = Staple.new({
-                                  sequence: staple.sequence[...corner_idx+1],
-                                  points: staple.points[...corner_idx+1],
-                                  original_points: staple.original_points[...corner_idx+1],
-                                  scaffold_idxs: staple.scaffold_idxs[...corner_idx+1],
-                                  complementary_rotation_labels: staple.complementary_rotation_labels[...corner_idx+1],
+                                  sequence: staple.sequence[...corner_idx + 1],
+                                  points: staple.points[...corner_idx + 1],
+                                  original_points: staple.original_points[...corner_idx + 1],
+                                  scaffold_idxs: staple.scaffold_idxs[...corner_idx + 1],
+                                  complementary_rotation_labels: staple.complementary_rotation_labels[...corner_idx + 1],
                                   front: staple.front,
                                   back: staple.back,
                                   buffer: staple.buffer,
                                   clone: true,
-                                  type: :mod_refraction, 
+                                  type: :mod_refraction,
                                   graph: @graph
                                 })
       back_staple = Staple.new({
-                                 sequence: staple.sequence[corner_idx...],
-                                 points: staple.points[corner_idx...],
-                                 original_points: staple.original_points[corner_idx...],
-                                 scaffold_idxs: staple.scaffold_idxs[corner_idx...],
-                                 complementary_rotation_labels: staple.complementary_rotation_labels[corner_idx...],
+                                 sequence: staple.sequence[corner_idx + 1...],
+                                 points: staple.points[corner_idx + 1...],
+                                 original_points: staple.original_points[corner_idx + 1...],
+                                 scaffold_idxs: staple.scaffold_idxs[corner_idx + 1...],
+                                 complementary_rotation_labels: staple.complementary_rotation_labels[corner_idx + 1...],
                                  front: staple.front,
                                  back: staple.back,
                                  buffer: staple.buffer,
                                  clone: true,
-                                 type: :mod_refraction, 
+                                 type: :mod_refraction,
                                  graph: @graph
                                })
 
@@ -522,8 +520,7 @@ class Breaker
       back_staple.next = staple.next
       next_staple = ObjectSpace._id2ref(staple.next)
       next_staple.prev = back_staple.object_id
-        
-     
+
       front_staple.update_exterior_extension(:end)
       back_staple.update_exterior_extension(:start)
 
@@ -535,7 +532,7 @@ class Breaker
       else
         new_staples << front_staple
       end
-      
+
       if back_staple.sequence.size < 30
         back_next_staple = ObjectSpace._id2ref(back_staple.next)
         merged_back_staple = merge_staples(back_staple, back_next_staple, :mod_refraction)
@@ -549,9 +546,7 @@ class Breaker
     new_staples.filter { |stp| !removed_staples.include?(stp) }
   end
 
-
   def merge_staples(st1, st2, type)
-
     staple = Staple.new({
                           sequence: st1.sequence + st2.sequence,
                           points: st1.points + st2.points,
@@ -577,15 +572,14 @@ class Breaker
     staple
   end
 
-
   def generate_shape_edges(vertices, scaffold_rotation_labels)
     sequence = IO.read('./app/assets/scaffolds/7249.txt')
     edges = []
     scaffold_idxs = []
-    sequence.size.times {|k| scaffold_idxs << k }
+    sequence.size.times { |k| scaffold_idxs << k }
     ### add extra checks for moving directions
     seq_count = 0
-    position_idx = 0
+    # position_idx = 0
     vertices.each_with_index do |v, i|
       this_edge = Edge.new(v, vertices[(i + 1) % vertices.size])
       this_step = moving_step(this_edge)
@@ -604,7 +598,7 @@ class Breaker
       # seq.size.times { |k| edge_idxs << position_idx + k }
       corner_seq = on_boundary?(this_edge.v2) ? 1 : 0
       # byebug if corner_seq == 1
-      position_idx += (seq.size + corner_seq)
+      # position_idx += (seq.size + corner_seq)
       seq_count += (this_step + corner_seq)
       this_edge.sequence = seq
       this_edge.scaffold_idxs = edge_scaffold_idxs
@@ -636,11 +630,9 @@ class Breaker
   end
 
   def moving_step(edge)
-
-    
-    w_step = (@graph.width / (@graph.segments * SSDNA_NT_DIST)).floor 
+    w_step = (@graph.width / (@graph.segments * SSDNA_NT_DIST)).floor
     h_step = (@graph.height / (@graph.segments * SSDNA_NT_DIST)).floor
-    d_step = (@graph.depth / (@graph.segments * SSDNA_NT_DIST)).floor 
+    d_step = (@graph.depth / (@graph.segments * SSDNA_NT_DIST)).floor
 
     case edge.directional_change
     when :x

@@ -120,7 +120,11 @@ class OxDNAMaker
       staple_positions = []
       staple_a1s = []
       staple_a3s = []
-      covered = false
+      # extension_sights = 0
+      grow_front = ['eout1', 'eout2', 'ein1', 'ein2'].include?(staple_idxs.first) 
+      grow_back = ['eout1', 'eout2', 'ein1', 'ein2'].include?(staple_idxs.last) 
+      covered_front = false
+      covered_back = false
 
       staple_idxs.each_with_index do |idx, i|
         case idx
@@ -130,11 +134,123 @@ class OxDNAMaker
           staple_positions << (prev_complimentary_data[0] + next_complimentary_data[0]) / 2
           staple_a1s << (prev_complimentary_data[1] + next_complimentary_data[1]) / 2
           staple_a3s << (prev_complimentary_data[2] + next_complimentary_data[2]) / 2
-        when 'eout'
+        when 'eout1'
+          next if !(grow_front ^ covered_front) #&& !(grow_back ^ covered_back)
+          
+          mod_i = staple_idxs.index { |n| n.instance_of?(Integer) }
+          orth, side = orthogonal_dimension(staple_points[mod_i], staple_points[mod_i+1])
+          delta = -1
+          case orth
+          when :x
+            case side
+            when :S5
+              a3 = dir_X * delta
+            when :S6
+              a3 = -dir_X * delta
+            end
+            ein_rot = r_X
+          when :y
+            case side
+            when :S3
+              a3 = dir_Y * delta
+            when :S4
+              a3 = -dir_Y * delta
+            end
+            ein_rot = r_Y
+          when :z
+            case side
+            when :S1
+              a3 = -dir_Z * delta
+            when :S2
+              a3 = dir_Z * delta
+            end
+            ein_rot = r_Z
+          end
 
-        when 'ein1', 'ein2' #, 'eout'
+          ein_positions = []
+          ein_a1s = []
+          ein_a3s = []
+          last_rb = scaffold_nt_hash[staple_idxs[mod_i]][3]
+          v1 = scaffold_nt_hash[staple_idxs[mod_i]][1]
+          v1 -= a3 * a3.inner_product(v1)
+          v1 = v1.normalize
+          a1 = v1
+          end_idx = mod_i
+          while i < end_idx
+            position = (last_rb - CM_CENTER_DS * a1)
+            byebug if ein_rot.nil?
+            a1 = ein_rot * a1
+            last_rb += a3 * BASE_BASE
+            ein_positions << position
+            ein_a1s << a1
+            ein_a3s << a3
+            i += 1
+          end
+          
+          staple_positions = ein_positions.reverse + staple_positions 
+          staple_a1s = ein_a1s.reverse + staple_a1s
+          staple_a3s = ein_a3s.reverse + staple_a3s
+          covered_front = true
+
+        when 'eout2'
+          next if !(grow_back ^ covered_back)
+           
+          orth, side = orthogonal_dimension(staple_points[i - 1], staple_points[i - 2])
+          delta = -1
+          case orth
+          when :x
+            case side
+            when :S5
+              a3 = dir_X * delta
+            when :S6
+              a3 = -dir_X * delta
+            end
+            ein_rot = r_X
+          when :y
+            case side
+            when :S3
+              a3 = dir_Y * delta
+            when :S4
+              a3 = -dir_Y * delta
+            end
+            ein_rot = r_Y
+          when :z
+            case side
+            when :S1
+              a3 = -dir_Z * delta
+            when :S2
+              a3 = dir_Z * delta
+            end
+            ein_rot = r_Z
+          end
+
+          ein_positions = []
+          ein_a1s = []
+          ein_a3s = []
+          last_rb = scaffold_nt_hash[staple_idxs[i - 1]][3]
+          v1 = scaffold_nt_hash[staple_idxs[i - 1]][1]
+          v1 -= a3 * a3.inner_product(v1)
+          v1 = v1.normalize
+          a1 = v1
+          end_idx = staple_idxs.size
+          while i < end_idx
+            position = (last_rb - CM_CENTER_DS * a1)
+            byebug if ein_rot.nil?
+            a1 = ein_rot * a1
+            last_rb += a3 * BASE_BASE
+            ein_positions << position
+            ein_a1s << a1
+            ein_a3s << a3
+            i += 1
+          end
+          
+          staple_positions.concat(ein_positions)
+          staple_a1s.concat(ein_a1s)
+          staple_a3s.concat(ein_a3s)
+          covered_back = true
+
+        when 'ein1', 'ein2'
           next if covered
-          # start_sight = idx == 'ein1' ? :start : :end
           mod_i = staple_idxs.index { |n| n.instance_of?(Integer) }
           if idx == 'ein1'
             orth, side = orthogonal_dimension(staple_points[mod_i], staple_points[mod_i-1])
@@ -173,7 +289,6 @@ class OxDNAMaker
           ein_a1s = []
           ein_a3s = []
           if idx == 'ein1'
-            # mod_i = staple_idxs.index { |n| n.instance_of?(Integer) }
             last_rb = scaffold_nt_hash[staple_idxs[mod_i]][3]
             v1 = scaffold_nt_hash[staple_idxs[mod_i]][1]
           else

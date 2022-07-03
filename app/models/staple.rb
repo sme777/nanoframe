@@ -107,33 +107,27 @@ class Staple
   def update_interior_extension(particle_barcode)
     return if @type == :refraction || @type == :mod_refraction || @disabled
 
-    extendable_start = @complementary_rotation_labels.first.nil? || @complementary_rotation_labels.first >= 5
-    extendable_end = @complementary_rotation_labels.last.nil? || @complementary_rotation_labels.last >= 5
-    extendable = nil
-
     if extendable_start
       extension_points = compute_extension_positions(@points.first, -1)
+      original_extension_points = compute_extension_positions(@original_points.first, -1)
       @points = extension_points + @points
+      @original_points = original_extension_points + @original_points
       @scaffold_idxs = ['ein1'] * extension_points.size + @scaffold_idxs
       @sequence = "#{convert(Staple.particle_barcodes[particle_barcode])}TT" + @sequence
       @type = :inner_start_reflection
       prev_staple = ObjectSpace._id2ref(@prev)
-      if prev_staple.extendable_end
-        prev_staple.disabled = true
-      end
+      prev_staple.disabled = true if prev_staple.extendable_end
     elsif extendable_end
       extension_points = compute_extension_positions(@points.last, -1)
-      @points += extension_points
-      @scaffold_idxs += ['ein2'] * extension_points.size
-      @sequence += "TT#{convert(Staple.particle_barcodes[particle_barcode].reverse)}"
+      original_extension_points = compute_extension_positions(@original_points.last, -1)
+      @points = @points + extension_points
+      @original_points = @original_points + original_extension_points
+      @scaffold_idxs = @scaffold_idxs + ['ein2'] * extension_points.size
+      @sequence = @sequence + "TT#{convert(Staple.particle_barcodes[particle_barcode].reverse)}"
+      @type = :inner_end_reflection
       next_staple = ObjectSpace._id2ref(@next)
-      if next_staple.extendable_start
-        next_staple.disabled = true
-      end
+      next_staple.disabled = true if next_staple.extendable_start
     end
-
-
-
   end
 
   def extendable_start
@@ -156,18 +150,18 @@ class Staple
       original_extension_points = compute_outer_extension_positions(@original_points[0], orth, side)
       @points = extension_points + @points
       @original_points = original_extension_points + @original_points
-      @scaffold_idxs = ['eout'] * extension_points.size + @scaffold_idxs
+      @scaffold_idxs = ['eout1'] * extension_points.size + @scaffold_idxs
       @complementary_rotation_labels = [nil] * extension_points.size + @complementary_rotation_labels
       @sequence = "#{Staple.orthogonal_barcodes.sample}TT" + @sequence
     when :end
       orth, side = Plane.orthogonal_dimension(@original_points[-2], @original_points[-2])
       extension_points = compute_outer_extension_positions(@points[-1], orth, side)
       original_extension_points = compute_outer_extension_positions(@original_points[-1], orth, side)
-      @points += extension_points
-      @original_points += original_extension_points
-      @scaffold_idxs += ['eout'] * extension_points.size
-      @complementary_rotation_labels += [nil] * extension_points.size
-      @sequence += "TT#{Staple.orthogonal_barcodes.sample}"
+      @points = @points + extension_points
+      @original_points = @original_points + original_extension_points
+      @scaffold_idxs = @scaffold_idxs + ['eout2'] * extension_points.size
+      @complementary_rotation_labels = @complementary_rotation_labels + [nil] * extension_points.size
+      @sequence = @sequence + "TT#{Staple.orthogonal_barcodes.sample.reverse}"
     end
   end
 
@@ -295,7 +289,6 @@ class Staple
   end
 
   def row_and_col(hor, vert, hor_dist, vert_dist)
-
     front_start_hor = @front.v1.instance_variable_get("@#{hor}")
     front_end_hor = @front.v2.instance_variable_get("@#{hor}")
     front_start_vert = @front.v1.instance_variable_get("@#{vert}")
@@ -368,45 +361,45 @@ class Staple
 
   def self.particle_barcodes
     {
-      :gold => 'GATGAGTG'
+      gold: 'GATGAGTG'
     }
   end
 
   def self.orthogonal_barcodes
-    [
-      'CTCATACC',
-      'ACCTCTTC',
-      'TATTCTAC',
-      'CAATTCTT',
-      'ATACCTCC',
-      'TCAACAAC',
-      'CCTTATCC',
-      'CTTCTATT',
-      'ACTTAACT',
-      'AACTCAAA',
-      'CATACACT',
-      'TACAATCA',
-      'ATCACTTC',
-      'CAATCCTA',
-      'CACCCACT',
-      'CCTTACCT',
-      'CACCCAAA',
-      'TCACTTAC',
-      'CAACATTT',
-      'TCCCTAAC',
-      'CTATCACA',
-      'CCAATTCA',
-      'ATCATCTA',
-      'CACTCCAC',
-      'TATCCCAA',
-      'ATTCCAAT',
-      'TTAACACA',
-      'CCCACTAA',
-      'TAACAACC',
-      'ACCACCTT',
-      'CATCCAAA',
-      'TTCTCTAT',
-      'ACTCACCT'
+    %w[
+      CTCATACC
+      ACCTCTTC
+      TATTCTAC
+      CAATTCTT
+      ATACCTCC
+      TCAACAAC
+      CCTTATCC
+      CTTCTATT
+      ACTTAACT
+      AACTCAAA
+      CATACACT
+      TACAATCA
+      ATCACTTC
+      CAATCCTA
+      CACCCACT
+      CCTTACCT
+      CACCCAAA
+      TCACTTAC
+      CAACATTT
+      TCCCTAAC
+      CTATCACA
+      CCAATTCA
+      ATCATCTA
+      CACTCCAC
+      TATCCCAA
+      ATTCCAAT
+      TTAACACA
+      CCCACTAA
+      TAACAACC
+      ACCACCTT
+      CATCCAAA
+      TTCTCTAT
+      ACTCACCT
     ]
   end
 end
