@@ -35,7 +35,7 @@ class Graph
     end
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
     @staples = @staple_breaker.break_refraction_staples(@staples)
-    # @staples.each(&:update_interior_extension)
+    @staples.each {|staple| staple.update_interior_extension(:gold)}
   end
 
   def setup_dimensions(dimensions, shape)
@@ -528,13 +528,6 @@ class Graph
     end
     # byebug
     
-    # sampled_points.each_with_index do |sample, idx|
-    #   byebug if sampled_points[idx].nil? || sampled_points[idx+1].nil?
-    #   if sampled_points[idx]== sampled_points[idx+1]
-    #     byebug
-    #   end
-    # end
-
     sampled_points = sampled_points.map { |point| [point.x, point.y, point.z] } # Vertex.flatten(sampled_points)
     scaffold_rotation_labels = ([0, 1, 2, 3, 4, 5, 6, 7, 8,
                                  9] * (sampled_points.size / 10).ceil)[...sampled_points.size]

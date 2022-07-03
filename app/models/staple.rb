@@ -2,7 +2,7 @@
 
 class Staple
   attr_accessor :sequence, :front, :back, :type, :next, :prev, :points, :interpolated_points, :scaffold_idxs,
-                :complementary_rotation_labels, :buffer, :starting_vertex, :ending_vertex, :original_points
+                :complementary_rotation_labels, :buffer, :starting_vertex, :ending_vertex, :original_points, :disabled
 
   def initialize(args)
     # setup_dimensions([], 5, :cube)
@@ -19,6 +19,7 @@ class Staple
       @graph = args[:graph]
       @starting_vertex = @points.first
       @ending_vertex = @points.last
+      @disabled = false
     else
       @front = args[:front]
       @back = args[:back]
@@ -31,20 +32,13 @@ class Staple
       @prev = nil
       @starting_vertex = nil
       @ending_vertex = nil
-
+      @disabled = false
       # buffer_type = type == :refraction
       if @front == @back
         @sequence = convert(front.sequence[start_pos...end_pos])
         @scaffold_idxs = front.scaffold_idxs[start_pos...end_pos]
         @complementary_rotation_labels = front.complementary_rotation_labels[start_pos...end_pos]
-      # elsif front.scaffold_idxs.include?(7248) && back.scaffold_idxs.include?(0)
-      #   # provide loopout length for dynamic length configuration
-      #   @sequence = convert(front.sequence[start_pos...start_pos + 15] + buffer_bp + back.sequence[...end_pos])
-      #   @scaffold_idxs = front.scaffold_idxs[start_pos...start_pos + 15] + ['skip'] * @buffer + back.scaffold_idxs[...end_pos]
-      #   @complementary_rotation_labels = front.complementary_rotation_labels[start_pos...start_pos + 15] + [nil] * @buffer + back.complementary_rotation_labels[...end_pos]
       else
-        # byebug if front.sequence[start_pos...].nil? || back.sequence[...end_pos].nil?
-        # corner_nt_idx = type == :refraction ? -2 : -1
         @sequence = convert(front.sequence[start_pos...] + buffer_bp + back.sequence[...end_pos])
         @scaffold_idxs = front.scaffold_idxs[start_pos...] + ['skip'] * @buffer + back.scaffold_idxs[...end_pos]
         @complementary_rotation_labels = front.complementary_rotation_labels[start_pos...] + [nil] * @buffer + back.complementary_rotation_labels[...end_pos]
@@ -110,8 +104,8 @@ class Staple
     points.concat(Vertex.linspace(dr_ch2, end_pos + 1, @back.v1, end_point)[1...])
   end
 
-  def update_interior_extension
-    return if @type == :refraction || @type == :mod_refraction
+  def update_interior_extension(particle_barcode)
+    return if @type == :refraction || @type == :mod_refraction || @disabled
 
     extendable_start = @complementary_rotation_labels.first.nil? || @complementary_rotation_labels.first >= 5
     extendable_end = @complementary_rotation_labels.last.nil? || @complementary_rotation_labels.last >= 5
@@ -120,15 +114,38 @@ class Staple
     if extendable_start
       extension_points = compute_extension_positions(@points.first, -1)
       @points = extension_points + @points
-      @scaffold_idxs = ['ein'] * extension_points.size + @scaffold_idxs
-      @sequence = 'A' * extension_points.size + @sequence
-
+      @scaffold_idxs = ['ein1'] * extension_points.size + @scaffold_idxs
+      @sequence = "#{convert(Staple.particle_barcodes[particle_barcode])}TT" + @sequence
+      @type = :inner_start_reflection
+      prev_staple = ObjectSpace._id2ref(@prev)
+      if prev_staple.extendable_end
+        prev_staple.disabled = true
+      end
     elsif extendable_end
       extension_points = compute_extension_positions(@points.last, -1)
       @points += extension_points
-      @scaffold_idxs += ['ein'] * extension_points.size
-      @sequence += 'A' * extension_points.size
+      @scaffold_idxs += ['ein2'] * extension_points.size
+      @sequence += "TT#{convert(Staple.particle_barcodes[particle_barcode])}"
+      next_staple = ObjectSpace._id2ref(@next)
+      if next_staple.extendable_start
+        next_staple.disabled = true
+      end
     end
+
+
+
+  end
+
+  def extendable_start
+    @complementary_rotation_labels.first.nil? || @complementary_rotation_labels.first >= 5
+  end
+
+  def extendable_end
+    extendable_end = @complementary_rotation_labels.last.nil? || @complementary_rotation_labels.last >= 5
+  end
+
+  def extendable
+    extendable_start || extendable_end
   end
 
   def update_exterior_extension(extension_side)
@@ -141,7 +158,7 @@ class Staple
       @original_points = original_extension_points + @original_points
       @scaffold_idxs = ['eout'] * extension_points.size + @scaffold_idxs
       @complementary_rotation_labels = [nil] * extension_points.size + @complementary_rotation_labels
-      @sequence = 'T' * extension_points.size + @sequence
+      @sequence = "#{Staple.orthogonal_barcodes.sample}TT" + @sequence
     when :end
       orth, side = Plane.orthogonal_dimension(@original_points[-2], @original_points[-2])
       extension_points = compute_outer_extension_positions(@points[-1], orth, side)
@@ -150,7 +167,7 @@ class Staple
       @original_points += original_extension_points
       @scaffold_idxs += ['eout'] * extension_points.size
       @complementary_rotation_labels += [nil] * extension_points.size
-      @sequence += 'T' * extension_points.size
+      @sequence += "TT#{Staple.orthogonal_barcodes.sample}"
     end
   end
 
@@ -220,8 +237,7 @@ class Staple
       "A": 'T',
       "T": 'A',
       "G": 'C',
-      "C": 'G',
-      "Z": "Z"
+      "C": 'G'
     }
   end
 
@@ -348,5 +364,49 @@ class Staple
     col = 1 if row.zero?
 
     [row, col]
+  end
+
+  def self.particle_barcodes
+    {
+      :gold => 'GATGAGTG'
+    }
+  end
+
+  def self.orthogonal_barcodes
+    [
+      'CTCATACC',
+      'ACCTCTTC',
+      'TATTCTAC',
+      'CAATTCTT',
+      'ATACCTCC',
+      'TCAACAAC',
+      'CCTTATCC',
+      'CTTCTATT',
+      'ACTTAACT',
+      'AACTCAAA',
+      'CATACACT',
+      'TACAATCA',
+      'ATCACTTC',
+      'CAATCCTA',
+      'CACCCACT',
+      'CCTTACCT',
+      'CACCCAAA',
+      'TCACTTAC',
+      'CAACATTT',
+      'TCCCTAAC',
+      'CTATCACA',
+      'CCAATTCA',
+      'ATCATCTA',
+      'CACTCCAC',
+      'TATCCCAA',
+      'ATTCCAAT',
+      'TTAACACA',
+      'CCCACTAA',
+      'TAACAACC',
+      'ACCACCTT',
+      'CATCCAAA',
+      'TTCTCTAT',
+      'ACTCACCT'
+    ]
   end
 end

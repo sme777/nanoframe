@@ -133,7 +133,7 @@ class Breaker
     end
     problem = model.to_problem
     Thread.new { problem.solve }.join
-    [problem.value_of(x), problem.value_of(x1), problem.value_of(x2), problem.value_of(y)+1, problem.value_of(z1),
+    [problem.value_of(x), problem.value_of(x1), problem.value_of(x2), problem.value_of(y), problem.value_of(z1),
      problem.value_of(z2), problem.value_of(z3), problem.value_of(z4)]
   end
 
@@ -531,15 +531,14 @@ class Breaker
         front_prev_staple = ObjectSpace._id2ref(front_staple.prev)
         merged_front_staple = merge_staples(front_prev_staple, front_staple, :mod_refraction)
         new_staples << merged_front_staple
-                removed_staples << front_prev_staple
-
+        removed_staples << front_prev_staple
       else
         new_staples << front_staple
       end
       
       if back_staple.sequence.size < 30
         back_next_staple = ObjectSpace._id2ref(back_staple.next)
-        merged_back_staple = merge_staples(back_staple, back_next_staple, :mod_start_refraction)
+        merged_back_staple = merge_staples(back_staple, back_next_staple, :mod_refraction)
         new_staples << merged_back_staple
         removed_staples << back_next_staple
       else
@@ -561,7 +560,7 @@ class Breaker
                           complementary_rotation_labels: st1.complementary_rotation_labels + st2.complementary_rotation_labels,
                           front: st1.front,
                           back: st2.back,
-                          buffer: 0, #st1.buffer + st2.buffer,
+                          buffer: st1.buffer + st2.buffer,
                           clone: true,
                           type: type,
                           graph: @graph
@@ -582,6 +581,8 @@ class Breaker
   def generate_shape_edges(vertices, scaffold_rotation_labels)
     sequence = IO.read('./app/assets/scaffolds/7249.txt')
     edges = []
+    scaffold_idxs = []
+    sequence.size.times {|k| scaffold_idxs << k }
     ### add extra checks for moving directions
     seq_count = 0
     position_idx = 0
@@ -592,27 +593,26 @@ class Breaker
         # byebug
         seq = sequence[seq_count...sequence.size]
         edge_rotation_labels = scaffold_rotation_labels[seq_count...sequence.size]
+        edge_scaffold_idxs = scaffold_idxs[seq_count...sequence.size]
       else
         seq = sequence[seq_count...(seq_count + this_step)]
         edge_rotation_labels = scaffold_rotation_labels[seq_count...(seq_count + this_step)]
-
+        edge_scaffold_idxs = scaffold_idxs[seq_count...(seq_count + this_step)]
       end
-      # if this_step.odd?
-      #   seq[0] = "Z"
-      # end
 
-      edge_idxs = []
-      seq.size.times { |k| edge_idxs << position_idx + k }
+      # edge_idxs = []
+      # seq.size.times { |k| edge_idxs << position_idx + k }
       corner_seq = on_boundary?(this_edge.v2) ? 1 : 0
-      position_idx += seq.size + corner_seq
-      seq_count += this_step + corner_seq
+      # byebug if corner_seq == 1
+      position_idx += (seq.size + corner_seq)
+      seq_count += (this_step + corner_seq)
       this_edge.sequence = seq
-      this_edge.scaffold_idxs = edge_idxs
+      this_edge.scaffold_idxs = edge_scaffold_idxs
+      # byebug if corner_seq == 1
       # byebug if edge_rotation_labels.nil?
       this_edge.complementary_rotation_labels = edge_rotation_labels.map { |e| 9 - e }
       edges << this_edge
     end
-
     edges.each_with_index do |edge, idx|
       edge.prev = edges[(idx - 1) % edges.size].object_id
       edge.next = edges[(idx + 1) % edges.size].object_id

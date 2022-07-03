@@ -453,20 +453,18 @@ if (signOutBtn != null || boxState != null) {
     }
     if (visualize) {
       const box = document.getElementById("box-state");
-      const boxLabel = document.getElementById("box-state-label");
       const stapleToggler = document.getElementById("box-state-staples");
-      const stapleTogglerLabel = document.getElementById("box-state-staples-label");
 
-      box.addEventListener("click", () => {
-        if (box.checked) {
-          boxLabel.innerHTML = "Closed Form";
+      box.addEventListener("click", (e) => {
+        if (box.innerHTML === "Open Form") {
+          box.innerHTML = "Closed Form";
           scene.remove(currentGroup);
           isSplit = true;
           currentGroup = splitLinearGroup;
           scene.add(currentGroup)
 
         } else {
-          boxLabel.innerHTML = "Open Form";
+          box.innerHTML = "Open Form";
           isSplit = false;
           scene.remove(currentGroup);
           currentGroup = linearGroup;
@@ -475,10 +473,10 @@ if (signOutBtn != null || boxState != null) {
       });
 
       stapleToggler.addEventListener("click", () => {
-        if (stapleToggler.checked) {
-          stapleTogglerLabel.innerHTML = "Hide Staples";
+        if (box.innerHTML === "Show Staples") {
+          stapleToggler.innerHTML = "Hide Staples";
         } else {
-          stapleTogglerLabel.innerHTML = "Show Staples";
+          stapleToggler.innerHTML = "Show Staples";
         }
           stapleLinearGroup.visible = !stapleLinearGroup.visible;
       });
