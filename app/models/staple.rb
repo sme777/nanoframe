@@ -125,7 +125,7 @@ class Staple
       extension_points = compute_extension_positions(@points.last, -1)
       @points += extension_points
       @scaffold_idxs += ['ein2'] * extension_points.size
-      @sequence += "TT#{convert(Staple.particle_barcodes[particle_barcode])}"
+      @sequence += "TT#{convert(Staple.particle_barcodes[particle_barcode].reverse)}"
       next_staple = ObjectSpace._id2ref(@next)
       if next_staple.extendable_start
         next_staple.disabled = true
