@@ -16,6 +16,7 @@ module SeedData
     attributes.each do |attr|
       attr_hash[attr] = parsed[attr]
     end
+    attr_hash["type"] = "PlaygroundItem"
     attr_hash
   end
 

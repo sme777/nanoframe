@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_07_04_181752) do
+ActiveRecord::Schema.define(version: 2022_07_04_200115) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(version: 2022_07_04_181752) do
     t.float "positions", default: [], array: true
     t.jsonb "staples", default: "{}"
     t.jsonb "routing", default: "{}"
+    t.string "type"
   end
 
   create_table "users", force: :cascade do |t|

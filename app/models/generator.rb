@@ -7,9 +7,6 @@ require 'object3D'
 require 'oxdna_maker'
 
 class Generator < ApplicationRecord
-  has_one_attached :staples_csv
-
-  attr_accessor :atom_count
 
   def self.generate_objects(step_size, loopout_length, min_len, max_len, scaff_length)
     min_len = min_len.to_i

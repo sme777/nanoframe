@@ -108,7 +108,8 @@ class GeneratorsController < ApplicationController
     else
 
       dimensions = { height: generator_fields[:height], width: generator_fields[:width],
-                     depth: generator_fields[:depth], divisions: generator_fields[:divisions] }
+                     depth: generator_fields[:depth], divisions: generator_fields[:divisions],
+                     type: "Generator"}
       if Generator.scaffolds[generator_fields[:scaffold_name].to_sym].nil?
 
       else
