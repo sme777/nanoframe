@@ -622,7 +622,8 @@ class Graph
       t = i.to_f / @points.size
       # colors.concat([t / 4, t / 1.5 + 0.15, t + 0.2])
       # colors << [t + 0.2, t + 0.2, t / 8] # yellow
-      colors << [t / 3, t / 3 + 0.3, t / 3]
+      colors << [t / 3, t / 3, t / 3  + 0.3] # green
+      # [t / 3 + 0.3, t / 3, t / 3] red
     end
     colors
   end

@@ -108,10 +108,10 @@ function setupSideBarScene() {
 function setupSideBarItemScene(idx) {
   const positions = JSON.parse(
     document.getElementById(`item${idx}_geometry`).value
-  );
+  ).flat();
   const colors = JSON.parse(
     document.getElementById(`item${idx}_material`).value
-  );
+  ).flat();
   const playGroundItemContainer = document.getElementById(
     `playground_item_${idx}`
   );
