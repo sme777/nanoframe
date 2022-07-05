@@ -3,18 +3,15 @@
 class Plane
   attr_accessor :graph, :up, :down, :left, :right, :name
 
-  def initialize(graph, name)
+  def initialize(plane_sets, graph, name)
     @name = name
+    @plane_sets = plane_sets
     @graph = graph
-    @up = nil
-    @down = nil
-    @left = nil
-    @right = nil
   end
 
   def to_hash
     sets_arr = []
-    @graph.each do |set|
+    @plane_sets.each do |set|
       edges_arr = []
       set.e.each do |edge|
         edges_arr.append(edge.to_hash)
@@ -25,15 +22,17 @@ class Plane
     { "sets": sets_arr }
   end
 
-  # For simple cuboid when all planes are
   def self.orthogonal_dimension(v1, v2)
-    side = Routing.find_plane_number(v1, v2, [50, 50, 50])
-    if (v1.x - v2.x).zero? && (v1.x.zero? || v1.x.abs == 50)
-      [:x, side]
-    elsif (v1.y - v2.y).zero? && (v1.y.zero? || v1.y.abs == 50)
-      [:y, side]
-    elsif (v1.z - v2.z).zero? && (v1.z.zero? || v1.z.abs == 50)
-      [:z, side]
+    case @graph.shape
+    when :cube
+      side = Routing.find_plane_number(v1, v2, [@graph.width, @graph.height, @graph.depth])
+      if (v1.x - v2.x).zero? && (v1.x.zero? || v1.x.abs == @graph.width)
+        [:x, side]
+      elsif (v1.y - v2.y).zero? && (v1.y.zero? || v1.y.abs == @graph.height)
+        [:y, side]
+      elsif (v1.z - v2.z).zero? && (v1.z.zero? || v1.z.abs == @graph.depth)
+        [:z, side]
+      end
     end
   end
 end
