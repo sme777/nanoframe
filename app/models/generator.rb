@@ -95,7 +95,7 @@ class Generator < ApplicationRecord
   end
 
   def self.supported_files
-    %w[staples_csv nfr oxdna pdb bundle]
+    ["staples (384 wells)", "staples (debug)", "nfr", "oxDNA", "PDB", "bundle"]
   end
 
   def self.color_palettes
@@ -129,8 +129,32 @@ class Generator < ApplicationRecord
     filename
   end
 
-  def staples_csv(filename)
-    csv_file = "#{Rails.root.join('tmp')}/#{filename}.csv"
+  def staples_384_wells(filename)
+    csv_file = "#{Rails.root.join('tmp')}/#{filename}_staples_384_wells.csv"
+    file = File.open(csv_file, 'w')
+    file.write("Well position,Name,Sequence\n")
+    staples = self.staples['data']
+    well_cols = (1..24).to_a
+    well_rows = (65..80).to_a.map {|ascii| ascii.chr}
+    well_col = 0
+    well_row = 0
+    staples.each do |staple|
+      sequence = staple['sequence']
+      name = staple['name']
+      file.write("#{well_rows[well_row]}#{well_cols[well_col]},#{name},#{sequence}\n")
+      if well_rows[well_row] == "P"
+        well_row = 0
+        well_col += 1
+      else
+        well_row += 1
+      end
+    end
+    file.close
+    ["#{filename}_staples_384_wells.csv"]
+  end
+
+  def staples_debug(filename)
+    csv_file = "#{Rails.root.join('tmp')}/#{filename}_staples_debug.csv"
     file = File.open(csv_file, 'w')
     file.write("name,color,sequence,length\n")
     staples = self.staples['data']
@@ -141,7 +165,7 @@ class Generator < ApplicationRecord
       file.write("#{name},#{Generator.rgb2hex(color)},#{sequence},#{sequence.size}\n")
     end
     file.close
-    ["#{filename}.csv"]
+    ["#{filename}_staples_debug.csv"]
   end
 
   def oxdna(filename)
@@ -282,9 +306,10 @@ class Generator < ApplicationRecord
   def bundle(filename)
     oxdna_files = oxdna(filename)
     nfr_file = nfr(filename)
-    staples_file = staples_csv(filename)
+    staples_384_wells_file = staples_384_wells(filename)
+    staples_debug_file = staples_debug(filename)
     # pdb_file = pdb(filename)
-    [oxdna_files, nfr_file, staples_file].flatten # , pdb_file]
+    [oxdna_files, nfr_file, staples_384_wells_file, staples_debug_file].flatten
   end
 
   def self.scaffolds

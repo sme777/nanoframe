@@ -15,7 +15,6 @@ Rails.application.routes.draw do
   get '/playground' => 'playground#index'
   post '/nanobot' => 'generators#create', as: 'generator'
   post '/nanobot' => 'generators#create', as: 'generators'
-  get '/nanobot/custom' => 'generators#custom'
 
   # oauth
   get 'auth/github/callback' => 'session#github'
@@ -38,12 +37,5 @@ Rails.application.routes.draw do
   get '/checkusername' => 'users#check_username', :defaults => { format: :json }
   # get '/nanobot/check_shape_params' => 'generators#check_shape_params'
   # downloading files
-  post '/nanobot/:id/staples' => 'downloads#download_staples', as: 'download_staples'
-  get '/nanobot/:id/nfr' => 'downloads#download_nfr'
-  get '/nanobot/:id/pdb' => 'downloads#download_pdb'
-  get '/nanobot/:id/oxdna' => 'downloads#download_oxdna'
-  get '/nanobot/:id/cadnano' => 'downloads#download_cadnano'
-  get '/nanobot/:id/bundle' => 'downloads#download_bundle'
-  # resources :generators
   get 'nanobot/generator' => 'generators#generator', as: 'shape_generator'
 end

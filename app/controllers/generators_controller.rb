@@ -26,13 +26,22 @@ class GeneratorsController < ApplicationController
     type = params[:type]
 
     unless type.nil?
-
+      repl = {'(' => '', ')' => '', ' ' => '_'}
+      type = type.gsub(Regexp.union(repl.keys), repl).downcase
       filename = @generator.filename(logged_in?, session[:user_id])
-      files = @generator.send(type, filename)
+      files = @generator.send(type.downcase, filename)
       zipfile_name = "#{Rails.root.join('tmp')}/#{filename}.zip"
       if files.size == 1
+        mime_type = ""
+        if type.include?("staple")
+          mime_type = "text/csv"
+        elsif type.include?("nfr")
+          mime_type = "application/json"
+        elsif type.include?("pdb")
+          mime_type = "chemical/pdb"
+        end
         File.open("#{Rails.root.join('tmp')}/#{files[0]}", 'r') do |f|
-          send_data f.read, type: 'application/json', filename: files[0]
+          send_data f.read, type: mime_type, filename: files[0]
         end
         File.delete("#{Rails.root.join('tmp')}/#{files[0]}")
       else

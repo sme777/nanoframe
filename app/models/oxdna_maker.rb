@@ -167,7 +167,6 @@ class OxDNAMaker
           end_idx = mod_i
           while i < end_idx
             position = (last_rb - CM_CENTER_DS * a1)
-            byebug if ein_rot.nil?
             a1 = ein_rot * a1
             last_rb += a3 * BASE_BASE
             ein_positions << position
@@ -224,7 +223,6 @@ class OxDNAMaker
           end_idx = staple_idxs.size
           while i < end_idx
             position = (last_rb - CM_CENTER_DS * a1)
-            byebug if ein_rot.nil?
             a1 = ein_rot * a1
             last_rb += a3 * BASE_BASE
             ein_positions << position
