@@ -5,8 +5,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/a7c3b1796ed55dff5f27/maintainability)](https://codeclimate.com/github/tilabberkeley/nanoframe/maintainability)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
-NanoFrame [nanoframe.org](https://www.nanoframe.org) is a web based tool which enables design and synthesis of 3D wireframe objects. This web application takes a single stranded DNA scaffold (either 7249 or 8064-base) with custom sequences and forms the desired wireframe shape in 3D.
-Supported wireframes include cube, sphere, cone, tetrahedron, and many more.
+NanoFrame [nanoframe.org](https://www.nanoframe.org) is a web based tool which enables design and synthesis of 3D wireframe polyhedra. NanoFrame's [synthesizer](https://www.nanoframe.org/nanobot) generates polyhedra from single-origami scaffold of any length, which then can be used as building block for designing larger multi-origami structure in NanoFrame's [playground](https://www.nanoframe.org/nanobot). Save your work to the cloud by creating account at [nanoframe.org](https://www.nanoframe.org).
 
 Consider citing the associated paper if you find the project useful.
 
@@ -15,12 +14,13 @@ Consider citing the associated paper if you find the project useful.
 > [paper](https://google.com) | [arXiv](https://arxiv.org/abs/2111.13992)
 
 # Contents
-
-- [Control Flow](#control-flow)
-- [**Video Tutorials**](https://www.youtube.com/playlist?list=PLJfZub7t7u3IMP3gVfIM1P1G8e6bqCVK2)
-- [Shape Picker](#shape-picker)
-- [DNA Routing](#dna-routing)
-- [Atomic Synthesization](#atomic-synthesization)
+- [Synthesizer](#synthesizer)
+- [Playground](#playground)
+- [Home](#home)
+- [Guides](#guides)
+- [Methods](#methods)
+- [Experiments](#experiments)
+- [Video Tutorials](#video-tutorials)
 - [Saving Work](#saving-work)
 - [Suggestions and Reporting Issues](#suggestions-and-reporting-issues)
 - [Working Locally](#working-locally)
@@ -161,6 +161,16 @@ To convert provided scaffold and staples to one of DNA file formats, we provide 
 You will still need to make an API key, but this API key can be used for any of the services provided by NanoFrame. See [nanoframe.org/api](http://nanoframe.org/api) for detailed docs of APIs.
 
 In addition, NanoFrame itself relies on a DNA file converter delivered by [popDNA](https://github.com/tilabberkeley/popDNA). Currently supported file formats are `pdb`, `oxdna`, and `json` (cadnano). The web API is provided for small file formats (< 100Mbs), for larger files please install `popDNA` with one of the [package managers](https://github.com/tilabberkeley/popDNA#installation). For extensive API documentation visit [popDNA.io/api](https://popdna.io/api).
+
+# Synthesizer
+
+# Playground
+
+# Guides
+
+# Methods
+
+# Experiments
 
 # Video Tutorials
 
