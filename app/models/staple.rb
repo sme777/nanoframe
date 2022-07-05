@@ -105,7 +105,8 @@ class Staple
   end
 
   def update_interior_extension(particle_barcode)
-    return if @type == :refraction || @type == :mod_refraction || @disabled
+    return if @type == :refraction || @type == :mod_refraction || 
+      @type == :exterior_start_refraction || @type == :exterior_end_refraction || @disabled
 
     if extendable_start
       extension_points = compute_extension_positions(@points.first, -1)
@@ -307,7 +308,7 @@ class Staple
     back_end_vert = @back.v2.instance_variable_get("@#{vert}")
 
     case @type
-    when :reflection
+    when :reflection, :mod_reflection, :interior_start_reflection, :interior_end_reflection
       row = nil
       col = nil
       if front_start_hor > back_end_hor
@@ -341,7 +342,7 @@ class Staple
         col = (back_end_hor / vert_dist).abs.floor
 
       end
-    when :refraction
+    when :refraction, :mod_refraction, :exterior_start_refraction, :exterior_start_refraction
       if front_start_vert.abs == hor_dist * @graph.segments || front_end_vert.abs == hor_dist * @graph.segments
         row = @graph.segments
         col = (front_start_hor / vert_dist).abs.floor
