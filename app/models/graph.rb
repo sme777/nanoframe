@@ -643,15 +643,13 @@ class Graph
   def to_hash
     return nil if @planes.nil?
 
-    # plane_arr = []
     graph_hash = {}
     graph_hash[:start] = @start_idx * @sampling_frequency
     graph_hash[:end] = (@start_idx + @group1.size) * @sampling_frequency
     graph_hash[:boundary_edges] = boundary_edges.each(&:to_hash)
     @planes.each do |plane|
-      p = Plane.new(plane, plane.object_id)
+      p = Plane.new(plane, self, plane.object_id)
       graph_hash[p.name] = p.to_hash
-      # plane_arr.append(p.to_hash)
     end
 
     graph_hash
