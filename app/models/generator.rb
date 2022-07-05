@@ -141,7 +141,7 @@ class Generator < ApplicationRecord
     staples.each do |staple|
       sequence = staple['sequence']
       name = staple['name']
-      file.write("#{well_rows[well_row]}#{well_cols[well_col]},#{name},#{sequence}\n")
+      file.write("#{well_rows[well_row]}#{well_cols[well_col]},#{Staple.convert2wellname(name)},#{sequence}\n")
       if well_rows[well_row] == "P"
         well_row = 0
         well_col += 1
@@ -162,6 +162,7 @@ class Generator < ApplicationRecord
       color = staple['color']
       sequence = staple['sequence']
       name = staple['name']
+      
       file.write("#{name},#{Generator.rgb2hex(color)},#{sequence},#{sequence.size}\n")
     end
     file.close
@@ -176,7 +177,6 @@ class Generator < ApplicationRecord
     staples_idxs = staples['data'].map { |e| e['indices'] }
     staples_sequences = staples['data'].map { |e| e['sequence'] }
     staples_points = staples['data'].map { |e| e['original_positions'] }
-    # byebug
     scaffold_positions, scaffold_a1s, scaffold_a3s, staples_positions, staples_a1s, staples_a3s = oxdna_maker.setup(
       scaffold_positions, staples_idxs, staples_points
     )
@@ -189,7 +189,6 @@ class Generator < ApplicationRecord
     scaffold_positions.each_with_index do |_pos, i|
       f.write("#{scaffold_positions[i][0]} #{scaffold_positions[i][1]} #{scaffold_positions[i][2]} #{scaffold_a1s[i][0]} #{scaffold_a1s[i][1]} #{scaffold_a1s[i][2]} #{scaffold_a3s[i][0]} #{scaffold_a3s[i][1]} #{scaffold_a3s[i][2]} 0.0 0.0 0.0 0.0 0.0 0.0\n")
     end
-    # byebug
     staples_positions.each_with_index do |position, idx|
       j = 0
       while j < position.size

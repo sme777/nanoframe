@@ -114,7 +114,7 @@ class Staple
       @original_points = original_extension_points + @original_points
       @scaffold_idxs = ['ein1'] * extension_points.size + @scaffold_idxs
       @sequence = "#{convert(Staple.particle_barcodes[particle_barcode])}TT" + @sequence
-      @type = :inner_start_reflection
+      @type = :interior_start_reflection
       prev_staple = ObjectSpace._id2ref(@prev)
       prev_staple.disabled = true if prev_staple.extendable_end
     elsif extendable_end
@@ -124,7 +124,7 @@ class Staple
       @original_points = @original_points + original_extension_points
       @scaffold_idxs = @scaffold_idxs + ['ein2'] * extension_points.size
       @sequence = @sequence + "TT#{convert(Staple.particle_barcodes[particle_barcode].reverse)}"
-      @type = :inner_end_reflection
+      @type = :interior_end_reflection
       next_staple = ObjectSpace._id2ref(@next)
       next_staple.disabled = true if next_staple.extendable_start
     end
@@ -190,15 +190,12 @@ class Staple
     points = []
     case orth
     when :x
-      byebug if side != :S5 && side != :S6
       dir = side == :S5 ? -1 : 1
       points = Vertex.linspace(:x, 11, point, Vertex.new(point.x + 3 * dir, point.y, point.z))[1...]
     when :y
-      byebug if side != :S3 && side != :S4
       dir = side == :S3 ? -1 : 1
       points = Vertex.linspace(:y, 11, point, Vertex.new(point.x, point.y + 3 * dir, point.z))[1...]
     when :z
-      byebug if side != :S1 && side != :S2
       dir = side == :S2 ? -1 : 1
       points = Vertex.linspace(:z, 11, point, Vertex.new(point.x, point.y, point.z + 3 * dir))[1...]
     end
@@ -236,7 +233,6 @@ class Staple
   end
 
   def name
-    # byebug
     starting_vertex = @front.v1
     ending_vertex = @back.v2
     side = Routing.find_plane_number(starting_vertex, ending_vertex, [@graph.width, @graph.height, @graph.depth])
@@ -286,6 +282,17 @@ class Staple
       end
     end
     points
+  end
+
+  def self.convert2wellname(name)
+    first_idx = name.index("-")
+    staple_name = Staple.letter_codes[name[...first_idx]]
+    name = name[...first_idx] + name[first_idx+1...]
+    second_idx = name.index("-")
+    staple_side = name[first_idx...second_idx]
+    staple_row = name[second_idx+1...second_idx+3]
+    staple_col = name[second_idx+4...second_idx+6]
+    "#{staple_name}[#{staple_side}][#{staple_row}][#{staple_col}]"
   end
 
   def row_and_col(hor, vert, hor_dist, vert_dist)
@@ -401,5 +408,20 @@ class Staple
       TTCTCTAT
       ACTCACCT
     ]
+  end
+
+  def self.letter_codes
+    {
+      "reflection" => :RFL,
+      "refraction" => :RFR,
+      "mod_reflection" => :MFL,
+      "exterior_start_refraction" => :ESR,
+      "exterior_end_refraction" => :EER,
+      "interior_start_reflection" => :ISL,
+      "interior_end_reflection" => :IEL,
+      "extension" => :EXT,
+      "interior_start_extension" => :IST,
+      "interior_end_extension" => :IET
+    }
   end
 end

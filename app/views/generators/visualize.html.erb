@@ -172,7 +172,7 @@
                     <% @staples['data'].each_with_index do |staple, idx| %>
                         <tr>
                             <td><%= idx+1 %></td>
-                            <td><%= staple["name"] %></td>
+                            <td><%= "#{staple["name"]} (#{Staple.convert2wellname(staple["name"])})" %></td>
                             <td><%= Generator.rgb2hex(staple["color"]) %></td>
                             <td><%= staple["sequence"] %></td>
                             <td><%= staple["sequence"].size %></td>

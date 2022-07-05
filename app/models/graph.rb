@@ -26,7 +26,6 @@ class Graph
     @sorted_vertices, @normalized_vertices, @points, @sampling_frequency, @scaffold_rotation_labels = generate_points
     @colors = generate_colors
     @sorted_edges, @staples = generate_staples
-    # byebug
     @start_idx, @group1, @group2, @boundary_edges = open_structure
     @vertex_cuts = []
     @boundary_edges.each do |e|
@@ -47,7 +46,6 @@ class Graph
     when :tetrahedron
       @radius = dimensions[0]
     end
-    # byebug
     dimensions.each do |k, _v|
       self.class.send(:attr_accessor, k.to_s)
     end
@@ -520,16 +518,13 @@ class Graph
 
       corner_nt = on_boundary?(next_vert) ? 7 : 6 # POTENTIAL SOLUTION: set sampling frequency same, but for refractions add nil for last index, then take average.
       edge_sampled_points = Vertex.linspace(dr_ch, sample_dir_map[dr_ch], vertex, next_vert)
-      # byebug if corner_nt == 1
 
       edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert], corner_nt)[-corner_nt...]
-      # byebug if corner_nt == 7
       edge_sampled_points[...(corner_nt / 2.0).floor] = last_corners unless last_corners.nil?
       edge_sampled_points[-(corner_nt / 2.0).floor...] = edge_corners[...(corner_nt / 2.0).ceil]
       last_corners = edge_corners[(corner_nt / 2.0).ceil...]
       sampled_points.concat(edge_sampled_points)
     end
-    # byebug
 
     sampled_points = sampled_points.map { |point| [point.x, point.y, point.z] } # Vertex.flatten(sampled_points)
     scaffold_rotation_labels = ([0, 1, 2, 3, 4, 5, 6, 7, 8,
@@ -638,7 +633,6 @@ class Graph
     end
     edges, staples = @staple_breaker.generate_staple_strands(@sorted_vertices, staple_len_map,
                                                              @scaffold_rotation_labels)
-    # byebug                                                   byebug
   end
 
   def open_structure(ratio = 1 / 3.to_f)

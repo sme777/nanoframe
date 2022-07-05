@@ -85,7 +85,6 @@ class Breaker
     x, y, x1, x2, z1, z2, z3, z4 = model.int_var_array(8, 0..Cbc::INF)
     model.maximize(2 * s2 * x + 4 * s * y + 2 * s * z1 + 2 * s * z2 + (s2 - s) * z3 + (s2 - s) * z4)
     h_step, v_step = step_size(side)
-    # byebug
     # x, y mandatory restraints
     model.enforce(x >= 20)
     model.enforce(y >= 20)
@@ -156,7 +155,6 @@ class Breaker
         refr2 = refr2.first
 
         if ext_b_hor == [0] && ext_b_vert == [0]
-          # byebug
           staple = Staple.new({
                                 front: edge, back: adjacent, start_pos: refr / 2, end_pos: refr2 / 2,
                                 type: :refraction, buffer: 0, graph: @graph # changed from 2
@@ -199,7 +197,6 @@ class Breaker
               stp.prev = extension_staples[idx - 1].object_id if stp != extension_staples.first
             end
             staples.concat(extension_staples)
-            # byebug
             staple = Staple.new({
                                   front: edge, back: adjacent, start_pos: start, end_pos: refr2 / 2,
                                   type: :refraction, buffer: 0, graph: @graph # changed from 2
@@ -218,7 +215,6 @@ class Breaker
       else
         adjacent = ObjectSpace._id2ref(edge.adjacent_edges.first)
         if ext_hor == [0] && ext_vert == [0]
-          # staple = Staple.new(edge, adjacent, refl2, refl2, :reflection, 1)
           staple = Staple.new({
                                 front: edge, back: adjacent, start_pos: refl2, end_pos: refl2,
                                 type: :reflection, buffer: 1, graph: @graph
@@ -242,9 +238,7 @@ class Breaker
 
             # extensions = ext_b_hor != [0] ? ext_b_hor : ext_b_vert
             extension_staples = []
-            # byebug if extensions.nil?
             extensions.each do |ext|
-              # staple = Staple.new(edge, edge, start, start + ext, :extension)
               staple = Staple.new({
                                     front: edge, back: edge, start_pos: start, end_pos: start + ext,
                                     type: :extension, graph: @graph
@@ -261,7 +255,6 @@ class Breaker
             end
 
             staples.concat(extension_staples)
-            # staple = Staple.new(edge, adjacent, start, refl2, :reflection, 1)
             staple = Staple.new({
                                   front: edge, back: adjacent, start_pos: start, end_pos: refl2,
                                   type: :reflection, buffer: 1, graph: @graph
@@ -273,11 +266,6 @@ class Breaker
             max_size = [refl1, refl2].max
             size1 = edge.sequence.size > max_size ? max_size : min_size
             size2 = edge.sequence.size <= max_size ? max_size : min_size
-            # if edge.sequence.size < max_size
-            #   staple = Staple.new(edge, adjacent, min_size, max_size, :reflection, 1)
-            # else
-            #   staple = Staple.new(edge, adjacent, max_size, min_size, :reflection, 1)
-            # end
             staple = Staple.new({
                                   front: edge, back: adjacent, start_pos: size1, end_pos: size2,
                                   type: :reflection, buffer: 1, graph: @graph
@@ -395,7 +383,6 @@ class Breaker
           prev_staple.type = prev_staple.type
         end
 
-        # byebug if back_staple_original_pos.size != back_staple_pos.size
         back_staple = Staple.new({ sequence: back_staple_seq,
                                    points: back_staple_pos,
                                    original_points: back_staple_original_pos,
@@ -478,7 +465,6 @@ class Breaker
     removed_staples = []
     staples.each do |staple|
       corner_vertex, corner_idx = staple.find_corner_vertex
-      # byebug
       if corner_idx.nil?
         # staple.type = :mod_reflection #if staple.type == :temp
         new_staples << staple unless removed_staples.include?(staple)
@@ -494,7 +480,7 @@ class Breaker
                                   back: staple.back,
                                   buffer: staple.buffer,
                                   clone: true,
-                                  type: :mod_refraction,
+                                  type: :exterior_end_refraction,
                                   graph: @graph
                                 })
       back_staple = Staple.new({
@@ -507,7 +493,7 @@ class Breaker
                                  back: staple.back,
                                  buffer: staple.buffer,
                                  clone: true,
-                                 type: :mod_refraction,
+                                 type: :exterior_start_refraction,
                                  graph: @graph
                                })
 
@@ -526,7 +512,7 @@ class Breaker
 
       if front_staple.sequence.size < 30
         front_prev_staple = ObjectSpace._id2ref(front_staple.prev)
-        merged_front_staple = merge_staples(front_prev_staple, front_staple, :mod_refraction)
+        merged_front_staple = merge_staples(front_prev_staple, front_staple, :exterior_end_refraction)
         new_staples << merged_front_staple
         removed_staples << front_prev_staple
       else
@@ -535,7 +521,7 @@ class Breaker
 
       if back_staple.sequence.size < 30
         back_next_staple = ObjectSpace._id2ref(back_staple.next)
-        merged_back_staple = merge_staples(back_staple, back_next_staple, :mod_refraction)
+        merged_back_staple = merge_staples(back_staple, back_next_staple, :exterior_start_refraction)
         new_staples << merged_back_staple
         removed_staples << back_next_staple
       else
@@ -584,7 +570,6 @@ class Breaker
       this_edge = Edge.new(v, vertices[(i + 1) % vertices.size])
       this_step = moving_step(this_edge)
       if i == vertices.size - 1
-        # byebug
         seq = sequence[seq_count...sequence.size]
         edge_rotation_labels = scaffold_rotation_labels[seq_count...sequence.size]
         edge_scaffold_idxs = scaffold_idxs[seq_count...sequence.size]
@@ -594,16 +579,10 @@ class Breaker
         edge_scaffold_idxs = scaffold_idxs[seq_count...(seq_count + this_step)]
       end
 
-      # edge_idxs = []
-      # seq.size.times { |k| edge_idxs << position_idx + k }
       corner_seq = on_boundary?(this_edge.v2) ? 1 : 0
-      # byebug if corner_seq == 1
-      # position_idx += (seq.size + corner_seq)
       seq_count += (this_step + corner_seq)
       this_edge.sequence = seq
       this_edge.scaffold_idxs = edge_scaffold_idxs
-      # byebug if corner_seq == 1
-      # byebug if edge_rotation_labels.nil?
       this_edge.complementary_rotation_labels = edge_rotation_labels.map { |e| 9 - e }
       edges << this_edge
     end
