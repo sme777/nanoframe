@@ -30,7 +30,12 @@
                 <h6>Actions</h6>
             </div>
             <div class="row box-state-container">
-                <%= link_to "Regenerate Routing", generate_routing_path({regenerate: true}), class: "btn btn-outline-secondary" %>
+                <%= form_with(url: "/nanobot/#{@generator.id}/visualize", method: :post, data: { turbo: false }) do |f| %>
+                    <%= hidden_field_tag 'regenerate', true %>
+                    <div class="row box-state-container">
+                    <%= button_tag "Regenerate Routing", class: "btn btn-outline-secondary regenerate-button"%>
+                    </div>
+                <% end %>
             </div>
             <div class="row box-state-container">
                 <button id="box-state" class="btn btn-outline-secondary">Open Form</button>

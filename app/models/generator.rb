@@ -119,6 +119,8 @@ class Generator < ApplicationRecord
     "0x#{hex}"
   end
 
+  
+
   def filename(logged, user_id)
     if logged
       curr_user = User.find(user_id)

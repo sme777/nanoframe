@@ -61,23 +61,13 @@ class GeneratorsController < ApplicationController
   def visualize
     @color_palettes = Generator.color_palettes
     @supported_files = Generator.supported_files
-    # byebug
     if params[:regenerate]
-      graph = @generator.route
-      routing = graph.to_hash
-      @positions = graph.points
-      @colors = graph.colors
-      @vertex_cuts = graph.vertex_cuts.size
-      @staples = graph.staples_hash
-      # write_staples_to_s3(@graph.staples, @graph.staple_colors)
-      Generator.find(@generator.id).update(
-        routing: routing,
-        positions: @positions,
-        colors: @colors,
-        vertex_cuts: @vertex_cuts,
-        staples: @staples
-      )
-      redirect_to "/nanobot/#{@generator.id}/visualize" unless @generator.routing.nil?
+      populate_generator
+      if turbo_frame_request?
+        render :async_visualize
+      else
+        redirect_to "/nanobot/#{@generator.id}/visualize"
+      end
     else
       @positions = @generator.positions
       @colors = @generator.colors
@@ -91,9 +81,7 @@ class GeneratorsController < ApplicationController
     download if params[:type]
   end
 
-  def async_visualize
-    @color_palettes = Generator.color_palettes
-    @supported_files = Generator.supported_files
+  def populate_generator
     graph = @generator.route
     routing = graph.to_hash
     @positions = graph.points
@@ -110,7 +98,12 @@ class GeneratorsController < ApplicationController
       vertex_cuts: @vertex_cuts,
       staples: @staples
     )
+  end
 
+  def async_visualize
+    @color_palettes = Generator.color_palettes
+    @supported_files = Generator.supported_files
+    populate_generator
     render :async_visualize
   end
 
