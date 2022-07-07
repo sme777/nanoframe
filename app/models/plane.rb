@@ -22,15 +22,15 @@ class Plane
     { "sets": sets_arr }
   end
 
-  def self.orthogonal_dimension(v1, v2)
-    case @graph.shape
+  def self.orthogonal_dimension(v1, v2, shape, dimensions)
+    case shape
     when :cube
-      side = Routing.find_plane_number(v1, v2, [@graph.width, @graph.height, @graph.depth])
-      if (v1.x - v2.x).zero? && (v1.x.zero? || v1.x.abs == @graph.width)
+      side = Routing.find_plane_number(v1, v2, dimensions)
+      if (v1.x - v2.x).zero? && (v1.x.zero? || v1.x.abs == dimensions[0])
         [:x, side]
-      elsif (v1.y - v2.y).zero? && (v1.y.zero? || v1.y.abs == @graph.height)
+      elsif (v1.y - v2.y).zero? && (v1.y.zero? || v1.y.abs == dimensions[1])
         [:y, side]
-      elsif (v1.z - v2.z).zero? && (v1.z.zero? || v1.z.abs == @graph.depth)
+      elsif (v1.z - v2.z).zero? && (v1.z.zero? || v1.z.abs == dimensions[2])
         [:z, side]
       end
     end

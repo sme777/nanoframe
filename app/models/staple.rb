@@ -49,18 +49,6 @@ class Staple
     end
   end
 
-  # def setup_dimensions(dimensions, segments, shape)
-  #   case shape
-  #   when :cube
-  #     @width = dimensions[0]
-  #     @height = dimensions[1]
-  #     @depth = dimensions[2]
-  #     @segments = segments
-  #   when :tetrahedron
-  #     @radius = dimensions[0]
-  #   end
-  # end
-
   def convert(edge_seq)
     sequence = ''
     seq = edge_seq.split('')
@@ -146,7 +134,7 @@ class Staple
   def update_exterior_extension(extension_side)
     case extension_side
     when :start
-      orth, side = Plane.orthogonal_dimension(@original_points[1], @original_points[1])
+      orth, side = Plane.orthogonal_dimension(@original_points[1], @original_points[1], @graph.shape, [@graph.width, @graph.height, @graph.depth])
       extension_points = compute_outer_extension_positions(@points[0], orth, side)
       original_extension_points = compute_outer_extension_positions(@original_points[0], orth, side)
       @points = extension_points + @points
@@ -155,7 +143,7 @@ class Staple
       @complementary_rotation_labels = [nil] * extension_points.size + @complementary_rotation_labels
       @sequence = "#{Staple.orthogonal_barcodes.sample}TT" + @sequence
     when :end
-      orth, side = Plane.orthogonal_dimension(@original_points[-2], @original_points[-2])
+      orth, side = Plane.orthogonal_dimension(@original_points[-2], @original_points[-2], @graph.shape, [@graph.width, @graph.height, @graph.depth])
       extension_points = compute_outer_extension_positions(@points[-1], orth, side)
       original_extension_points = compute_outer_extension_positions(@original_points[-1], orth, side)
       @points = @points + extension_points
@@ -308,7 +296,7 @@ class Staple
     back_end_vert = @back.v2.instance_variable_get("@#{vert}")
 
     case @type
-    when :reflection, :mod_reflection, :interior_start_reflection, :interior_end_reflection
+    when :reflection #, :mod_reflection, :interior_start_reflection, :interior_end_reflection
       row = nil
       col = nil
       if front_start_hor > back_end_hor
@@ -342,7 +330,7 @@ class Staple
         col = (back_end_hor / vert_dist).abs.floor
 
       end
-    when :refraction, :mod_refraction, :exterior_start_refraction, :exterior_start_refraction
+    when :refraction #, :mod_refraction, :exterior_start_refraction, :exterior_start_refraction
       if front_start_vert.abs == hor_dist * @graph.segments || front_end_vert.abs == hor_dist * @graph.segments
         row = @graph.segments
         col = (front_start_hor / vert_dist).abs.floor
@@ -424,5 +412,19 @@ class Staple
       "interior_start_extension" => :IST,
       "interior_end_extension" => :IET
     }
+  end
+
+  def orthogonal_dimension(v1, v2)
+    case @graph.shape
+    when :cube
+      side = Routing.find_plane_number(v1, v2, [@graph.width, @graph.height, @graph.depth])
+      if (v1.x - v2.x).zero? && (v1.x.zero? || v1.x.abs == @graph.width)
+        [:x, side]
+      elsif (v1.y - v2.y).zero? && (v1.y.zero? || v1.y.abs == @graph.height)
+        [:y, side]
+      elsif (v1.z - v2.z).zero? && (v1.z.zero? || v1.z.abs == @graph.depth)
+        [:z, side]
+      end
+    end
   end
 end

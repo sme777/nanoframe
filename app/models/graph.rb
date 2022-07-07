@@ -109,14 +109,15 @@ class Graph
   def staples_hash
     staples_data = []
     @staples.each do |staple|
-      staples_data << { positions: staple.points.map do |point|
+      staples_data << { 'positions' => staple.points.map do |point|
                                      [point.x, point.y, point.z]
-                                   end, original_positions: staple.original_points.map do |point|
+                                   end, 'original_positions' => staple.original_points.map do |point|
                                                               [point.x, point.y, point.z]
                                                             end,
-                        color: [rand, rand, rand], name: staple.name, sequence: staple.sequence, indices: staple.scaffold_idxs }
+                        'color' => [rand, rand, rand], 'name' => staple.name, 'sequence' => staple.sequence, 
+                        'indices' => staple.scaffold_idxs }
     end
-    { data: staples_data }
+    { 'data' => staples_data }
   end
 
   def connect_vertices(vs)
@@ -644,9 +645,9 @@ class Graph
     return nil if @planes.nil?
 
     graph_hash = {}
-    graph_hash[:start] = @start_idx * @sampling_frequency
-    graph_hash[:end] = (@start_idx + @group1.size) * @sampling_frequency
-    graph_hash[:boundary_edges] = boundary_edges.each(&:to_hash)
+    graph_hash['start'] = @start_idx * @sampling_frequency
+    graph_hash['end'] = (@start_idx + @group1.size) * @sampling_frequency
+    graph_hash['boundary_edges'] = boundary_edges.each(&:to_hash)
     @planes.each do |plane|
       p = Plane.new(plane, self, plane.object_id)
       graph_hash[p.name] = p.to_hash

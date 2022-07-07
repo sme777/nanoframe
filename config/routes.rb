@@ -24,9 +24,10 @@ Rails.application.routes.draw do
   # get '/auth/google_oauth2/callback', to: 'users#google_oauth2', as: :google_oauth2_callback
   # get '/auth/github/callback', to: 'users#github', as: :github_callback
 
-  post '/nanobot/:id/routing' => 'generators#download'
+  # patch '/nanobot/:id/visualize' => 'generators#visualize'
   get '/nanobot/:id/routing' => 'generators#routing'
   post '/nanobot/:id/visualize' => 'generators#visualize', as: 'generate_routing'
+  get '/nanobot/:id/async_visualize' => 'generators#async_visualize', as: 'generate_async_routing'
   get '/nanobot/:id/visualize' => 'generators#visualize'
   get '/nanobot/:id/compile' => 'generators#compile'
   post '/nanobot/:id/compile' => 'generators#signup_and_save'
