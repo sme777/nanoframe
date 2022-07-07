@@ -1,0 +1,160 @@
+<div class="outer-regenerate-container">
+
+    <div class="regenerate-container">
+        <div class="info-container">
+            <div class="row box-state-label">
+                <h6>Info</h6>
+            </div>
+
+            <div class="row box-state-container">
+                <div class="form-floating nopad-container">
+                    <input type="text" class="form-control" id="dimension_info"
+                        value="<%= @generator.get_dimensions %>" disabled>
+                    <label for="dimension_info">Dimensions</label>
+                </div>
+            </div>
+
+            <div class="row box-state-container">
+                <div class="form-floating nopad-container">
+                    <input type="text" class="form-control" id="vertex_cut_info"
+                        value="<%= @vertex_cuts %>" disabled>
+                    <label for="vertex_cut_info">Vertex Cuts</label>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="actions-container">
+
+            <div class="row box-state-label">
+                <h6>Actions</h6>
+            </div>
+            <div class="row box-state-container">
+                <%= link_to "Regenerate Routing", generate_routing_path({regenerate: true}), class: "btn btn-outline-secondary" %>
+            </div>
+            <div class="row box-state-container">
+                <button id="box-state" class="btn btn-outline-secondary">Open Form</button>
+            </div>
+            <div class="row box-state-container">
+                <button id="box-state-staples" class="btn btn-outline-secondary">Show Staples</button><br>
+            </div>
+
+            <div class="row box-state-container">
+                <div class="dropdown download-file-container">
+                    <button class="btn btn-outline-secondary dropdown-toggle file-dropdown-menu" type="button"
+                        id="download-file-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Download Files
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark file-dropdown-menu">
+                        <% @supported_files.each do |file| %>
+                        <li>
+                            <%= form_with(url: "/nanobot/#{@generator.id}/visualize", method: :post, data: { turbo: false }) do |f| %>
+                            <%= hidden_field_tag 'type', file %>
+                            <%= button_tag file, class: "dropdown-item"%>
+                            <% end %>
+                        </li>
+                        <% end %>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+        <div class="modifications-container">
+
+
+            <%= form_with(url: update_generator_path(@generator.id), method: :post) do |f| %>
+            <div class="row box-state-label">
+                <h6>Modifications</h6>
+            </div>
+            <div class="row box-state-container">
+                <div class="form-floating nopad-container">
+                    <%= f.text_field :bridge_length, type: "number", class: "form-control", value: "2" %>
+                    <%= f.label "Bridge Length", for: "bridge_length", class: "form-label"%>
+                </div>
+            </div>
+
+
+            <div class="row box-state-container">
+                <div class="form-floating nopad-container">
+                    <%= f.select :color_palette, @color_palettes, {}, {class: "form-select"}%>
+                    <%= f.label "Color Palette", for: "color_palette", class: "form-label"%>
+                </div>
+            </div>
+            <div class="row box-state-container">
+                <%= f.submit "Update", class: "btn btn-outline-dark" %>
+            </div>
+            <% end %>
+        </div>
+    </div>
+</div>
+
+<div class="selectionOuterContainer">
+    <div class="selectionContainer">
+        <div class="row">
+            <div class="seqeunce-name">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">Base</span>
+                    <input type="text" class="form-control sequence-base" value="<%= @scaffold[0]%>" disabled>
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">Position</span>
+                    <input type="text" class="form-control sequence-id" value="1" disabled>
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text">Side</span>
+                    <input type="text" class="form-control side-id" value="" disabled>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var scaffoldPositions = <%= @positions %>;
+    var scaffoldColors = <%= @colors %>;
+    var scaffold = "<%= @scaffold %>";
+    var start = <%= @start %>;
+    var end = <%= @end %>;
+    var staples = <%= @staples.to_json.html_safe %>;
+    var signOutBtn = null;
+    var generatorSize = null;
+    var boxState = 1;
+</script>
+<div class="row">
+    <div class="canvas-container">
+        <div class="datGUI"></div>
+        <canvas id="visualize-webgl"></canvas>
+    </div>
+</div>
+
+<div class="table-container">
+    <button class="btn btn btn-outline-dark" type="button" data-bs-toggle="collapse"
+        data-bs-target="#staple_table_container" aria-expanded="false" aria-controls="staple_table_container">
+        Staple Strands Sequences
+    </button>
+    <div class="collapse" id="staple_table_container">
+        <table class="table table-striped table-hover col-md-12" id="staples_table">
+            <thead>
+                <tr>
+                    <th>Staple #</th>
+                    <th>ID</th>
+                    <th>Color</th>
+                    <th>Sequence</th>
+                    <th>Length (bp)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% @staples['data'].each_with_index do |staple, idx| %>
+                <tr>
+                    <td><%= idx+1 %></td>
+                    <td><%= "#{staple["name"]} (#{Staple.convert2wellname(staple["name"])})" %></td>
+                    <td><%= Generator.rgb2hex(staple["color"]) %></td>
+                    <td><%= staple["sequence"] %></td>
+                    <td><%= staple["sequence"].size %></td>
+                </tr>
+                <% end %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<%= javascript_pack_tag 'visualize', 'data-turbolinks-track': 'reload'%>

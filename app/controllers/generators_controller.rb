@@ -24,7 +24,6 @@ class GeneratorsController < ApplicationController
 
   def download
     type = params[:type]
-
     unless type.nil?
       repl = {'(' => '', ')' => '', ' ' => '_'}
       type = type.gsub(Regexp.union(repl.keys), repl).downcase
@@ -62,7 +61,8 @@ class GeneratorsController < ApplicationController
   def visualize
     @color_palettes = Generator.color_palettes
     @supported_files = Generator.supported_files
-    if params[:regenerate] || @generator.routing == '{}'
+    # byebug
+    if params[:regenerate]
       graph = @generator.route
       routing = graph.to_hash
       @positions = graph.points
@@ -89,6 +89,29 @@ class GeneratorsController < ApplicationController
     end
 
     download if params[:type]
+  end
+
+  def async_visualize
+    @color_palettes = Generator.color_palettes
+    @supported_files = Generator.supported_files
+    graph = @generator.route
+    routing = graph.to_hash
+    @positions = graph.points
+    @colors = graph.colors
+    @scaffold = @generator.scaffold
+    @vertex_cuts = graph.vertex_cuts.size
+    @staples = graph.staples_hash
+    @start = routing['start']
+    @end = routing['end']
+    Generator.find(@generator.id).update(
+      routing: routing,
+      positions: @positions,
+      colors: @colors,
+      vertex_cuts: @vertex_cuts,
+      staples: @staples
+    )
+
+    render :async_visualize
   end
 
   def update_generator

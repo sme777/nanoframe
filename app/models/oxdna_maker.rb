@@ -127,7 +127,7 @@ class OxDNAMaker
           next if !(grow_front ^ covered_front) #&& !(grow_back ^ covered_back)
           
           mod_i = staple_idxs.index { |n| n.instance_of?(Integer) }
-          orth, side = orthogonal_dimension(staple_points[mod_i], staple_points[mod_i+1])
+          orth, side = orthogonal_dimension(staple_points[mod_i], staple_points[mod_i+1], :cube, [50, 50, 50])
           delta = idx == 'ein1' ? 1  : -1
           case orth
           when :x
@@ -183,7 +183,7 @@ class OxDNAMaker
         when 'eout2', 'ein2'
           next if !(grow_back ^ covered_back)
            
-          orth, side = orthogonal_dimension(staple_points[i - 1], staple_points[i - 2])
+          orth, side = orthogonal_dimension(staple_points[i - 1], staple_points[i - 2], :cube, [50, 50, 50])
           delta = idx == 'ein2' ? 1  : -1
           case orth
           when :x
@@ -250,8 +250,8 @@ class OxDNAMaker
     [scaffold_positions, scaffold_a1s, scaffold_a3s, staples_positions, staples_a1s, staples_a3s]
   end
 
-  def orthogonal_dimension(v1, v2)
-    Plane.orthogonal_dimension(Vertex.new(v1[0], v1[1], v1[2]), Vertex.new(v2[0], v2[1], v2[2]))
+  def orthogonal_dimension(v1, v2, shape, dimensions)
+    Plane.orthogonal_dimension(Vertex.new(v1[0], v1[1], v1[2]), Vertex.new(v2[0], v2[1], v2[2]), shape, dimensions)
   end
 
 
