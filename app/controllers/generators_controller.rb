@@ -65,6 +65,7 @@ class GeneratorsController < ApplicationController
       if turbo_frame_request?
         render :async_visualize
       else
+        # if 
         redirect_to "/nanobot/#{@generator.id}/visualize"
       end
     else
@@ -74,8 +75,8 @@ class GeneratorsController < ApplicationController
   end
 
   def user_visualize
-    
-    if current_user.username != params[:user]
+    @host_user = params[:user]
+    if @current_user.username != @host_user
       if !@generator.nil? && @generator.public
         set_generator_params
         render :visualize
