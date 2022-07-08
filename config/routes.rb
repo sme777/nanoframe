@@ -21,10 +21,9 @@ Rails.application.routes.draw do
   get 'auth/google_oauth2/callback' => 'session#google_oauth2'
   get 'auth/failure' => 'session#failure'
   get 'logout' => 'session#destroy'
-  # get '/auth/google_oauth2/callback', to: 'users#google_oauth2', as: :google_oauth2_callback
-  # get '/auth/github/callback', to: 'users#github', as: :github_callback
 
-  # patch '/nanobot/:id/visualize' => 'generators#visualize'
+  get '/nanobot/:user/:id/visualize' => 'generators#user_visualize'
+
   get '/nanobot/:id/routing' => 'generators#routing'
   post '/nanobot/:id/visualize' => 'generators#visualize', as: 'generate_routing'
   get '/nanobot/:id/async_visualize' => 'generators#async_visualize', as: 'generate_async_routing'
@@ -36,7 +35,6 @@ Rails.application.routes.draw do
   # ajax requests
   get '/checkemail' => 'users#check_email', :defaults => { format: :json }
   get '/checkusername' => 'users#check_username', :defaults => { format: :json }
-  # get '/nanobot/check_shape_params' => 'generators#check_shape_params'
-  # downloading files
-  get 'nanobot/generator' => 'generators#generator', as: 'shape_generator'
+
+  get '/nanobot/generator' => 'generators#generator', as: 'shape_generator'
 end

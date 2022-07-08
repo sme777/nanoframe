@@ -21,6 +21,7 @@ class SessionController < ApplicationController
 
   def find_or_create_user(user_info, create_if_not_exists)
     provider = user_info['provider']
+    byebug
     user = User.find_by(
       provider: provider,
       id: user_info['uid'].to_s[...8].to_i

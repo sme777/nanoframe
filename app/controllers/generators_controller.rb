@@ -59,8 +59,7 @@ class GeneratorsController < ApplicationController
   end
 
   def visualize
-    @color_palettes = Generator.color_palettes
-    @supported_files = Generator.supported_files
+    set_static_generator_params
     if params[:regenerate]
       populate_generator
       if turbo_frame_request?
@@ -69,17 +68,66 @@ class GeneratorsController < ApplicationController
         redirect_to "/nanobot/#{@generator.id}/visualize"
       end
     else
-      @positions = @generator.positions
-      @colors = @generator.colors
-      @vertex_cuts = @generator.vertex_cuts
-      @scaffold = @generator.scaffold
-      @staples = @generator.staples
-      @start = @generator.routing['start']
-      @end = @generator.routing['end']
+      set_dynamic_generator_params
     end
-
     download if params[:type]
   end
+
+  def user_visualize
+    
+    if current_user.username != params[:user]
+      if !@generator.nil? && @generator.public
+        set_generator_params
+        render :visualize
+      else
+        render_404
+      end
+    else
+      if !@generator.nil?
+        set_generator_params
+        render :visualize
+      else
+        render_404
+      end
+    end
+  end
+
+  def async_visualize
+    @color_palettes = Generator.color_palettes
+    @supported_files = Generator.supported_files
+    populate_generator
+    render :async_visualize
+  end
+
+  def set_generator_params
+    set_static_generator_params
+    set_dynamic_generator_params
+  end
+
+  def set_static_generator_params
+    @color_palettes = Generator.color_palettes
+    @supported_files = Generator.supported_files
+  end
+
+  def set_dynamic_generator_params
+    @positions = @generator.positions
+    @colors = @generator.colors
+    @vertex_cuts = @generator.vertex_cuts
+    @scaffold = @generator.scaffold
+    @staples = @generator.staples
+    @start = @generator.routing['start']
+    @end = @generator.routing['end']
+  end
+
+  def render_404
+    respond_to do |format|
+      format.html { render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found }
+      format.xml  { head :not_found }
+      format.any  { head :not_found }
+    end
+  end
+  
+  
 
   def populate_generator
     graph = @generator.route
@@ -98,13 +146,6 @@ class GeneratorsController < ApplicationController
       vertex_cuts: @vertex_cuts,
       staples: @staples
     )
-  end
-
-  def async_visualize
-    @color_palettes = Generator.color_palettes
-    @supported_files = Generator.supported_files
-    populate_generator
-    render :async_visualize
   end
 
   def update_generator

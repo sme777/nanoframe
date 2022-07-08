@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_07_04_200115) do
+ActiveRecord::Schema.define(version: 2022_07_08_052824) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,7 +47,6 @@ ActiveRecord::Schema.define(version: 2022_07_04_200115) do
     t.string "shape"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.integer "user_id"
     t.string "scaffold_name"
     t.integer "vertex_cuts"
     t.integer "bridge_length"
@@ -58,6 +57,8 @@ ActiveRecord::Schema.define(version: 2022_07_04_200115) do
     t.jsonb "staples", default: "{}"
     t.jsonb "routing", default: "{}"
     t.string "type"
+    t.string "user_id"
+    t.boolean "public"
   end
 
   create_table "users", force: :cascade do |t|
@@ -68,10 +69,8 @@ ActiveRecord::Schema.define(version: 2022_07_04_200115) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "provider"
-    t.string "uid"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "generators", "users"
 end

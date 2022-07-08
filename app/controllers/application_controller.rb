@@ -17,11 +17,9 @@ class ApplicationController < ActionController::Base
   end
 
   def set_generator
-    @generator = Generator.find(generator_id)
-  rescue ActiveRecord::RecordNotFound
-    @generator = Generator.new
+    @generator = Generator.find_by(id: generator_id)
   end
-
+  
   def set_user
     @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
   end
