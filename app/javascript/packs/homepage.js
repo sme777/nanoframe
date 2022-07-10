@@ -80,7 +80,7 @@ function main() {
         const controls = new OrbitControls(sceneInfo.camera, homepageItemContainer)
         controls.minDistance = 0.1;
         controls.maxDistance = 1000;
-
+        controls.enableZoom = false;
         return sceneInfo;
     }
 

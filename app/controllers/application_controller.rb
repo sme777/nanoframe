@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
   end
 
   def set_generator
-    @generator = Generator.find_by(id: generator_id)
+    @generator = Generator.find_by(id: generator_id) || Generator.new
   end
   
   def set_user

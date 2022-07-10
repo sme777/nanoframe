@@ -101,7 +101,6 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-  console.log($("#generator_scaffold_name").val())
   $(".synthesizer-btn").click(function (e) {
     e.preventDefault();
     if ($("#generator_shape").find(":selected").text() == "Cube (P1)") {
@@ -121,7 +120,6 @@ $(document).ready(function () {
       } else {
         scaffold_length = 0;
       }
-      console.log(scaffold_length)
       // find a better way to replace error messages
       if (scaffold_length - used < 0) {
         $(".danger-container").show();

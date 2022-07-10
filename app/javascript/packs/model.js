@@ -33,7 +33,6 @@ const gui = new dat.GUI({
 camera.position.z = 240;
 const scene = new THREE.Scene();
 
-const shape = document.getElementById("generator_shape_id");
 let shapeName = document.querySelector("#generator_shape").value;
 shapeName = shapeName.slice(0, shapeName.indexOf(" (")).toLowerCase();
 let chosenShape;
@@ -108,7 +107,7 @@ document.querySelector("#sequenceUpload").onchange = function () {
 
 document.querySelector(".synthesizer-btn").onclick = () => {
   let dnaSequence;
-  if (document.querySelector("#sequenceCheckbox").checked) {
+  if (document.querySelector("#sequence_checkbox").checked) {
     dnaSequence = dna.generateRandom();
   } else {
     dnaSequence = sequence;
