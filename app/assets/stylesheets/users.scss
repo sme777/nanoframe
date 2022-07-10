@@ -397,11 +397,9 @@ a {
 }
 
 .design-container {
+  position: relative;
+  background-color: transparent;
   margin: 3% 5%;
-}
-
-.design-container:hover {
-  background-color: #f8f8f8;
 }
 
 .downloads-container {
@@ -432,4 +430,18 @@ a {
 
 .small {
   width: 15px;
+}
+
+#homepage-canvas {
+  position: absolute;
+  left: 0;
+  top: 0vh;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: -1;
+}
+
+.user-feed-containe {
+  position: relative;
 }

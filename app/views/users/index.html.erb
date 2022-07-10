@@ -160,11 +160,15 @@
   <% end %>
 
   <% if !@current_user.nil? %>
+  
+  <div id="user-feed-container">
+  <canvas id="homepage-canvas"></canvas>
     <input type="hidden" id="generator-size" value="<%= @generators.size %>">
-    <% @generators.each_with_index do |g, index| %>
-    <%= render partial: "layouts/item", locals: {generator: g, index: index}%>
+      <% @generators.each_with_index do |item, index| %>
+      <%= render partial: "item", locals: {homepageItem: item, index: index}%>
+      <% end %>
     <% end %>
-  <% end %>
+  </div>
   <%= render "layouts/footer"%>
-  <%= javascript_pack_tag 'main', 'visualize', 'data-turbolinks-track': 'reload' %>
+  <%= javascript_pack_tag 'main', 'homepage', 'data-turbolinks-track': 'reload' %>
 </body>

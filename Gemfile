@@ -41,6 +41,7 @@ gem 'inline_svg'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.4', require: false
 # File zipper
+gem 'erb_lint', require: false
 gem 'rubyzip'
 # Loggers
 gem 'oink'

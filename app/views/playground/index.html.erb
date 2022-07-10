@@ -98,7 +98,7 @@
                             <input type="hidden" id="playground_item_listing" value="<%= @playground_items.length %>">
 
                             <% @playground_items.each_with_index do |item, idx| %>
-                            <%= render partial: "item", locals: {item: item, index: idx} %>
+                                <%= render partial: "item", locals: {item: item, index: idx} %>
                             <% end %>
 
                         </div>

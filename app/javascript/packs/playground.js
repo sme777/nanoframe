@@ -222,7 +222,8 @@ function render() {
   }
 
   raycaster.setFromCamera(pointer, playGroundScene.camera);
-
+  // const transform = `translateY(${window.scrollY}px)`;
+  // renderer.domElement.style.transform = transform;
   requestAnimationFrame(render);
 }
 requestAnimationFrame(render);

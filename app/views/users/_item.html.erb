@@ -1,14 +1,14 @@
   <div class="card design-container">
-      <input type="hidden" id="index-<%= index %>" value="<%= generator.id%>">
-      <input type="hidden" id="generator-container-<%= generator.id%>" value="<%= generator.routing%>">
-      <div class="row">
-          <div class="col-md-7 px-3 canvas-container">
-              <canvas id="webgl-public-<%= generator.id %>"></canvas>
+
+      <div class="row element-container">
+          <div id=<%= "homepage_item_#{index}" %> class="col-md-7 px-3 object-container">
+                <input type="hidden" id=<%= "item#{index}_geometry" %> value="<%= homepageItem.positions %> ">
+                <input type="hidden" id=<%= "item#{index}_material" %> value="<%= homepageItem.colors %> ">
           </div>
-          <div class="col-md-5">
+          <div class="col-md-5 object-info-container">
               <div class="row first">
                   <div class="col-md-6">
-                      <p class="item-description">Shape: <%= "Cube" if generator.shape == "1" %></p>
+                      <p class="item-description">Shape: <%= homepageItem.shape %></p>
                   </div>
                   <div class="col-md-6 edit-toolkit">
                       <a href="">Make Private</a>
@@ -16,43 +16,43 @@
               </div>
               <div class="row">
                   <div class="col-md-6">
-                      <p class="item-description">Width: ? nm</p>
+                      <p class="item-description">Width: <%= homepageItem.dimensions['width'] %> nm</p>
                   </div>
 
                   <div class="col-md-6 edit-toolkit">
-                      <a href="/nanobot/<%= generator.id%>/visualize">Edit</a>
+                      <a href="/nanobot/<%= homepageItem.id%>/visualize">Edit</a>
                   </div>
               </div>
               <div class="row">
-                  <p class="item-description">Height: ? nm</p>
+                  <p class="item-description">Height: <%= homepageItem.dimensions['height'] %> nm</p>
               </div>
               <div class="row">
-                  <p class="item-description">Depth: ? nm</p>
+                  <p class="item-description">Depth: <%= homepageItem.dimensions['depth'] %> nm</p>
               </div>
               <div class="row">
-                  <p class="date-description">Created: <i><%= generator.created_at.strftime("%A, %B %e, %Y") %></i></p>
+                  <p class="date-description">Created: <i><%= homepageItem.created_at.strftime("%A, %B %e, %Y") %></i></p>
               </div>
               <div class="row downloads-container">
                   <div class="col-md-3">
-                      <a href="nanobot/<%= generator.id %>/nfr" class="btn btn-outline-primary w-100">
+                      <a href="nanobot/<%= homepageItem.id %>/nfr" class="btn btn-outline-primary w-100">
                           <img class="generate-download-txt"
                               src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
                           nfr</a>
                   </div>
                   <div class="col-md-3">
-                      <a href="nanobot/<%= generator.id %>/oxdna" class="btn btn-outline-secondary w-100">
+                      <a href="nanobot/<%= homepageItem.id %>/oxdna" class="btn btn-outline-secondary w-100">
                           <img class="generate-download-txt"
                               src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
                           oxview</a>
                   </div>
                   <div class="col-md-3">
-                      <a href="nanobot/<%= generator.id %>/staples" class="btn btn-outline-danger w-100">
+                      <a href="nanobot/<%= homepageItem.id %>/staples" class="btn btn-outline-danger w-100">
                           <img class="generate-download-txt"
                               src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
                           staples</a>
                   </div>
                   <div class="col-md-3">
-                      <a href="nanobot/<%= generator.id %>/bundle" class="btn btn-outline-success w-100">
+                      <a href="nanobot/<%= homepageItem.id %>/bundle" class="btn btn-outline-success w-100">
                           <img class="generate-download-txt"
                               src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
                           bundle</a>
