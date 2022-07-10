@@ -150,6 +150,10 @@ class GeneratorsController < ApplicationController
   end
 
   def update_generator
+    if params[:visibility]
+      Generator.find(@generator.id).update(public: !@generator.public)
+    end
+
     if params[:bridge_length] && !@generator.is_current_bridge_length(params[:bridge_length])
       new_staples = @generator.update_bridge_length
       Generator.find(@generator.id).update(staples: new_staples)
@@ -182,8 +186,9 @@ class GeneratorsController < ApplicationController
       else
         scaffold = Generator.public_send(generator_fields[:scaffold_name].parameterize(separator: '_'))
       end
+      is_public = generator_fields[:visibility] == "1" ? true : false
       @generator = Generator.new({ shape: generator_fields[:shape], dimensions: dimensions, scaffold: scaffold,
-                                   scaffold_name: generator_fields[:scaffold_name] })
+                                   scaffold_name: generator_fields[:scaffold_name], public: is_public })
       @generator.user_id = @current_user.id unless @current_user.nil?
 
       if @generator.save
@@ -260,7 +265,7 @@ class GeneratorsController < ApplicationController
   private
 
   def generator_params
-    params.require(:generator).permit(:height, :width, :depth, :shape, :divisions, :scaffold_name)
+    params.require(:generator).permit(:height, :width, :depth, :shape, :divisions, :scaffold_name, :visibility)
   end
 
   def user_generator_params

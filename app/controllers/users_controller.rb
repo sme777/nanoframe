@@ -2,9 +2,21 @@
 
 class UsersController < ApplicationController
   def index
-    @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
-    @generators = @current_user.generators.order(created_at: :desc) unless @current_user.nil?
-    @supported_files = Generator.supported_files
+
+    if params[:type]
+      filter_generators
+    else
+      @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
+      if !@current_user.nil?
+        @generators = @current_user.generators.order(created_at: :desc).filter {|g| g.public}
+        # @public_generators = @current_user.generators.order(created_at: :desc).filter {|g| g.public}
+        # @private_generators = @current_user.generators.order(created_at: :desc).filter {|g| !g.public}
+        # @all_generators = @current_user.generators.order(created_at: :desc)
+      end
+      
+      @supported_files = Generator.supported_files
+    end
+
   end
 
   def miscellaneous; end
@@ -71,6 +83,18 @@ class UsersController < ApplicationController
   end
 
   def add_generator(g); end
+
+  def filter_generators
+    @supported_files = Generator.supported_files
+    if params[:type] == "public"
+      @generators = @current_user.generators.order(created_at: :desc).filter {|g| g.public}
+    elsif params[:type] == "private"
+      @generators = @current_user.generators.order(created_at: :desc).filter {|g| !g.public}
+    else
+      @generators = @current_user.generators.order(created_at: :desc)
+    end
+    # render :index
+  end
 
   private
 

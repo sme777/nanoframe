@@ -10,9 +10,19 @@
                 <div class="col-md-6">
                     <p class="item-description">Shape: <%= homepageItem.shape %></p>
                 </div>
-                <div class="col-md-6 edit-toolkit">
-                    <a href="">Make Private</a>
-                </div>
+                <% if homepageItem.public %>
+                    <div class="col-md-6 edit-toolkit">
+                        <%= form_with(url: update_generator_path(homepageItem.id), method: :post) do |f|%>
+                            <%= f.hidden_field "visibility" "" %>
+                            <%= f.submit "Make Private", class: "btn btn-link update-generator-btn" %>
+                        <% end %>
+                    </div>
+                <% else %>
+                    <%= form_with(url: update_generator_path(homepageItem.id), method: :post) do |f|%>
+                        <%= f.hidden_field "visibility" "" %>
+                        <%= f.submit "Make Public", class: "btn btn-link update-generator-btn" %>
+                    <% end %>
+                <% end %>
             </div>
             <div class="row">
                 <div class="col-md-6">

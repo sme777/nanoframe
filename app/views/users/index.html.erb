@@ -28,16 +28,30 @@
   </div>
   <div class="feed-container">
     <div class="switch-field">
-      <input type="radio" id="radio-one" name="switch-one" value="public" checked />
-      <label for="radio-one" class="radio-label"><img class="public-png"
+      <%= link_to "Public", root_path(type: "public"), class: "generator-filter", id: "public_generators", name: "switch-one"%>
+      <%= link_to "Private", root_path(type: "private"), class: "generator-filter", id: "private_generators", name: "switch-one" %>
+      <%= link_to "History", root_path(type: "all"), class: "generator-filter", id: "all_generators", name: "switch-one"%>
+    </div>
+      <%
+=begin%>
+      <%= form_with(url: "/", method: :post, class: "generators_filter") do |f| %>
+      <input type="radio" class="generator-filter" id="public_generators" name="switch-one" value="public" checked />
+
+      <label for="public_generators" class="radio-label"><img class="public-png"
           src="https://nanoframe.s3.us-west-1.amazonaws.com/public.png"> Public</label>
-      <input type="radio" id="radio-two" name="switch-one" value="private" />
-      <label for="radio-two" class="radio-label"><img class="private-png"
+      <%= button_tag "lol"%>
+      <% end %>
+
+      <input type="radio" class="generator-filter" id="private_generators" name="switch-one" value="private" />
+      <label for="private_generators" class="radio-label"><img class="private-png"
           src="https://nanoframe.s3.us-west-1.amazonaws.com/private.png"> Private</label>
-      <input type="radio" id="radio-three" name="switch-one" value="history" />
-      <label for="radio-three" class="radio-label"><img class="history-png"
+      <input type="radio" class="generator-filter" id="all_generators" name="switch-one" value="history" />
+      <label for="all_generators" class="radio-label"><img class="history-png"
           src="https://nanoframe.s3.us-west-1.amazonaws.com/history.png"> History</label>
     </div>
+  </div>
+  <%
+=end%>
   </div>
 
 
@@ -160,13 +174,16 @@
   <% end %>
 
   <% if !@current_user.nil? %>
-  
+
   <div id="user-feed-container">
-  <canvas id="homepage-canvas"></canvas>
-    <input type="hidden" id="generator-size" value="<%= @generators.size %>">
+    <canvas id="homepage-canvas"></canvas>
+
+    <div class="public-generators-container">
+      <input type="hidden" id="generator-size" value="<%= @generators.size %>">
       <% @generators.each_with_index do |item, index| %>
       <%= render partial: "item", locals: {homepageItem: item, index: index}%>
       <% end %>
+    </div>
     <% end %>
   </div>
   <%= render "layouts/footer"%>
