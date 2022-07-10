@@ -1,64 +1,57 @@
-  <div class="card design-container">
+<div class="card design-container">
 
-      <div class="row element-container">
-          <div id=<%= "homepage_item_#{index}" %> class="col-md-7 px-3 object-container">
-                <input type="hidden" id=<%= "item#{index}_geometry" %> value="<%= homepageItem.positions %> ">
-                <input type="hidden" id=<%= "item#{index}_material" %> value="<%= homepageItem.colors %> ">
-          </div>
-          <div class="col-md-5 object-info-container">
-              <div class="row first">
-                  <div class="col-md-6">
-                      <p class="item-description">Shape: <%= homepageItem.shape %></p>
-                  </div>
-                  <div class="col-md-6 edit-toolkit">
-                      <a href="">Make Private</a>
-                  </div>
-              </div>
-              <div class="row">
-                  <div class="col-md-6">
-                      <p class="item-description">Width: <%= homepageItem.dimensions['width'] %> nm</p>
-                  </div>
+    <div class="row element-container">
+        <div id=<%= "homepage_item_#{index}" %> class="col-md-7 px-3 object-container">
+            <input type="hidden" id=<%= "item#{index}_geometry" %> value="<%= homepageItem.positions %> ">
+            <input type="hidden" id=<%= "item#{index}_material" %> value="<%= homepageItem.colors %> ">
+        </div>
+        <div class="col-md-5 object-info-container">
+            <div class="row first">
+                <div class="col-md-6">
+                    <p class="item-description">Shape: <%= homepageItem.shape %></p>
+                </div>
+                <div class="col-md-6 edit-toolkit">
+                    <a href="">Make Private</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <p class="item-description">Width: <%= homepageItem.dimensions['width'] %> nm</p>
+                </div>
 
-                  <div class="col-md-6 edit-toolkit">
-                      <a href="/nanobot/<%= homepageItem.id%>/visualize">Edit</a>
-                  </div>
-              </div>
-              <div class="row">
-                  <p class="item-description">Height: <%= homepageItem.dimensions['height'] %> nm</p>
-              </div>
-              <div class="row">
-                  <p class="item-description">Depth: <%= homepageItem.dimensions['depth'] %> nm</p>
-              </div>
-              <div class="row">
-                  <p class="date-description">Created: <i><%= homepageItem.created_at.strftime("%A, %B %e, %Y") %></i></p>
-              </div>
-              <div class="row downloads-container">
-                  <div class="col-md-3">
-                      <a href="nanobot/<%= homepageItem.id %>/nfr" class="btn btn-outline-primary w-100">
-                          <img class="generate-download-txt"
-                              src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-                          nfr</a>
-                  </div>
-                  <div class="col-md-3">
-                      <a href="nanobot/<%= homepageItem.id %>/oxdna" class="btn btn-outline-secondary w-100">
-                          <img class="generate-download-txt"
-                              src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-                          oxview</a>
-                  </div>
-                  <div class="col-md-3">
-                      <a href="nanobot/<%= homepageItem.id %>/staples" class="btn btn-outline-danger w-100">
-                          <img class="generate-download-txt"
-                              src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-                          staples</a>
-                  </div>
-                  <div class="col-md-3">
-                      <a href="nanobot/<%= homepageItem.id %>/bundle" class="btn btn-outline-success w-100">
-                          <img class="generate-download-txt"
-                              src="https://nanoframe.s3.us-west-1.amazonaws.com/download.png">
-                          bundle</a>
-                  </div>
+                <div class="col-md-6 edit-toolkit">
+                    <a href="/nanobot/<%= homepageItem.id%>/visualize">Edit</a>
+                </div>
+            </div>
+            <div class="row">
+                <p class="item-description">Height: <%= homepageItem.dimensions['height'] %> nm</p>
+            </div>
+            <div class="row">
+                <p class="item-description">Depth: <%= homepageItem.dimensions['depth'] %> nm</p>
+            </div>
+            <div class="row">
+                <p class="date-description">Created: <i><%= homepageItem.created_at.strftime("%A, %B %e, %Y") %></i>
+                </p>
+            </div>
+            <div class="row downloads-container">
+                <div class="dropdown download-file-container">
+                    <button class="btn btn-dark dropdown-toggle file-dropdown-menu" type="button"
+                        id="download-file-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Download Files
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-dark file-dropdown-menu">
+                        <% @supported_files.each do |file| %>
+                        <li>
+                            <%= form_with(url: "/nanobot/#{homepageItem.id}/visualize", method: :post, data: { turbo: false }) do |f| %>
+                            <%= hidden_field_tag 'type', file %>
+                            <%= button_tag file, class: "dropdown-item"%>
+                            <% end %>
+                        </li>
+                        <% end %>
+                    </ul>
+                </div>
+            </div>
 
-              </div>
-          </div>
-      </div>
-  </div>
+        </div>
+    </div>
+</div>

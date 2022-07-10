@@ -4,6 +4,7 @@ class UsersController < ApplicationController
   def index
     @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
     @generators = @current_user.generators.order(created_at: :desc) unless @current_user.nil?
+    @supported_files = Generator.supported_files
   end
 
   def miscellaneous; end
