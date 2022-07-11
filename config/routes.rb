@@ -7,6 +7,7 @@ Rails.application.routes.draw do
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   get '/' => 'users#index', as: :root
   post '/' => 'users#create'
+  get '/home/:page' => 'users#index', as: :root_pagination
   get '/profile' => 'users#profile'
   get '/signin' => 'users#sign_in'
   get '/signout' => 'users#sign_out'

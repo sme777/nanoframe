@@ -29,7 +29,9 @@ gem 'omniauth', '~> 2.0'
 gem 'omniauth-github', '~> 2.0.0'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-rails_csrf_protection'
-
+# Paginating Active Record
+gem 'kaminari'
+gem 'will_paginate'
 gem 'pycall'
 # User Active Storage variant
 gem 'mini_magick', '~>4.8'

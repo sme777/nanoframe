@@ -32,23 +32,23 @@
       <%= link_to "Private", root_path(type: "private"), class: "generator-filter", id: "private_generators", name: "switch-one" %>
       <%= link_to "History", root_path(type: "all"), class: "generator-filter", id: "all_generators", name: "switch-one"%>
     </div>
-      <%
+    <%
 =begin%>
-      <%= form_with(url: "/", method: :post, class: "generators_filter") do |f| %>
-      <input type="radio" class="generator-filter" id="public_generators" name="switch-one" value="public" checked />
+    <%= form_with(url: "/", method: :post, class: "generators_filter") do |f| %>
+    <input type="radio" class="generator-filter" id="public_generators" name="switch-one" value="public" checked />
 
-      <label for="public_generators" class="radio-label"><img class="public-png"
-          src="https://nanoframe.s3.us-west-1.amazonaws.com/public.png"> Public</label>
-      <%= button_tag "lol"%>
-      <% end %>
+    <label for="public_generators" class="radio-label"><img class="public-png"
+        src="https://nanoframe.s3.us-west-1.amazonaws.com/public.png"> Public</label>
+    <%= button_tag "lol"%>
+    <% end %>
 
-      <input type="radio" class="generator-filter" id="private_generators" name="switch-one" value="private" />
-      <label for="private_generators" class="radio-label"><img class="private-png"
-          src="https://nanoframe.s3.us-west-1.amazonaws.com/private.png"> Private</label>
-      <input type="radio" class="generator-filter" id="all_generators" name="switch-one" value="history" />
-      <label for="all_generators" class="radio-label"><img class="history-png"
-          src="https://nanoframe.s3.us-west-1.amazonaws.com/history.png"> History</label>
-    </div>
+    <input type="radio" class="generator-filter" id="private_generators" name="switch-one" value="private" />
+    <label for="private_generators" class="radio-label"><img class="private-png"
+        src="https://nanoframe.s3.us-west-1.amazonaws.com/private.png"> Private</label>
+    <input type="radio" class="generator-filter" id="all_generators" name="switch-one" value="history" />
+    <label for="all_generators" class="radio-label"><img class="history-png"
+        src="https://nanoframe.s3.us-west-1.amazonaws.com/history.png"> History</label>
+  </div>
   </div>
   <%
 =end%>
@@ -186,6 +186,45 @@
     </div>
     <% end %>
   </div>
+
+  <div class="pagination-container">
+    <nav>
+      <ul class="pagination justify-content-center">
+        <% if @current_page != 1 %>
+          <li class="page-item">
+            <a class="page-link" href="<%= root_pagination_path(page: @current_page - 1) %>" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        <% end %>
+        <% if @current_page + 1 > @last_page %>
+          <% if @current_page - 2 >= @first_page %>
+            <li class="page-item"><%= link_to @current_page - 2, root_pagination_path(page: @current_page - 2), class: "page-link" %></li>
+          <% end %>
+        <% end %>
+        <% if @current_page + 2 > @last_page %>
+          <% if @current_page -1 >= @first_page %>
+            <li class="page-item"><%= link_to @current_page - 1, root_pagination_path(page: @current_page - 1), class: "page-link" %></li>
+          <% end %>
+        <% end %>
+        <li class="page-item active"><%= link_to @current_page, root_pagination_path(page: @current_page), class: "page-link" %></li>
+        <% if @current_page + 1 <= @last_page %>
+          <li class="page-item"><%= link_to @current_page + 1, root_pagination_path(page: @current_page + 1), class: "page-link" %></li>
+        <% end %>
+        <% if @current_page + 2 <= @last_page %>
+          <li class="page-item"><%= link_to @current_page + 2, root_pagination_path(page: @current_page + 2), class: "page-link" %></li>
+        <% end %>
+        <% if @current_page != @last_page && @current_page + 1 != @last_page && @current_page + 2 != @last_page %>
+        <li class="page-item">
+          <a class="page-link" href="<%= root_pagination_path(page: @current_page + 1) %>" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+        <% end %>
+      </ul>
+    </nav>
+  </div>
+
   <%= render "layouts/footer"%>
   <%= javascript_pack_tag 'main', 'homepage', 'data-turbolinks-track': 'reload' %>
 </body>

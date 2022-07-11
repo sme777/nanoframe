@@ -12,13 +12,13 @@
                 </div>
                 <% if homepageItem.public %>
                     <div class="col-md-6 edit-toolkit">
-                        <%= form_with(url: update_generator_path(homepageItem.id), method: :post) do |f|%>
+                        <%= form_with(url: update_generator_path(homepageItem.id), method: :post, class: "visibility-form") do |f|%>
                             <%= f.hidden_field "visibility" "" %>
                             <%= f.submit "Make Private", class: "btn btn-link update-generator-btn" %>
                         <% end %>
                     </div>
                 <% else %>
-                    <%= form_with(url: update_generator_path(homepageItem.id), method: :post) do |f|%>
+                    <%= form_with(url: update_generator_path(homepageItem.id), method: :post, class: "visibility-form") do |f|%>
                         <%= f.hidden_field "visibility" "" %>
                         <%= f.submit "Make Public", class: "btn btn-link update-generator-btn" %>
                     <% end %>

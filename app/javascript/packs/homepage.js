@@ -45,20 +45,23 @@ function main() {
     function setupUserFeed() {
         const generatorSize = document.querySelector("#generator-size").value;
         let userFeedScenes = [];
-    
         for (let i = 0; i < generatorSize; i++) {
             const elementScene = setupUserFeedItemScene(i);
-            userFeedScenes.push(elementScene);
+            if (elementScene != null) {
+                userFeedScenes.push(elementScene);
+            }
         }
         return userFeedScenes;
     }
     
     
     function setupUserFeedItemScene(idx) {
+        if (document.querySelector(`#item${idx}_geometry`) == null) {
+            return null;
+        }
         const positions = JSON.parse(
             document.querySelector(`#item${idx}_geometry`).value
         ).flat();
-    
         const colors = JSON.parse(
             document.querySelector(`#item${idx}_material`).value
         ).flat();

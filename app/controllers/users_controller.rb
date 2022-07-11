@@ -8,10 +8,23 @@ class UsersController < ApplicationController
     else
       @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
       if !@current_user.nil?
-        @generators = @current_user.generators.order(created_at: :desc).filter {|g| g.public}
-        # @public_generators = @current_user.generators.order(created_at: :desc).filter {|g| g.public}
-        # @private_generators = @current_user.generators.order(created_at: :desc).filter {|g| !g.public}
-        # @all_generators = @current_user.generators.order(created_at: :desc)
+        @first_page = 1
+        @current_page =  params[:page].to_i || @first_page
+        @last_page = (@current_user.generators.size / 5.0).ceil
+        if @current_page < @first_page
+          redirect_to "/home/#{@first_page}"
+          return
+        end
+
+        if @current_page > @last_page
+          redirect_to "/home/#{@last_page}"
+          return
+        end
+
+        @generators = @current_user.generators
+                                   .order(created_at: :desc)
+                                   .paginate(:page => @current_page, :per_page => 5 )
+
       end
       
       @supported_files = Generator.supported_files
