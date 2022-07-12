@@ -184,8 +184,9 @@
       <%= render partial: "item", locals: {homepageItem: item, index: index}%>
       <% end %>
     </div>
-    <% end %>
   </div>
+    
+  
 
   <div class="pagination-container">
     <nav>
@@ -224,6 +225,7 @@
       </ul>
     </nav>
   </div>
+  <% end %>
 
   <%= render "layouts/footer"%>
   <%= javascript_pack_tag 'main', 'homepage', 'data-turbolinks-track': 'reload' %>

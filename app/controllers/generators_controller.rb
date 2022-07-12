@@ -75,20 +75,31 @@ class GeneratorsController < ApplicationController
   end
 
   def user_visualize
-    @host_user = params[:user]
-    if @current_user.username != @host_user
-      if !@generator.nil? && @generator.public
-        set_generator_params
-        render :visualize
-      else
+    
+    if @current_user.nil?
+      if !@generator.public
         render_404
+        return
+      else
+        set_generator_params
+        redirect_to "/nanobot/#{@generator.id}/visualize" 
+        return
       end
     else
-      if !@generator.nil?
+      @host_user = params[:user]
+      if @current_user.username != @host_user
+        if !@generator.public
+          render_404
+          return
+        else
+          set_generator_params
+          redirect_to "/nanobot/#{@generator.id}/visualize" 
+          return
+        end
+      else
         set_generator_params
         render :visualize
-      else
-        render_404
+        return
       end
     end
   end
