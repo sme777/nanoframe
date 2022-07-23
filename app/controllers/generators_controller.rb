@@ -87,12 +87,12 @@ class GeneratorsController < ApplicationController
       end
     else
       if @current_user.username != @host_user
-        if !@generator.public
-          render :template => "errors/404"
+        if User.find_by(username: @host_user) && @generator.public
+          set_generator_params
+          render :visualize
           return
         else
-          set_generator_params
-          redirect_to "/nanobot/#{@generator.id}/visualize" 
+          render :template => "errors/404"
           return
         end
       else
