@@ -187,44 +187,45 @@
   </div>
     
   
-
-  <div class="pagination-container">
-    <nav>
-      <ul class="pagination justify-content-center">
-        <% if @current_page != 1 %>
+    <% if @last_page != 0 %>
+    <div class="pagination-container">
+      <nav>
+        <ul class="pagination justify-content-center">
+          <% if @current_page != 1 %>
+            <li class="page-item">
+              <a class="page-link" href="<%= root_pagination_path(page: @current_page - 1) %>" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+          <% end %>
+          <% if @current_page + 1 > @last_page %>
+            <% if @current_page - 2 >= @first_page %>
+              <li class="page-item"><%= link_to @current_page - 2, root_pagination_path(page: @current_page - 2), class: "page-link" %></li>
+            <% end %>
+          <% end %>
+          <% if @current_page + 2 > @last_page %>
+            <% if @current_page -1 >= @first_page %>
+              <li class="page-item"><%= link_to @current_page - 1, root_pagination_path(page: @current_page - 1), class: "page-link" %></li>
+            <% end %>
+          <% end %>
+          <li class="page-item active"><%= link_to @current_page, root_pagination_path(page: @current_page), class: "page-link" %></li>
+          <% if @current_page + 1 <= @last_page %>
+            <li class="page-item"><%= link_to @current_page + 1, root_pagination_path(page: @current_page + 1), class: "page-link" %></li>
+          <% end %>
+          <% if @current_page + 2 <= @last_page %>
+            <li class="page-item"><%= link_to @current_page + 2, root_pagination_path(page: @current_page + 2), class: "page-link" %></li>
+          <% end %>
+          <% if @current_page != @last_page %>
           <li class="page-item">
-            <a class="page-link" href="<%= root_pagination_path(page: @current_page - 1) %>" aria-label="Previous">
-              <span aria-hidden="true">&laquo;</span>
+            <a class="page-link" href="<%= root_pagination_path(page: @current_page + 1) %>" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
             </a>
           </li>
-        <% end %>
-        <% if @current_page + 1 > @last_page %>
-          <% if @current_page - 2 >= @first_page %>
-            <li class="page-item"><%= link_to @current_page - 2, root_pagination_path(page: @current_page - 2), class: "page-link" %></li>
           <% end %>
-        <% end %>
-        <% if @current_page + 2 > @last_page %>
-          <% if @current_page -1 >= @first_page %>
-            <li class="page-item"><%= link_to @current_page - 1, root_pagination_path(page: @current_page - 1), class: "page-link" %></li>
-          <% end %>
-        <% end %>
-        <li class="page-item active"><%= link_to @current_page, root_pagination_path(page: @current_page), class: "page-link" %></li>
-        <% if @current_page + 1 <= @last_page %>
-          <li class="page-item"><%= link_to @current_page + 1, root_pagination_path(page: @current_page + 1), class: "page-link" %></li>
-        <% end %>
-        <% if @current_page + 2 <= @last_page %>
-          <li class="page-item"><%= link_to @current_page + 2, root_pagination_path(page: @current_page + 2), class: "page-link" %></li>
-        <% end %>
-        <% if @current_page != @last_page %>
-        <li class="page-item">
-          <a class="page-link" href="<%= root_pagination_path(page: @current_page + 1) %>" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
-        <% end %>
-      </ul>
-    </nav>
-  </div>
+        </ul>
+      </nav>
+    </div>
+    <% end %>
   <% end %>
 
   <%= render "layouts/footer"%>

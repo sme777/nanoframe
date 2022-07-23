@@ -75,21 +75,20 @@ class GeneratorsController < ApplicationController
   end
 
   def user_visualize
-    
+    @host_user = params[:user]
     if @current_user.nil?
-      if !@generator.public
-        render_404
+      if User.find_by(username: @host_user) && @generator.public
+        set_generator_params
+        render :visualize
         return
       else
-        set_generator_params
-        redirect_to "/nanobot/#{@generator.id}/visualize" 
+        render :template => "errors/404"
         return
       end
     else
-      @host_user = params[:user]
       if @current_user.username != @host_user
         if !@generator.public
-          render_404
+          render :template => "errors/404"
           return
         else
           set_generator_params
@@ -130,16 +129,6 @@ class GeneratorsController < ApplicationController
     @start = @generator.routing['start']
     @end = @generator.routing['end']
   end
-
-  def render_404
-    respond_to do |format|
-      format.html { render :file => "#{Rails.root}/public/404.html", :layout => false, :status => :not_found }
-      format.xml  { head :not_found }
-      format.any  { head :not_found }
-    end
-  end
-  
-  
 
   def populate_generator
     graph = @generator.route

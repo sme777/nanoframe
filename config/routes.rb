@@ -39,4 +39,9 @@ Rails.application.routes.draw do
   get '/checkusername' => 'users#check_username', :defaults => { format: :json }
 
   get '/nanobot/generator' => 'generators#generator', as: 'shape_generator'
+
+  get '/404' => 'errors#not_found'
+  get '/422' => 'errors#unacceptable'
+  get '/500' => 'errors#internal_error'
+  match '*path' => "errors#not_found", via: :all
 end

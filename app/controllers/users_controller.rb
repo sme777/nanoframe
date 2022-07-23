@@ -2,7 +2,6 @@
 
 class UsersController < ApplicationController
   def index
-
     if params[:type]
       filter_generators
     else
@@ -16,7 +15,7 @@ class UsersController < ApplicationController
           return
         end
 
-        if @current_page > @last_page
+        if @current_page > @last_page && @last_page > 0
           redirect_to "/home/#{@last_page}"
           return
         end
