@@ -1,16 +1,15 @@
 import * as THREE from "three";
-import {SetupGeneralScene, SetupItemFeed, Material, ResizeRendererToDisplaySize} from "./sceneUtils"
+import { SetupGeneralScene, SetupItemFeed, ResizeRendererToDisplaySize, Material } from "./sceneUtils";
 
 function main() {
 
-    const canvas = document.querySelector("#homepage-canvas");
-    const userFeedContainer = document.querySelector("#user-feed-container");
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    const canvas = document.querySelector("#feed-canvas");
+    const feedContainer = document.querySelector("#feed-container-body");
+    const renderer = new THREE.WebGLRenderer({canvas: canvas, antialias: true, alpha: true});
     renderer.setClearAlpha(0);
-    const homepageScene = SetupGeneralScene(userFeedContainer);
+    const feedScene = SetupGeneralScene(feedContainer);
     const generatorSize = document.querySelector("#generator-size").value;
-    const userFeedScenes = SetupItemFeed(generatorSize);
-
+    const feedItemsScenes = SetupItemFeed(generatorSize);
     function renderSceneInfo(sceneInfo, resolution) {
         const { scene, camera, elem } = sceneInfo;
         Material.resolution.set(resolution.width, resolution.height);
@@ -35,22 +34,23 @@ function main() {
     }
 
     function render() {
-        ResizeRendererToDisplaySize(renderer, homepageScene.camera);
+        ResizeRendererToDisplaySize(renderer, feedScene.camera);
 
         renderer.setScissorTest(false);
         renderer.clear(true, true);
         renderer.setScissorTest(true);
       
-        renderSceneInfo(homepageScene, {
-            height: userFeedContainer.clientHeight,
-            width: userFeedContainer.clientWidth,
+        renderSceneInfo(feedScene, {
+            height: feedContainer.clientHeight,
+            width: feedContainer.clientWidth,
         });
-        for (let i = 0; i < userFeedScenes.length; i++) {
-        const modelItemContainer = document.querySelector(`#page_item_${i}`);
-          renderSceneInfo(userFeedScenes[i], {
-            height: modelItemContainer.clientHeight,
-            width: modelItemContainer.clientWidth,
-          });
+        for (let i = 0; i < feedItemsScenes.length; i++) {
+            const modelItemContainer = document.querySelector(`#page_item_${i}`);
+            // console.log(modelItemContainer.clientHeight, modelItemContainer.clientWidth)
+            renderSceneInfo(feedItemsScenes[i], {
+                height: modelItemContainer.clientHeight,
+                width: modelItemContainer.clientWidth,
+            });
         }
         const transform = `translateY(${window.scrollY}px)`;
         renderer.domElement.style.transform = transform;
@@ -58,6 +58,5 @@ function main() {
     }
     requestAnimationFrame(render);
 }
-
 
 main();

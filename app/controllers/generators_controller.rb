@@ -12,6 +12,30 @@ class GeneratorsController < ApplicationController
     @scaffolds = Generator.scaffolds
   end
 
+  def new
+    @shapes = Generator.shapes
+    @scaffolds = Generator.scaffolds
+    render :index
+  end
+
+  def synthesizer
+    @first_page = 1
+    @current_page =  params[:page].to_i || @first_page
+    @last_page = (Generator.all.size / 9.0).ceil
+    if @current_page < @first_page
+      redirect_to "/synthesizer/#{@first_page}"
+      return
+    end
+
+    if @current_page > @last_page && @last_page > 0
+      redirect_to "/synthesizer/#{@last_page}"
+      return
+    end
+    @feed_synths = Generator.all
+                            .order(created_at: :desc)
+                            .paginate(:page => @current_page, :per_page => 9 )
+  end
+
   def routing
     @generator = Generator.find(generator_id)
     @positions = @generator.positions

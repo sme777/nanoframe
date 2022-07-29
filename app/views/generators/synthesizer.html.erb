@@ -1,0 +1,45 @@
+<%= render partial: "layouts/nav", locals: {tab: "synthesizer"}%>
+
+<div class="feed-container">
+    <canvas id="feed-canvas"></canvas>
+    <div id="feed-container-header">
+        <div class="row">
+            <div class="searching-container col-md-9">
+                <div class="input-group mb-3">
+                    <input type="search" class="form-control" placeholder="Search synths by name or author...">
+                    <a class="search-bar-icon input-group-text"><i class="fa-solid fa-magnifying-glass"></i></a>
+                </div>
+            </div>
+
+            <div class="sorting-container col-md-3">
+                <div class="dropdown">
+                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Sort by: Newly Synthed
+                    </button>
+                    <ul class="dropdown-menu" style="">
+                        <li><button class="dropdown-item" type="button">Author</button></li>
+                        <li><button class="dropdown-item" type="button">Popularity</button></li>
+                        <li><button class="dropdown-item" type="button">Newly Synthed</button></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <a class="btn btn-dark" href="/synthesizer/new"><i class="fa-solid fa-plus"></i>New</a>
+    </div>
+    <div id="feed-container-body">
+        <input type="hidden" id="generator-size" value="<%= @feed_synths.size %>">
+        <% @feed_synths.each_with_index do |synth, index| %>
+            <% if index % 3 == 0 %>
+                <div class="row">
+            <% end %>
+            <%= render partial: "feed_item", locals: {synth: synth, index: index}%>
+            <% if (index + 1) % 3 == 0%>
+                </div>
+            <% end %>
+        <% end %>
+    </div>
+</div>
+<%= render partial: "layouts/pages", locals: {tab: "synthesizer"}%>
+<%= render "layouts/footer"%>
+<%= javascript_pack_tag 'synthesizer', 'data-turbolinks-track': 'reload'%>

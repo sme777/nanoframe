@@ -23,6 +23,10 @@ Rails.application.routes.draw do
   get 'auth/failure' => 'session#failure'
   get 'logout' => 'session#destroy'
 
+  get '/synthesizer' => redirect("/synthesizer/1")
+  get '/synthesizer/new' => 'generators#new'
+  get '/synthesizer/:page' => 'generators#synthesizer'
+  
   get '/nanobot/:user/:id/visualize' => 'generators#user_visualize'
 
   get '/nanobot/:id/routing' => 'generators#routing'

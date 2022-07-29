@@ -8,7 +8,7 @@
 
 
 
-  <%= render partial: "layouts/nav", locals: {tab: "bot"}%>
+  <%= render partial: "layouts/nav", locals: {tab: "synthesizer"}%>
 
   <div class="message-container">
     <% flash.each do |key, value| %>
@@ -34,108 +34,119 @@
   <div class="row selection-menu">
     <div id="canvas-container" class="col-md-6">
       <!-- <div class="datGUI"></div> -->
-        <canvas id="synthesizer"></canvas>
+      <canvas id="synthesizer"></canvas>
     </div>
     <div class="controls-outer-container col-md-6">
-    <div id="controls-container">
-      <div class="synthesizer-header">
-        <h6>Select Synthesizing Options</h6>
-      </div>
-      <%= form_with(model: @generator, method: :post, id: "synthesize-form", class: "synthesize-form") do |f| %>
-      <div class="form-container">
-        <div class="shape-dropdown">
-        <div class="synthesizer-item">
-          <div class="form-floating">
-            <%= f.select :shape, @shapes, {}, {class: "form-select"} %>
-            <%= f.label "Shape", for: "generator_shape_id" %>
-          </div>
+      <div id="controls-container">
+        <div class="synthesizer-header">
+          <h6>Select Synthesizing Options</h6>
         </div>
-        <div class="synthesizer-item">
-          <div class="form-floating">
-            <%= f.select :scaffold_name, @scaffolds, {}, {class: "form-select"} %>
-            <%= f.label "Scaffold", for: "generator_scaffold_name" %>
-          </div>
-          <%# <%= select_tag(:shape,  options_for_select(@options, :select => "2", :disabled => "0"), id: "synthesizer-shape", class: "form-select")%>
-        </div>
-      </div>
-      <div class="synthesizer-item custom-scaffold-container">
-        <div class="form-floating">
-          <input type="text" class="form-control" id="custom_sequence_length" placeholder="scaffold length">
-          <label for="custom_sequence_length">Scaffold Length</label>
-        </div>
-      </div>
-        <%# Erbify %>
-        <div class="row sequence-container synthesizer-item">
-          <div class="col-md-5 random-sequence-container">
-            <input class="form-check-input" type="checkbox" value="" id="sequence_checkbox" autocomplete="off">
-            <label id="sequence_checkbox_label" class="form-check-label" for="sequence_checkbox">
-              Random Sequence
-            </label>
-          </div>
-
-          <div class="col-md-7 input-container">
-            <input class="form-control form-control-sm" id="sequenceUpload" type="file" accept=".txt">
-          </div>
-        </div>
-        <%= f.hidden_field "scaffold_length" ""%>
-        <%# Add hidden field for JSON data %>
-        <% if @current_user %>
-          <div class="visibility-container">
-            <div class="form-check form-switch">
-              <%= f.check_box :visibility, class: "form-check-input", id: "visibility-input", checked: true%>
-              <label class="form-check-label" id="visibility-label" for="visibility-input">Public</label>
+        <%= form_with(model: @generator, method: :post, id: "synthesize-form", class: "synthesize-form") do |f| %>
+        <div class="form-container">
+          <div class="shape-dropdown">
+            <div class="synthesizer-item">
+              <div class="form-floating">
+                <%= f.select :shape, @shapes, {}, {class: "form-select"} %>
+                <%= f.label "Shape", for: "generator_shape_id" %>
+              </div>
+            </div>
+            <div class="synthesizer-item">
+              <div class="form-floating">
+                <%= f.select :scaffold_name, @scaffolds, {}, {class: "form-select"} %>
+                <%= f.label "Scaffold", for: "generator_scaffold_name" %>
+              </div>
+              <%# <%= select_tag(:shape,  options_for_select(@options, :select => "2", :disabled => "0"), id: "synthesizer-shape", class: "form-select")%>
             </div>
           </div>
+          <div class="synthesizer-item custom-scaffold-container">
+            <div class="form-floating">
+              <input type="text" class="form-control" id="custom_sequence_length" placeholder="scaffold length">
+              <label for="custom_sequence_length">Scaffold Length</label>
+            </div>
+          </div>
+          <%# Erbify %>
+          <div class="row sequence-container synthesizer-item">
+            <div class="col-md-5 random-sequence-container">
+              <input class="form-check-input" type="checkbox" value="" id="sequence_checkbox" autocomplete="off">
+              <label id="sequence_checkbox_label" class="form-check-label" for="sequence_checkbox">
+                Random Sequence
+              </label>
+            </div>
+
+            <div class="col-md-7 input-container">
+              <input class="form-control form-control-sm" id="sequenceUpload" type="file" accept=".txt">
+            </div>
+          </div>
+          <%= f.hidden_field "scaffold_length" ""%>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="wireframe-container">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+                  <label class="form-check-label" for="flexCheckChecked">
+                    Wireframe
+                  </label>
+                </div>
+              </div>
+            </div>
+            <% if @current_user %>
+            <div class="col-md-6">
+              <div class="visibility-container">
+                <div class="form-check form-switch">
+                  <%= f.check_box :visibility, class: "form-check-input", id: "visibility-input", checked: true%>
+                  <label class="form-check-label" id="visibility-label" for="visibility-input">Public</label>
+                </div>
+              </div>
+            </div>
+            <% end %>
+          </div>
+          <%# Add hidden field for JSON data %>
+
+          <div class="dimension-picker">
+            <div class="width-container synthesizer-item dimension-wrapper-container">
+              <div class="input-group dimension-input-container">
+                <span class="input-group-text w-25">Width</span>
+                <%= f.text_field :width, type: "text", class: "dimension-input width-input form-control", placeholder: "50 nm" %>
+              </div>
+            </div>
+
+            <div class="height-container synthesizer-item dimension-wrapper-container">
+              <div class="input-group dimension-input-container">
+                <span class="input-group-text w-25">Height</span>
+                <%= f.text_field :height, type: "text", class: "dimension-input height-input form-control", placeholder: "50 nm" %>
+              </div>
+            </div>
+
+            <div class="depth-container synthesizer-item dimension-wrapper-container">
+              <div class="input-group dimension-input-container">
+                <span class="input-group-text w-25">Depth</span>
+                <%= f.text_field :depth, type: "text", class: "dimension-input depth-input form-control", placeholder: "50 nm" %>
+              </div>
+            </div>
+
+            <div class="ws-container synthesizer-item dimension-wrapper-container">
+              <div class="input-group dimension-input-container">
+                <span class="input-group-text w-25">Divisions</span>
+                <%= f.text_field :divisions, type: "text", class: "dimension-input divisions-input form-control", placeholder: "4" %>
+              </div>
+            </div>
+
+            <div class="json-container">
+              <%= f.text_field :json, type: "hidden", class: "json-input" %>
+            </div>
+          </div>
+          <div class="synthesizer-btn-container">
+            <%= f.submit "Synthesize", id: "synthesize-btn", class: "synthesizer-btn btn btn-outline-dark btn-lg w-100", disabled: true%>
+            <%# <button type="submit" class="synthesizer-btn btn btn-secondary btn-lg w-50" disabled>Synthesize</button> %>
+          </div>
+        </div>
         <% end %>
-        <div class="dimension-picker">
-          <div
-            class="width-container synthesizer-item dimension-wrapper-container">
-            <div class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Width</span>
-              <%= f.text_field :width, type: "text", class: "dimension-input width-input form-control", placeholder: "50 nm" %>
-            </div>
-          </div>
-
-          <div
-            class="height-container synthesizer-item dimension-wrapper-container">
-            <div class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Height</span>
-              <%= f.text_field :height, type: "text", class: "dimension-input height-input form-control", placeholder: "50 nm" %>
-            </div>
-          </div>
-
-          <div
-            class="depth-container synthesizer-item dimension-wrapper-container">
-            <div class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Depth</span>
-              <%= f.text_field :depth, type: "text", class: "dimension-input depth-input form-control", placeholder: "50 nm" %>
-            </div>
-          </div>
-
-          <div
-            class="ws-container synthesizer-item dimension-wrapper-container">
-            <div class="input-group dimension-input-container">
-              <span class="input-group-text w-25">Divisions</span>
-              <%= f.text_field :divisions, type: "text", class: "dimension-input divisions-input form-control", placeholder: "4" %>
-            </div>
-          </div>
-
-          <div class="json-container">
-            <%= f.text_field :json, type: "hidden", class: "json-input" %>
-          </div>
-        </div>
-        <div class="synthesizer-btn-container">
-          <%= f.submit "Synthesize", id: "synthesize-btn", class: "synthesizer-btn btn btn-outline-dark btn-lg w-100", disabled: true%>
-          <%# <button type="submit" class="synthesizer-btn btn btn-secondary btn-lg w-50" disabled>Synthesize</button> %>
-        </div>
       </div>
-      <% end %>
+
     </div>
 
-  </div>
+    <!-- End of Synthesizer Selection-->
 
-  <!-- End of Synthesizer Selection-->
-
-  <%= render "layouts/footer"%>
-  <%= javascript_pack_tag 'dna', 'model', 'nanobot', 'data-turbolinks-track': 'reload'%>
+    <%= render "layouts/footer"%>
+    <%= javascript_pack_tag 'dna', 'model', 'nanobot', 'data-turbolinks-track': 'reload'%>
 </body>

@@ -121,12 +121,6 @@ a {
   padding-left: 30%;
 }
 
-#artifactCanvas {
-  margin-top: 5%;
-  z-index: -1;
-  position: absolute;
-}
-
 .forgot-password-container {
   text-align: center;
   margin-top: 2%;
@@ -333,14 +327,6 @@ a {
   z-index: -1;
 }
 
-#background-webgl {
-  width: 100%;
-  height: auto;
-  z-index: -10;
-  position: absolute;
-  top: 10%;
-}
-
 .google-btn {
   width: 184px;
   height: 42px;
@@ -456,6 +442,6 @@ a {
   z-index: -1;
 }
 
-.user-feed-containe {
+.user-feed-container {
   position: relative;
 }

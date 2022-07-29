@@ -498,6 +498,10 @@ $btn-hover-border-color: #111;
   padding: 3% 5%;
 }
 
+.wireframe-container {
+  padding: 3% 5%;
+}
+
 .scaffold-length {
   width: 100%;
 }
@@ -563,4 +567,35 @@ td{
 
 .loading-bar {
   padding-top: 5%;
+}
+
+
+#feed-container-header {
+  padding: 5%;
+}
+
+#feed-container-body {
+  padding: 5%;
+}
+
+.search-bar-icon {
+  text-decoration: none;
+}
+
+#feed-canvas {
+  position: absolute;
+  left: 0;
+  top: 0vh;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: -1;
+}
+
+.feed-item-container {
+  height: 20vh;
+}
+
+.feed-card {
+  background-color: transparent !important;
 }
