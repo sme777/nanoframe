@@ -1,0 +1,116 @@
+<%= render partial: "layouts/nav", locals: {tab: "outreach"} %>
+<%= stylesheet_link_tag 'application', media: 'all' %>
+
+<div class="poster-container">
+    <div class="poster-header-container">
+        <h2>DNA28 Poster Conference Presentation</h2>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <h3>NANOFRAME.ORG: A Web-Based DNA Wireframe Design Tool</h3>
+        </div>
+        <div class="col-md-4">
+            <a class="btn btn-default" href="https://arxiv.org/abs/2111.13992">Preprint</a>
+            <a href="/DNA28?download=true" class="btn btn-default"><i class="fa fa-download" aria-hidden="true"></i>Download Poster</a>
+        </div>
+        <hr>
+        <h4>Introduction</h4>
+        <div class="introduction-container">
+        <ul>
+            <li>
+            nanoframe.org is an open-source web-based DNA wireframe design application built as “software as a service”.
+            </li>
+            <li>
+            nanoframe.org’s focus is on wireframes because compared to close-packed DNA origamis, wireframes cover larger surface area, which we need for embedding molecular recognition capabilities of DNA into non-DNA materials.
+            </li>
+            <li>
+            nanoframe.org allows creation of multi-origami nanostructures by combining single-origami “blocks” in the playground mode.
+            </li>
+            <li>
+            nanoframe.org provides a free-of-charge storage for saving work in the cloud, and enables viewing and working with projects with a user-friendly graphical user interface.
+            </li>
+            <li>
+            nanoframe.org has a feed system where public user-generated projects can be shared and discussed.
+            </li>
+        </ul>
+        </div>
+        <h4>Home & Feed</h4>
+            <p>
+            Authentication with nanoframe.org provides many advantages including free storage of generates shapes.
+            </p>
+            <div class="user-image-container">
+                <%= image_tag("user_profile.png", class: "user-image")%>
+            </div>
+            <p>
+            nanoframe.org’s feed system helps keep track of latest nano innovations and designs while providing a forum for discussion.
+            </p>
+            <div class="user-image-container">
+                <%= image_tag("user_feed.png", class: "user-image")%>
+            </div>
+        <h4>Model & Methods</h4>
+        <p>
+        We develop scaffold routing, staple breaking, and cage opening algorithms for synthesizing polyhedra.
+        While nanoframe.org currently only supports cuboids, the algorithms can be extended to any-non cuboid polyhedra.
+        </p>
+        <u><h5>Scaffol Routing</h5></u>
+        <p>
+        Polyhedra are broken down to a collection of polygons, and a randomized DFS is run on each plane. The polygons are combined through an iterative greedy algorithm to reconstruct the desired polyhedron. 
+        </p>
+        <div class="user-image-container">
+            <%= image_tag("scaffold_pipeline.png", class: "user-image")%>
+        </div>
+        <u><h5>Staple Breaking</h5></u>
+        <p>
+        Staple breaking is an iterative process and can be divided into 3 stages.
+        </p>
+        <p>
+        <strong>Stage 1:</strong> Stapes are broken into 3 categories: staples that jump across edges (reflections), staples that jump across planes (refractions), and staples that stay on one edge (protractions).
+        </p>
+        <p>
+        <strong>Stage 2:</strong> Reflection staples are broken down across boundary edges (more below) to have a toe-like shape. Refractions are broken down into pairs – matching each side.
+        </p>
+        <p>
+        <strong>Stage 3:</strong> Staples are extended towards interior and exterior for particle capturing and self-assembly.
+        </p>
+        <u><h5>Cage Opening</h5></u>
+        <p>
+        We built algorithms for detecting strongest connected components of the structure and establishing edge boundaries. Staples are broken to have a toe-like shape among the boundary edges to facilitate opening upon annealing at low temperatures. The length of the toe can be adjusted by the user, default value is 3 nucleotides.
+        </p>
+        <div class="row">
+            <div class="object-image-container col-md-6">
+                <%= image_tag("toe_staple.png", class: "toe-image")%>
+            </div>
+            <div class="object-image-container col-md-6">
+                <%= image_tag("open_cage.png", class: "cage-image")%>
+            </div>
+        </div>
+        <h4>Self-Assembly</h4>
+        <ul>
+            <li>We develop special types of staples extending towards the interior and exterior of the wireframe enabling particle capture and mult-origami assembly.</li>
+            <li>Interior staples can be programmed to be complementary with sequences present in the nanoparticle.</li>
+            <li>Exterior staples are automatically computed to match neighboring structures for hierarchical self-assembly.</li>
+            <li>MD can be run on all nanoframe.org structures by exporting them to other nucleic acid formats (i.e. oxDNA, PDB).</li>
+            <li>All nanoframe.org structures are stored in native JSON like .nfr format.</li>
+        </ul>
+        <div class="object-image-container">
+            <%= image_tag("oxdna_sample.png", class: "object-image")%>
+        </div>
+        <h4>Playground</h4>
+        <p>
+        In playground mode of nanoframe.org, one can combine single-origami wireframes to generate more complex multi-origami structures. In the GUI, when objects are within close proximity, their exterior extension will automatically bind, bringing the two structures together. 
+        </p>
+        <p>
+        It the scriptable format, one can provide a geometric specifications of the nanostructure, and the building blocks would be added automatically.
+        Users can choose to include payload in the full or partial structure. Playground work can be saved to user’s account or exported to nucleic acid formats.
+        </p>
+        <div class="playground-container row">
+            <div class="object-image-container col-md-6">
+                <%= image_tag("2x2_cube.png", class: "object-image")%>
+            </div>
+            <div class="object-image-container col-md-6">
+                <%= image_tag("lab_wireframe.png", class: "object-image")%>
+            </div>
+        </div>
+    </div>
+</div>
+<%= render "layouts/footer"%>
