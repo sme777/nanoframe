@@ -40,8 +40,7 @@ Rails.application.routes.draw do
 
   get '/nanobot/generator' => 'generators#generator', as: 'shape_generator'
 
-  get '/DNA28' => 'outreach#DNA28'
-  patch '/download_DNA28' => 'outreach#download_DNA28'
+  get '/dna28' => 'outreach#dna28'
   get '/404' => 'errors#not_found'
   get '/422' => 'errors#unacceptable'
   get '/500' => 'errors#internal_error'
