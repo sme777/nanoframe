@@ -1,5 +1,5 @@
 class OutreachController < ApplicationController
-    def dna28
+    def DNA28
         if params[:download] == "true"
             send_file(
                 "#{Rails.root.join('app/assets/files/DNA28_Poster.pdf')}",
