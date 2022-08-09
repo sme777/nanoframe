@@ -1,5 +1,4 @@
 class OutreachController < ApplicationController
-
     def dna28
         if params[:download] == "true"
             send_file(
@@ -9,5 +8,4 @@ class OutreachController < ApplicationController
               )
         end
     end
-
 end
