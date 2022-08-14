@@ -279,6 +279,16 @@ new THREE.Box3()
 currentGroup = linearGroup;
 scene.add(currentGroup);
 
+// const cubeMat = new THREE.MeshLambertMaterial( {color: 0xC0C0C0} )
+
+// const cubeGeo = new THREE.BoxGeometry(45, 45, 45)
+// const meshCube = new THREE.Mesh(cubeGeo, cubeMat)
+// scene.add(meshCube)
+// const cubeLight = new THREE.DirectionalLight(0xffffff, 1);
+// scene.add(cubeLight);
+// cubeLight.target = meshCube;
+// cubeLight.position.set(1, 2, 4)
+
 let controls = new OrbitControls(camera, renderer.domElement);
 controls.minDistance = 10;
 controls.maxDistance = 5000;
@@ -428,7 +438,7 @@ function render() {
     }
   }
 
-  document.querySelector(".side-id").value = minDistPlane;
+  document.querySelector("#shape_side_info").value = minDistPlane;
 
   renderer.render(scene, camera);
 
@@ -449,8 +459,8 @@ function render() {
       const line = intersections[0].object;
       const idx = findIndex(intersections[0].point);
       if (idx != null) {
-        document.querySelector(".sequence-base").value = scaffold[idx];
-        document.querySelector(".sequence-id").value = idx;
+        document.querySelector("#sequence_base_info").value = scaffold[idx];
+        document.querySelector("#sequence_id_info").value = idx;
       }
     } else {
       sphereInter.visible = false;

@@ -15,7 +15,6 @@ class GeneratorsController < ApplicationController
   def new
     @shapes = Generator.shapes
     @scaffolds = Generator.scaffolds
-    render :index
   end
 
   def synthesizer
@@ -90,7 +89,7 @@ class GeneratorsController < ApplicationController
         render :async_visualize
       else
         # if 
-        redirect_to "/nanobot/#{@generator.id}/visualize"
+        redirect_to "/synthesizer/#{@generator.id}/visualize"
       end
     else
       set_dynamic_generator_params
@@ -188,7 +187,7 @@ class GeneratorsController < ApplicationController
       Generator.find(@generator.id).update(routing: graph_json)
     end
 
-    redirect_to "/nanobot/#{@generator.id}/visualize"
+    redirect_to "/synthesizer/#{@generator.id}/visualize"
   end
 
   def compile
@@ -199,7 +198,7 @@ class GeneratorsController < ApplicationController
     generator_fields = generator_params
     if !Generator.supported_shapes.include?(generator_fields[:shape])
       flash[:danger] = "#{generator_fields[:shape]} is currently not supported."
-      redirect_to '/nanobot'
+      redirect_to '/synthesizer/new'
     else
 
       dimensions = { height: generator_fields[:height], width: generator_fields[:width],
@@ -217,10 +216,10 @@ class GeneratorsController < ApplicationController
 
       if @generator.save
         session['id'] = @generator.id
-        redirect_to "/nanobot/#{@generator.id}/visualize"
+        redirect_to "/synthesizer/#{@generator.id}/visualize"
       else
         flash[:message] = 'Could Not Complete Request'
-        redirect_to '/nanobot'
+        redirect_to '/synthesizer/new'
       end
     end
   end
@@ -257,7 +256,7 @@ class GeneratorsController < ApplicationController
       redirect_to '/'
     else
       flash[:register_and_save_errors] = user.errors.full_messages
-      redirect_to "/nanobot/#{@generator.id}/compile"
+      redirect_to "/synthesizer/#{@generator.id}/compile"
     end
   end
 

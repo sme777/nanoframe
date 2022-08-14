@@ -26,12 +26,30 @@
     <h2 class="user-fullname"><%= @current_user.name %></h2>
     <h5 class="user-username"><%= @current_user.username%></h5>
   </div>
-  <div class="feed-container">
-    <div class="switch-field">
+  <div class="row feed-container">
+              <div class="col-md-10"></div>
+              <div class="sorting-container col-md-2">
+                <div class="dropdown">
+                    <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Sort by: Public
+                    </button>
+                    <ul class="dropdown-menu" style="">
+                        <li><button class="dropdown-item" type="button">Author</button></li>
+                        <li><button class="dropdown-item" type="button">Popularity</button></li>
+                        <li><button class="dropdown-item" type="button">Newly Synthed</button></li>
+                    </ul>
+                </div>
+            </div>
+    <%
+=begin%>
+ <div class="switch-field">
       <%= link_to "Public", root_path(type: "public"), class: "generator-filter", id: "public_generators", name: "switch-one"%>
       <%= link_to "Private", root_path(type: "private"), class: "generator-filter", id: "private_generators", name: "switch-one" %>
       <%= link_to "History", root_path(type: "all"), class: "generator-filter", id: "all_generators", name: "switch-one"%>
-    </div>
+    </div> 
+<%
+=end%>
     <%
 =begin%>
     <%= form_with(url: "/", method: :post, class: "generators_filter") do |f| %>

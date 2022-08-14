@@ -193,7 +193,7 @@ In **Nanobot** tab the user gets to choose a shape from given selection or make 
 
 # Dimension Generator
 
-We provide a tool for fidning the desired shape with minimum leftover base pairs [nanoframe.org/nanobot/generator](https://nanoframe.org/nanobot/generator). One can specifiy the granuality of the output by provindng the step size. A benchmark loopout length can also be set, such that shapes with loopout length greater than the threshold will be discarded. Optionally, we provide max and min dimension as well as the length of the scaffold which by default is M13mp18 bacteriophage DNA.
+We provide a tool for fidning the desired shape with minimum leftover base pairs [nanoframe.org/synthesizer/generator](https://nanoframe.org/synthesizer/generator). One can specifiy the granuality of the output by provindng the step size. A benchmark loopout length can also be set, such that shapes with loopout length greater than the threshold will be discarded. Optionally, we provide max and min dimension as well as the length of the scaffold which by default is M13mp18 bacteriophage DNA.
 
 # DNA Routing
 

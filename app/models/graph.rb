@@ -13,7 +13,7 @@ class Graph
   # dimension[2] -> depth
   def initialize(id, dimensions, shape, scaffold)
     setup_dimensions(dimensions, shape)
-    @shape = shape
+    @shape = Shape.new(shape)
     @generator_id = id
     @segments = dimensions['divisions'].to_i + 1
     @scaff_length = scaffold.size

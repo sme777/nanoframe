@@ -134,7 +134,7 @@ class Staple
   def update_exterior_extension(extension_side)
     case extension_side
     when :start
-      orth, side = Plane.orthogonal_dimension(@original_points[1], @original_points[1], @graph.shape, [@graph.width, @graph.height, @graph.depth])
+      orth, side = Plane.orthogonal_dimension(@original_points[1], @original_points[1], @graph.shape.name, [@graph.width, @graph.height, @graph.depth])
       extension_points = compute_outer_extension_positions(@points[0], orth, side)
       original_extension_points = compute_outer_extension_positions(@original_points[0], orth, side)
       @points = extension_points + @points
@@ -143,7 +143,7 @@ class Staple
       @complementary_rotation_labels = [nil] * extension_points.size + @complementary_rotation_labels
       @sequence = "#{Staple.orthogonal_barcodes.sample}TT" + @sequence
     when :end
-      orth, side = Plane.orthogonal_dimension(@original_points[-2], @original_points[-2], @graph.shape, [@graph.width, @graph.height, @graph.depth])
+      orth, side = Plane.orthogonal_dimension(@original_points[-2], @original_points[-2], @graph.shape.name, [@graph.width, @graph.height, @graph.depth])
       extension_points = compute_outer_extension_positions(@points[-1], orth, side)
       original_extension_points = compute_outer_extension_positions(@original_points[-1], orth, side)
       @points = @points + extension_points
@@ -415,7 +415,7 @@ class Staple
   end
 
   def orthogonal_dimension(v1, v2)
-    case @graph.shape
+    case @graph.shape.name
     when :cube
       side = Routing.find_plane_number(v1, v2, [@graph.width, @graph.height, @graph.depth])
       if (v1.x - v2.x).zero? && (v1.x.zero? || v1.x.abs == @graph.width)

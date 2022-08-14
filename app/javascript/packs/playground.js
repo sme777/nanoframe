@@ -122,9 +122,18 @@ function setupSideBarItemScene(idx) {
 
   const line = new Line2(geometry, material);
   line.geometry.center();
-  line.name = "routingObject";
+ 
   sceneInfo.scene.add(line);
-  sceneInfo.mesh = line;
+  const sceneGroup = new THREE.Group();
+  // const particle = new THREE.Mesh(
+  //   new THREE.BoxGeometry(45, 45, 45),
+  //   new THREE.MeshLambertMaterial({color: 0xC0C0C0})
+  // )
+  sceneGroup.add(line);
+  // sceneGroup.add(particle);
+  sceneGroup.name = "routingObject";
+  sceneInfo.scene.add(sceneGroup);
+  sceneInfo.mesh = sceneGroup;
 
   const controls = new OrbitControls(sceneInfo.camera, playGroundItemContainer);
   controls.minDistance = 0.1;

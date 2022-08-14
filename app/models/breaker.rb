@@ -24,7 +24,7 @@ class Breaker
   # S1 = front; S2 = back; S3 = top; S4 = bottom; S5 = left; S6 = right
   def staples_preprocess(side)
     contraints = {}
-    case @graph.shape
+    case @graph.shape.name
     when :cube
 
       w_constraint = ((@graph.width / @graph.segments) / SSDNA_NT_DIST).floor >= 60
@@ -54,7 +54,7 @@ class Breaker
   end
 
   def staples_postprocess(arr)
-    case @graph.shape
+    case @graph.shape.name
     when :cube
       #   arr = [@ext_b_hor, @ext_b_vert, @ext_hor, @ext_vert]
       arr.each_with_index do |ext, i|
@@ -286,7 +286,7 @@ class Breaker
   end
 
   def step_size(side)
-    case @graph.shape
+    case @graph.shape.name
     when :cube
       case side
       when :S1, :S2

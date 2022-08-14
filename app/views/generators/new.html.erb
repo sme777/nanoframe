@@ -19,7 +19,7 @@
     <% end %>
     <div class="alert alert-warning alert-dismissible fade show warning-container" role="alert">
       <p class="warning-text">The Loopout length is over 200 base pairs </p><a href="#"
-        id="continue_anchor">Continue?</a> See <a href="nanobot/generator">generator page</a>
+        id="continue_anchor">Continue?</a> See <a href="synthesizer/generator">generator page</a>
       for iteractive examples.
     </div>
     <div class="alert alert-danger alert-dismissible fade show danger-container" role="alert">
@@ -41,7 +41,7 @@
         <div class="synthesizer-header">
           <h6>Select Synthesizing Options</h6>
         </div>
-        <%= form_with(model: @generator, method: :post, id: "synthesize-form", class: "synthesize-form") do |f| %>
+        <%= form_with(model: @generator, url: "/synthesizer/new", method: :post, id: "synthesize-form", class: "synthesize-form") do |f| %>
         <div class="form-container">
           <div class="shape-dropdown">
             <div class="synthesizer-item">
