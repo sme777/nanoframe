@@ -5,7 +5,7 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/a7c3b1796ed55dff5f27/maintainability)](https://codeclimate.com/github/tilabberkeley/nanoframe/maintainability)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
-NanoFrame [nanoframe.org](https://www.nanoframe.org) is a web based tool which enables design and synthesis of 3D wireframe polyhedra. NanoFrame's [synthesizer](https://www.nanoframe.org/nanobot) generates polyhedra from single-origami scaffold of any length, which then can be used as building block for designing larger multi-origami structure in NanoFrame's [playground](https://www.nanoframe.org/nanobot). Save your work to the cloud by creating account at [nanoframe.org](https://www.nanoframe.org).
+NanoFrame [nanoframe.org](https://www.nanoframe.org) is a web based tool for designing and synthesizing 3D wireframe polyhedra. NanoFrame's [synthesizer](https://www.nanoframe.org/synthesizer) generates polyhedra from single-origami scaffold of any length, which then can be used as building block for designing larger multi-origami structure in NanoFrame's [playground](https://www.nanoframe.org/playground). Save your work to the cloud by creating account at [nanoframe.org](https://www.nanoframe.org).
 
 Consider citing the associated paper if you find the project useful.
 
@@ -14,35 +14,46 @@ Consider citing the associated paper if you find the project useful.
 > [paper](https://google.com) | [arXiv](https://arxiv.org/abs/2111.13992)
 
 # Contents
+- [Control Flow](#control-flow)
+- [Home](#home)
 - [Synthesizer](#synthesizer)
 - [Playground](#playground)
-- [Home](#home)
 - [Guides](#guides)
-- [Methods](#methods)
 - [Experiments](#experiments)
 - [Video Tutorials](#video-tutorials)
-- [Saving Work](#saving-work)
 - [Suggestions and Reporting Issues](#suggestions-and-reporting-issues)
 - [Working Locally](#working-locally)
-- [Contributions](#contributions)
+- [Contributing](#contributing)
 
 # Control Flow
 
 The application is broken down into three parts, each can be navigated to with the ribbon at the top of the page.
 
+<p align="center">
+  <img src="https://github.com/sme777/nanoframe/blob/master/docs/navbar.png">
+</p>
+
+The entry point of [nanoframe.org](https://www.nanoframe.org) is the <ins>Home</ins> tab, where users are taken to a sign in/up page or their profile homepage (depending on cookie sessions); see [Home](#home) for more info.
+
+Any user -- whether signed-in or not -- can synthesize polyhedra, the difference lies in saving the work to the cloud. Navigating to <ins>Synthesizer</ins> tab will yield the active feed of [nanoframe.org](https://www.nanoframe.org) which consist of synthesized shapes by users that were made public. In <ins>Synthesizer</ins> tab users can then click <ins>New</ins> and provide the specification of the shape.
+
+In playground tab, user would work with an active canvas and build shapes by dragging and dropping elements on it. Both a graphical user interface (GUI) and a scriptable interface exist for ease of use. As in synthesizer tab, uers will need to be registered to save work from playground, otherwise the service is open to all users.
+
+The guides folder has documentation on all aspects of [nanoframe.org](https://www.nanoframe.org), including vidoe tutorials (linked in this file as well), file format description, methods and materials, and API docs.
+
 #### Home
 
 NanoFrame allows users to sign up and save their work. Generated work can be saved as both private and public, further, once users login they can discover what other creators have been synthesizing with NanoFrame.
 
-#### The NanoBot
+#### Synthesizer
 
 The NanoBot tab is where all the magic happens. Users can select one of the predefined shapes, or create their own (upcoming feature). After selecting a shape, users can interact with the shape dynamically by adjusting its attributes.
 
-#### Miscellaneous
+#### Playground
 
 NanoFrame relies on several API which were developed on par with the project. These are completely free, but to make API calls clients need to register and obtain an API key.
 
-##### Automatic Staple Generation
+##### Guides
 
 We define three types of staples: **refl**ection, **refr**action, and **ext**e**n**sion. Reflection strands connect two orthogonal parts of the scaffold and therefore connect to two non-sequential edges. Refractions can be thought of as projection onto another plane, meaning they are the staples that cross from one plane onto the other. These connect two sequential edges. Extension are staples that live in between the area leftover by reflactions and refractions. Extension staples attach to a single edge. We set up a linear program that yields the optimal choice of reflection, refraction and extension staple strands. The constraints are shown below:
 
