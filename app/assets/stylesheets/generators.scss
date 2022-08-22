@@ -167,7 +167,12 @@ input {
 }
 
 .random-sequence-container {
+  display: none;
   text-align: center;
+}
+
+#sequence_upload_container {
+  display: none;
 }
 
 #sequence_checkbox_label {
@@ -463,11 +468,11 @@ $btn-hover-border-color: #111;
 }
 
 .generator-sidebar-content {
-  max-height: 50vh;
+  // max-height: 50vh;
   // overflow: hidden;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  direction: ltr;
+  // overflow-y: scroll;
+  // overflow-x: hidden;
+  // direction: ltr;
 }
 
 // #box-state {
@@ -613,7 +618,7 @@ td{
 }
 
 .feed-item-container {
-  height: 20vh;
+  height: 30vh;
 }
 
 .feed-card {
@@ -623,6 +628,23 @@ td{
 
 .heart-item-container {
   text-align: center;
+}
+
+.advanced-option {
+  color: #111 !important;
+}
+
+.advanded-option-header {
+  margin-top: 2%;
+  margin-bottom: 0;
+}
+
+// .collapsed {
+//   color: #111;
+// }
+
+.advanced-option:hover {
+  color:green !important; //rgb(56, 55, 55);
 }
 
 .comment-item-container {
@@ -657,7 +679,10 @@ td{
   right: 1%;
   padding-top: 2%;
   padding-bottom: 2%;
-  // box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  height: 80vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  border-radius: 2.5%;
 }
   

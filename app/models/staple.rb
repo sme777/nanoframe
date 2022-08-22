@@ -92,27 +92,27 @@ class Staple
     points.concat(Vertex.linspace(dr_ch2, end_pos + 1, @back.v1, end_point)[1...])
   end
 
-  def update_interior_extension(particle_barcode)
+  def update_interior_extension(sequence)
     return if @type == :refraction || @type == :mod_refraction || 
       @type == :exterior_start_refraction || @type == :exterior_end_refraction || @disabled
 
     if extendable_start
-      extension_points = compute_extension_positions(@points.first, -1)
-      original_extension_points = compute_extension_positions(@original_points.first, -1)
+      extension_points = compute_inner_extension_positions(@points.first, -1, sequence.size)
+      original_extension_points = compute_inner_extension_positions(@original_points.first, -1, sequence.size)
       @points = extension_points + @points
       @original_points = original_extension_points + @original_points
       @scaffold_idxs = ['ein1'] * extension_points.size + @scaffold_idxs
-      @sequence = "#{convert(Staple.particle_barcodes[particle_barcode])}TT" + @sequence
+      @sequence = sequence + @sequence
       @type = :interior_start_reflection
       prev_staple = ObjectSpace._id2ref(@prev)
       prev_staple.disabled = true if prev_staple.extendable_end
     elsif extendable_end
-      extension_points = compute_extension_positions(@points.last, -1)
-      original_extension_points = compute_extension_positions(@original_points.last, -1)
+      extension_points = compute_inner_extension_positions(@points.last, -1, sequence.size)
+      original_extension_points = compute_inner_extension_positions(@original_points.last, -1, sequence.size)
       @points = @points + extension_points
       @original_points = @original_points + original_extension_points
       @scaffold_idxs = @scaffold_idxs + ['ein2'] * extension_points.size
-      @sequence = @sequence + "TT#{convert(Staple.particle_barcodes[particle_barcode].reverse)}"
+      @sequence = @sequence + sequence
       @type = :interior_end_reflection
       next_staple = ObjectSpace._id2ref(@next)
       next_staple.disabled = true if next_staple.extendable_start
@@ -131,26 +131,26 @@ class Staple
     extendable_start || extendable_end
   end
 
-  def update_exterior_extension(extension_side)
+  def update_exterior_extension(extension_side, sequence)
     case extension_side
     when :start
       orth, side = Plane.orthogonal_dimension(@original_points[1], @original_points[1], @graph.shape.name, [@graph.width, @graph.height, @graph.depth])
-      extension_points = compute_outer_extension_positions(@points[0], orth, side)
-      original_extension_points = compute_outer_extension_positions(@original_points[0], orth, side)
+      extension_points = compute_outer_extension_positions(@points[0], orth, side, sequence.size)
+      original_extension_points = compute_outer_extension_positions(@original_points[0], orth, side, sequence.size)
       @points = extension_points + @points
       @original_points = original_extension_points + @original_points
       @scaffold_idxs = ['eout1'] * extension_points.size + @scaffold_idxs
       @complementary_rotation_labels = [nil] * extension_points.size + @complementary_rotation_labels
-      @sequence = "#{Staple.orthogonal_barcodes.sample}TT" + @sequence
+      @sequence = sequence + @sequence
     when :end
       orth, side = Plane.orthogonal_dimension(@original_points[-2], @original_points[-2], @graph.shape.name, [@graph.width, @graph.height, @graph.depth])
-      extension_points = compute_outer_extension_positions(@points[-1], orth, side)
-      original_extension_points = compute_outer_extension_positions(@original_points[-1], orth, side)
+      extension_points = compute_outer_extension_positions(@points[-1], orth, side, sequence.size)
+      original_extension_points = compute_outer_extension_positions(@original_points[-1], orth, side, sequence.size)
       @points = @points + extension_points
       @original_points = @original_points + original_extension_points
       @scaffold_idxs = @scaffold_idxs + ['eout2'] * extension_points.size
       @complementary_rotation_labels = @complementary_rotation_labels + [nil] * extension_points.size
-      @sequence = @sequence + "TT#{Staple.orthogonal_barcodes.sample.reverse}"
+      @sequence = @sequence + sequence
     end
   end
 
@@ -175,38 +175,38 @@ class Staple
     rounded_point = Vertex.new(rounded_x, rounded_y, rounded_z)
   end
 
-  def compute_outer_extension_positions(point, orth, side)
+  def compute_outer_extension_positions(point, orth, side, length)
     points = []
     case orth
     when :x
       dir = side == :S5 ? -1 : 1
-      points = Vertex.linspace(:x, 11, point, Vertex.new(point.x + 3 * dir, point.y, point.z))[1...]
+      points = Vertex.linspace(:x, length + 1, point, Vertex.new(point.x + (length / 2.5) * dir, point.y, point.z))[1...]
     when :y
       dir = side == :S3 ? -1 : 1
-      points = Vertex.linspace(:y, 11, point, Vertex.new(point.x, point.y + 3 * dir, point.z))[1...]
+      points = Vertex.linspace(:y, length + 1, point, Vertex.new(point.x, point.y + (length / 2.5) * dir, point.z))[1...]
     when :z
       dir = side == :S2 ? -1 : 1
-      points = Vertex.linspace(:z, 11, point, Vertex.new(point.x, point.y, point.z + 3 * dir))[1...]
+      points = Vertex.linspace(:z, length + 1, point, Vertex.new(point.x, point.y, point.z + (length / 2.5) * dir))[1...]
     end
     points
   end
 
-  def compute_extension_positions(point, dir)
+  def compute_inner_extension_positions(point, dir, length)
     rounded_point = rounded_vertex(point)
     side = Routing.find_plane_number(rounded_point, rounded_point, [@graph.width, @graph.height, @graph.depth])
     case side
     when :S1
-      Vertex.linspace(:z, 11, point, Vertex.new(point.x, point.y, point.z + 3 * dir))[1...]
+      Vertex.linspace(:z, length + 1, point, Vertex.new(point.x, point.y, point.z + (length / 2.5) * dir))[1...]
     when :S2
-      Vertex.linspace(:z, 11, point, Vertex.new(point.x, point.y, point.z - 3 * dir))[1...]
+      Vertex.linspace(:z, length + 1, point, Vertex.new(point.x, point.y, point.z - (length / 2.5) * dir))[1...]
     when :S3
-      Vertex.linspace(:y, 11, point, Vertex.new(point.x, point.y - 3 * dir, point.z))[1...]
+      Vertex.linspace(:y, length + 1, point, Vertex.new(point.x, point.y - (length / 2.5) * dir, point.z))[1...]
     when :S4
-      Vertex.linspace(:y, 11, point, Vertex.new(point.x, point.y + 3 * dir, point.z))[1...]
+      Vertex.linspace(:y, length + 1, point, Vertex.new(point.x, point.y + (length / 2.5) * dir, point.z))[1...]
     when :S5
-      Vertex.linspace(:x, 11, point, Vertex.new(point.x - 3 * dir, point.y, point.z))[1...]
+      Vertex.linspace(:x, length + 1, point, Vertex.new(point.x - (length / 2.5) * dir, point.y, point.z))[1...]
     when :S6
-      Vertex.linspace(:x, 11, point, Vertex.new(point.x + 3 * dir, point.y, point.z))[1...]
+      Vertex.linspace(:x, length + 1, point, Vertex.new(point.x + (length / 2.5) * dir, point.y, point.z))[1...]
     else
       []
     end

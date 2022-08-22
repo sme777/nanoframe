@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   get '/profile' => 'users#profile'
   get '/signin' => 'users#sign_in'
   get '/signout' => 'users#sign_out'
-  get '/miscellaneous' => 'users#miscellaneous'
+  get '/guides' => redirect("/guides/home")
   get '/synthesizer' => redirect("/synthesizer/1")
   get '/playground' => 'playground#index'
 
@@ -20,7 +20,7 @@ Rails.application.routes.draw do
   get 'auth/failure' => 'session#failure'
   get 'logout' => 'session#destroy'
 
-  
+  # synthesizer
   get '/synthesizer/new' => 'generators#new'
   post '/synthesizer/new' => 'generators#create'
   get '/synthesizer/generator' => 'generators#generator', as: 'shape_generator'
@@ -29,13 +29,38 @@ Rails.application.routes.draw do
   post '/synthesizer/:id/visualize' => 'generators#visualize', as: 'generate_routing'
   get '/synthesizer/:id/async_visualize' => 'generators#async_visualize', as: 'generate_async_routing'
   get '/synthesizer/:id/visualize' => 'generators#visualize'
-
-  get '/contact/new' => 'users#get_contact'
   post '/synthesizer/:id/update_generator' => 'generators#update_generator', as: 'update_generator'
- 
+
+  get '/contact/new' => 'users#get_contact' 
   get '/checkemail' => 'users#check_email', :defaults => { format: :json }
   get '/checkusername' => 'users#check_username', :defaults => { format: :json }
+  
+  #guides
+  get '/guides/home' => 'guides#home'
+  get '/guides/feed' => 'guides#feed'
+  get '/guides/shapes' => 'guides#shapes'
+  get '/guides/scaffolds' => 'guides#scaffolds'
+  get '/guides/wireframe' => 'guides#wireframe'
+  get '/guides/dimensions' => 'guides#dimensions'
+  get '/guides/advanced' => 'guides#advanced'
+  get '/guides/canvas_gui' => 'guides#canvas_gui'
+  get '/guides/canvas_api' => 'guides#canvas_api'
+  get '/guides/nfr_projects' => 'guides#nfr_projects'
+  get '/guides/tpsc' => 'guides#tpsc'
+  get '/guides/api_keys' => 'guides#api_keys'
+  get '/guides/home_api' => 'guides#home_api'
+  get '/guides/feed_api' => 'guides#feed_api'
+  get '/guides/synthesizer_api' => 'guides#synthesizer_api'
+  get '/guides/playground_api' => 'guides#playground_api'
+  get '/guides/single_origami_assembly' => 'guides#single_origami_assembly'
+  get '/guides/single_origami_cage_opening' => 'guides#single_origami_cage_opening'
+  get '/guides/multi_origami_assembly' => 'guides#multi_origami_assembly'
+  get '/guides/multi_origami_cage_opening' => 'guides#multi_origami_cage_opening'
+
+  # outreach
   get '/dna28' => 'outreach#DNA28'
+  
+  # errors
   get '/404' => 'errors#not_found'
   get '/422' => 'errors#unacceptable'
   get '/500' => 'errors#internal_error'

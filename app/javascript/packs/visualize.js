@@ -292,6 +292,7 @@ scene.add(currentGroup);
 let controls = new OrbitControls(camera, renderer.domElement);
 controls.minDistance = 10;
 controls.maxDistance = 5000;
+controls.enableZoom = false;
 
 window.addEventListener("resize", onWindowResize);
 canvas.addEventListener("wheel", onZoom);

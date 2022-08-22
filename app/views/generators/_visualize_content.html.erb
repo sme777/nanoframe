@@ -1,5 +1,5 @@
 <div class="outer-regenerate-container">
-    <div class="generator-sidebar">
+    <div class="generator-sidebar" data-bs-spy="scroll" data-bs-offset="0" tabindex="0">
         <div class="generator-sidebar-content">
         <div class="regenerate-container">
 
@@ -64,6 +64,17 @@
                 </div>
                 <div class="box-state-container">
                     <button id="box-state-staples" class="btn btn-outline-secondary w-100">Show Staples</button><br>
+                </div>
+
+                <div class="box-state-container">
+                    <button type="button" data-bs-toggle="collapse" data-bs-target="#staple_table_container" 
+                    aria-expanded="false" aria-controls="staple_table_container" class="btn btn-outline-secondary w-100">
+                    View Sequence Table
+                    </button>
+                </div>
+
+                <div class="box-state-container">
+                    <button id="box-state-staples" class="btn btn-outline-secondary w-100">Enable Zoom</button><br>
                 </div>
 
                 <div class="box-state-container">
@@ -146,10 +157,6 @@
 </div>
 
 <div class="table-container">
-    <button class="btn btn btn-outline-dark" type="button" data-bs-toggle="collapse"
-        data-bs-target="#staple_table_container" aria-expanded="false" aria-controls="staple_table_container">
-        Staple Strands Sequences
-    </button>
     <div class="collapse" id="staple_table_container">
         <table class="table table-striped table-hover col-md-12" id="staples_table">
             <thead>

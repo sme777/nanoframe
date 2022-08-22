@@ -10,6 +10,7 @@ function main() {
     const feedScene = SetupGeneralScene(feedContainer);
     const generatorSize = document.querySelector("#generator-size").value;
     const feedItemsScenes = SetupItemFeed(generatorSize);
+    
     function renderSceneInfo(sceneInfo, resolution) {
         const { scene, camera, elem } = sceneInfo;
         Material.resolution.set(resolution.width, resolution.height);

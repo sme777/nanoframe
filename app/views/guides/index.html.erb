@@ -1,0 +1,142 @@
+<%= stylesheet_link_tag 'application', media: 'all' %>
+<%= render partial: "layouts/nav", locals: {tab: "other"}%>
+
+<div class="nanoframe-docs-container">
+    <div class="row">
+        <div class="docs-sidebar-container col-md-3">
+            <div class="docs-header-container">
+                <h3><i class="fa-solid fa-book"></i> NanoFrame Docs</h3>
+            </div>
+            <hr>
+            <div class="accordion accordion-flush" id="doc_accordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="home_feed_accordion_heading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#home_feed_accordion_collapse" aria-expanded="false" aria-controls="home_feed_accordion_collapse">
+                            Home & Feed
+                        </button>
+                    </h2>
+                    <div id="home_feed_accordion_collapse" class="accordion-collapse collapse show" aria-labelledby="home_feed_accordion_heading"
+                        data-bs-parent="#doc_accordion">
+                        <div class="accordion-body">
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item nanoframe-doc-item nanoframe-doc-selected-item"><a href="/guides/home" class="text-dark nanoframe-doc-link">Home</a></li>
+                                    <li class="list-group-item nanoframe-doc-item"><a href="/guides/feed" class="text-dark nanoframe-doc-link">Feed</a></li>
+                                </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="synthesizer_accordion_heading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#synthesizer_accordion_collapse" aria-expanded="false" aria-controls="synthesizer_accordion_collapse">
+                            Synthesizer
+                        </button>
+                    </h2>
+                    <div id="synthesizer_accordion_collapse" class="accordion-collapse collapse" aria-labelledby="synthesizer_accordion_heading"
+                        data-bs-parent="#doc_accordion">
+                        <div class="accordion-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item nanoframe-doc-item"><a href="/guides/shapes" class="text-dark nanoframe-doc-link">Shapes</a></li>
+                            <li class="list-group-item nanoframe-doc-item"><a href="/guides/scaffolds" class="text-dark nanoframe-doc-link">Scaffolds</a></li>
+                            <li class="list-group-item nanoframe-doc-item"><a href="/guides/wireframe" class="text-dark nanoframe-doc-link">Wireframe</a></li>
+                            <li class="list-group-item nanoframe-doc-item"><a href="/guides/dimensions" class="text-dark nanoframe-doc-link">Dimensions</a></li>
+                            <li class="list-group-item nanoframe-doc-item"><a href="/guides/advanced" class="text-dark nanoframe-doc-link">Advanced</a></li>
+                        </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="playground_accordion_heading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#playground_accordion_collapse" aria-expanded="false"
+                            aria-controls="playground_accordion_collapse">
+                            Playground
+                        </button>
+                    </h2>
+                    <div id="playground_accordion_collapse" class="accordion-collapse collapse"
+                        aria-labelledby="playground_accordion_heading" data-bs-parent="#doc_accordion">
+                        <div class="accordion-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item nanoframe-doc-item"><a href="/guides/canvas_gui" class="text-dark nanoframe-doc-link">Canvas GUI Interactions</a></li>
+                                <li class="list-group-item nanoframe-doc-item"><a href="/guides/canvas_api" class="text-dark nanoframe-doc-link">Canvas API Interactions</a></li>
+                                <li class="list-group-item nanoframe-doc-item"><a href="/guides/nfr_projects" class="text-dark nanoframe-doc-link">Export/Import NFR Projects</a></li>
+                                <li class="list-group-item nanoframe-doc-item"><a href="/guides/tpsc" class="text-dark nanoframe-doc-link">Exporting TPSC</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="api_accordion_heading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#api_accordion_collapse" aria-expanded="false"
+                            aria-controls="api_accordion_collapse">
+                            API
+                        </button>
+                    </h2>
+                    <div id="api_accordion_collapse" class="accordion-collapse collapse"
+                        aria-labelledby="api_accordion_heading" data-bs-parent="#doc_accordion">
+                        <div class="accordion-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item nanoframe-doc-item"><a href="/guides/api_keys" class="text-dark nanoframe-doc-link">Obtaining Keys</a></li>
+                                <li class="list-group-item nanoframe-doc-item"><a href="/guides/home_feed_api" class="text-dark nanoframe-doc-link">Home & Feed API Actions</a></li>
+                                <li class="list-group-item nanoframe-doc-item"><a href="/guides/synthesizer_api" class="text-dark nanoframe-doc-link">Synthesizer API Actions</a></li>
+                                <li class="list-group-item nanoframe-doc-item"><a href="/guides/playground_api" class="text-dark nanoframe-doc-link">Playground API Actions</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="tutorial_accordion_heading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#tutorial_accordion_collapse" aria-expanded="false"
+                            aria-controls="tutorial_accordion_collapse">
+                            Tutorials
+                        </button>
+                    </h2>
+                    <div id="tutorial_accordion_collapse" class="accordion-collapse collapse"
+                        aria-labelledby="tutorial_accordion_heading" data-bs-parent="#doc_accordion">
+                        <div class="accordion-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item nanoframe-doc-item"><a href="https://youtube.com/playlist?list=PLJfZub7t7u3IMP3gVfIM1P1G8e6bqCVK2" class="text-dark nanoframe-doc-link">Home & Feed</a></li>
+                                <li class="list-group-item nanoframe-doc-item"><a href="https://youtube.com/playlist?list=PLJfZub7t7u3IMP3gVfIM1P1G8e6bqCVK2" class="text-dark nanoframe-doc-link">Synthesizer</a></li>
+                                <li class="list-group-item nanoframe-doc-item"><a href="https://youtube.com/playlist?list=PLJfZub7t7u3IMP3gVfIM1P1G8e6bqCVK2" class="text-dark nanoframe-doc-link">Playground</a></li>
+                                <li class="list-group-item nanoframe-doc-item"><a href="https://youtube.com/playlist?list=PLJfZub7t7u3IMP3gVfIM1P1G8e6bqCVK2" class="text-dark nanoframe-doc-link">API</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="experiment_accordion_heading">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#experiment_accordion_collapse" aria-expanded="false"
+                            aria-controls="experiment_accordion_collapse">
+                            Experiment Protocol
+                        </button>
+                    </h2>
+                    <div id="experiment_accordion_collapse" class="accordion-collapse collapse"
+                        aria-labelledby="experiment_accordion_heading" data-bs-parent="#doc_accordion">
+                        <div class="accordion-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item nanoframe-doc-item"><a href="/guides/single_origami_assembly" class="text-dark nanoframe-doc-link">Single-Origami Assembly Protocol</a></li>
+                                <li class="list-group-item nanoframe-doc-item"><a href="/guides/single_origami_cage_opening" class="text-dark nanoframe-doc-link">Single-Origami Cage Opening Protocol</a></li>
+                                <li class="list-group-item nanoframe-doc-item"><a href="/guides/multi_origami_assembly" class="text-dark nanoframe-doc-link">Multi-Origami Assembly Protocol</a></li>
+                                <li class="list-group-item nanoframe-doc-item"><a href="/guides/multi_origami_cage_opening" class="text-dark nanoframe-doc-link">Multi-Origami Cage Opening Protocol</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+    </div>
+</div>
+</div>
+<%= render "layouts/footer"%>

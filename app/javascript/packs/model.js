@@ -29,6 +29,7 @@ controls.enableDamping = true;
 const gui = new dat.GUI({
   autoPlace: false,
 });
+controls.enableZoom = false;
 
 camera.position.z = 240;
 const scene = new THREE.Scene();

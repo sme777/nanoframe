@@ -91,8 +91,8 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-  $(".input-container").click(function () {
-    $("#sequenceCheckbox").prop("checked", false);
+  $("#sequence_upload_container").click(function () {
+    $("#sequence_checkbox").prop("checked", false);
   });
 
   $(".random-sequence-container").click(function () {
@@ -167,9 +167,13 @@ $(document).ready(function () {
   $("#generator_scaffold_name").click(() => {
     if ($("#generator_scaffold_name").val() == 'Custom') {
       $(".custom-scaffold-container").show();
+      $(".random-sequence-container").show();
+      $("#sequence_upload_container").show();
       $("#sequence_checkbox").prop("checked", true);
     } else {
       $(".custom-scaffold-container").hide();
+      $(".random-sequence-container").hide();
+      $("#sequence_upload_container").hide();
       $("#sequence_checkbox").prop("checked", false);
     }
   })

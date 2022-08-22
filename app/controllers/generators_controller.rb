@@ -211,7 +211,11 @@ class GeneratorsController < ApplicationController
       end
       is_public = generator_fields[:visibility] == "1" ? true : false
       @generator = Generator.new({ shape: generator_fields[:shape], dimensions: dimensions, scaffold: scaffold,
-                                   scaffold_name: generator_fields[:scaffold_name], public: is_public })
+                                   scaffold_name: generator_fields[:scaffold_name], public: is_public,
+                                   exterior_extension_length: generator_fields[:exterior_extensions].to_i,
+                                   interior_extension_length: generator_fields[:interior_extensions].to_i,
+                                   exterior_extension_bond_type: generator_fields[:exterior_bond_type],
+                                   interior_extension_bond_type: generator_fields[:interior_bond_type]})
       @generator.user_id = @current_user.id unless @current_user.nil?
 
       if @generator.save
@@ -288,7 +292,8 @@ class GeneratorsController < ApplicationController
   private
 
   def generator_params
-    params.require(:generator).permit(:height, :width, :depth, :shape, :divisions, :scaffold_name, :visibility)
+    params.require(:generator).permit(:height, :width, :depth, :shape, :divisions, :scaffold_name, :visibility, 
+                                      :exterior_extensions, :exterior_bond_type, :interior_extensions, :interior_bond_type)
   end
 
   def user_generator_params

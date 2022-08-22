@@ -73,7 +73,7 @@
               </label>
             </div>
 
-            <div class="col-md-7 input-container">
+            <div class="col-md-7 input-container" id="sequence_upload_container">
               <input class="form-control form-control-sm" id="sequenceUpload" type="file" accept=".txt">
             </div>
           </div>
@@ -135,6 +135,68 @@
               <%= f.text_field :json, type: "hidden", class: "json-input" %>
             </div>
           </div>
+
+          <p class="advanded-option-header">
+            <button class="btn btn-link advanced-option" type="button" data-bs-toggle="collapse" data-bs-target="#advanced_options_menu" aria-expanded="false">
+             <i class="fa-solid fa-angle-right"></i>Advanced
+            </button>
+          </p>
+          <div class="collapse" id="advanced_options_menu">
+
+            <div class="input-group synthesizer-item">
+              <span class="input-group-text w-50">Exterior Extensions Length</span>
+              <%= f.text_field :exterior_extensions, type: "text", value: "10", class: "form-control", placeholder: "10" %>
+              <div class="btn-group btn-group" role="group">
+                  <%= f.radio_button :exterior_bond_type, :zipbond, class: "btn-check", autocomplete: "off", checked: true %>
+                  <%= f.label "Zip Bonds", for: "generator_exterior_bond_type_zipbond", class: "btn btn-outline-dark" %>
+                  <%= f.radio_button :exterior_bond_type, :armbond, class: "btn-check", autocomplete: "off"%>
+                  <%= f.label "Arm Bonds", for: "generator_exterior_bond_type_armbond", class: "btn btn-outline-dark" %>
+              </div>
+            </div>
+            <div class="input-group synthesizer-item">
+              <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="disable_exteriror_extensions">
+                <label class="form-check-label" for="disable_exteriror_extensions">
+                  Disable Exterior Extensions
+                </label>
+              </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input-container">
+                  <input class="form-control form-control-sm" id="exterior_extension_sequence_upload" type="file" accept=".txt">
+                </div>
+              </div>
+            </div>
+
+            <div class="input-group synthesizer-item">
+              <span class="input-group-text w-50">Interior Extensions Length</span>
+              <%= f.text_field :interior_extensions, type: "text", value: "10", class: "form-control", placeholder: "10" %>
+              <div class="btn-group btn-group" role="group">
+                  <%= f.radio_button :interior_bond_type, :zipbond, class: "btn-check", autocomplete: "off", checked: true %>
+                  <%= f.label "Zip Bonds", for: "generator_interior_bond_type_zipbond", class: "btn btn-outline-dark" %>
+                  <%= f.radio_button :interior_bond_type, :armbond, class: "btn-check", autocomplete: "off"%>
+                  <%= f.label "Arm Bonds", for: "generator_interior_bond_type_armbond", class: "btn btn-outline-dark" %>
+              </div>
+            </div>
+
+            <div class="input-group synthesizer-item">
+              <div class="col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" value="" id="disable_interior_extensions">
+                  <label class="form-check-label" for="disable_interior_extensions">
+                    Disable Interior Extensions
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input-container">
+                  <input class="form-control form-control-sm" id="interior_extension_sequence_upload" type="file" accept=".txt">
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="synthesizer-btn-container">
             <%= f.submit "Synthesize", id: "synthesize-btn", class: "synthesizer-btn btn btn-outline-dark btn-lg w-100", disabled: true%>
             <%# <button type="submit" class="synthesizer-btn btn btn-secondary btn-lg w-50" disabled>Synthesize</button> %>
@@ -148,5 +210,5 @@
     <!-- End of Synthesizer Selection-->
 
     <%= render "layouts/footer"%>
-    <%= javascript_pack_tag 'dna', 'model', 'nanobot', 'data-turbolinks-track': 'reload'%>
+    <%= javascript_pack_tag 'dna', 'model', 'nanobot', 'synthesizerMenu', 'data-turbolinks-track': 'reload'%>
 </body>

@@ -1,0 +1,23 @@
+// Place all the styles related to the guides controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: https://sass-lang.com/
+.docs-sidebar-container {
+    padding: 4% 2%;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+.docs-header-container {
+    padding-bottom: 3%;
+}
+
+.nanoframe-doc-item:hover {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+.nanoframe-doc-selected-item {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+.nanoframe-doc-link {
+    display:block;
+}

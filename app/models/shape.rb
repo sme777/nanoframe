@@ -11,7 +11,7 @@ class Shape
 
   def generate_faces
     data_hash = JSON.parse(
-      File.read("/home/sme777/Desktop/nanoframe/app/assets/models/shapes.json")
+      File.read("#{Rails.root.join('app')}/assets/models/shapes.json")
     )
     shape_data = data_hash["#{@name}"]
     faces = []
