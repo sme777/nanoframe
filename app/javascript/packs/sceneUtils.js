@@ -26,9 +26,13 @@ export function SetupGeneralScene(container) {
 export function SetupItemFeed(itemCount) {
     let itemScenes = [];
     for (let i = 0; i < itemCount; i++) {
-        const elementScene = setupItemScene(i);
-        if (elementScene != null) {
-            itemScenes.push(elementScene);
+        try {
+            const elementScene = setupItemScene(i);
+            if (elementScene != null) {
+                itemScenes.push(elementScene);
+            }
+        } catch (e) {
+            console.log(`Error retrieving synth properties ${e}`)
         }
     }
     return itemScenes;

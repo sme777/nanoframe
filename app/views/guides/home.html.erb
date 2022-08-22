@@ -1,0 +1,18 @@
+<%= stylesheet_link_tag 'application', media: 'all' %>
+<%= render partial: "layouts/nav", locals: {tab: "other"} %>
+
+<div class="row">
+    <div class="docs-sidebar-container col-md-3">
+        <%= render partial: "sidenav", locals: {main: "home_feed", section: "home"} %>
+    </div>
+    <div class="col-md-9">
+        <div class="page-container">
+            <div class="page-title-container">
+                <h3>Home</h3>
+            </div>
+            <div class="page-body-container">
+            </div>
+        </div>
+    </div>
+</div>
+<%= render "layouts/footer" %>

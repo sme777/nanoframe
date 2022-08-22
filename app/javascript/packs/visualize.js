@@ -17,11 +17,6 @@ import GLTFExporter from 'three-gltf-exporter';
 
 
 let size = 1;
-let visualize = true;
-if (generatorSize != null) {
-  size = parseInt(generatorSize.value);
-  visualize = false;
-}
 let insetWidth, insetHeight, camera2;
 let firstStartPoint, firstEndPoint, lastStartPoint, lastEndPoint;
 let id
@@ -98,34 +93,14 @@ function adjustSplitPosition(points, group) {
 function generateDisplay(
   positions,
   colors = colors,
-  split = false,
-  fullDisplay = true
-) {
-  if (!fullDisplay) {
-    positions = positions.concat(positions).slice(start, end);
-    if (!residualEdges) {
-      firstStartPoint = positions.slice(0, 3);
-      firstEndPoint = positions.slice(-3);
-    } else {
-      lastStartPoint = positions.slice(0, 3);
-      lastEndPoint = positions.slice(-3);
-    }
-  }
-
-  if (fullDisplay) {
-    routingColors = colors;
-  } else {
-    colors = findColorSequnece(start, positions.length, divisions);
-  }
-
+  split = false
+  ) {
   const geometry = new LineGeometry();
   geometry.setPositions(positions);
   geometry.setColors(colors);
 
   line0 = new Line2(geometry, matLine);
-  if (fullDisplay) {
-    let _ = split ? splitLinearGroup.add(line0) : linearGroup.add(line0);
-  }
+  let _ = split ? splitLinearGroup.add(line0) : linearGroup.add(line0);
 }
 
 function updateDisplay(scene) {
@@ -199,16 +174,7 @@ function connectEnds(start, end, elevation) {
   return new THREE.Mesh(line, material);
 }
 
-for (let i = 0; i < size; i++) {
-  if (!visualize) {
-    id = document.getElementById("index-" + i.toString()).value;
-    canvas = document.getElementById("webgl-public-" + id);
-  } else {
-    canvas = document.getElementById("visualize-webgl");
-  }
-}
-
-
+canvas = document.getElementById("visualize-webgl");
 canvasContainer = document.querySelector(".canvas-container");
 canvasContainerWidth = canvasContainer.offsetWidth;
 canvasContainerHeight = canvasContainer.offsetHeight;
@@ -226,14 +192,13 @@ let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(
   40,
   canvasContainerWidth / canvasContainerHeight,
-  1,
-  1000
+  0.1,
+  10000
 );
 camera.position.set(-40, 60, 90);
-if (visualize) {
-  camera2 = new THREE.PerspectiveCamera(40, 1, 1, 1000);
-  camera2.position.copy(camera.position);
-}
+camera2 = new THREE.PerspectiveCamera(40, 1, 1, 1000);
+camera2.position.copy(camera.position);
+
 
 let doublePoints = scaffoldPositions.concat(scaffoldPositions);
 let doubleColors = scaffoldColors.concat(scaffoldColors);
@@ -401,13 +366,10 @@ function onWindowResize() {
   camera.aspect = canvasContainerWidth / canvasContainerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(canvasContainerWidth, canvasContainerHeight);
-
-  if (visualize) {
-    insetWidth = canvasContainerHeight / 4;
-    insetHeight = canvasContainerHeight / 4;
-    camera2.aspect = insetWidth / insetHeight;
-    camera2.updateProjectionMatrix(line1);
-  }
+  insetWidth = canvasContainerHeight / 4;
+  insetHeight = canvasContainerHeight / 4;
+  camera2.aspect = insetWidth / insetHeight;
+  camera2.updateProjectionMatrix(line1);
 }
 
 function findIndex(pos) {
@@ -443,7 +405,7 @@ function render() {
 
   renderer.render(scene, camera);
 
-  if (visualize) {
+  
     raycaster.setFromCamera(mouse, camera);
     const intersections = raycaster.intersectObject(currentGroup, true);
 
@@ -477,13 +439,14 @@ function render() {
     matLine.resolution.set(insetWidth, insetHeight);
     renderer.render(scene, camera2);
     renderer.setScissorTest(false);
-  }
+  
 
   requestAnimationFrame(render);
 }
-if (visualize) {
+
   const box = document.getElementById("box-state");
   const stapleToggler = document.getElementById("box-state-staples");
+  const zoomToggler = document.getElementById("box-state-zoom");
 
   box.addEventListener("click", (e) => {
     if (box.innerHTML === "Open Form") {
@@ -511,7 +474,16 @@ if (visualize) {
     stapleLinearGroup.visible = !stapleLinearGroup.visible;
   });
 
-}
+  zoomToggler.addEventListener("click", () => {
+    if (controls.enableZoom) {
+      zoomToggler.innerHTML = "Enable Zoom";
+    } else {
+      zoomToggler.innerHTML = "Disable Zoom";
+    }
+    controls.enableZoom = !controls.enableZoom;
+  })
+
+
 
 
 document.querySelector("#gltf_export").addEventListener("click", () => {
