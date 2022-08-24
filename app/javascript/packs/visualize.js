@@ -447,6 +447,7 @@ function render() {
   const box = document.getElementById("box-state");
   const stapleToggler = document.getElementById("box-state-staples");
   const zoomToggler = document.getElementById("box-state-zoom");
+  const tableToggler = document.getElementById("box-stable-table");
 
   box.addEventListener("click", (e) => {
     if (box.innerHTML === "Open Form") {
@@ -466,7 +467,7 @@ function render() {
   });
 
   stapleToggler.addEventListener("click", () => {
-    if (box.innerHTML === "Show Staples") {
+    if (stapleToggler.innerHTML === "Show Staples") {
       stapleToggler.innerHTML = "Hide Staples";
     } else {
       stapleToggler.innerHTML = "Show Staples";
@@ -483,7 +484,13 @@ function render() {
     controls.enableZoom = !controls.enableZoom;
   })
 
-
+  tableToggler.addEventListener("click", () => {
+    if (tableToggler.innerHTML === "View Sequence Table") {
+      tableToggler.innerHTML = "Hide Sequence Table"
+    } else {
+      tableToggler.innerHTML = "View Sequence Table"
+    }
+  })
 
 
 document.querySelector("#gltf_export").addEventListener("click", () => {

@@ -210,12 +210,22 @@ class GeneratorsController < ApplicationController
         scaffold = Generator.public_send(generator_fields[:scaffold_name].parameterize(separator: '_'))
       end
       is_public = generator_fields[:visibility] == "1" ? true : false
+      exterior_extensions_arr, interior_extensions_arr = [], []
+
+      if !generator_fields[:exterior_extension_sequence].nil?
+        exterior_extensions_arr = generator_fields[:exterior_extension_sequence].tempfile.read.split("\n")
+      end
+
+      if !generator_fields[:interior_extension_sequence].nil?
+        interior_extensions_arr = generator_fields[:interior_extension_sequence].tempfile.read.split("\n")
+      end
       @generator = Generator.new({ shape: generator_fields[:shape], dimensions: dimensions, scaffold: scaffold,
                                    scaffold_name: generator_fields[:scaffold_name], public: is_public,
                                    exterior_extension_length: generator_fields[:exterior_extensions].to_i,
                                    interior_extension_length: generator_fields[:interior_extensions].to_i,
                                    exterior_extension_bond_type: generator_fields[:exterior_bond_type],
-                                   interior_extension_bond_type: generator_fields[:interior_bond_type]})
+                                   interior_extension_bond_type: generator_fields[:interior_bond_type],
+                                   exterior_extensions: exterior_extensions_arr, interior_extensions: interior_extensions_arr})
       @generator.user_id = @current_user.id unless @current_user.nil?
 
       if @generator.save
@@ -293,7 +303,8 @@ class GeneratorsController < ApplicationController
 
   def generator_params
     params.require(:generator).permit(:height, :width, :depth, :shape, :divisions, :scaffold_name, :visibility, 
-                                      :exterior_extensions, :exterior_bond_type, :interior_extensions, :interior_bond_type)
+                                      :exterior_extensions, :exterior_bond_type, :interior_extensions, :interior_bond_type,
+                                      :exterior_extension_sequence, :interior_extension_sequence)
   end
 
   def user_generator_params

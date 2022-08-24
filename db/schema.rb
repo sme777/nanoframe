@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_08_21_080158) do
+ActiveRecord::Schema.define(version: 2022_08_22_172232) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -63,6 +63,8 @@ ActiveRecord::Schema.define(version: 2022_08_21_080158) do
     t.integer "interior_extension_length"
     t.string "exterior_extension_bond_type"
     t.string "interior_extension_bond_type"
+    t.text "exterior_extensions", default: [], array: true
+    t.text "interior_extensions", default: [], array: true
   end
 
   create_table "users", force: :cascade do |t|

@@ -11,10 +11,10 @@ class Graph
   # dimension[0] -> width
   # dimension[1] -> height
   # dimension[2] -> depth
-  def initialize(id, dimensions, shape, scaffold)
+  def initialize(generator, dimensions, shape, scaffold)
     setup_dimensions(dimensions, shape)
+    setup_extensions(generator)
     @shape = Shape.new(shape)
-    @generator_id = id
     @segments = dimensions['divisions'].to_i + 1
     @scaff_length = scaffold.size
     @staple_breaker = Breaker.new(self)
@@ -33,8 +33,8 @@ class Graph
       @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
-    @staples = @staple_breaker.break_refraction_staples(@staples, ["TTTTT"])
-    @staples.each {|staple| staple.update_interior_extension("")}
+    @staples = @staple_breaker.break_refraction_staples(@staples, @exterior_extensions)
+    @staples = @staple_breaker.extend_interior_staples(@staples, @interior_extensions) if @interior_extension_length > 0
   end
 
   def setup_dimensions(dimensions, shape)
@@ -49,6 +49,13 @@ class Graph
     dimensions.each do |k, _v|
       self.class.send(:attr_accessor, k.to_s)
     end
+  end
+
+  def setup_extensions(generator)
+    @exterior_extensions = generator.exterior_extensions 
+    @interior_extensions = generator.interior_extensions 
+    @exterior_extension_length = generator.exterior_extension_length
+    @interior_extension_length = generator.interior_extension_length
   end
 
   def create_vertices_and_edges(shape)

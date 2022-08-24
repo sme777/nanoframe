@@ -95,8 +95,9 @@ class Staple
   def update_interior_extension(sequence)
     return if @type == :refraction || @type == :mod_refraction || 
       @type == :exterior_start_refraction || @type == :exterior_end_refraction || @disabled
-
+    
     if extendable_start
+      sequence = "#{convert(Staple.particle_barcodes[:gold])}TT" if sequence.nil?
       extension_points = compute_inner_extension_positions(@points.first, -1, sequence.size)
       original_extension_points = compute_inner_extension_positions(@original_points.first, -1, sequence.size)
       @points = extension_points + @points
@@ -107,6 +108,7 @@ class Staple
       prev_staple = ObjectSpace._id2ref(@prev)
       prev_staple.disabled = true if prev_staple.extendable_end
     elsif extendable_end
+      sequence = "TT#{convert(Staple.particle_barcodes[:gold].reverse)}" if sequence.nil?
       extension_points = compute_inner_extension_positions(@points.last, -1, sequence.size)
       original_extension_points = compute_inner_extension_positions(@original_points.last, -1, sequence.size)
       @points = @points + extension_points
@@ -132,6 +134,14 @@ class Staple
   end
 
   def update_exterior_extension(extension_side, sequence)
+    if sequence.nil?
+      if extension_side == :start
+        sequence = "#{Staple.orthogonal_barcodes.sample}TT"
+      else
+        sequence = "TT#{Staple.orthogonal_barcodes.sample.reverse}"
+      end
+    end
+    
     case extension_side
     when :start
       orth, side = Plane.orthogonal_dimension(@original_points[1], @original_points[1], @graph.shape.name, [@graph.width, @graph.height, @graph.depth])

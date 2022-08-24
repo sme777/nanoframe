@@ -164,7 +164,7 @@
               </div>
               <div class="col-md-6">
                 <div class="input-container">
-                  <input class="form-control form-control-sm" id="exterior_extension_sequence_upload" type="file" accept=".txt">
+                  <%= f.file_field "exterior_extension_sequence", class: "form-control form-control-sm", accept: ".txt"%>
                 </div>
               </div>
             </div>
@@ -191,7 +191,7 @@
               </div>
               <div class="col-md-6">
                 <div class="input-container">
-                  <input class="form-control form-control-sm" id="interior_extension_sequence_upload" type="file" accept=".txt">
+                  <%= f.file_field "interior_extension_sequence", class: "form-control form-control-sm", accept: ".txt"%>
                 </div>
               </div>
             </div>
@@ -199,7 +199,6 @@
 
           <div class="synthesizer-btn-container">
             <%= f.submit "Synthesize", id: "synthesize-btn", class: "synthesizer-btn btn btn-outline-dark btn-lg w-100", disabled: true%>
-            <%# <button type="submit" class="synthesizer-btn btn btn-secondary btn-lg w-50" disabled>Synthesize</button> %>
           </div>
         </div>
         <% end %>

@@ -507,8 +507,11 @@ class Breaker
       next_staple = ObjectSpace._id2ref(staple.next)
       next_staple.prev = back_staple.object_id
       
-      front_staple.update_exterior_extension(:end, ext_sequences[0])
-      back_staple.update_exterior_extension(:start, ext_sequences[0])
+      if !ext_sequences.empty?
+        front_staple.update_exterior_extension(:end, ext_sequences[0])
+        back_staple.update_exterior_extension(:start, ext_sequences[0])
+        ext_sequences.rotate
+      end
 
       if front_staple.sequence.size < 30
         front_prev_staple = ObjectSpace._id2ref(front_staple.prev)
@@ -530,6 +533,14 @@ class Breaker
     end
 
     new_staples.filter { |stp| !removed_staples.include?(stp) }
+  end
+
+  def extend_interior_staples(staples, interior_extensions)
+    staples.each_with_index do |staple, idx|
+      staple.update_interior_extension(interior_extensions[0])
+      interior_extensions.rotate 
+    end
+    staples
   end
 
   def merge_staples(st1, st2, type)

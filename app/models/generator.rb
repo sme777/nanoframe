@@ -44,7 +44,7 @@ class Generator < ApplicationRecord
   end
 
   def route
-    @graph = Graph.new(id, dimensions, shape_name, scaffold)
+    @graph = Graph.new(self, dimensions, shape_name, scaffold)
   end
 
   def update_bridge_length(length)

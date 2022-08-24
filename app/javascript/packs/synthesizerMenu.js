@@ -18,14 +18,14 @@ $(() => {
             $("#generator_exterior_bond_type_zipbond").prop("checked", false);
             $("#generator_exterior_bond_type_armbond").prop("disabled", true);
             $("#generator_exterior_bond_type_armbond").prop("checked", false);
-            $("#exterior_extension_sequence_upload").prop("disabled", true);
+            $("#generator_exterior_extension_sequence").prop("disabled", true);
         } else {
             $("#generator_exterior_extensions").prop("disabled", false);
             $("#generator_exterior_extensions").val(10);
             $("#generator_exterior_bond_type_zipbond").prop("disabled", false);
             $("#generator_exterior_bond_type_zipbond").prop("checked", true);
             $("#generator_exterior_bond_type_armbond").prop("disabled", false);
-            $("#exterior_extension_sequence_upload").prop("disabled", false);
+            $("#generator_exterior_extension_sequence").prop("disabled", false);
         }
     };
 
@@ -37,14 +37,14 @@ $(() => {
             $("#generator_interior_bond_type_zipbond").prop("checked", false);
             $("#generator_interior_bond_type_armbond").prop("disabled", true);
             $("#generator_interior_bond_type_armbond").prop("checked", false);
-            $("#interior_extension_sequence_upload").prop("disabled", true);
+            $("#generator_interior_extension_sequence").prop("disabled", true);
         } else {
             $("#generator_interior_extensions").prop("disabled", false);
             $("#generator_interior_extensions").val(10);
             $("#generator_interior_bond_type_zipbond").prop("disabled", false);
             $("#generator_interior_bond_type_zipbond").prop("checked", true);
             $("#generator_interior_bond_type_armbond").prop("disabled", false);
-            $("#interior_extension_sequence_upload").prop("disabled", false);
+            $("#generator_interior_extension_sequence").prop("disabled", false);
         }
     };
 });
