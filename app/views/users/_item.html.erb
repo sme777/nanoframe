@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="col-md-6 edit-toolkit">
-                    <a href="/nanobot/<%= homepageItem.id%>/visualize">Edit</a>
+                    <a href="/synthesizer/<%= homepageItem.id%>/visualize">Edit</a>
                 </div>
             </div>
             <div class="row">
@@ -52,7 +52,7 @@
                     <ul class="dropdown-menu dropdown-menu-dark file-dropdown-menu">
                         <% @supported_files.each do |file| %>
                         <li>
-                            <%= form_with(url: "/nanobot/#{homepageItem.id}/visualize", method: :post, data: { turbo: false }) do |f| %>
+                            <%= form_with(url: "/synthesizer/#{homepageItem.id}/visualize", method: :post, data: { turbo: false }) do |f| %>
                             <%= hidden_field_tag 'type', file %>
                             <%= button_tag file, class: "dropdown-item"%>
                             <% end %>
