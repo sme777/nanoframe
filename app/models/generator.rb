@@ -7,7 +7,6 @@ require 'object3D'
 require 'oxdna_maker'
 
 class Generator < ApplicationRecord
-
   def self.generate_objects(step_size, loopout_length, min_len, max_len, scaff_length)
     min_len = min_len.to_i
     max_len = max_len.to_i
@@ -95,7 +94,7 @@ class Generator < ApplicationRecord
   end
 
   def self.supported_files
-    ["staples (384 wells)", "staples (debug)", "nfr", "oxDNA", "PDB", "bundle"]
+    ['staples (384 wells)', 'staples (debug)', 'nfr', 'oxDNA', 'PDB', 'bundle']
   end
 
   def self.color_palettes
@@ -119,8 +118,6 @@ class Generator < ApplicationRecord
     "0x#{hex}"
   end
 
-  
-
   def filename(logged, user_id)
     if logged
       curr_user = User.find(user_id)
@@ -137,14 +134,14 @@ class Generator < ApplicationRecord
     file.write("Well position,Name,Sequence\n")
     staples = self.staples['data']
     well_cols = (1..24).to_a
-    well_rows = (65..80).to_a.map {|ascii| ascii.chr}
+    well_rows = (65..80).to_a.map(&:chr)
     well_col = 0
     well_row = 0
     staples.each do |staple|
       sequence = staple['sequence']
       name = staple['name']
       file.write("#{well_rows[well_row]}#{well_cols[well_col]},#{Staple.convert2wellname(name)},#{sequence}\n")
-      if well_rows[well_row] == "P"
+      if well_rows[well_row] == 'P'
         well_row = 0
         well_col += 1
       else
@@ -164,7 +161,7 @@ class Generator < ApplicationRecord
       color = staple['color']
       sequence = staple['sequence']
       name = staple['name']
-      
+
       file.write("#{name},#{Generator.rgb2hex(color)},#{sequence},#{sequence.size}\n")
     end
     file.close
@@ -449,7 +446,7 @@ class Generator < ApplicationRecord
   end
 
   def self.supported_shapes
-    ['Cube (P1)']
+    ['Cube (P1)', 'Tetrahedron (P2)']
   end
 
   def shape_name

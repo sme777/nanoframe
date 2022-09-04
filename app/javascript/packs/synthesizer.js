@@ -10,7 +10,11 @@ function main() {
     const feedScene = SetupGeneralScene(feedContainer);
     const generatorSize = document.querySelector("#generator-size").value;
     const feedItemsScenes = SetupItemFeed(generatorSize);
-    
+    const modelItemContainer = document.querySelector(`#page_item_0`);
+
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(modelItemContainer.width, modelItemContainer.height);
+
     function renderSceneInfo(sceneInfo, resolution) {
         const { scene, camera, elem } = sceneInfo;
         Material.resolution.set(resolution.width, resolution.height);
@@ -46,8 +50,6 @@ function main() {
             width: feedContainer.clientWidth,
         });
         for (let i = 0; i < feedItemsScenes.length; i++) {
-            const modelItemContainer = document.querySelector(`#page_item_${i}`);
-            // console.log(modelItemContainer.clientHeight, modelItemContainer.clientWidth)
             renderSceneInfo(feedItemsScenes[i], {
                 height: modelItemContainer.clientHeight,
                 width: modelItemContainer.clientWidth,

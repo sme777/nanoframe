@@ -3,7 +3,6 @@
 require 'json'
 
 class Graph
-  include ActiveModel::Serialization
   SSDNA_NT_DIST = 0.332
   attr_accessor :vertices, :edges, :sets, :route, :planes, :vertex_cuts, :staples, :staple_colors, :boundary_edges,
                 :points, :colors, :shape, :segments, :scaff_length
@@ -12,17 +11,24 @@ class Graph
   # dimension[1] -> height
   # dimension[2] -> depth
   def initialize(generator, dimensions, shape, scaffold)
+    byebug
     setup_dimensions(dimensions, shape)
     setup_extensions(generator)
     @shape = Shape.new(shape)
     @segments = dimensions['divisions'].to_i + 1
     @scaff_length = scaffold.size
     @staple_breaker = Breaker.new(self)
-    v_and_e = create_vertices_and_edges(shape)
-    @vertices = v_and_e[0]
-    @edges = v_and_e[1]
-    @template_planes = find_four_planes
-    @planes, @raw_planes = find_plane_combination(@template_planes)
+    @outgoers = create_outgoers(@shape, @segments)
+    @vertices, @edges = create_vertices_and_edges(@shape)
+
+    if shape.name == "tetrahedron"
+      @template_planes = find_four_planes2(@edges, @outgoers, @vertices)
+      @planes = find_plane_combination_tetrahedron(@template_planes)
+    else
+      @template_planes = find_four_planes
+      @planes = find_plane_combination(@template_planes)
+    end
+    
     @sorted_vertices, @normalized_vertices, @points, @sampling_frequency, @scaffold_rotation_labels = generate_points
     @colors = generate_colors
     @sorted_edges, @staples = generate_staples
@@ -33,29 +39,40 @@ class Graph
       @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
     @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
-    @staples = @staple_breaker.break_refraction_staples(@staples, @exterior_extensions)
-    @staples = @staple_breaker.extend_interior_staples(@staples, @interior_extensions) if @interior_extension_length > 0
+    @staples = @staple_breaker.break_refraction_staples(@staples, @exterior_extensions, @exterior_extension_length)
+    if @interior_extension_length.positive?
+      @staples = @staple_breaker.extend_interior_staples(@staples, @interior_extensions,
+                                                         @interior_extension_length)
+    end
   end
 
   def setup_dimensions(dimensions, shape)
-    case shape
-    when :cube
+    # case shape
+    # when :cube
       @width = dimensions['width'].to_f
       @height = dimensions['height'].to_f
       @depth = dimensions['depth'].to_f
-    when :tetrahedron
-      @radius = dimensions[0]
-    end
+    # when :tetrahedron
+    #   @radius = dimensions[0]
+    # end
     dimensions.each do |k, _v|
       self.class.send(:attr_accessor, k.to_s)
     end
   end
 
   def setup_extensions(generator)
-    @exterior_extensions = generator.exterior_extensions 
-    @interior_extensions = generator.interior_extensions 
+    @exterior_extensions = generator.exterior_extensions
+    @interior_extensions = generator.interior_extensions
     @exterior_extension_length = generator.exterior_extension_length
     @interior_extension_length = generator.interior_extension_length
+  end
+
+  def create_outgoers(shape, segments)
+    outgoers = []
+    shape.faces.each do |face|
+      outgoers << face.generate_segmented_vertices(segments).map {|v| v.round(6)}
+    end
+    outgoers
   end
 
   def create_vertices_and_edges(shape)
@@ -64,7 +81,7 @@ class Graph
     x = 0
     y = 0
 
-    case shape
+    case shape.name
     when :cube
       while x <= @segments && y <= @segments
 
@@ -87,10 +104,13 @@ class Graph
         end
 
       end
-    when :tetrahedron
-      v = get_vertices(:triangle)
-      stripes = connect_vertices(v)
-      e = get_edges(stripes)
+    else
+      @outgoers.each do |outgoer_group|
+        edges = Routing.get_edges(Routing.connect_vertices(outgoer_group))
+        vertices = Routing.get_vertices(edges)
+        e << edges
+        v << vertices
+      end
     end
     [v, e]
   end
@@ -109,99 +129,18 @@ class Graph
     vertices
   end
 
-  def modifications_objects
-    { staples: Marshal.dump(@staples), boundary_edges: Marshal.dump(@boundary_edges) }
-  end
-
   def staples_hash
     staples_data = []
     @staples.each do |staple|
       staples_data << { 'positions' => staple.points.map do |point|
-                                     [point.x, point.y, point.z]
-                                   end, 'original_positions' => staple.original_points.map do |point|
-                                                              [point.x, point.y, point.z]
-                                                            end,
-                        'color' => [rand, rand, rand], 'name' => staple.name, 'sequence' => staple.sequence, 
+                                         [point.x, point.y, point.z]
+                                       end, 'original_positions' => staple.original_points.map do |point|
+                                                                      [point.x, point.y, point.z]
+                                                                    end,
+                        'color' => [rand, rand, rand], 'name' => staple.name, 'sequence' => staple.sequence,
                         'indices' => staple.scaffold_idxs }
     end
     { 'data' => staples_data }
-  end
-
-  def connect_vertices(vs)
-    disp_v = vs.clone
-    e = []
-    until disp_v.empty?
-      v1 = disp_v[rand(0..(disp_v.length - 1))]
-      disp_v.delete(v1)
-      v2 = disp_v[rand(0..(disp_v.length - 1))]
-      if !same_side?(v1, v2)
-        e << Edge.new(v1, v2)
-        disp_v.delete(v2)
-      else
-        disp_v << v1
-      end
-    end
-    e
-  end
-
-  def get_edges(stripes)
-    undisected_edges = stripes.clone
-    (0..undisected_edges.length).each do |i|
-      (0..undisected_edges.length).each do |j|
-        if i == j
-          next
-        elsif intersect(undisected_edges[i], undisected_edges[j])
-          intersection_point = intersection(undisected_edges[i], undisected_edges[j])
-          e1_split = split_edge(undisected_edges[i], intersection_point)
-          e2_split = split_edge(undisected_edges[j], intersection_point)
-          undisected_edges.delete(undisected_edges[i])
-          undisected_edges.delete(undisected_edges[j])
-          undisected_edges << e1_split
-          undisected_edges << e2_split
-          # did_change
-        end
-      end
-    end
-    # puts Edge.beautify_edges(stripes)
-
-    undisected_edges
-  end
-
-  def ccw(a, b, c)
-    (c.y - a.y) * (b.x - a.x) > (b.y - a.y) * (c.x - a.x)
-  end
-
-  def intersect(e1, e2)
-    a = e1.v1
-    b = e1.v2
-    c = e2.v1
-    d = e2.v2
-    ccw(a, c, d) != ccw(b, c, d) && ccw(a, b, c) != ccw(a, b, d)
-  end
-
-  def intersection(e1, e2)
-    xdiff = [e1.v1.x - e1.v2.x, e2.v1.x - e2.v2.x]
-    ydiff = [e1.v1.y - e1.v2.y, e2.v1.y - e2.v2.y]
-
-    div = det(xdiff, ydiff)
-    d = [det([e1.v1.x, e1.v1.y], [e1.v2.x, e1.v2.y]), det([e2.v1.x, e2.v1.y], [e2.v2.x, e2.v2.y])]
-    x = det(d, xdiff) / div
-    y = det(d, ydiff) / div
-    Vertex.new(x, y, 0)
-  end
-
-  def det(a, b)
-    a[0] * b[1] - a[1] * b[0]
-  end
-
-  def split_edge(edge, point)
-    [Edge.new(edge.v1, point), Edge.new(point, edge.v2)]
-  end
-
-  def same_side?(v1, v2)
-    (v1.y == v2.y && v1.y.zero?) || (v1.y != 0 && v2.y != 0 &&
-    (v1.x < (@segments + 1) / 2 && v2.x < (@segments + 1) / 2 ||
-    v1.x > (@segments + 1) / 2 && v2.x > (@segments + 1) / 2))
   end
 
   def find_outgoers
@@ -225,6 +164,77 @@ class Graph
     end
     nil
   end
+
+  def find_plane_routing2(edges, outgoers, ingoers)
+
+    total_outgoers = outgoers.length
+    taken_outgoers = []
+    taken_edges = []
+    sets = []
+    last_move = nil
+    while taken_outgoers.length != total_outgoers
+      s = outgoers[rand(0..(outgoers.length - 1))]
+      outgoers.delete(s)
+      t = outgoers[rand(0..(outgoers.length - 1))]
+      dfs_edges = dfs2(s, t, last_move, taken_edges, edges, outgoers + ingoers) # ???
+      if dfs_edges != []
+        outgoers.delete(t)
+        taken_outgoers << s
+        taken_outgoers << t
+        taken_edges.concat(dfs_edges)
+        new_set = GraphSet.new(s)
+        new_set.add_node(t)
+        dfs_edges.each do |e|
+          new_set.add_edge(e)
+        end
+        sets << new_set
+      else
+        outgoers << s
+      end
+    end
+    if taken_edges.length != @edges.length
+      find_plane_routing2
+    else
+      sets
+    end
+  end
+
+
+  def dfs2(k, t, last_move, taken_edges, edges, vertices)
+    visited = {}
+    edges = deep_copy_edges2(taken_edges, edges)
+    # 0 denotes horizontal movement and 1 vertical
+    axis, next_move = Vertex.directional_change_axis(k, t)
+    # prev = (k.x % @segments).zero? ? 0 : 1
+
+    vertices.each do |v|
+      visited[v.hash] = [] # empty array of edges
+    end
+    visited = explore2(k, next_move, edges, visited)
+    visited[t.hash]
+  end
+
+  def explore2(k, last_move, edges, visited)
+    neighbors = find_neighbors2(k, last_move, edges)
+    return [] if neighbors.length.zero?
+
+    neighbors.each do |neighbor|
+      new_edge = Edge.new(k, neighbor)
+      _, next_move = Vertex.directional_change_axis(k, neighbor)
+      edges = find_and_remove_edge(edges, new_edge)
+
+      if visited[neighbor.hash] == []
+        visited[neighbor.hash] << new_edge
+        visited[k.hash].each do |p|
+          visited[neighbor.hash] << p
+        end
+      end
+      
+      explore2(neighbor, next_move, edges, visited)
+    end
+    visited
+  end
+
 
   # randomized algorithm that finds general plane routings
   # by selecting random start and end vertices
@@ -303,6 +313,14 @@ class Graph
     edges
   end
 
+  def deep_copy_edges2(taken_edges, edges)
+    new_edges = []
+    edges.each do |e|
+      new_edges << Edge.new(e.v1, e.v2) unless is_taken_edge?(e, taken_edges)
+    end
+    new_edges
+  end
+
   def is_taken_edge?(e, taken_edges)
     taken_edges.each do |tk|
       if (tk.v1 == e.v1 && tk.v2 == e.v2) ||
@@ -342,6 +360,25 @@ class Graph
     return v2 if (prev == 1 && (v2.y - v1.y).abs == 1) || (prev.zero? && (v2.x - v1.x).abs == 1)
   end
 
+  def find_neighbors2(v, prev, edges)
+    n = []
+    edges.each do |e|
+      neighbor_vertex = nil
+      if v == e.v1
+        neighbor_vertex = find_neighboring_vertex2(v, e.v2, prev)
+      elsif v == e.v2
+        neighbor_vertex = find_neighboring_vertex2(v, e.v1, prev)
+      end
+      n << neighbor_vertex unless neighbor_vertex.nil?
+    end
+    n
+  end
+
+  def find_neighboring_vertex2(v1, v2, prev)
+    _, largest = Vertex.directional_change_axis(v1, v2)
+    return v2 if (largest == :Y && prev != :Y) || (largest == :X && prev != :X) || (largest == :Z && prev != :Z)
+  end
+  
   # Generates plane routings for other faces of the cube
   # back -> 0
   # top -> 1
@@ -430,6 +467,32 @@ class Graph
   define_clone_and_transform :""
   define_clone_and_transform :reverse_
 
+
+  def find_four_planes2(edges, outgoers, vertices)
+    planes = []
+    edges.each_with_index do |edge_group, idx|
+      planes_group = []  
+      ingoers = extract_ingoers(vertices[idx], outgoers[idx])
+      4.times do |_|
+        planes_group << find_plane_routing2(edge_group, outgoers[idx], ingoers)
+      end
+      planes << planes_group
+    end
+    planes
+  end
+
+  def extract_ingoers(vertices, outgoers)
+    ingoers = []
+    vertices.each do |v|
+      includes_v = false
+      outgoers.each do |o|
+        includes_v = true if v == o
+      end
+      ingoers << v unless includes_v
+    end
+    ingoers
+  end
+
   # find 4 unique plane routings
   def find_four_planes
     planes = []
@@ -444,6 +507,24 @@ class Graph
     false
   end
 
+  def find_plane_combination_tetrahedron(planes)
+    i = 0
+    found = false
+    combinations = planes.product(planes[0], planes[1], planes[2], planes[3])
+    combinations.each do |c|
+      # arr = transform_array(c)
+
+      if has_one_loop(arr)
+        found = true
+        # reverse_arr = transform_array(arr, 'reverse_')
+        return arr #, reverse_arr]
+      end
+      i += 1
+    end
+
+    return find_plane_combination(find_four_planes) unless found
+  end
+
   def find_plane_combination(planes)
     i = 0
     found = false
@@ -453,13 +534,37 @@ class Graph
 
       if has_one_loop(arr)
         found = true
-        reverse_arr = transform_array(arr, 'reverse_')
-        return [arr, reverse_arr]
+        return arr
       end
       i += 1
     end
 
     return find_plane_combination(find_four_planes) unless found
+  end
+
+  # Greedy algorithm for finding 3D wireframe routing
+  def find_plane_combination2(shape, planes)
+    routing = []
+    curr_face = shape.faces[0]
+    face_iter_map = {}
+    shape.faces.each do |face|
+      face_iter_map["#{face.object_id}"] = 0
+    end
+
+    while shape.faces.size != routing.size
+      if face_iter_map["#{curr_face.object_id}"] > 3
+        face_id, route = routing.pop
+        face_iter_map["#{face_id}"] += 1
+        curr_face = curr_face.prev
+      end
+
+      curr_face_routing = planes[face_iter_map["#{curr_face.object_id}"]]
+      if attach?(routing, curr_face_routing)
+        routing << [curr_face.object_id, curr_face_routing]
+      else
+        face_iter_map["#{curr_face.object_id}"] += 1
+      end
+    end
   end
 
   def has_one_loop(g)
@@ -508,9 +613,9 @@ class Graph
   end
 
   def generate_points
-    plane_copy = Marshal.load(Marshal.dump(@planes))
+    plane_copy = Utils.deep_copy(@planes)
     sorted_vertices = Routing.sort_sets(plane_copy)
-    normalized_vertices = Marshal.load(Marshal.dump(sorted_vertices))
+    normalized_vertices = Utils.deep_copy(sorted_vertices)
 
     sorted_vertices = Routing.normalize(sorted_vertices, @width / @segments.to_f, @height / @segments.to_f,
                                         @depth / @segments.to_f, false)

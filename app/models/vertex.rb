@@ -3,12 +3,13 @@
 require 'json'
 
 class Vertex
-  attr_accessor :x, :y, :z
+  attr_accessor :x, :y, :z, :side
 
-  def initialize(x = 0, y = 0, z = 0)
+  def initialize(x = 0, y = 0, z = 0, side = nil)
     @x = x
     @y = y
     @z = z
+    @side = side
   end
 
   def string
@@ -29,6 +30,13 @@ class Vertex
 
   def ==(other)
     @x == other.x && @y == other.y && @z == other.z
+  end
+
+  def round(dec)
+    @x = @x.round(dec)
+    @y = @y.round(dec)
+    @z = @z.round(dec)
+    self
   end
 
   def distance_to_squared(v)
@@ -98,6 +106,37 @@ class Vertex
 
   def euler_angles
     [Math.atan2(@x, @y), Math.atan2(@y, Math.sqrt(@x**2 + @z**2)), Math.atan2(@z, Math.sqrt(@x**2 + @z**2))]
+  end
+
+  def copy
+    Vertex.new(@x, @y, @z, @side)
+  end
+
+  def self.directional_change_axis(v1, v2)
+    axis = {}
+    axis_count = 0
+    dx = v1.x - v2.x
+    dy = v1.y - v2.y
+    dz = v1.z - v2.z
+    if dx != 0
+      axis[:X] = dx
+      axis_count += dx.abs
+    end
+
+    if dy != 0
+      axis[:Y] = dy
+      axis_count += dy.abs
+    end
+
+    if dz != 0
+      axis[:Z] = dz
+      axis_count += dz.abs
+    end
+    axis.each do |ax|
+      ax[1] /= axis_count
+    end
+    largest_delta_idx = axis.map { |e| e[1] }.each_with_index.max[1]
+    [axis, axis.keys[largest_delta_idx]]
   end
 
   def self.string_of_vertices(vertices)

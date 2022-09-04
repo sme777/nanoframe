@@ -6,8 +6,8 @@ class ApplicationController < ActionController::Base
   helper_method :logged_in?
   helper_method :not_logged_in?
 
-  rescue_from "ActionController::UnknownAction", :with => :render_404
-  rescue_from "ActionController::RoutingError",  :with => :render_404
+  rescue_from 'ActionController::UnknownAction', with: :render_404
+  rescue_from 'ActionController::RoutingError',  with: :render_404
 
   def current_user
     return unless session[:user_id]
@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
   def set_generator
     @generator = Generator.find_by(id: generator_id) || Generator.new
   end
-  
+
   def set_user
     @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
   end
@@ -34,5 +34,4 @@ class ApplicationController < ActionController::Base
   def generator_id
     params[:id] || session[:id]
   end
-
 end

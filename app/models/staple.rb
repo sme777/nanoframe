@@ -92,12 +92,14 @@ class Staple
     points.concat(Vertex.linspace(dr_ch2, end_pos + 1, @back.v1, end_point)[1...])
   end
 
-  def update_interior_extension(sequence)
-    return if @type == :refraction || @type == :mod_refraction || 
-      @type == :exterior_start_refraction || @type == :exterior_end_refraction || @disabled
-    
+  def update_interior_extension(sequence, ext_length)
+    return if @type == :refraction || @type == :mod_refraction ||
+              @type == :exterior_start_refraction || @type == :exterior_end_refraction || @disabled
+
     if extendable_start
-      sequence = "#{convert(Staple.particle_barcodes[:gold])}TT" if sequence.nil?
+      if sequence.nil?
+        sequence = ext_length == 10 ? "#{convert(Staple.particle_barcodes[:gold])}TT" : "#{Staple.generate_barcode(ext_length - 2)}TT"
+      end
       extension_points = compute_inner_extension_positions(@points.first, -1, sequence.size)
       original_extension_points = compute_inner_extension_positions(@original_points.first, -1, sequence.size)
       @points = extension_points + @points
@@ -108,13 +110,15 @@ class Staple
       prev_staple = ObjectSpace._id2ref(@prev)
       prev_staple.disabled = true if prev_staple.extendable_end
     elsif extendable_end
-      sequence = "TT#{convert(Staple.particle_barcodes[:gold].reverse)}" if sequence.nil?
+      if sequence.nil?
+        sequence = ext_length == 10 ? "TT#{convert(Staple.particle_barcodes[:gold].reverse)}" : "TT#{Staple.generate_barcode(ext_length - 2)}"
+      end
       extension_points = compute_inner_extension_positions(@points.last, -1, sequence.size)
       original_extension_points = compute_inner_extension_positions(@original_points.last, -1, sequence.size)
-      @points = @points + extension_points
-      @original_points = @original_points + original_extension_points
-      @scaffold_idxs = @scaffold_idxs + ['ein2'] * extension_points.size
-      @sequence = @sequence + sequence
+      @points += extension_points
+      @original_points += original_extension_points
+      @scaffold_idxs += ['ein2'] * extension_points.size
+      @sequence += sequence
       @type = :interior_end_reflection
       next_staple = ObjectSpace._id2ref(@next)
       next_staple.disabled = true if next_staple.extendable_start
@@ -133,18 +137,19 @@ class Staple
     extendable_start || extendable_end
   end
 
-  def update_exterior_extension(extension_side, sequence)
+  def update_exterior_extension(extension_side, sequence, ext_length)
     if sequence.nil?
       if extension_side == :start
-        sequence = "#{Staple.orthogonal_barcodes.sample}TT"
+        sequence = ext_length == 10 ? "#{Staple.orthogonal_barcodes.sample}TT" : "#{Staple.generate_barcode(ext_length - 2)}TT"
       else
-        sequence = "TT#{Staple.orthogonal_barcodes.sample.reverse}"
+        sequence = ext_length == 10 ? "TT#{Staple.orthogonal_barcodes.sample.reverse}" : "TT#{Staple.generate_barcode(ext_length - 2)}"
       end
     end
-    
+
     case extension_side
     when :start
-      orth, side = Plane.orthogonal_dimension(@original_points[1], @original_points[1], @graph.shape.name, [@graph.width, @graph.height, @graph.depth])
+      orth, side = Plane.orthogonal_dimension(@original_points[1], @original_points[1], @graph.shape.name,
+                                              [@graph.width, @graph.height, @graph.depth])
       extension_points = compute_outer_extension_positions(@points[0], orth, side, sequence.size)
       original_extension_points = compute_outer_extension_positions(@original_points[0], orth, side, sequence.size)
       @points = extension_points + @points
@@ -153,14 +158,15 @@ class Staple
       @complementary_rotation_labels = [nil] * extension_points.size + @complementary_rotation_labels
       @sequence = sequence + @sequence
     when :end
-      orth, side = Plane.orthogonal_dimension(@original_points[-2], @original_points[-2], @graph.shape.name, [@graph.width, @graph.height, @graph.depth])
+      orth, side = Plane.orthogonal_dimension(@original_points[-2], @original_points[-2], @graph.shape.name,
+                                              [@graph.width, @graph.height, @graph.depth])
       extension_points = compute_outer_extension_positions(@points[-1], orth, side, sequence.size)
       original_extension_points = compute_outer_extension_positions(@original_points[-1], orth, side, sequence.size)
-      @points = @points + extension_points
-      @original_points = @original_points + original_extension_points
-      @scaffold_idxs = @scaffold_idxs + ['eout2'] * extension_points.size
-      @complementary_rotation_labels = @complementary_rotation_labels + [nil] * extension_points.size
-      @sequence = @sequence + sequence
+      @points += extension_points
+      @original_points += original_extension_points
+      @scaffold_idxs += ['eout2'] * extension_points.size
+      @complementary_rotation_labels += [nil] * extension_points.size
+      @sequence += sequence
     end
   end
 
@@ -190,13 +196,16 @@ class Staple
     case orth
     when :x
       dir = side == :S5 ? -1 : 1
-      points = Vertex.linspace(:x, length + 1, point, Vertex.new(point.x + (length / 2.5) * dir, point.y, point.z))[1...]
+      points = Vertex.linspace(:x, length + 1, point,
+                               Vertex.new(point.x + (length / 2.5) * dir, point.y, point.z))[1...]
     when :y
       dir = side == :S3 ? -1 : 1
-      points = Vertex.linspace(:y, length + 1, point, Vertex.new(point.x, point.y + (length / 2.5) * dir, point.z))[1...]
+      points = Vertex.linspace(:y, length + 1, point,
+                               Vertex.new(point.x, point.y + (length / 2.5) * dir, point.z))[1...]
     when :z
       dir = side == :S2 ? -1 : 1
-      points = Vertex.linspace(:z, length + 1, point, Vertex.new(point.x, point.y, point.z + (length / 2.5) * dir))[1...]
+      points = Vertex.linspace(:z, length + 1, point,
+                               Vertex.new(point.x, point.y, point.z + (length / 2.5) * dir))[1...]
     end
     points
   end
@@ -284,13 +293,13 @@ class Staple
   end
 
   def self.convert2wellname(name)
-    first_idx = name.index("-")
+    first_idx = name.index('-')
     staple_name = Staple.letter_codes[name[...first_idx]]
-    name = name[...first_idx] + name[first_idx+1...]
-    second_idx = name.index("-")
+    name = name[...first_idx] + name[first_idx + 1...]
+    second_idx = name.index('-')
     staple_side = name[first_idx...second_idx]
-    staple_row = name[second_idx+1...second_idx+3]
-    staple_col = name[second_idx+4...second_idx+6]
+    staple_row = name[second_idx + 1...second_idx + 3]
+    staple_col = name[second_idx + 4...second_idx + 6]
     "#{staple_name}[#{staple_side}][#{staple_row}][#{staple_col}]"
   end
 
@@ -306,7 +315,7 @@ class Staple
     back_end_vert = @back.v2.instance_variable_get("@#{vert}")
 
     case @type
-    when :reflection #, :mod_reflection, :interior_start_reflection, :interior_end_reflection
+    when :reflection # , :mod_reflection, :interior_start_reflection, :interior_end_reflection
       row = nil
       col = nil
       if front_start_hor > back_end_hor
@@ -335,12 +344,10 @@ class Staple
               end
       else
         row = (back_end_vert / hor_dist).abs.floor
-        if @front.directional_change == hor.to_sym
-        end
         col = (back_end_hor / vert_dist).abs.floor
 
       end
-    when :refraction #, :mod_refraction, :exterior_start_refraction, :exterior_start_refraction
+    when :refraction # , :mod_refraction, :exterior_start_refraction, :exterior_start_refraction
       if front_start_vert.abs == hor_dist * @graph.segments || front_end_vert.abs == hor_dist * @graph.segments
         row = @graph.segments
         col = (front_start_hor / vert_dist).abs.floor
@@ -409,18 +416,27 @@ class Staple
     ]
   end
 
+  def self.generate_barcode(length)
+    alphabet = %w[A T C]
+    sequence = ''
+    length.times do |_|
+      sequence += alphabet.sample
+    end
+    sequence
+  end
+
   def self.letter_codes
     {
-      "reflection" => :RFL,
-      "refraction" => :RFR,
-      "mod_reflection" => :MFL,
-      "exterior_start_refraction" => :ESR,
-      "exterior_end_refraction" => :EER,
-      "interior_start_reflection" => :ISL,
-      "interior_end_reflection" => :IEL,
-      "extension" => :EXT,
-      "interior_start_extension" => :IST,
-      "interior_end_extension" => :IET
+      'reflection' => :RFL,
+      'refraction' => :RFR,
+      'mod_reflection' => :MFL,
+      'exterior_start_refraction' => :ESR,
+      'exterior_end_refraction' => :EER,
+      'interior_start_reflection' => :ISL,
+      'interior_end_reflection' => :IEL,
+      'extension' => :EXT,
+      'interior_start_extension' => :IST,
+      'interior_end_extension' => :IET
     }
   end
 

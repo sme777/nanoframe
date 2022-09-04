@@ -6,29 +6,28 @@ class UsersController < ApplicationController
       filter_generators
     else
       @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
-      if !@current_user.nil?
+      unless @current_user.nil?
         @first_page = 1
-        @current_page =  params[:page].to_i || @first_page
+        @current_page = params[:page].to_i || @first_page
         @last_page = (@current_user.generators.size / 5.0).ceil
         if @current_page < @first_page
           redirect_to "/home/#{@first_page}"
           return
         end
 
-        if @current_page > @last_page && @last_page > 0
+        if @current_page > @last_page && @last_page.positive?
           redirect_to "/home/#{@last_page}"
           return
         end
 
         @generators = @current_user.generators
                                    .order(created_at: :desc)
-                                   .paginate(:page => @current_page, :per_page => 5 )
+                                   .paginate(page: @current_page, per_page: 5)
 
       end
-      
+
       @supported_files = Generator.supported_files
     end
-
   end
 
   def miscellaneous; end
@@ -98,13 +97,14 @@ class UsersController < ApplicationController
 
   def filter_generators
     @supported_files = Generator.supported_files
-    if params[:type] == "public"
-      @generators = @current_user.generators.order(created_at: :desc).filter {|g| g.public}
-    elsif params[:type] == "private"
-      @generators = @current_user.generators.order(created_at: :desc).filter {|g| !g.public}
-    else
-      @generators = @current_user.generators.order(created_at: :desc)
-    end
+    @generators = case params[:type]
+                  when 'public'
+                    @current_user.generators.order(created_at: :desc).filter(&:public)
+                  when 'private'
+                    @current_user.generators.order(created_at: :desc).filter { |g| !g.public }
+                  else
+                    @current_user.generators.order(created_at: :desc)
+                  end
     # render :index
   end
 

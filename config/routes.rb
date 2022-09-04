@@ -10,8 +10,8 @@ Rails.application.routes.draw do
   get '/profile' => 'users#profile'
   get '/signin' => 'users#sign_in'
   get '/signout' => 'users#sign_out'
-  get '/guides' => redirect("/guides/home")
-  get '/synthesizer' => redirect("/synthesizer/1")
+  get '/guides' => redirect('/guides/home')
+  get '/synthesizer' => redirect('/synthesizer/1')
   get '/playground' => 'playground#index'
 
   # oauth
@@ -31,11 +31,11 @@ Rails.application.routes.draw do
   get '/synthesizer/:id/visualize' => 'generators#visualize'
   post '/synthesizer/:id/update_generator' => 'generators#update_generator', as: 'update_generator'
 
-  get '/contact/new' => 'users#get_contact' 
+  get '/contact/new' => 'users#get_contact'
   get '/checkemail' => 'users#check_email', :defaults => { format: :json }
   get '/checkusername' => 'users#check_username', :defaults => { format: :json }
-  
-  #guides
+
+  # guides
   get '/guides/home' => 'guides#home'
   get '/guides/feed' => 'guides#feed'
   get '/guides/shapes' => 'guides#shapes'
@@ -59,10 +59,10 @@ Rails.application.routes.draw do
 
   # outreach
   get '/dna28' => 'outreach#DNA28'
-  
+
   # errors
   get '/404' => 'errors#not_found'
   get '/422' => 'errors#unacceptable'
   get '/500' => 'errors#internal_error'
-  match '*path' => "errors#not_found", via: :all
+  match '*path' => 'errors#not_found', via: :all
 end

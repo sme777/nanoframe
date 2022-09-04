@@ -154,7 +154,6 @@ function findBorderPointCount(positions) {
   return [xCountFront - xCountBack, yCountFront - yCountBack, zCountFront - zCountBack];
 }
 
-
 function connectEnds(start, end, elevation) {
   let middle = (new THREE.Vector3()).addVectors(start, end).divideScalar(2);
   let firstControlPoint = (new THREE.Vector3()).addVectors(start, middle).divideScalar(2).add(new THREE.Vector3(0, elevation, 0));

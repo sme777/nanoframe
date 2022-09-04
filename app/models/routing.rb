@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# require 'm'
 
 module Routing
   @@prev_vertex = nil
@@ -231,5 +232,110 @@ module Routing
     elsif v1.x == dims[0]
       :S6
     end
+  end
+
+  def self.connect_vertices(vs)
+    disp_v = Utils.deep_copy(vs)
+    edges = []
+    until disp_v.empty?
+      v1 = disp_v[rand(0..(disp_v.length - 1))]
+      v2 = disp_v[rand(0..(disp_v.length - 1))]
+      if v1.side != v2.side || v1 == v2
+        edges << Edge.new(v1, v2)
+        disp_v.delete(v1)
+        disp_v.delete(v2)
+      end
+    end
+    edges
+  end
+
+  def self.get_vertices(edges)
+    vertices = []
+    edges.each do |edge|
+      includes_v1 = false
+      includes_v2 = false
+      vertices.each do |vertex|
+        includes_v1 = true if vertex == edge.v1
+        includes_v2 = true if vertex == edge.v2
+      end
+      vertices << edge.v1.copy unless includes_v1
+      vertices << edge.v2.copy unless includes_v2
+    end
+    vertices
+  end
+
+  def self.get_edges(stripes)
+    undisected_edges = Utils.deep_copy(stripes)
+    for i in (0...undisected_edges.size) do
+      for j in (0...undisected_edges.size) do
+        if i == j
+          next
+        else
+          edge1 = undisected_edges[i]
+          edge2 = undisected_edges[j]
+          does_intersect, points = intersects(
+            edge1.v1, edge1.v2, 
+            edge2.v1, edge2.v2)
+          if does_intersect
+            e1_split = Routing.split_edge(edge1, points[0])
+            e2_split = Routing.split_edge(edge2, points[0])
+            undisected_edges.delete(edge1)
+            undisected_edges.delete(edge2)
+            undisected_edges.concat(e1_split)
+            undisected_edges.concat(e2_split)
+          end
+        end
+      end
+    end
+    undisected_edges.filter {|elem| elem.v1 != elem.v2 }
+  end
+
+  def self.split_edge(edge, point)
+    [Edge.new(edge.v1, point), Edge.new(point, edge.v2)]
+  end
+
+  def self.intersects(p1, p2, p3, p4)
+    eps = 10e-8
+    p13 = Vertex.new(p1.x - p3.x, p1.y - p3.y, p1.z - p3.z)
+    p43 = Vertex.new(p4.x - p3.x, p4.y - p3.y, p4.z - p3.z)
+    if (p43.x.abs < eps && p43.y.abs < eps && p43.z.abs < eps)
+      return [false, nil]
+    end
+
+    p21 = Vertex.new(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z)
+    if (p21.x.abs < eps && p21.y.abs < eps && p21.z.abs < eps)
+      return [false, nil]
+    end
+
+    d1343 = p13.x * p43.x + p13.y * p43.y + p13.z * p43.z
+    d4321 = p43.x * p21.x + p43.y * p21.y + p43.z * p21.z
+    d1321 = p13.x * p21.x + p13.y * p21.y + p13.z * p21.z
+    d4343 = p43.x * p43.x + p43.y * p43.y + p43.z * p43.z
+    d2121 = p21.x * p21.x + p21.y * p21.y + p21.z * p21.z
+
+    denom = d2121 * d4343 - d4321 * d4321
+
+    if denom < eps
+      return [false, nil]
+    end
+
+    numer = d1343 * d4321 - d1321 * d4343
+    mua = numer / denom
+    mub = (d1343 + d4321 * mua) / d4343
+    if mua < 0 || mua > 1
+      return [false, nil]
+    end
+
+    pa = Routing.crop(p1 + p21 * mua).round(6)
+    pb = Routing.crop(p3 + p43 * mub).round(6)
+    [true, [pa, pb]]
+  end
+
+  def self.crop(point)
+    esp = 10e-7
+    point.x = 0 if point.x.abs < esp
+    point.y = 0 if point.y.abs < esp
+    point.z = 0 if point.z.abs < esp
+    point
   end
 end

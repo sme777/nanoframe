@@ -10,6 +10,10 @@ function main() {
     const homepageScene = SetupGeneralScene(userFeedContainer);
     const generatorSize = document.querySelector("#generator-size").value;
     const userFeedScenes = SetupItemFeed(generatorSize);
+    const modelItemContainer = document.querySelector(`#page_item_0`);
+
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(modelItemContainer.width, modelItemContainer.height);
 
     function renderSceneInfo(sceneInfo, resolution) {
         const { scene, camera, elem } = sceneInfo;
@@ -46,7 +50,7 @@ function main() {
             width: userFeedContainer.clientWidth,
         });
         for (let i = 0; i < userFeedScenes.length; i++) {
-        const modelItemContainer = document.querySelector(`#page_item_${i}`);
+        
           renderSceneInfo(userFeedScenes[i], {
             height: modelItemContainer.clientHeight,
             width: modelItemContainer.clientWidth,

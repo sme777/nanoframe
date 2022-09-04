@@ -19,20 +19,20 @@ class GeneratorsController < ApplicationController
 
   def synthesizer
     @first_page = 1
-    @current_page =  params[:page].to_i || @first_page
+    @current_page = params[:page].to_i || @first_page
     @last_page = (Generator.all.size / 9.0).ceil
     if @current_page < @first_page
       redirect_to "/synthesizer/#{@first_page}"
       return
     end
 
-    if @current_page > @last_page && @last_page > 0
+    if @current_page > @last_page && @last_page.positive?
       redirect_to "/synthesizer/#{@last_page}"
       return
     end
     @feed_synths = Generator.all
                             .order(created_at: :desc)
-                            .paginate(:page => @current_page, :per_page => 9 )
+                            .paginate(page: @current_page, per_page: 9)
   end
 
   def routing
@@ -48,19 +48,19 @@ class GeneratorsController < ApplicationController
   def download
     type = params[:type]
     unless type.nil?
-      repl = {'(' => '', ')' => '', ' ' => '_'}
+      repl = { '(' => '', ')' => '', ' ' => '_' }
       type = type.gsub(Regexp.union(repl.keys), repl).downcase
       filename = @generator.filename(logged_in?, session[:user_id])
       files = @generator.send(type.downcase, filename)
       zipfile_name = "#{Rails.root.join('tmp')}/#{filename}.zip"
       if files.size == 1
-        mime_type = ""
-        if type.include?("staple")
-          mime_type = "text/csv"
-        elsif type.include?("nfr")
-          mime_type = "application/json"
-        elsif type.include?("pdb")
-          mime_type = "chemical/pdb"
+        mime_type = ''
+        if type.include?('staple')
+          mime_type = 'text/csv'
+        elsif type.include?('nfr')
+          mime_type = 'application/json'
+        elsif type.include?('pdb')
+          mime_type = 'chemical/pdb'
         end
         File.open("#{Rails.root.join('tmp')}/#{files[0]}", 'r') do |f|
           send_data f.read, type: mime_type, filename: files[0]
@@ -88,7 +88,7 @@ class GeneratorsController < ApplicationController
       if turbo_frame_request?
         render :async_visualize
       else
-        # if 
+        # if
         redirect_to "/synthesizer/#{@generator.id}/visualize"
       end
     else
@@ -103,27 +103,21 @@ class GeneratorsController < ApplicationController
       if User.find_by(username: @host_user) && @generator.public
         set_generator_params
         render :visualize
-        return
       else
-        render :template => "errors/404"
-        return
+        render template: 'errors/404'
       end
-    else
-      if @current_user.username != @host_user
-        if User.find_by(username: @host_user) && @generator.public
-          set_generator_params
-          render :visualize
-          return
-        else
-          render :template => "errors/404"
-          return
-        end
-      else
+    elsif @current_user.username != @host_user
+      if User.find_by(username: @host_user) && @generator.public
         set_generator_params
         render :visualize
-        return
+      else
+        render template: 'errors/404'
       end
+    else
+      set_generator_params
+      render :visualize
     end
+    nil
   end
 
   def async_visualize
@@ -173,9 +167,7 @@ class GeneratorsController < ApplicationController
   end
 
   def update_generator
-    if params[:visibility]
-      Generator.find(@generator.id).update(public: !@generator.public)
-    end
+    Generator.find(@generator.id).update(public: !@generator.public) if params[:visibility]
 
     if params[:bridge_length] && !@generator.is_current_bridge_length(params[:bridge_length])
       new_staples = @generator.update_bridge_length
@@ -203,20 +195,21 @@ class GeneratorsController < ApplicationController
 
       dimensions = { height: generator_fields[:height], width: generator_fields[:width],
                      depth: generator_fields[:depth], divisions: generator_fields[:divisions],
-                     type: "Generator"}
+                     type: 'Generator' }
       if Generator.scaffolds[generator_fields[:scaffold_name].to_sym].nil?
 
       else
         scaffold = Generator.public_send(generator_fields[:scaffold_name].parameterize(separator: '_'))
       end
-      is_public = generator_fields[:visibility] == "1" ? true : false
-      exterior_extensions_arr, interior_extensions_arr = [], []
+      is_public = generator_fields[:visibility] == '1'
+      exterior_extensions_arr = []
+      interior_extensions_arr = []
 
-      if !generator_fields[:exterior_extension_sequence].nil?
+      unless generator_fields[:exterior_extension_sequence].nil?
         exterior_extensions_arr = generator_fields[:exterior_extension_sequence].tempfile.read.split("\n")
       end
 
-      if !generator_fields[:interior_extension_sequence].nil?
+      unless generator_fields[:interior_extension_sequence].nil?
         interior_extensions_arr = generator_fields[:interior_extension_sequence].tempfile.read.split("\n")
       end
       @generator = Generator.new({ shape: generator_fields[:shape], dimensions: dimensions, scaffold: scaffold,
@@ -225,7 +218,7 @@ class GeneratorsController < ApplicationController
                                    interior_extension_length: generator_fields[:interior_extensions].to_i,
                                    exterior_extension_bond_type: generator_fields[:exterior_bond_type],
                                    interior_extension_bond_type: generator_fields[:interior_bond_type],
-                                   exterior_extensions: exterior_extensions_arr, interior_extensions: interior_extensions_arr})
+                                   exterior_extensions: exterior_extensions_arr, interior_extensions: interior_extensions_arr })
       @generator.user_id = @current_user.id unless @current_user.nil?
 
       if @generator.save
@@ -302,7 +295,7 @@ class GeneratorsController < ApplicationController
   private
 
   def generator_params
-    params.require(:generator).permit(:height, :width, :depth, :shape, :divisions, :scaffold_name, :visibility, 
+    params.require(:generator).permit(:height, :width, :depth, :shape, :divisions, :scaffold_name, :visibility,
                                       :exterior_extensions, :exterior_bond_type, :interior_extensions, :interior_bond_type,
                                       :exterior_extension_sequence, :interior_extension_sequence)
   end

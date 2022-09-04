@@ -46,7 +46,6 @@ class OxDNAMaker
     current_prime_dir = :X
     prev_prime_dir = :X
     positions.each_with_index do |pos, idx|
-        
       dir_axis, largest_delta_idx = directional_change_axis(positions[idx], positions[idx - 1]) unless idx < 1
       unless idx < 2
         dir_axis_prv, largest_delta_prv_idx = directional_change_axis(positions[idx - 1],
@@ -104,14 +103,14 @@ class OxDNAMaker
       scaffold_nt_hash[idx] = [position_d, a1_d, a3_d, rb]
       # rbs << rb
     end
-    
+
     staples_idxs.each_with_index do |staple_idxs, j|
       staple_points = staples_points[j]
       staple_positions = []
       staple_a1s = []
       staple_a3s = []
-      grow_front = ['eout1', 'eout2', 'ein1', 'ein2'].include?(staple_idxs.first) 
-      grow_back = ['eout1', 'eout2', 'ein1', 'ein2'].include?(staple_idxs.last) 
+      grow_front = %w[eout1 eout2 ein1 ein2].include?(staple_idxs.first)
+      grow_back = %w[eout1 eout2 ein1 ein2].include?(staple_idxs.last)
       covered_front = false
       covered_back = false
 
@@ -124,11 +123,11 @@ class OxDNAMaker
           staple_a1s << (prev_complimentary_data[1] + next_complimentary_data[1]) / 2
           staple_a3s << (prev_complimentary_data[2] + next_complimentary_data[2]) / 2
         when 'eout1', 'ein1'
-          next if !(grow_front ^ covered_front) #&& !(grow_back ^ covered_back)
-          
+          next unless grow_front ^ covered_front # && !(grow_back ^ covered_back)
+
           mod_i = staple_idxs.index { |n| n.instance_of?(Integer) }
-          orth, side = orthogonal_dimension(staple_points[mod_i], staple_points[mod_i+1], :cube, [50, 50, 50])
-          delta = idx == 'ein1' ? 1  : -1
+          orth, side = orthogonal_dimension(staple_points[mod_i], staple_points[mod_i + 1], :cube, [50, 50, 50])
+          delta = idx == 'ein1' ? 1 : -1
           case orth
           when :x
             case side
@@ -174,17 +173,17 @@ class OxDNAMaker
             ein_a3s << a3
             i += 1
           end
-          
-          staple_positions = ein_positions.reverse + staple_positions 
+
+          staple_positions = ein_positions.reverse + staple_positions
           staple_a1s = ein_a1s.reverse + staple_a1s
           staple_a3s = ein_a3s.reverse + staple_a3s
           covered_front = true
 
         when 'eout2', 'ein2'
-          next if !(grow_back ^ covered_back)
-           
+          next unless grow_back ^ covered_back
+
           orth, side = orthogonal_dimension(staple_points[i - 1], staple_points[i - 2], :cube, [50, 50, 50])
-          delta = idx == 'ein2' ? 1  : -1
+          delta = idx == 'ein2' ? 1 : -1
           case orth
           when :x
             case side
@@ -230,13 +229,13 @@ class OxDNAMaker
             ein_a3s << a3
             i += 1
           end
-          
+
           staple_positions.concat(ein_positions)
           staple_a1s.concat(ein_a1s)
           staple_a3s.concat(ein_a3s)
           covered_back = true
         else
-          complimentary_data = scaffold_nt_hash[(idx-1) % scaffold_nt_hash.size]
+          complimentary_data = scaffold_nt_hash[(idx - 1) % scaffold_nt_hash.size]
           staple_positions << complimentary_data[0]
           staple_a1s << complimentary_data[1]
           staple_a3s << complimentary_data[2]
@@ -253,7 +252,6 @@ class OxDNAMaker
   def orthogonal_dimension(v1, v2, shape, dimensions)
     Plane.orthogonal_dimension(Vertex.new(v1[0], v1[1], v1[2]), Vertex.new(v2[0], v2[1], v2[2]), shape, dimensions)
   end
-
 
   def rotation_matrix(axis, angles)
     angle = if angles.is_a?(Array)

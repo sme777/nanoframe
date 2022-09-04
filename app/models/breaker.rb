@@ -459,7 +459,7 @@ class Breaker
     staples.concat(residual_staples)
   end
 
-  def break_refraction_staples(staples, ext_sequences)
+  def break_refraction_staples(staples, ext_sequences, ext_length)
     new_staples = []
     temp_staples = []
     removed_staples = []
@@ -506,10 +506,10 @@ class Breaker
       back_staple.next = staple.next
       next_staple = ObjectSpace._id2ref(staple.next)
       next_staple.prev = back_staple.object_id
-      
-      if !ext_sequences.empty?
-        front_staple.update_exterior_extension(:end, ext_sequences[0])
-        back_staple.update_exterior_extension(:start, ext_sequences[0])
+
+      if ext_length.positive?
+        front_staple.update_exterior_extension(:end, ext_sequences[0], ext_length)
+        back_staple.update_exterior_extension(:start, ext_sequences[0], ext_length)
         ext_sequences.rotate
       end
 
@@ -535,10 +535,10 @@ class Breaker
     new_staples.filter { |stp| !removed_staples.include?(stp) }
   end
 
-  def extend_interior_staples(staples, interior_extensions)
-    staples.each_with_index do |staple, idx|
-      staple.update_interior_extension(interior_extensions[0])
-      interior_extensions.rotate 
+  def extend_interior_staples(staples, interior_extensions, interior_extension_length)
+    staples.each_with_index do |staple, _idx|
+      staple.update_interior_extension(interior_extensions[0], interior_extension_length)
+      interior_extensions.rotate
     end
     staples
   end
