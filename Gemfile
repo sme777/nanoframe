@@ -49,6 +49,7 @@ gem 'rubyzip'
 gem 'oink'
 gem 'ruby-cbc', require: false
 gem 'unicorn'
+gem 'delaunator'
 # gem 'rack-timeout'
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

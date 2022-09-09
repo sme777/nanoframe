@@ -29,6 +29,11 @@ class Edge
     JSON.generate({ "v1": @v1.to_hash, "v2": @v2.to_hash })
   end
 
+  def reverse
+    @v1, @v2 = @v2, @v1
+    self
+  end
+
   def directional_change
     if @v1.x - @v2.x != 0
       :x

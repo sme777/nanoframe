@@ -11,7 +11,7 @@ class Graph
   # dimension[1] -> height
   # dimension[2] -> depth
   def initialize(generator, dimensions, shape, scaffold)
-    byebug
+    # byebug
     setup_dimensions(dimensions, shape)
     setup_extensions(generator)
     @shape = Shape.new(shape)
@@ -20,7 +20,7 @@ class Graph
     @staple_breaker = Breaker.new(self)
     @outgoers = create_outgoers(@shape, @segments)
     @vertices, @edges = create_vertices_and_edges(@shape)
-
+    byebug
     if shape.name == "tetrahedron"
       @template_planes = find_four_planes2(@edges, @outgoers, @vertices)
       @planes = find_plane_combination_tetrahedron(@template_planes)
@@ -166,33 +166,34 @@ class Graph
   end
 
   def find_plane_routing2(edges, outgoers, ingoers)
-
+    byebug
     total_outgoers = outgoers.length
     taken_outgoers = []
     taken_edges = []
     sets = []
+    vertices = Utils.deep_copy(outgoers + ingoers)
     last_move = nil
     while taken_outgoers.length != total_outgoers
-      s = outgoers[rand(0..(outgoers.length - 1))]
-      outgoers.delete(s)
+      start = outgoers[rand(0..(outgoers.length - 1))]
+      outgoers.delete(start)
       t = outgoers[rand(0..(outgoers.length - 1))]
-      dfs_edges = dfs2(s, t, last_move, taken_edges, edges, outgoers + ingoers) # ???
+      dfs_edges = dfs2(start, t, last_move, taken_edges, edges, vertices) # ???
       if dfs_edges != []
         outgoers.delete(t)
-        taken_outgoers << s
+        taken_outgoers << start
         taken_outgoers << t
         taken_edges.concat(dfs_edges)
-        new_set = GraphSet.new(s)
+        new_set = GraphSet.new(start)
         new_set.add_node(t)
         dfs_edges.each do |e|
           new_set.add_edge(e)
         end
         sets << new_set
       else
-        outgoers << s
+        outgoers << start
       end
     end
-    if taken_edges.length != @edges.length
+    if taken_edges.length != edges.length
       find_plane_routing2
     else
       sets
@@ -216,7 +217,7 @@ class Graph
 
   def explore2(k, last_move, edges, visited)
     neighbors = find_neighbors2(k, last_move, edges)
-    return [] if neighbors.length.zero?
+    return visited if neighbors.length.zero?
 
     neighbors.each do |neighbor|
       new_edge = Edge.new(k, neighbor)
@@ -288,7 +289,7 @@ class Graph
 
   def explore(k, prev, edges, visited)
     neighbors = find_neighbors(k, prev, edges)
-    return [] if neighbors.length.zero?
+    return visited if neighbors.length.zero?
 
     neighbors.each do |neighbor|
       new_edge = Edge.new(k, neighbor)

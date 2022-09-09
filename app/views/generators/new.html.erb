@@ -148,9 +148,9 @@
               <%= f.text_field :exterior_extensions, type: "text", value: "10", class: "form-control", placeholder: "10" %>
               <div class="btn-group btn-group" role="group">
                   <%= f.radio_button :exterior_bond_type, :zipbond, class: "btn-check", autocomplete: "off", checked: true %>
-                  <%= f.label "Zip Bonds", for: "generator_exterior_bond_type_zipbond", class: "btn btn-outline-dark" %>
+                  <%= f.label "Zip Bonds", for: "generator_exterior_bond_type_zipbond", class: "btn btn-outline-dark bond-btn"%>
                   <%= f.radio_button :exterior_bond_type, :armbond, class: "btn-check", autocomplete: "off"%>
-                  <%= f.label "Arm Bonds", for: "generator_exterior_bond_type_armbond", class: "btn btn-outline-dark" %>
+                  <%= f.label "Arm Bonds", for: "generator_exterior_bond_type_armbond", class: "btn btn-outline-dark bond-btn" %>
               </div>
             </div>
             <div class="input-group synthesizer-item">
@@ -174,9 +174,9 @@
               <%= f.text_field :interior_extensions, type: "text", value: "10", class: "form-control", placeholder: "10" %>
               <div class="btn-group btn-group" role="group">
                   <%= f.radio_button :interior_bond_type, :zipbond, class: "btn-check", autocomplete: "off", checked: true %>
-                  <%= f.label "Zip Bonds", for: "generator_interior_bond_type_zipbond", class: "btn btn-outline-dark" %>
+                  <%= f.label "Zip Bonds", for: "generator_interior_bond_type_zipbond", class: "btn btn-outline-dark bond-btn" %>
                   <%= f.radio_button :interior_bond_type, :armbond, class: "btn-check", autocomplete: "off"%>
-                  <%= f.label "Arm Bonds", for: "generator_interior_bond_type_armbond", class: "btn btn-outline-dark" %>
+                  <%= f.label "Arm Bonds", for: "generator_interior_bond_type_armbond", class: "btn btn-outline-dark bond-btn" %>
               </div>
             </div>
 
