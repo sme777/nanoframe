@@ -308,19 +308,26 @@ module Routing
       new_vertices, new_edges = Routing.get_edges(connected_edges)
       # all_edges = 
       # byebug
-      a,b,c,d = Routing.get_plane_equation(new_vertices[0], new_vertices[1], new_vertices[2])
-      rotation_matrix = Routing.xy_rotation_matrix(a,b,c,d)
-      translated_points = new_vertices.map {|vertex| rotation_matrix*Vector[vertex.x, vertex.y, vertex.z - d/c]}
-      translated_vertices = translated_points.map {|point| Vertex.new(point[0], point[1], point[2])}
+      
+      a1,b1,c1,d1 = Routing.get_plane_equation(new_vertices[0], new_vertices[1], new_vertices[2])
+      translated_vertices = new_vertices.map {|vertex| Vertex.new(vertex.x, vertex.y, vertex.z - d1/c1) }
+      # a2,b2,c2,d2 = Routing.get_plane_equation(translated_vertices[0], translated_vertices[1], translated_vertices[2])
+      rotation_matrix = Routing.xy_rotation_matrix(a1,b1,c1,d1)
+      # translated_points = new_vertices.map {|vertex| a * vertex.x + b * vertex.y + c * vertex.z}
+      rotated_points = new_vertices.map {|vertex| rotation_matrix*Vector[vertex.x, vertex.y, vertex.z]}
+      # translated_points = new_vertices.map {|vertex| rotation_matrix*Vector[vertex.x, vertex.y, vertex.z - d/c]}
+      transformed_vertices = rotated_points.map {|point| Vertex.new(point[0], point[1], point[2] + d1/c1)}
       # projected_points = 
       # byebug
       begin
-        triangles = Delaunator.triangulate(translated_vertices.map{|vertex| [vertex.x, vertex.y]})    
+        triangles = Delaunator.triangulate(transformed_vertices.map{|vertex| [vertex.x, vertex.y]})
+        # byebug if triangle.size == 18
       rescue => exception
         failures += 1
         next 
       end
-      current_area = Routing.compute_surface_area(translated_vertices, triangles)
+      # byebug if triangles.size == 18
+      current_area = Routing.compute_surface_area(transformed_vertices, triangles)
       # byebug
       if current_area < total_area
         total_area = current_area
@@ -423,10 +430,14 @@ module Routing
   end
 
   def self.xy_rotation_matrix(a,b,c,d)
+    # byebug
     cos_theta = c / (Math.sqrt(a**2 + b**2 + c**2))
     sin_theta = Math.sqrt((a**2 + b**2)/(a**2 + b**2 + c**2))
     u1 = b / Math.sqrt((a**2 + b**2 + c**2))
     u2 = - a / Math.sqrt((a**2 + b**2 + c**2))
+    normal_norm = Math.sqrt(u1**2+u2**2)
+    u1 /= normal_norm
+    u2 /= normal_norm
 
     Matrix[[cos_theta + (u1**2)*(1-cos_theta), u1*u2*(1-cos_theta), u2*sin_theta],
            [u1*u2*(1-cos_theta), cos_theta+(u2**2)*(1-cos_theta), -u1*sin_theta],

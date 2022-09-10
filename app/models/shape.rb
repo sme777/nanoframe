@@ -72,7 +72,7 @@ class Shape
         vertices << planars
         corners << corner
       end
-      [vertices.flatten, corners]
+      [vertices.flatten.map {|v| v.round(4)}, corners.map{ |v| v.round(4) }]
     end
   end
 

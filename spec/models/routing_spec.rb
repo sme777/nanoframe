@@ -15,8 +15,20 @@ RSpec.describe 'Routing', type: :model do
         outgoer_vertices, corners = shape.faces[0].generate_segmented_vertices(3)
         # byebug
         optimal_edges, failures = Routing.find_optimal_edges(outgoer_vertices, corners)
-        byebug
-        optimal_vertices = Routing.get_vertices(optimal_edges)
+        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
+        expect(optimal_edges).to include(Edge.new(Vertex.new(3.84899, 6.666683, 1.36082), Vertex.new(7.698, 6.6667, -1.3608)))
+        expect(optimal_edges).to include(Edge.new(Vertex.new(3.84899, 6.666683, 1.36082), Vertex.new(1.9245, 10.0, -1.3608)))
+        expect(optimal_edges).to include(Edge.new(Vertex.new(3.849, 0.0, 9.5258), Vertex.new(1.9245, 3.3333, 6.804133)))
+        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
+        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
+        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
+        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
+        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
+        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
+        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
+        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
+        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
+        # optimal_vertices = Routing.get_vertices(optimal_edges)
         
     end
 
