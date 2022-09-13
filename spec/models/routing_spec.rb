@@ -15,19 +15,30 @@ RSpec.describe 'Routing', type: :model do
         outgoer_vertices, corners = shape.faces[0].generate_segmented_vertices(3)
         # byebug
         optimal_edges, failures = Routing.find_optimal_edges(outgoer_vertices, corners)
-        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
-        expect(optimal_edges).to include(Edge.new(Vertex.new(3.84899, 6.666683, 1.36082), Vertex.new(7.698, 6.6667, -1.3608)))
-        expect(optimal_edges).to include(Edge.new(Vertex.new(3.84899, 6.666683, 1.36082), Vertex.new(1.9245, 10.0, -1.3608)))
-        expect(optimal_edges).to include(Edge.new(Vertex.new(3.849, 0.0, 9.5258), Vertex.new(1.9245, 3.3333, 6.804133)))
-        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
-        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
-        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
-        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
-        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
-        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
-        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
-        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
-        expect(optimal_edges).to include(Edge.new(Vertex.new(0, 6.666675, 4.082446), Vertex.new(3.84899, 6.666683, 1.36082)))
+        byebug
+        expect(optimal_edges.find { |edge| (edge.v1 == Vertex.new(3.849, 6.667, 1.361) && 
+            edge.v2 == Vertex.new(0, 6.667, 4.082)) || (edge.v2 == Vertex.new(3.849, 6.667, 1.361) && 
+            edge.v1 == Vertex.new(0, 6.667, 4.082))}).to_not be_nil
+
+        expect(optimal_edges.find { |edge| (edge.v1 == Vertex.new(0, 6.667, 4.082) && 
+            edge.v2 == Vertex.new(-3.849, 6.667, 6.804)) || (edge.v2 == Vertex.new(0, 6.667, 4.082) && 
+            edge.v1 == Vertex.new(-3.849, 6.667, 6.804))}).to_not be_nil
+
+        expect(optimal_edges.find { |edge| (edge.v1 == Vertex.new(0, 6.667, 4.082) && 
+            edge.v2 == Vertex.new(-1.925, 10.0, 1.361)) || (edge.v2 == Vertex.new(0, 6.667, 4.082) && 
+            edge.v1 == Vertex.new(-1.925, 10.0, 1.361))}).to_not be_nil
+
+        expect(optimal_edges.find { |edge| (edge.v1 == Vertex.new(7.698, 0, 6.804) && 
+            edge.v2 == Vertex.new(5.774, 3.333, 4.082)) || (edge.v2 == Vertex.new(7.698, 0, 6.804) && 
+            edge.v1 == Vertex.new(5.774, 3.333, 4.082))}).to_not be_nil
+
+        expect(optimal_edges.find { |edge| (edge.v1 == Vertex.new(5.774, 3.333, 4.082) && 
+            edge.v2 == Vertex.new(3.849, 6.667, 1.361)) || (edge.v2 == Vertex.new(5.774, 3.333, 4.082) && 
+            edge.v1 == Vertex.new(3.849, 6.667, 1.361)) }).to_not be_nil
+
+        expect(optimal_edges.find { |edge| (edge.v1 == Vertex.new(9.623, 3.333, 1.361) && 
+            edge.v2 == Vertex.new(5.774, 3.333, 4.082)) || (edge.v2 == Vertex.new(9.623, 3.333, 1.361) && 
+            edge.v1 == Vertex.new(5.774, 3.333, 4.082)) }).to_not be_nil
         # optimal_vertices = Routing.get_vertices(optimal_edges)
         
     end

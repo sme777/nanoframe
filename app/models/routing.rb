@@ -301,8 +301,9 @@ module Routing
     total_area = Float::INFINITY
     running_streak = 0
     edges = []
+    running_triangles = []
     failures = 0
-    while running_streak < 200
+    while running_streak < 500
      
       connected_edges = Routing.connect_vertices(outgoer_vertices, corners)
       new_vertices, new_edges = Routing.get_edges(connected_edges)
@@ -317,11 +318,12 @@ module Routing
       rotated_points = new_vertices.map {|vertex| rotation_matrix*Vector[vertex.x, vertex.y, vertex.z]}
       # translated_points = new_vertices.map {|vertex| rotation_matrix*Vector[vertex.x, vertex.y, vertex.z - d/c]}
       transformed_vertices = rotated_points.map {|point| Vertex.new(point[0], point[1], point[2] + d1/c1)}
+      # transformed_vertices = transformed_vertices.map {|vertex| }
       # projected_points = 
       # byebug
       begin
         triangles = Delaunator.triangulate(transformed_vertices.map{|vertex| [vertex.x, vertex.y]})
-        # byebug if triangle.size == 18
+        # byebug if new_edges.size == 12
       rescue => exception
         failures += 1
         next 
@@ -333,6 +335,7 @@ module Routing
         total_area = current_area
         running_streak = 0
         edges = new_edges
+        running_triangles = triangles
       else
         running_streak += 1
       end
@@ -515,6 +518,8 @@ module Routing
 
     disected_edges = undisected_edges.filter {|elem| elem.v1 != elem.v2 }
     disected_edges.each do |edge|
+      edge.v1.round(3)
+      edge.v2.round(3)
       new_vertices << edge.v1 unless new_vertices.include?(edge.v1)
       new_vertices << edge.v2 unless new_vertices.include?(edge.v2)
     end
