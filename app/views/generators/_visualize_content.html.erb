@@ -76,6 +76,10 @@
                 </div>
 
                 <div class="box-state-container">
+                    <button id="box-state-add-particle" class="btn btn-outline-secondary w-100">Add Particle</button><br>
+                </div>
+
+                <div class="box-state-container">
                     <button id="box-state-viewport" class="btn btn-outline-secondary w-100">Change Viewport</button><br>
                 </div>
 
@@ -180,5 +184,46 @@
         </table>
     </div>
 </div>
+
+  <div class="add-particle-container">
+        <div class="add-particle-wrapper">
+        <div class="add-particle-close-wrapper">
+            <span id="close-icon-wrapper"><i class="fa-solid fa-xmark"></i></span>
+        </div>
+        <div class="form-floating mb-3">
+            <select class="form-select" id="add-particle-shape">
+                <option value="cube" selected>Cube</option>
+                <option value="dodecahedron">Dodecahedron</option>
+                <option value="icosahedron">Icosahedron</option>
+            </select>
+            <label for="add-particle-shape">Particle Shape</label>
+        </div>
+
+        <div class="input-group add-particle-group width-group">
+            <span class="input-group-text w-25">Width</span>
+            <input type="text" class="form-control width-field" placeholder="45 nm">
+        </div>
+
+        <div class="input-group add-particle-group height-group">
+            <span class="input-group-text w-25">Height</span>
+            <input type="text" class="form-control height-field" placeholder="45 nm">
+        </div>
+        
+        <div class="input-group add-particle-group depth-group">
+            <span class="input-group-text w-25">Depth</span>
+            <input type="text" class="form-control depth-field" placeholder="45 nm">
+        </div>
+
+        <div class="input-group add-particle-group radius-group">
+            <span class="input-group-text w-25">Radius</span>
+            <input type="text" class="form-control radius-field" placeholder="10 nm">
+        </div>
+
+        <div class="add-particle-btn-container add-particle-group">
+          <button id="add-particle-btn" class="btn btn-dark w-100">Add Particle</button>
+        </div>
+    </div>
+
+  </div>
 
 <%= javascript_pack_tag 'visualize', 'data-turbolinks-track': 'reload'%>

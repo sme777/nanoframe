@@ -135,9 +135,11 @@ a {
 }
 
 .signout-link-container {
-  position: absolute;
-  top: 20%;
-  left: 5%;
+  position: relative;
+  text-align: right;
+  padding-right: 5%;
+  // top: 20%;
+  // left: 85%;
 }
 
 .create-link-container {
@@ -226,7 +228,7 @@ a {
 }
 
 .user-portrait-mask {
-  margin: 5% 0;
+  margin: 3% 0;
 }
 
 .landscape {
@@ -243,6 +245,7 @@ a {
 
 .profile-container {
   text-align: center;
+  // width: 50%;
 }
 
 .file-upload {
@@ -315,9 +318,12 @@ a {
   font-weight: 600;
 }
 
+
+
 #footer {
   background-color: white;
-  margin-top: 8%;
+  // margin-top: 8%;
+  margin-top:auto;
 }
 
 .dna-wrapper {
@@ -444,4 +450,9 @@ a {
 
 .user-feed-container {
   position: relative;
+}
+
+.sorting-container {
+  text-align: right;
+  padding-right: 5%;
 }

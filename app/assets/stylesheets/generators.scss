@@ -674,18 +674,65 @@ td{
 }
 
 .generator-sidebar {
+  
   position: absolute;
   width: 20%;
   right: 1%;
   padding-top: 2%;
   padding-bottom: 2%;
-  height: 80vh;
+  // height: 80vh;
+  // max-height: 40vh;
   overflow-x: hidden;
   overflow-y: scroll;
   box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
-  border-radius: 2.5%;
+  border-radius: 1.5%;
 }
 
 .bond-btn {
   font-size: 14px;
+}
+
+.helix-bundles-container {
+  padding-top: 1%;
+  text-align: center;
+}
+
+.add-particle-container {
+  width: 30%;
+  display: none;
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 2%;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+
+.add-particle-wrapper {
+  padding: 4% 6%;
+}
+
+.add-particle-group {
+  padding-top: 3%;
+}
+
+.radius-group {
+  display: none;
+}
+
+.add-particle-close-wrapper {
+  text-align: right;
+  padding-bottom: 2%;
+}
+
+#close-icon-wrapper {
+  cursor: pointer;
 }

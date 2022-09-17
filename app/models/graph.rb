@@ -70,7 +70,7 @@ class Graph
   def create_outgoers(shape, segments)
     outgoers = []
     shape.faces.each do |face|
-      outgoers << face.generate_segmented_vertices(segments).map {|v| v.round(6)}
+      outgoers << face.generate_segmented_vertices(segments)[0].map {|v| v.round(6)}
     end
     outgoers
   end

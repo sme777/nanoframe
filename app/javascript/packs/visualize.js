@@ -27,7 +27,9 @@ let routingColors;
 let isSplit;
 let xGroup1Count, yGroup1Count, zGroup1Count;
 let xGroup2Count, yGroup2Count, zGroup2Count;
+let sceneObjects = {};
 
+let currentAddedParticle = "";
 
 let linearGroup = new THREE.Group();
 linearGroup.name = "Linear";
@@ -94,7 +96,7 @@ function generateDisplay(
   positions,
   colors = colors,
   split = false
-  ) {
+) {
   const geometry = new LineGeometry();
   geometry.setPositions(positions);
   geometry.setColors(colors);
@@ -195,6 +197,7 @@ let camera = new THREE.PerspectiveCamera(
   10000
 );
 camera.position.set(-40, 60, 90);
+camera.name = "sceneMainCamera";
 camera2 = new THREE.PerspectiveCamera(40, 1, 1, 1000);
 camera2.position.copy(camera.position);
 
@@ -404,93 +407,199 @@ function render() {
 
   renderer.render(scene, camera);
 
-  
-    raycaster.setFromCamera(mouse, camera);
-    const intersections = raycaster.intersectObject(currentGroup, true);
 
-    if (intersections.length > 0) {
-      if (zoomUpdate) {
-        sphereInter.geometry.dispose()
-        sphereInter.geometry = new THREE.SphereGeometry(
-          controls.target.distanceTo(controls.object.position) * 0.005
-        );
-        zoomUpdate = false;
-      }
-      sphereInter.visible = true;
-      sphereInter.position.copy(intersections[0].point);
-      const line = intersections[0].object;
-      const idx = findIndex(intersections[0].point);
-      if (idx != null) {
-        document.querySelector("#sequence_base_info").value = scaffold[idx];
-        document.querySelector("#sequence_id_info").value = idx;
-      }
-    } else {
-      sphereInter.visible = false;
+  raycaster.setFromCamera(mouse, camera);
+  const intersections = raycaster.intersectObject(currentGroup, true);
+
+  if (intersections.length > 0) {
+    if (zoomUpdate) {
+      sphereInter.geometry.dispose()
+      sphereInter.geometry = new THREE.SphereGeometry(
+        controls.target.distanceTo(controls.object.position) * 0.005
+      );
+      zoomUpdate = false;
     }
+    sphereInter.visible = true;
+    sphereInter.position.copy(intersections[0].point);
+    const line = intersections[0].object;
+    const idx = findIndex(intersections[0].point);
+    if (idx != null) {
+      document.querySelector("#sequence_base_info").value = scaffold[idx];
+      document.querySelector("#sequence_id_info").value = idx;
+    }
+  } else {
+    sphereInter.visible = false;
+  }
 
-    renderer.setClearColor(0xf5f5f5, 1);
-    renderer.clearDepth();
-    renderer.setScissorTest(true);
-    renderer.setScissor(20, 20, insetWidth, insetHeight);
-    renderer.setViewport(20, 20, insetWidth, insetHeight);
-    camera2.position.copy(camera.position);
-    camera2.quaternion.copy(camera.quaternion);
-    matLine.resolution.set(insetWidth, insetHeight);
-    renderer.render(scene, camera2);
-    renderer.setScissorTest(false);
-  
+  renderer.setClearColor(0xf5f5f5, 1);
+  renderer.clearDepth();
+  renderer.setScissorTest(true);
+  renderer.setScissor(20, 20, insetWidth, insetHeight);
+  renderer.setViewport(20, 20, insetWidth, insetHeight);
+  camera2.position.copy(camera.position);
+  camera2.quaternion.copy(camera.quaternion);
+  matLine.resolution.set(insetWidth, insetHeight);
+  renderer.render(scene, camera2);
+  renderer.setScissorTest(false);
+
 
   requestAnimationFrame(render);
 }
 
-  const box = document.getElementById("box-state");
-  const stapleToggler = document.getElementById("box-state-staples");
-  const zoomToggler = document.getElementById("box-state-zoom");
-  const tableToggler = document.getElementById("box-stable-table");
+const box = document.getElementById("box-state");
+const stapleToggler = document.getElementById("box-state-staples");
+const zoomToggler = document.getElementById("box-state-zoom");
+const tableToggler = document.getElementById("box-stable-table");
+const particleToggler = document.getElementById("box-state-add-particle");
+const particleShape = document.getElementById("add-particle-shape");
+const addParticleButton = document.getElementById("add-particle-btn")
+const closeAddParticleButton = document.getElementById("close-icon-wrapper")
 
-  box.addEventListener("click", (e) => {
-    if (box.innerHTML === "Open Form") {
-      box.innerHTML = "Closed Form";
-      scene.remove(currentGroup);
-      isSplit = true;
-      currentGroup = splitLinearGroup;
-      scene.add(currentGroup)
+box.addEventListener("click", (e) => {
+  if (box.innerHTML === "Open Form") {
+    box.innerHTML = "Closed Form";
+    scene.remove(currentGroup);
+    isSplit = true;
+    currentGroup = splitLinearGroup;
+    scene.add(currentGroup)
 
-    } else {
-      box.innerHTML = "Open Form";
-      isSplit = false;
-      scene.remove(currentGroup);
-      currentGroup = linearGroup;
-      scene.add(currentGroup);
+  } else {
+    box.innerHTML = "Open Form";
+    isSplit = false;
+    scene.remove(currentGroup);
+    currentGroup = linearGroup;
+    scene.add(currentGroup);
+  }
+});
+
+stapleToggler.addEventListener("click", () => {
+  if (stapleToggler.innerHTML === "Show Staples") {
+    stapleToggler.innerHTML = "Hide Staples";
+  } else {
+    stapleToggler.innerHTML = "Show Staples";
+  }
+  stapleLinearGroup.visible = !stapleLinearGroup.visible;
+});
+
+zoomToggler.addEventListener("click", () => {
+  if (controls.enableZoom) {
+    zoomToggler.innerHTML = "Enable Zoom";
+  } else {
+    zoomToggler.innerHTML = "Disable Zoom";
+  }
+  controls.enableZoom = !controls.enableZoom;
+});
+
+tableToggler.addEventListener("click", () => {
+  if (tableToggler.innerHTML === "View Sequence Table") {
+    tableToggler.innerHTML = "Hide Sequence Table"
+  } else {
+    tableToggler.innerHTML = "View Sequence Table"
+  }
+});
+
+particleToggler.addEventListener("click", () => {
+  if (particleToggler.innerHTML === "Add Particle") {
+    document.querySelector(".add-particle-container").style.display = "block";
+    document.querySelector('.add-particle-container').setAttribute("style","display:block");
+  } else {
+    let [shapeMesh, shapeLight] = sceneObjects[currentAddedParticle];
+    scene.remove(scene.getObjectByName(camera.name));
+    camera.children = camera.children.filter(obj => obj.name != shapeLight.name);
+    scene.add(camera);
+    scene.remove(scene.getObjectByName(shapeMesh.name));
+    particleToggler.innerHTML = "Add Particle"
+  }
+  
+});
+
+particleShape.addEventListener("click", () => {
+  if (particleShape.value === "cube") {
+    document.querySelector(".radius-group").style.display = "none";
+    document.querySelector('.radius-group').setAttribute("style","display:none");
+
+    document.querySelector(".width-group").style.display = "flex";
+    document.querySelector('.width-group').setAttribute("style","display:flex");
+    document.querySelector(".height-group").style.display = "flex";
+    document.querySelector('.height-group').setAttribute("style","display:flex");
+    document.querySelector(".depth-group").style.display = "flex";
+    document.querySelector('.depth-group').setAttribute("style","display:flex");
+
+  } else {
+    document.querySelector(".radius-group").style.display = "flex";
+    document.querySelector('.radius-group').setAttribute("style","display:flex");
+
+    document.querySelector(".width-group").style.display = "none";
+    document.querySelector('.width-group').setAttribute("style","display:none");
+    document.querySelector(".height-group").style.display = "none";
+    document.querySelector('.height-group').setAttribute("style","display:none");
+    document.querySelector(".depth-group").style.display = "none";
+    document.querySelector('.depth-group').setAttribute("style","display:none");
+
+  }
+});
+
+addParticleButton.addEventListener("click", () => {
+  
+  if (particleShape.value === "cube") {
+    const widthValue = document.querySelector('.width-field').value;
+    const heightValue = document.querySelector('.width-field').value;
+    const depthValue = document.querySelector('.width-field').value;
+    const shapeGeometry = new THREE.BoxGeometry(widthValue, heightValue, depthValue);
+    const shapeMaterial = new THREE.MeshPhongMaterial({color: 0xF57328, side: THREE.DoubleSide});
+    const shapeLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    const shapeMesh = new THREE.Mesh(shapeGeometry, shapeMaterial);
+    shapeMesh.name = "cubeMesh";
+    shapeLight.name = "cubeLight"
+    currentAddedParticle = "cube";
+    sceneObjects[currentAddedParticle] = [shapeMesh, shapeLight];
+    scene.remove(camera)
+    camera.add(shapeLight);
+    scene.add(camera)
+    scene.add(shapeMesh);
+  }
+  else {
+    const radiusField = document.querySelector('.radius-field').value;
+    const shapeMaterial = new THREE.MeshPhongMaterial({color: 0xF57328, side: THREE.DoubleSide})
+    currentAddedParticle = particleShape.value;
+    let shapeGeometry;
+    switch (particleShape.value) {
+      case "icosahedron":
+        shapeGeometry = new THREE.IcosahedronGeometry(radiusField);
+        break;
+      case "dodecahedron":
+        shapeGeometry = new THREE.DodecahedronGeometry(radiusField);
+        break;
     }
-  });
+    const shapeLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    const shapeMesh = new THREE.Mesh(shapeGeometry, shapeMaterial);
+    shapeMesh.name = `${particleShape.value}Mesh`;
+    shapeLight.name = `${particleShape.value}Light`;
+    sceneObjects[`${particleShape.value}`] = [shapeMesh, shapeLight];
+    scene.remove(camera)
+    camera.add(shapeLight);
+    scene.add(camera)
+    scene.add(shapeMesh);
+  }
 
-  stapleToggler.addEventListener("click", () => {
-    if (stapleToggler.innerHTML === "Show Staples") {
-      stapleToggler.innerHTML = "Hide Staples";
-    } else {
-      stapleToggler.innerHTML = "Show Staples";
-    }
-    stapleLinearGroup.visible = !stapleLinearGroup.visible;
-  });
+  document.querySelector(".add-particle-container").style.display = "none";
+  document.querySelector('.add-particle-container').setAttribute("style","display:none");
+  particleToggler.innerHTML = "Remove Particle"
+});
 
-  zoomToggler.addEventListener("click", () => {
-    if (controls.enableZoom) {
-      zoomToggler.innerHTML = "Enable Zoom";
-    } else {
-      zoomToggler.innerHTML = "Disable Zoom";
-    }
-    controls.enableZoom = !controls.enableZoom;
-  })
+closeAddParticleButton.addEventListener("click", () => {
+  document.querySelector(".add-particle-container").style.display = "none";
+  document.querySelector('.add-particle-container').setAttribute("style","display:none");
+});
 
-  tableToggler.addEventListener("click", () => {
-    if (tableToggler.innerHTML === "View Sequence Table") {
-      tableToggler.innerHTML = "Hide Sequence Table"
-    } else {
-      tableToggler.innerHTML = "View Sequence Table"
-    }
-  })
 
+const canvasVhMin = Math.min(
+  document.querySelector(".canvas-container").clientHeight,
+  vh(80)
+);
+
+document.querySelector(".generator-sidebar").style.height = canvasVhMin;
+document.querySelector('.generator-sidebar').setAttribute("style",`height:${canvasVhMin}px`);
 
 document.querySelector("#gltf_export").addEventListener("click", () => {
   const exporter = new GLTFExporter();
@@ -518,6 +627,11 @@ function saveArrayBuffer(text, filename) {
   save(new Blob([buffer], {
     type: 'application/octet-stream'
   }), filename);
+}
+
+function vh(percent) {
+  var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+  return (percent * h) / 100;
 }
 
 function saveString(text, filename) {
