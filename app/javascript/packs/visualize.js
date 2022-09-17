@@ -513,6 +513,30 @@ particleToggler.addEventListener("click", () => {
   
 });
 
+if (particleShape.value === "cube") {
+  document.querySelector(".radius-group").style.display = "none";
+  document.querySelector('.radius-group').setAttribute("style","display:none");
+
+  document.querySelector(".width-group").style.display = "flex";
+  document.querySelector('.width-group').setAttribute("style","display:flex");
+  document.querySelector(".height-group").style.display = "flex";
+  document.querySelector('.height-group').setAttribute("style","display:flex");
+  document.querySelector(".depth-group").style.display = "flex";
+  document.querySelector('.depth-group').setAttribute("style","display:flex");
+
+} else {
+  document.querySelector(".radius-group").style.display = "flex";
+  document.querySelector('.radius-group').setAttribute("style","display:flex");
+
+  document.querySelector(".width-group").style.display = "none";
+  document.querySelector('.width-group').setAttribute("style","display:none");
+  document.querySelector(".height-group").style.display = "none";
+  document.querySelector('.height-group').setAttribute("style","display:none");
+  document.querySelector(".depth-group").style.display = "none";
+  document.querySelector('.depth-group').setAttribute("style","display:none");
+
+}
+
 particleShape.addEventListener("click", () => {
   if (particleShape.value === "cube") {
     document.querySelector(".radius-group").style.display = "none";
@@ -570,6 +594,12 @@ addParticleButton.addEventListener("click", () => {
       case "dodecahedron":
         shapeGeometry = new THREE.DodecahedronGeometry(radiusField);
         break;
+      case "tetrahedron":
+        shapeGeometry = new THREE.TetrahedronGeometry(radiusField);
+        break;
+      case "octahedron":
+        shapeGeometry = new THREE.OctahedronGeometry(radiusField);
+        break;
     }
     const shapeLight = new THREE.DirectionalLight(0xffffff, 0.8);
     const shapeMesh = new THREE.Mesh(shapeGeometry, shapeMaterial);
@@ -620,7 +650,8 @@ document.querySelector("#gltf_export").addEventListener("click", () => {
       console.log('An error happened during parsing', error);
     },
   );
-})
+});
+
 
 
 function saveArrayBuffer(text, filename) {
