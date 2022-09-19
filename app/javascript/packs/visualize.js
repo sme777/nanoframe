@@ -16,7 +16,7 @@ import {
 import GLTFExporter from 'three-gltf-exporter';
 
 
-let insetWidth, insetHeight, camera2;
+let insetWidth, insetHeight;
 let zoomUpdate;
 let isSplit;
 let line0, line1;
@@ -68,10 +68,10 @@ renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(canvasContainerWidth, canvasContainerHeight);
 camera.position.set(-40, 60, 90);
 camera.name = "sceneMainCamera";
-camera2 = new THREE.PerspectiveCamera(40, 1, 1, 1000);
+const camera2 = new THREE.PerspectiveCamera(40, 1, 1, 1000);
 camera2.position.copy(camera.position);
-
-
+const camera3 = new THREE.PerspectiveCamera(40, 1, 1, 1000);
+camera3.position.z += 30;
 let doublePoints = scaffoldPositions.concat(scaffoldPositions);
 let doubleColors = scaffoldColors.concat(scaffoldColors);
 generateDisplay(scaffoldPositions.flat(), scaffoldColors.flat());
@@ -345,6 +345,8 @@ function onWindowResize() {
     insetHeight = height / 4;
     camera2.aspect = insetWidth / insetHeight;
     camera2.updateProjectionMatrix();
+    camera3.aspect = insetWidth / insetHeight;
+    camera3.updateProjectionMatrix();
   }
 }
 
@@ -390,6 +392,7 @@ function render() {
     sphereInter.visible = false;
   }
 
+  // Zoomed out of version of wireframe
   renderer.setClearColor(0xf5f5f5, 1);
   renderer.clearDepth();
   renderer.setScissorTest(true);
@@ -401,6 +404,15 @@ function render() {
   renderer.render(scene, camera2);
   renderer.setScissorTest(false);
 
+  // Plane specific routing
+  renderer.setClearColor(0xf5f5f5, 1);
+  renderer.clearDepth();
+  renderer.setScissorTest(true);
+  renderer.setScissor(20, canvas.clientHeight * 0.7, insetWidth, insetHeight);
+  renderer.setViewport(20, canvas.clientHeight * 0.7, insetWidth, insetHeight);
+  // camera3.position
+  renderer.render(scene, camera3);
+  renderer.setScissorTest(false);
 
   requestAnimationFrame(render);
 }
@@ -413,7 +425,7 @@ const particleToggler = document.getElementById("box-state-add-particle");
 const particleShape = document.getElementById("add-particle-shape");
 const addParticleButton = document.getElementById("add-particle-btn")
 const closeAddParticleButton = document.getElementById("close-icon-wrapper")
-
+console.log(canvas.height, canvas.offsetHeight, canvas.clientHeight)
 box.addEventListener("click", (e) => {
   if (box.innerHTML === "Open Form") {
     box.innerHTML = "Closed Form";
@@ -589,7 +601,7 @@ closeAddParticleButton.addEventListener("click", () => {
 
 const canvasVhMin = Math.min(
   document.querySelector(".canvas-container").clientHeight,
-  vh(80)
+  vh(90)
 );
 
 document.querySelector(".generator-sidebar").style.height = canvasVhMin;
