@@ -229,6 +229,12 @@
                 </div>
               </div>
 
+              <div class="synthesizer-item">
+                <div class="form-floating">
+                    <%= f.select :color_palette, @color_palettes, {}, {class: "form-select"}%>
+                    <%= f.label "Color Palette", for: "color_palette", class: "form-label"%>
+                </div>
+              </div>
           </div>
 
           <div class="synthesizer-btn-container">

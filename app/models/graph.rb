@@ -10,17 +10,18 @@ class Graph
   # dimension[0] -> width
   # dimension[1] -> height
   # dimension[2] -> depth
-  def initialize(generator, dimensions, shape, scaffold)
+  def initialize(generator, dimensions, shape, scaffold, color_palette)
     # byebug
     setup_dimensions(dimensions, shape)
     setup_extensions(generator)
     @shape = Shape.new(shape)
     @segments = dimensions['divisions'].to_i + 1
     @scaff_length = scaffold.size
+    @color_palette = color_palette
     @staple_breaker = Breaker.new(self)
     @outgoers = create_outgoers(@shape, @segments)
     @vertices, @edges = create_vertices_and_edges(@shape)
-    byebug
+    # byebug
     if shape.name == "tetrahedron"
       @template_planes = find_four_planes2(@edges, @outgoers, @vertices)
       @planes = find_plane_combination_tetrahedron(@template_planes)
@@ -30,7 +31,7 @@ class Graph
     end
     
     @sorted_vertices, @normalized_vertices, @points, @sampling_frequency, @scaffold_rotation_labels = generate_points
-    @colors = generate_colors
+    @colors = Graph.generate_colors(@points.size, @color_palette)
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
     @vertex_cuts = []
@@ -630,7 +631,7 @@ class Graph
       next_next_vert = normalized_vertices[(i + 2) % normalized_vertices.size]
       dr_ch = Edge.new(vertex, next_vert).directional_change
 
-      corner_nt = on_boundary?(next_vert) ? 7 : 6 # POTENTIAL SOLUTION: set sampling frequency same, but for refractions add nil for last index, then take average.
+      corner_nt = on_boundary?(next_vert) ? 9 : 8 # POTENTIAL SOLUTION: set sampling frequency same, but for refractions add nil for last index, then take average.
       edge_sampled_points = Vertex.linspace(dr_ch, sample_dir_map[dr_ch], vertex, next_vert)
 
       edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert], corner_nt)[-corner_nt...]
@@ -648,7 +649,7 @@ class Graph
     [sorted_vertices, normalized_vertices, sampled_points, freq, scaffold_rotation_labels]
   end
 
-  def rounded_corner_points(vertices, smoothness = 6, radius = 1, closed = true)
+  def rounded_corner_points(vertices, smoothness = 8, radius = 1.5, closed = true)
     min_vector = (vertices[0] - vertices[1])
     min_length = min_vector.distance
     vertices.each_with_index do |_v, idx|
@@ -725,14 +726,24 @@ class Graph
     (val.ceil % divisor).zero? || (val.floor % divisor).zero?
   end
 
-  def generate_colors
+  def self.generate_colors(points_size, color_palette)
     colors = []
-    (0...@points.size).each do |i|
-      t = i.to_f / @points.size
-      # colors.concat([t / 4, t / 1.5 + 0.15, t + 0.2])
-      # colors << [t + 0.2, t + 0.2, t / 8] # yellow
-      colors << [t / 3, t / 3 + 0.3, t / 3] # green
-      # [t / 3 + 0.3, t / 3, t / 3] red
+    (0...points_size).each do |i|
+      t = i.to_f / points_size
+      case color_palette
+      when "Green Ocean"
+        colors << [t / 3, t / 3 + 0.3, t / 3]
+      when "Leather Vintage"
+        colors << [t + 0.2, t + 0.2, t / 8]
+      when "Cold Breeze"
+        colors << [t / 4, t / 1.5 + 0.15, t + 0.2]
+      when "Red Forest"
+        colors << [t / 3 + 0.3, t / 3, t / 3]
+      when "Violet Storm"
+        colors << [t / 3, t / 8, t / 3 + 0.15]
+      else
+        colors << [t / 3, t / 3 + 0.3, t / 3]  
+      end
     end
     colors
   end
