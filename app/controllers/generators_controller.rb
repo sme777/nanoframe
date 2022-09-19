@@ -15,6 +15,7 @@ class GeneratorsController < ApplicationController
   def new
     @shapes = Generator.shapes
     @scaffolds = Generator.scaffolds
+    @color_palettes = Generator.color_palettes
   end
 
   def synthesizer
@@ -88,7 +89,6 @@ class GeneratorsController < ApplicationController
       if turbo_frame_request?
         render :async_visualize
       else
-        # if
         redirect_to "/synthesizer/#{@generator.id}/visualize"
       end
     else
@@ -168,17 +168,15 @@ class GeneratorsController < ApplicationController
 
   def update_generator
     Generator.find(@generator.id).update(public: !@generator.public) if params[:visibility]
-
-    if params[:bridge_length] && !@generator.is_current_bridge_length(params[:bridge_length])
-      new_staples = @generator.update_bridge_length
+    if params[:bridge_length] && !@generator.is_current_bridge_length(params[:bridge_length].to_i)
+      new_staples = @generator.update_bridge_length(params[:bridge_length])
       Generator.find(@generator.id).update(staples: new_staples)
     end
-
-    if params[:color_palette] && !@generator.is_current_color_palette(params[:color_palette])
-      graph_json = @generator.update_color_pallette
-      Generator.find(@generator.id).update(routing: graph_json)
+    color_palette = params[:color_palette]
+    if Generator.color_palettes.include?(color_palette) && !@generator.is_current_color_palette(color_palette)
+      colors = @generator.update_color_pallette(color_palette)
+      Generator.find(@generator.id).update(colors: colors, color_palette: color_palette)
     end
-
     redirect_to "/synthesizer/#{@generator.id}/visualize"
   end
 
@@ -218,7 +216,9 @@ class GeneratorsController < ApplicationController
                                    interior_extension_length: generator_fields[:interior_extensions].to_i,
                                    exterior_extension_bond_type: generator_fields[:exterior_bond_type],
                                    interior_extension_bond_type: generator_fields[:interior_bond_type],
-                                   exterior_extensions: exterior_extensions_arr, interior_extensions: interior_extensions_arr })
+                                   exterior_extensions: exterior_extensions_arr, interior_extensions: interior_extensions_arr,
+                                   bridge_length: generator_fields[:bridge_length], color_palette: generator_fields[:color_palette],
+                                   reflection_buffer_length: generator_fields[:reflection_buffer_length]})
       @generator.user_id = @current_user.id unless @current_user.nil?
 
       if @generator.save
@@ -297,7 +297,8 @@ class GeneratorsController < ApplicationController
   def generator_params
     params.require(:generator).permit(:height, :width, :depth, :shape, :divisions, :scaffold_name, :visibility,
                                       :exterior_extensions, :exterior_bond_type, :interior_extensions, :interior_bond_type,
-                                      :exterior_extension_sequence, :interior_extension_sequence)
+                                      :exterior_extension_sequence, :interior_extension_sequence, :bridge_length, :reflection_buffer_length,
+                                      :color_palette)
   end
 
   def user_generator_params

@@ -76,6 +76,10 @@
                 </div>
 
                 <div class="box-state-container">
+                    <button id="box-state-add-particle" class="btn btn-outline-secondary w-100">Add Particle</button><br>
+                </div>
+
+                <div class="box-state-container">
                     <button id="box-state-viewport" class="btn btn-outline-secondary w-100">Change Viewport</button><br>
                 </div>
 
@@ -107,7 +111,7 @@
             <div class="modifications-container">
 
 
-                <%= form_with(url: update_generator_path(@generator.id), method: :post) do |f| %>
+                <%= form_with(url: update_generator_path(@generator.id), method: :post, data: { turbo: false }) do |f| %>
                 <div class="row box-state-label">
                     <h6>Modifications</h6>
                 </div>
@@ -121,7 +125,7 @@
 
                 <div class="row box-state-container">
                     <div class="form-floating nopad-container">
-                        <%= f.select :color_palette, @color_palettes, {}, {class: "form-select"}%>
+                        <%= f.select :color_palette, options_for_select(@color_palettes, selected: @generator.color_palette), {}, {class: "form-select"}%>
                         <%= f.label "Color Palette", for: "color_palette", class: "form-label"%>
                     </div>
                 </div>
@@ -180,5 +184,48 @@
         </table>
     </div>
 </div>
+
+  <div class="add-particle-container">
+        <div class="add-particle-wrapper">
+        <div class="add-particle-close-wrapper">
+            <span id="close-icon-wrapper"><i class="fa-solid fa-xmark"></i></span>
+        </div>
+        <div class="form-floating mb-3">
+            <select class="form-select" id="add-particle-shape">
+                <option value="cube">Cube</option>
+                <option value="tetrahedron">Tetrahedron</option>
+                <option value="dodecahedron">Dodecahedron</option>
+                <option value="icosahedron">Icosahedron</option>
+                <option value="octahedron">Octahedron</option>
+            </select>
+            <label for="add-particle-shape">Particle Shape</label>
+        </div>
+
+        <div class="input-group add-particle-group width-group">
+            <span class="input-group-text w-25">Width</span>
+            <input type="text" class="form-control width-field" placeholder="45 nm">
+        </div>
+
+        <div class="input-group add-particle-group height-group">
+            <span class="input-group-text w-25">Height</span>
+            <input type="text" class="form-control height-field" placeholder="45 nm">
+        </div>
+        
+        <div class="input-group add-particle-group depth-group">
+            <span class="input-group-text w-25">Depth</span>
+            <input type="text" class="form-control depth-field" placeholder="45 nm">
+        </div>
+
+        <div class="input-group add-particle-group radius-group">
+            <span class="input-group-text w-25">Radius</span>
+            <input type="text" class="form-control radius-field" placeholder="10 nm">
+        </div>
+
+        <div class="add-particle-btn-container add-particle-group">
+          <button id="add-particle-btn" class="btn btn-dark w-100">Add Particle</button>
+        </div>
+    </div>
+
+  </div>
 
 <%= javascript_pack_tag 'visualize', 'data-turbolinks-track': 'reload'%>

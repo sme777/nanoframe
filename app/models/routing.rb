@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 # require 'm'
+require 'matrix'
 
 module Routing
   @@prev_vertex = nil
@@ -234,19 +235,51 @@ module Routing
     end
   end
 
-  def self.connect_vertices(vs)
+  def self.connect_vertices(vs, corners)
     disp_v = Utils.deep_copy(vs)
+    disp_c = Utils.deep_copy(corners) + Utils.deep_copy(vs)
+    disp2_c = Utils.deep_copy(disp_c)
     edges = []
     until disp_v.empty?
-      v1 = disp_v[rand(0..(disp_v.length - 1))]
-      v2 = disp_v[rand(0..(disp_v.length - 1))]
-      if v1.side != v2.side || v1 == v2
+      v1 = disp_v.sample
+      v2 = disp_v.sample
+      if v1.side == v2.side && disp_v.size == 2
+        disp_v = Utils.deep_copy(vs)
+        edges = []
+      end
+
+      if v1.side != v2.side && v1 != v2
         edges << Edge.new(v1, v2)
         disp_v.delete(v1)
         disp_v.delete(v2)
       end
     end
-    edges
+    # boundary_edges = []
+    # disp_c.each do |vertex|
+    #   vertex1 = Routing.find_closest_vertex(vertex, disp2_c)
+    #   edge1 = Edge.new(vertex, vertex1)
+    #   boundary_edges << edge1 if (boundary_edges.filter {|e| (e.v1 == edge1.v1 && e.v2 == edge1.v2) || (e.v1 == edge1.v2 && e.v2 == edge1.v1)}).empty?
+    #   disp2_c.delete(vertex1)
+    #   vertex2 = Routing.find_closest_vertex(vertex, disp2_c)
+    #   edge2 = Edge.new(vertex, vertex2)
+    #   boundary_edges << edge2 if (boundary_edges.filter {|e| (e.v1 == edge2.v1 && e.v2 == edge2.v2) || (e.v1 == edge2.v2 && e.v2 == edge2.v1)}).empty?
+    #   disp2_c << vertex1
+    # end
+    # byebug
+    edges #boundary_edges]
+  end
+
+  def self.find_closest_vertex(corner, vertices)
+    closest_so_far = Float::INFINITY
+    closest_vertex = nil
+    vertices.each do |vertex|
+      distance = corner.distance_to_squared(vertex)
+      if distance < closest_so_far && distance != 0
+        closest_so_far = distance
+        closest_vertex = vertex
+      end
+    end
+    closest_vertex
   end
 
   def self.get_vertices(edges)
@@ -264,8 +297,200 @@ module Routing
     vertices
   end
 
+  def self.find_optimal_edges(outgoer_vertices, corners)
+    total_area = Float::INFINITY
+    running_streak = 0
+    edges = []
+    running_triangles = []
+    failures = 0
+    while running_streak < 500
+     
+      connected_edges = Routing.connect_vertices(outgoer_vertices, corners)
+      new_vertices, new_edges = Routing.get_edges(connected_edges)
+      # all_edges = 
+      # byebug
+      
+      a1,b1,c1,d1 = Routing.get_plane_equation(new_vertices[0], new_vertices[1], new_vertices[2])
+      translated_vertices = new_vertices.map {|vertex| Vertex.new(vertex.x, vertex.y, vertex.z - d1/c1) }
+      # a2,b2,c2,d2 = Routing.get_plane_equation(translated_vertices[0], translated_vertices[1], translated_vertices[2])
+      rotation_matrix = Routing.xy_rotation_matrix(a1,b1,c1,d1)
+      # translated_points = new_vertices.map {|vertex| a * vertex.x + b * vertex.y + c * vertex.z}
+      rotated_points = new_vertices.map {|vertex| rotation_matrix*Vector[vertex.x, vertex.y, vertex.z]}
+      # translated_points = new_vertices.map {|vertex| rotation_matrix*Vector[vertex.x, vertex.y, vertex.z - d/c]}
+      transformed_vertices = rotated_points.map {|point| Vertex.new(point[0], point[1], point[2] + d1/c1)}
+      # transformed_vertices = transformed_vertices.map {|vertex| }
+      # projected_points = 
+      # byebug
+      begin
+        triangles = Delaunator.triangulate(transformed_vertices.map{|vertex| [vertex.x, vertex.y]})
+        # byebug if new_edges.size == 12
+      rescue => exception
+        failures += 1
+        next 
+      end
+      # byebug if triangles.size == 18
+      current_area = Routing.compute_surface_area(transformed_vertices, triangles)
+      # byebug
+      if current_area < total_area
+        total_area = current_area
+        running_streak = 0
+        edges = new_edges
+        running_triangles = triangles
+      else
+        running_streak += 1
+      end
+    end
+    byebug
+    [edges, failures]
+
+    # edge_visit_map = {}
+    # edges.each do |edge|
+    #   edge_visit_map[edge.hash] = 0
+    # end
+
+    # edges.each do |edge|
+      
+    #   edges.each do |next_edge|
+    #     next unless edge.v2 == next_edge.v1 || edge.v2 == next_edge.v2
+    #     if edge.v2 == next_edge.v1 
+          
+    #     else
+
+    #     end
+    #   end
+    # end
+  end
+
+  def self.compute_surface_area(vertices, triangles)
+    total_area = 0
+    (0..triangles.size-1).step(3) do |i|
+      triangle_area = Routing.compute_polygon_area([
+        vertices[triangles[i]],
+        vertices[triangles[i+1]],
+        vertices[triangles[i+2]],
+      ])
+      total_area += Math.exp(triangle_area)
+    end
+    total_area
+    # edge_visit_map = {}
+    # cut_edges.each do |cut_edge|
+    #   # set hash -> [type, current, limit]
+    #   edge_visit_map[cut_edge.object_id] = [:cut, 0, 2]
+    # end
+
+    # boundary_edges.each do |boundary_edge|
+    #   edge_visit_map[boundary_edge.object_id] = [:boundary, 0, 1]
+    # end
+
+    # total_edges = cut_edges + boundary_edges
+    # # new_edges = Utils.deep_copy(total_edges)
+    # surface_area = 0
+    # total_edges.each do |edge|
+    #   satisfied = false
+    #   polyon_edges = [edge]
+    #   next_edge = edge
+    #   while !satisfied
+    #     next_edge, edge_visit_map = Routing.find_closest_edge(edge.v1, next_edge, total_edges, edge_visit_map)
+    #     if next_edge.nil?
+    #       polyon_edges = []
+    #       break
+    #     end
+    #     polyon_edges << next_edge
+    #     if next_edge.v2 == edge.v1
+    #       # byebug
+    #       satisfied = true
+    #     end
+    #   end
+    #   # byebug if Routing.compute_polygon_area(polyon_edges) > 0
+    #   surface_area += Routing.compute_polygon_area(polyon_edges)
+    # end
+    # surface_area
+  end
+
+  def self.find_closest_edge(origin, target, edges, visit_map)
+    min_distance = Float::INFINITY 
+    next_edge = nil
+    # byebug
+    edges.each do |edge|
+      next if target == edge || (target.v2 != edge.v1 && target.v2 != edge.v2)
+      edge_data = visit_map[edge.object_id]
+      other = target.v2 == edge.v1 ? edge.v2 : edge.v1
+      
+      distance = origin.distance_to_squared(other)
+      if distance < min_distance && edge_data[1] < edge_data[2]
+        min_distance = distance
+        next_edge = edge
+      end
+    end
+    
+    if !next_edge.nil?
+      next_edge_data = visit_map[next_edge.object_id]
+      next_edge_data[1] += 1
+      visit_map[next_edge.object_id] = next_edge_data
+      next_edge = target.v2 == next_edge.v1 ? next_edge : next_edge.reverse unless next_edge.nil?
+    end
+    [next_edge, visit_map]
+  end
+
+  def self.xy_rotation_matrix(a,b,c,d)
+    # byebug
+    cos_theta = c / (Math.sqrt(a**2 + b**2 + c**2))
+    sin_theta = Math.sqrt((a**2 + b**2)/(a**2 + b**2 + c**2))
+    u1 = b / Math.sqrt((a**2 + b**2 + c**2))
+    u2 = - a / Math.sqrt((a**2 + b**2 + c**2))
+    normal_norm = Math.sqrt(u1**2+u2**2)
+    u1 /= normal_norm
+    u2 /= normal_norm
+
+    Matrix[[cos_theta + (u1**2)*(1-cos_theta), u1*u2*(1-cos_theta), u2*sin_theta],
+           [u1*u2*(1-cos_theta), cos_theta+(u2**2)*(1-cos_theta), -u1*sin_theta],
+           [-u2*sin_theta, u1*sin_theta, cos_theta]]
+  end
+
+  # follows Ex + Fy + Hz + K = 0
+  def self.get_plane_equation(a, b, c)
+    ab = b - a
+    ac = c - a
+    e, f, h = ab.cross(ac)
+    # gcd = h.gcd(e.gcd(f))
+    # e /= gcd
+    # f /= gcd
+    # g /= gcd
+    k = -(e * a.x + f * a.y + h * a.z)
+    [e, f, h, k]
+  end
+
+  def self.compute_polygon_area(vertices)
+    
+    ab = vertices[1] - vertices[0]
+    ac = vertices[2] - vertices[0]
+    u = ab.cross(ac)
+    result = Math.sqrt(u[0]**2 + u[1]**2 + u[2]**2).abs / 2
+    result
+    # byebug if result.nil?
+    # return 0 if edges.size < 3
+    # byebug
+    # # vertices = edges.map {|edge| edge.v2}
+    # total = Vertex.new(0, 0, 0)
+    # vertices.each_with_index do |_, idx|
+    #   vi1 = vertices[idx]
+    #   vi2 = vertices[(idx+1)%vertices.size]
+    #   prod = vi1.cross(vi2)
+    #   total.x += prod[0]
+    #   total.y += prod[1]
+    #   # total.z += prod[2]
+    # end
+    
+    # result = total.dot(Vertex.unit_normal(
+    #   Vertex.new(vertices[0].x, vertices[0].y, 0), 
+    #   Vertex.new(vertices[1].x, vertices[1].y, 0), 
+    #   Vertex.new(vertices[2].x, vertices[2].y, 0)))
+    # Math.exp((result/2).abs)
+  end
+
   def self.get_edges(stripes)
     undisected_edges = Utils.deep_copy(stripes)
+    intersections = 0
     for i in (0...undisected_edges.size) do
       for j in (0...undisected_edges.size) do
         if i == j
@@ -277,6 +502,7 @@ module Routing
             edge1.v1, edge1.v2, 
             edge2.v1, edge2.v2)
           if does_intersect
+            intersections += 1
             e1_split = Routing.split_edge(edge1, points[0])
             e2_split = Routing.split_edge(edge2, points[0])
             undisected_edges.delete(edge1)
@@ -287,7 +513,18 @@ module Routing
         end
       end
     end
-    undisected_edges.filter {|elem| elem.v1 != elem.v2 }
+
+    new_vertices = []
+
+    disected_edges = undisected_edges.filter {|elem| elem.v1 != elem.v2 }
+    disected_edges.each do |edge|
+      edge.v1.round(3)
+      edge.v2.round(3)
+      new_vertices << edge.v1 unless new_vertices.include?(edge.v1)
+      new_vertices << edge.v2 unless new_vertices.include?(edge.v2)
+    end
+    [new_vertices, disected_edges]
+    # [undisected_edges.filter {|elem| elem.v1 != elem.v2 }, intersections]
   end
 
   def self.split_edge(edge, point)

@@ -142,13 +142,33 @@
             </button>
           </p>
           <div class="collapse" id="advanced_options_menu">
+            <div class="row ">
+              <div class="col-md-4">
+                <span class="input-group-text w-75">Edge Type</span>
+              </div>
+              <div class="col-md-8 helix-bundles-container">
+                <div class="form-check form-check-inline">
+                  <%= f.radio_button :edge_type, :single_hb, class: "form-check-input", id: "1hb_edge_type", autocomplete: "off", checked: true %>
+                  <%= f.label :single_hb, "1 HB", for: "generator_edge_type", class: "form-check-label"%>
+                </div>
+                <div class="form-check form-check-inline">
+                  <%= f.radio_button :edge_type, :double_hb, class: "form-check-input", id: "2hb_edge_type", autocomplete: "off" %>
+                  <%= f.label :double_hb, "2 HB", for: "generator_edge_type", class: "form-check-label"%>
+                </div>
+                <div class="form-check form-check-inline">
+                  <%= f.radio_button :edge_type, :six_hb, class: "form-check-input", id: "6hb_edge_type", autocomplete: "off" %>
+                  <%= f.label :six_hb, "6 HB", for: "generator_edge_type", class: "form-check-label"%>
+                </div>
+              </div>
+              
+            </div>
 
             <div class="input-group synthesizer-item">
               <span class="input-group-text w-50">Exterior Extensions Length</span>
               <%= f.text_field :exterior_extensions, type: "text", value: "10", class: "form-control", placeholder: "10" %>
               <div class="btn-group btn-group" role="group">
                   <%= f.radio_button :exterior_bond_type, :zipbond, class: "btn-check", autocomplete: "off", checked: true %>
-                  <%= f.label "Zip Bonds", for: "generator_exterior_bond_type_zipbond", class: "btn btn-outline-dark" %>
+                  <%= f.label "Zip Bonds", for: "generator_exterior_bond_type_zipbond", class: "btn btn-outline-dark"%>
                   <%= f.radio_button :exterior_bond_type, :armbond, class: "btn-check", autocomplete: "off"%>
                   <%= f.label "Arm Bonds", for: "generator_exterior_bond_type_armbond", class: "btn btn-outline-dark" %>
               </div>
@@ -195,6 +215,26 @@
                 </div>
               </div>
             </div>
+              <div class="synthesizer-item">
+                <div class="form-floating">
+                  <%= f.text_field :bridge_length, type: "number", class: "form-control", value: "2" %>
+                  <%= f.label "Bridge Length", for: "generator_bridge_length", class: "form-label" %>
+                </div>
+              </div>
+
+              <div class="synthesizer-item">
+                <div class="form-floating">
+                  <%= f.text_field :reflection_buffer_length, type: "number", class: "form-control", value: "1" %>
+                  <%= f.label "Reflection Buffer Length", for: "generator_reflection_buffer_length", class: "form-label" %>
+                </div>
+              </div>
+
+              <div class="synthesizer-item">
+                <div class="form-floating">
+                    <%= f.select :color_palette, @color_palettes, {}, {class: "form-select"}%>
+                    <%= f.label "Color Palette", for: "color_palette", class: "form-label"%>
+                </div>
+              </div>
           </div>
 
           <div class="synthesizer-btn-container">

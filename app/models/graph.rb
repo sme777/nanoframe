@@ -10,17 +10,18 @@ class Graph
   # dimension[0] -> width
   # dimension[1] -> height
   # dimension[2] -> depth
-  def initialize(generator, dimensions, shape, scaffold)
-    byebug
+  def initialize(generator, dimensions, shape, scaffold, color_palette)
+    # byebug
     setup_dimensions(dimensions, shape)
     setup_extensions(generator)
     @shape = Shape.new(shape)
     @segments = dimensions['divisions'].to_i + 1
     @scaff_length = scaffold.size
+    @color_palette = color_palette
     @staple_breaker = Breaker.new(self)
     @outgoers = create_outgoers(@shape, @segments)
     @vertices, @edges = create_vertices_and_edges(@shape)
-
+    # byebug
     if shape.name == "tetrahedron"
       @template_planes = find_four_planes2(@edges, @outgoers, @vertices)
       @planes = find_plane_combination_tetrahedron(@template_planes)
@@ -30,7 +31,7 @@ class Graph
     end
     
     @sorted_vertices, @normalized_vertices, @points, @sampling_frequency, @scaffold_rotation_labels = generate_points
-    @colors = generate_colors
+    @colors = Graph.generate_colors(@points.size, @color_palette)
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
     @vertex_cuts = []
@@ -70,7 +71,7 @@ class Graph
   def create_outgoers(shape, segments)
     outgoers = []
     shape.faces.each do |face|
-      outgoers << face.generate_segmented_vertices(segments).map {|v| v.round(6)}
+      outgoers << face.generate_segmented_vertices(segments)[0].map {|v| v.round(6)}
     end
     outgoers
   end
@@ -166,33 +167,34 @@ class Graph
   end
 
   def find_plane_routing2(edges, outgoers, ingoers)
-
+    byebug
     total_outgoers = outgoers.length
     taken_outgoers = []
     taken_edges = []
     sets = []
+    vertices = Utils.deep_copy(outgoers + ingoers)
     last_move = nil
     while taken_outgoers.length != total_outgoers
-      s = outgoers[rand(0..(outgoers.length - 1))]
-      outgoers.delete(s)
+      start = outgoers[rand(0..(outgoers.length - 1))]
+      outgoers.delete(start)
       t = outgoers[rand(0..(outgoers.length - 1))]
-      dfs_edges = dfs2(s, t, last_move, taken_edges, edges, outgoers + ingoers) # ???
+      dfs_edges = dfs2(start, t, last_move, taken_edges, edges, vertices) # ???
       if dfs_edges != []
         outgoers.delete(t)
-        taken_outgoers << s
+        taken_outgoers << start
         taken_outgoers << t
         taken_edges.concat(dfs_edges)
-        new_set = GraphSet.new(s)
+        new_set = GraphSet.new(start)
         new_set.add_node(t)
         dfs_edges.each do |e|
           new_set.add_edge(e)
         end
         sets << new_set
       else
-        outgoers << s
+        outgoers << start
       end
     end
-    if taken_edges.length != @edges.length
+    if taken_edges.length != edges.length
       find_plane_routing2
     else
       sets
@@ -216,7 +218,7 @@ class Graph
 
   def explore2(k, last_move, edges, visited)
     neighbors = find_neighbors2(k, last_move, edges)
-    return [] if neighbors.length.zero?
+    return visited if neighbors.length.zero?
 
     neighbors.each do |neighbor|
       new_edge = Edge.new(k, neighbor)
@@ -288,7 +290,7 @@ class Graph
 
   def explore(k, prev, edges, visited)
     neighbors = find_neighbors(k, prev, edges)
-    return [] if neighbors.length.zero?
+    return visited if neighbors.length.zero?
 
     neighbors.each do |neighbor|
       new_edge = Edge.new(k, neighbor)
@@ -629,7 +631,7 @@ class Graph
       next_next_vert = normalized_vertices[(i + 2) % normalized_vertices.size]
       dr_ch = Edge.new(vertex, next_vert).directional_change
 
-      corner_nt = on_boundary?(next_vert) ? 7 : 6 # POTENTIAL SOLUTION: set sampling frequency same, but for refractions add nil for last index, then take average.
+      corner_nt = on_boundary?(next_vert) ? 9 : 8 # POTENTIAL SOLUTION: set sampling frequency same, but for refractions add nil for last index, then take average.
       edge_sampled_points = Vertex.linspace(dr_ch, sample_dir_map[dr_ch], vertex, next_vert)
 
       edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert], corner_nt)[-corner_nt...]
@@ -647,7 +649,7 @@ class Graph
     [sorted_vertices, normalized_vertices, sampled_points, freq, scaffold_rotation_labels]
   end
 
-  def rounded_corner_points(vertices, smoothness = 6, radius = 1, closed = true)
+  def rounded_corner_points(vertices, smoothness = 8, radius = 1.5, closed = true)
     min_vector = (vertices[0] - vertices[1])
     min_length = min_vector.distance
     vertices.each_with_index do |_v, idx|
@@ -724,14 +726,24 @@ class Graph
     (val.ceil % divisor).zero? || (val.floor % divisor).zero?
   end
 
-  def generate_colors
+  def self.generate_colors(points_size, color_palette)
     colors = []
-    (0...@points.size).each do |i|
-      t = i.to_f / @points.size
-      # colors.concat([t / 4, t / 1.5 + 0.15, t + 0.2])
-      # colors << [t + 0.2, t + 0.2, t / 8] # yellow
-      colors << [t / 3, t / 3 + 0.3, t / 3] # green
-      # [t / 3 + 0.3, t / 3, t / 3] red
+    (0...points_size).each do |i|
+      t = i.to_f / points_size
+      case color_palette
+      when "Green Ocean"
+        colors << [t / 3, t / 3 + 0.3, t / 3]
+      when "Leather Vintage"
+        colors << [t + 0.2, t + 0.2, t / 8]
+      when "Cold Breeze"
+        colors << [t / 4, t / 1.5 + 0.15, t + 0.2]
+      when "Red Forest"
+        colors << [t / 3 + 0.3, t / 3, t / 3]
+      when "Violet Storm"
+        colors << [t / 3, t / 8, t / 3 + 0.15]
+      else
+        colors << [t / 3, t / 3 + 0.3, t / 3]  
+      end
     end
     colors
   end

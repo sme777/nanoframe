@@ -16,18 +16,15 @@ import {
 import GLTFExporter from 'three-gltf-exporter';
 
 
-let size = 1;
 let insetWidth, insetHeight, camera2;
-let firstStartPoint, firstEndPoint, lastStartPoint, lastEndPoint;
-let id
-let canvas, zoomUpdate;
-let line0, line1, line4, line5, line6, line7;
-let canvasContainer, canvasContainerWidth, canvasContainerHeight;
-let routingColors;
+let zoomUpdate;
 let isSplit;
+let line0, line1;
 let xGroup1Count, yGroup1Count, zGroup1Count;
 let xGroup2Count, yGroup2Count, zGroup2Count;
+let sceneObjects = {};
 
+let currentAddedParticle = "";
 
 let linearGroup = new THREE.Group();
 linearGroup.name = "Linear";
@@ -47,154 +44,30 @@ let matLine = new LineMaterial({
   alphaToCoverage: true,
 });
 
-let matLineBasic = new THREE.LineBasicMaterial({
-  vertexColors: true,
-});
-const clock = new THREE.Clock();
-const OrbitControls = oc(THREE);
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-function adjustSplitPosition(points, group) {
-  let delta = 15;
-  if (group === "group1") {
-    for (let i = 0; i < points.length; i += 3) {
-      if (xGroup1Count > xGroup2Count) {
-        points[i] -= delta;
-      } else {
-        points[i] += delta;
-      }
-
-      if (zGroup1Count > zGroup2Count) {
-        points[i + 2] -= delta;
-      } else {
-        points[i + 2] += delta;
-      }
-    }
-  } else {
-    for (let i = 0; i < points.length; i += 3) {
-      if (xGroup1Count > xGroup2Count) {
-        points[i] += delta;
-      } else {
-        points[i] -= delta;
-      }
-
-      if (zGroup1Count > zGroup2Count) {
-        points[i + 2] += delta;
-      } else {
-        points[i + 2] -= delta;
-      }
-    }
-  }
-
-  return points;
-}
-
-function generateDisplay(
-  positions,
-  colors = colors,
-  split = false
-  ) {
-  const geometry = new LineGeometry();
-  geometry.setPositions(positions);
-  geometry.setColors(colors);
-
-  line0 = new Line2(geometry, matLine);
-  let _ = split ? splitLinearGroup.add(line0) : linearGroup.add(line0);
-}
-
-function updateDisplay(scene) {
-  scene.remove(currentGroup);
-  currentGroup = isSplit ? splitLinearGroup : linearGroup;
-  scene.add(currentGroup);
-}
-
-/**
- *
- * @param {*} start
- * @param {*} length
- * @returns
- */
-function findColorSequnece(start, length) {
-  let count = 0;
-  let modIndex;
-  let subarray = [];
-  let adjStart = start * 12 * 3;
-  for (let i = adjStart; count < length; i++, count++) {
-    modIndex = i % routingColors.length;
-    subarray.push(routingColors[modIndex]);
-  }
-  return subarray;
-}
-
-
-function findBorderPointCount(positions) {
-  let xCountFront = 0;
-  let yCountFront = 0;
-  let zCountFront = 0;
-  let xCountBack = 0;
-  let yCountBack = 0;
-  let zCountBack = 0;
-
-  for (let i = 0; i < positions.length; i++) {
-    if (positions[i][0] == 0) {
-      xCountFront += 1;
-    } else if (positions[i][0] == 50) {
-      xCountBack += 1;
-    } else if (positions[i][1] == 0) {
-      yCountBack += 1;
-    } else if (positions[i][1] == 50) {
-      yCountFront += 1;
-    } else if (positions[i][2] == 0) {
-      zCountBack += 1;
-    } else if (positions[i][2] == -50) {
-      zCountFront += 1;
-    }
-  }
-  return [xCountFront - xCountBack, yCountFront - yCountBack, zCountFront - zCountBack];
-}
-
-function connectEnds(start, end, elevation) {
-  let middle = (new THREE.Vector3()).addVectors(start, end).divideScalar(2);
-  let firstControlPoint = (new THREE.Vector3()).addVectors(start, middle).divideScalar(2).add(new THREE.Vector3(0, elevation, 0));
-  let secondControlPoint = (new THREE.Vector3()).addVectors(middle, end).divideScalar(2).add(new THREE.Vector3(0, elevation, 0));
-  const curve = new THREE.CubicBezierCurve3(
-    start,
-    firstControlPoint,
-    secondControlPoint,
-    end
-  );
-  const line = new MeshLine();
-  const material = new MeshLineMaterial({
-    color: new THREE.Color(0xFFC54D),
-    resolution: new THREE.Vector2(canvasContainerWidth, canvasContainerHeight)
-  });
-  line.setPoints(curve.getPoints(49), p => 0.8);
-  return new THREE.Mesh(line, material);
-}
-
-canvas = document.getElementById("visualize-webgl");
-canvasContainer = document.querySelector(".canvas-container");
-canvasContainerWidth = canvasContainer.offsetWidth;
-canvasContainerHeight = canvasContainer.offsetHeight;
-
-let renderer = new THREE.WebGLRenderer({
+const canvas = document.getElementById("visualize-webgl");
+const canvasContainer = document.querySelector(".canvas-container");
+let canvasContainerWidth = canvasContainer.clientWidth;
+let canvasContainerHeight = canvasContainer.clientHeight;
+const renderer = new THREE.WebGLRenderer({
   canvas: canvas,
   alpha: true,
   antialias: true,
 });
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(canvasContainerWidth, canvasContainerHeight);
-
-let scene = new THREE.Scene();
-
-let camera = new THREE.PerspectiveCamera(
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(
   40,
   canvasContainerWidth / canvasContainerHeight,
   0.1,
   10000
 );
+const OrbitControls = oc(THREE);
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(canvasContainerWidth, canvasContainerHeight);
 camera.position.set(-40, 60, 90);
+camera.name = "sceneMainCamera";
 camera2 = new THREE.PerspectiveCamera(40, 1, 1, 1000);
 camera2.position.copy(camera.position);
 
@@ -228,8 +101,6 @@ const connectionLine2 = connectEnds(startVec2, endVec2, 10);
 splitLinearGroup.add(connectionLine1);
 splitLinearGroup.add(connectionLine2);
 
-
-
 let stapleLinearGroup = new THREE.Group();
 stapleLinearGroup.visible = false;
 
@@ -243,15 +114,6 @@ new THREE.Box3()
 currentGroup = linearGroup;
 scene.add(currentGroup);
 
-// const cubeMat = new THREE.MeshLambertMaterial( {color: 0xC0C0C0} )
-
-// const cubeGeo = new THREE.BoxGeometry(45, 45, 45)
-// const meshCube = new THREE.Mesh(cubeGeo, cubeMat)
-// scene.add(meshCube)
-// const cubeLight = new THREE.DirectionalLight(0xffffff, 1);
-// scene.add(cubeLight);
-// cubeLight.target = meshCube;
-// cubeLight.position.set(1, 2, 4)
 
 let controls = new OrbitControls(camera, renderer.domElement);
 controls.minDistance = 10;
@@ -321,6 +183,98 @@ for (let i = 0; i < 6; i++) {
 
 requestAnimationFrame(render);
 
+function adjustSplitPosition(points, group) {
+  let delta = 15;
+  if (group === "group1") {
+    for (let i = 0; i < points.length; i += 3) {
+      if (xGroup1Count > xGroup2Count) {
+        points[i] -= delta;
+      } else {
+        points[i] += delta;
+      }
+
+      if (zGroup1Count > zGroup2Count) {
+        points[i + 2] -= delta;
+      } else {
+        points[i + 2] += delta;
+      }
+    }
+  } else {
+    for (let i = 0; i < points.length; i += 3) {
+      if (xGroup1Count > xGroup2Count) {
+        points[i] += delta;
+      } else {
+        points[i] -= delta;
+      }
+
+      if (zGroup1Count > zGroup2Count) {
+        points[i + 2] += delta;
+      } else {
+        points[i + 2] -= delta;
+      }
+    }
+  }
+
+  return points;
+}
+
+function generateDisplay(
+  positions,
+  colors = colors,
+  split = false
+) {
+  const geometry = new LineGeometry();
+  geometry.setPositions(positions);
+  geometry.setColors(colors);
+
+  line0 = new Line2(geometry, matLine);
+  split ? splitLinearGroup.add(line0) : linearGroup.add(line0);
+}
+
+function findBorderPointCount(positions) {
+  let xCountFront = 0;
+  let yCountFront = 0;
+  let zCountFront = 0;
+  let xCountBack = 0;
+  let yCountBack = 0;
+  let zCountBack = 0;
+
+  for (let i = 0; i < positions.length; i++) {
+    if (positions[i][0] == 0) {
+      xCountFront += 1;
+    } else if (positions[i][0] == 50) {
+      xCountBack += 1;
+    } else if (positions[i][1] == 0) {
+      yCountBack += 1;
+    } else if (positions[i][1] == 50) {
+      yCountFront += 1;
+    } else if (positions[i][2] == 0) {
+      zCountBack += 1;
+    } else if (positions[i][2] == -50) {
+      zCountFront += 1;
+    }
+  }
+  return [xCountFront - xCountBack, yCountFront - yCountBack, zCountFront - zCountBack];
+}
+
+function connectEnds(start, end, elevation) {
+  let middle = (new THREE.Vector3()).addVectors(start, end).divideScalar(2);
+  let firstControlPoint = (new THREE.Vector3()).addVectors(start, middle).divideScalar(2).add(new THREE.Vector3(0, elevation, 0));
+  let secondControlPoint = (new THREE.Vector3()).addVectors(middle, end).divideScalar(2).add(new THREE.Vector3(0, elevation, 0));
+  const curve = new THREE.CubicBezierCurve3(
+    start,
+    firstControlPoint,
+    secondControlPoint,
+    end
+  );
+  const line = new MeshLine();
+  const material = new MeshLineMaterial({
+    color: new THREE.Color(0xFFC54D),
+    resolution: new THREE.Vector2(canvasContainerWidth, canvasContainerHeight)
+  });
+  line.setPoints(curve.getPoints(49), p => 0.8);
+  return new THREE.Mesh(line, material);
+}
 
 function generateStapleGroup(staples, group) {
   for (let i = 0; i < staples.data.length; i++) {
@@ -361,16 +315,6 @@ function onPointerMove(e) {
   mouse.y = y
 }
 
-function onWindowResize() {
-  camera.aspect = canvasContainerWidth / canvasContainerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(canvasContainerWidth, canvasContainerHeight);
-  insetWidth = canvasContainerHeight / 4;
-  insetHeight = canvasContainerHeight / 4;
-  camera2.aspect = insetWidth / insetHeight;
-  camera2.updateProjectionMatrix(line1);
-}
-
 function findIndex(pos) {
   let min = Infinity;
   let idx = null;
@@ -387,7 +331,25 @@ function findIndex(pos) {
   return idx;
 }
 
+function onWindowResize() {
+  const currentCanvas = renderer.domElement;
+  const width = currentCanvas.clientWidth;
+  const height = currentCanvas.clientHeight;
+  const needResize = currentCanvas.width !== width || currentCanvas.height !== height;
+  if (needResize) {
+    renderer.setSize(width, height);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+
+    insetWidth = height / 4;
+    insetHeight = height / 4;
+    camera2.aspect = insetWidth / insetHeight;
+    camera2.updateProjectionMatrix();
+  }
+}
+
 function render() {
+
   renderer.setClearColor(0x000000, 0);
   renderer.setViewport(0, 0, canvasContainerWidth, canvasContainerHeight);
   matLine.resolution.set(canvasContainerWidth, canvasContainerHeight);
@@ -404,93 +366,234 @@ function render() {
 
   renderer.render(scene, camera);
 
-  
-    raycaster.setFromCamera(mouse, camera);
-    const intersections = raycaster.intersectObject(currentGroup, true);
 
-    if (intersections.length > 0) {
-      if (zoomUpdate) {
-        sphereInter.geometry.dispose()
-        sphereInter.geometry = new THREE.SphereGeometry(
-          controls.target.distanceTo(controls.object.position) * 0.005
-        );
-        zoomUpdate = false;
-      }
-      sphereInter.visible = true;
-      sphereInter.position.copy(intersections[0].point);
-      const line = intersections[0].object;
-      const idx = findIndex(intersections[0].point);
-      if (idx != null) {
-        document.querySelector("#sequence_base_info").value = scaffold[idx];
-        document.querySelector("#sequence_id_info").value = idx;
-      }
-    } else {
-      sphereInter.visible = false;
+  raycaster.setFromCamera(mouse, camera);
+  const intersections = raycaster.intersectObject(currentGroup, true);
+
+  if (intersections.length > 0) {
+    if (zoomUpdate) {
+      sphereInter.geometry.dispose()
+      sphereInter.geometry = new THREE.SphereGeometry(
+        controls.target.distanceTo(controls.object.position) * 0.005
+      );
+      zoomUpdate = false;
     }
+    sphereInter.visible = true;
+    sphereInter.position.copy(intersections[0].point);
+    const line = intersections[0].object;
+    const idx = findIndex(intersections[0].point);
+    if (idx != null) {
+      document.querySelector("#sequence_base_info").value = scaffold[idx];
+      document.querySelector("#sequence_id_info").value = idx;
+    }
+  } else {
+    sphereInter.visible = false;
+  }
 
-    renderer.setClearColor(0xf5f5f5, 1);
-    renderer.clearDepth();
-    renderer.setScissorTest(true);
-    renderer.setScissor(20, 20, insetWidth, insetHeight);
-    renderer.setViewport(20, 20, insetWidth, insetHeight);
-    camera2.position.copy(camera.position);
-    camera2.quaternion.copy(camera.quaternion);
-    matLine.resolution.set(insetWidth, insetHeight);
-    renderer.render(scene, camera2);
-    renderer.setScissorTest(false);
-  
+  renderer.setClearColor(0xf5f5f5, 1);
+  renderer.clearDepth();
+  renderer.setScissorTest(true);
+  renderer.setScissor(20, 20, insetWidth, insetHeight);
+  renderer.setViewport(20, 20, insetWidth, insetHeight);
+  camera2.position.copy(camera.position);
+  camera2.quaternion.copy(camera.quaternion);
+  matLine.resolution.set(insetWidth, insetHeight);
+  renderer.render(scene, camera2);
+  renderer.setScissorTest(false);
+
 
   requestAnimationFrame(render);
 }
 
-  const box = document.getElementById("box-state");
-  const stapleToggler = document.getElementById("box-state-staples");
-  const zoomToggler = document.getElementById("box-state-zoom");
-  const tableToggler = document.getElementById("box-stable-table");
+const box = document.getElementById("box-state");
+const stapleToggler = document.getElementById("box-state-staples");
+const zoomToggler = document.getElementById("box-state-zoom");
+const tableToggler = document.getElementById("box-stable-table");
+const particleToggler = document.getElementById("box-state-add-particle");
+const particleShape = document.getElementById("add-particle-shape");
+const addParticleButton = document.getElementById("add-particle-btn")
+const closeAddParticleButton = document.getElementById("close-icon-wrapper")
 
-  box.addEventListener("click", (e) => {
-    if (box.innerHTML === "Open Form") {
-      box.innerHTML = "Closed Form";
-      scene.remove(currentGroup);
-      isSplit = true;
-      currentGroup = splitLinearGroup;
-      scene.add(currentGroup)
+box.addEventListener("click", (e) => {
+  if (box.innerHTML === "Open Form") {
+    box.innerHTML = "Closed Form";
+    scene.remove(currentGroup);
+    isSplit = true;
+    currentGroup = splitLinearGroup;
+    scene.add(currentGroup)
 
-    } else {
-      box.innerHTML = "Open Form";
-      isSplit = false;
-      scene.remove(currentGroup);
-      currentGroup = linearGroup;
-      scene.add(currentGroup);
+  } else {
+    box.innerHTML = "Open Form";
+    isSplit = false;
+    scene.remove(currentGroup);
+    currentGroup = linearGroup;
+    scene.add(currentGroup);
+  }
+});
+
+stapleToggler.addEventListener("click", () => {
+  if (stapleToggler.innerHTML === "Show Staples") {
+    stapleToggler.innerHTML = "Hide Staples";
+  } else {
+    stapleToggler.innerHTML = "Show Staples";
+  }
+  stapleLinearGroup.visible = !stapleLinearGroup.visible;
+});
+
+zoomToggler.addEventListener("click", () => {
+  if (controls.enableZoom) {
+    zoomToggler.innerHTML = "Enable Zoom";
+  } else {
+    zoomToggler.innerHTML = "Disable Zoom";
+  }
+  controls.enableZoom = !controls.enableZoom;
+});
+
+tableToggler.addEventListener("click", () => {
+  if (tableToggler.innerHTML === "View Sequence Table") {
+    tableToggler.innerHTML = "Hide Sequence Table"
+  } else {
+    tableToggler.innerHTML = "View Sequence Table"
+  }
+});
+
+particleToggler.addEventListener("click", () => {
+  if (particleToggler.innerHTML === "Add Particle") {
+    document.querySelector(".add-particle-container").style.display = "block";
+    document.querySelector('.add-particle-container').setAttribute("style", "display:block");
+  } else {
+    let [shapeMesh, shapeLight] = sceneObjects[currentAddedParticle];
+    scene.remove(scene.getObjectByName(camera.name));
+    camera.children = camera.children.filter(obj => obj.name != shapeLight.name);
+    scene.add(camera);
+    scene.remove(scene.getObjectByName(shapeMesh.name));
+    particleToggler.innerHTML = "Add Particle"
+  }
+
+});
+
+if (particleShape.value === "cube") {
+  document.querySelector(".radius-group").style.display = "none";
+  document.querySelector('.radius-group').setAttribute("style", "display:none");
+
+  document.querySelector(".width-group").style.display = "flex";
+  document.querySelector('.width-group').setAttribute("style", "display:flex");
+  document.querySelector(".height-group").style.display = "flex";
+  document.querySelector('.height-group').setAttribute("style", "display:flex");
+  document.querySelector(".depth-group").style.display = "flex";
+  document.querySelector('.depth-group').setAttribute("style", "display:flex");
+
+} else {
+  document.querySelector(".radius-group").style.display = "flex";
+  document.querySelector('.radius-group').setAttribute("style", "display:flex");
+
+  document.querySelector(".width-group").style.display = "none";
+  document.querySelector('.width-group').setAttribute("style", "display:none");
+  document.querySelector(".height-group").style.display = "none";
+  document.querySelector('.height-group').setAttribute("style", "display:none");
+  document.querySelector(".depth-group").style.display = "none";
+  document.querySelector('.depth-group').setAttribute("style", "display:none");
+
+}
+
+particleShape.addEventListener("click", () => {
+  if (particleShape.value === "cube") {
+    document.querySelector(".radius-group").style.display = "none";
+    document.querySelector('.radius-group').setAttribute("style", "display:none");
+
+    document.querySelector(".width-group").style.display = "flex";
+    document.querySelector('.width-group').setAttribute("style", "display:flex");
+    document.querySelector(".height-group").style.display = "flex";
+    document.querySelector('.height-group').setAttribute("style", "display:flex");
+    document.querySelector(".depth-group").style.display = "flex";
+    document.querySelector('.depth-group').setAttribute("style", "display:flex");
+
+  } else {
+    document.querySelector(".radius-group").style.display = "flex";
+    document.querySelector('.radius-group').setAttribute("style", "display:flex");
+
+    document.querySelector(".width-group").style.display = "none";
+    document.querySelector('.width-group').setAttribute("style", "display:none");
+    document.querySelector(".height-group").style.display = "none";
+    document.querySelector('.height-group').setAttribute("style", "display:none");
+    document.querySelector(".depth-group").style.display = "none";
+    document.querySelector('.depth-group').setAttribute("style", "display:none");
+
+  }
+});
+
+addParticleButton.addEventListener("click", () => {
+
+  if (particleShape.value === "cube") {
+    const widthValue = document.querySelector('.width-field').value;
+    const heightValue = document.querySelector('.height-field').value;
+    const depthValue = document.querySelector('.depth-field').value;
+    const shapeGeometry = new THREE.BoxGeometry(widthValue, heightValue, depthValue);
+    const shapeMaterial = new THREE.MeshPhongMaterial({
+      color: 0xF57328,
+      side: THREE.DoubleSide
+    });
+    const shapeLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    const shapeMesh = new THREE.Mesh(shapeGeometry, shapeMaterial);
+    shapeMesh.name = "cubeMesh";
+    shapeLight.name = "cubeLight"
+    currentAddedParticle = "cube";
+    sceneObjects[currentAddedParticle] = [shapeMesh, shapeLight];
+    scene.remove(camera)
+    camera.add(shapeLight);
+    scene.add(camera)
+    scene.add(shapeMesh);
+  } else {
+    const radiusField = document.querySelector('.radius-field').value;
+    const shapeMaterial = new THREE.MeshPhongMaterial({
+      color: 0xF57328,
+      side: THREE.DoubleSide
+    })
+    currentAddedParticle = particleShape.value;
+    let shapeGeometry;
+    switch (particleShape.value) {
+      case "icosahedron":
+        shapeGeometry = new THREE.IcosahedronGeometry(radiusField);
+        break;
+      case "dodecahedron":
+        shapeGeometry = new THREE.DodecahedronGeometry(radiusField);
+        break;
+      case "tetrahedron":
+        shapeGeometry = new THREE.TetrahedronGeometry(radiusField);
+        break;
+      case "octahedron":
+        shapeGeometry = new THREE.OctahedronGeometry(radiusField);
+        break;
     }
-  });
+    const shapeLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    const shapeMesh = new THREE.Mesh(shapeGeometry, shapeMaterial);
+    shapeMesh.name = `${particleShape.value}Mesh`;
+    shapeLight.name = `${particleShape.value}Light`;
+    sceneObjects[`${particleShape.value}`] = [shapeMesh, shapeLight];
+    scene.remove(camera)
+    camera.add(shapeLight);
+    scene.add(camera)
+    scene.add(shapeMesh);
+  }
 
-  stapleToggler.addEventListener("click", () => {
-    if (stapleToggler.innerHTML === "Show Staples") {
-      stapleToggler.innerHTML = "Hide Staples";
-    } else {
-      stapleToggler.innerHTML = "Show Staples";
-    }
-    stapleLinearGroup.visible = !stapleLinearGroup.visible;
-  });
+  document.querySelector(".add-particle-container").style.display = "none";
+  document.querySelector('.add-particle-container').setAttribute("style", "display:none");
+  particleToggler.innerHTML = "Remove Particle"
+});
 
-  zoomToggler.addEventListener("click", () => {
-    if (controls.enableZoom) {
-      zoomToggler.innerHTML = "Enable Zoom";
-    } else {
-      zoomToggler.innerHTML = "Disable Zoom";
-    }
-    controls.enableZoom = !controls.enableZoom;
-  })
+closeAddParticleButton.addEventListener("click", () => {
+  document.querySelector(".add-particle-container").style.display = "none";
+  document.querySelector('.add-particle-container').setAttribute("style", "display:none");
+});
 
-  tableToggler.addEventListener("click", () => {
-    if (tableToggler.innerHTML === "View Sequence Table") {
-      tableToggler.innerHTML = "Hide Sequence Table"
-    } else {
-      tableToggler.innerHTML = "View Sequence Table"
-    }
-  })
 
+const canvasVhMin = Math.min(
+  document.querySelector(".canvas-container").clientHeight,
+  vh(80)
+);
+
+document.querySelector(".generator-sidebar").style.height = canvasVhMin;
+document.querySelector('.generator-sidebar').setAttribute("style", `height:${canvasVhMin}px`);
 
 document.querySelector("#gltf_export").addEventListener("click", () => {
   const exporter = new GLTFExporter();
@@ -511,13 +614,19 @@ document.querySelector("#gltf_export").addEventListener("click", () => {
       console.log('An error happened during parsing', error);
     },
   );
-})
+});
+
 
 
 function saveArrayBuffer(text, filename) {
   save(new Blob([buffer], {
     type: 'application/octet-stream'
   }), filename);
+}
+
+function vh(percent) {
+  var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+  return (percent * h) / 100;
 }
 
 function saveString(text, filename) {

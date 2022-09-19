@@ -43,7 +43,7 @@ class Generator < ApplicationRecord
   end
 
   def route
-    @graph = Graph.new(self, dimensions, shape_name, scaffold)
+    @graph = Graph.new(self, dimensions, shape_name, scaffold, color_palette)
   end
 
   def update_bridge_length(length)
@@ -63,7 +63,9 @@ class Generator < ApplicationRecord
     arr
   end
 
-  def update_color_pallette; end
+  def update_color_pallette(color_palette)
+    Graph.generate_colors(positions.size, color_palette)
+  end
 
   def make_staples_file(staples, descriptions)
     filename = "#{width}x#{height}x#{depth}-#{width_segment}"
@@ -98,7 +100,7 @@ class Generator < ApplicationRecord
   end
 
   def self.color_palettes
-    ['Leather Vintage', 'Cold Breeze', 'Pink Forest', 'Customize...']
+    ['Green Ocean', 'Leather Vintage', 'Cold Breeze', 'Red Forest', 'Violet Storm']
   end
 
   def self.rgb2hex(rgb)

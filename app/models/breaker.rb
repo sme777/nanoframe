@@ -205,7 +205,7 @@ class Breaker
           else
             staple = Staple.new({
                                   front: edge, back: adjacent, start_pos: refr / 2, end_pos: refr2 / 2,
-                                  type: :reflection, buffer: 1, graph: @graph
+                                  type: :reflection, buffer: 0, graph: @graph
                                 })
 
             # staple.setup_dimensions([@width, @height, @depth], @segments, @shape)
@@ -217,7 +217,7 @@ class Breaker
         if ext_hor == [0] && ext_vert == [0]
           staple = Staple.new({
                                 front: edge, back: adjacent, start_pos: refl2, end_pos: refl2,
-                                type: :reflection, buffer: 1, graph: @graph
+                                type: :reflection, buffer: 0, graph: @graph
                               })
         else
           dir_ch = edge.directional_change
@@ -257,7 +257,7 @@ class Breaker
             staples.concat(extension_staples)
             staple = Staple.new({
                                   front: edge, back: adjacent, start_pos: start, end_pos: refl2,
-                                  type: :reflection, buffer: 1, graph: @graph
+                                  type: :reflection, buffer: 0, graph: @graph
                                 })
 
           else
@@ -268,7 +268,7 @@ class Breaker
             size2 = edge.sequence.size <= max_size ? max_size : min_size
             staple = Staple.new({
                                   front: edge, back: adjacent, start_pos: size1, end_pos: size2,
-                                  type: :reflection, buffer: 1, graph: @graph
+                                  type: :reflection, buffer: 0, graph: @graph
                                 })
           end
         end

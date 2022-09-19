@@ -66,10 +66,13 @@ class Shape
 
     def generate_segmented_vertices(segments)
       vertices = []
+      corners = []
       @sides.each do |side|
-        vertices << side.generate_vertices(segments)
+        corner, planars = side.generate_vertices(segments)
+        vertices << planars
+        corners << corner
       end
-      vertices.flatten
+      [vertices.flatten.map {|v| v.round(4)}, corners.map{ |v| v.round(4) }]
     end
   end
 
@@ -80,6 +83,7 @@ class Shape
       @v1 = edge[0]
       @v2 = edge[1]
       @parent = parent
+      @id = self.object_id
       @neighbor = nil
     end
 
@@ -89,9 +93,10 @@ class Shape
         vertices << Vertex.new(@v1[0] *  segment / segments + @v2[0] *  (segments - segment) / segments,
                                @v1[1] *  segment / segments + @v2[1] *  (segments - segment) / segments,
                                @v1[2] *  segment / segments + @v2[2] *  (segments - segment) / segments,
-                               side = self.object_id)
+                               side = @id)
       end
-      vertices[1...-1]
+      [vertices[0], vertices[1...-1]]
+      # vertices[1...-1]
     end
   end
 end
