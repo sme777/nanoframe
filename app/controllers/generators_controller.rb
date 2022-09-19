@@ -89,7 +89,6 @@ class GeneratorsController < ApplicationController
       if turbo_frame_request?
         render :async_visualize
       else
-        # if
         redirect_to "/synthesizer/#{@generator.id}/visualize"
       end
     else
@@ -144,7 +143,6 @@ class GeneratorsController < ApplicationController
     @vertex_cuts = @generator.vertex_cuts
     @scaffold = @generator.scaffold
     @staples = @generator.staples
-    # byebug
     @start = @generator.routing['start']
     @end = @generator.routing['end']
   end
@@ -179,7 +177,6 @@ class GeneratorsController < ApplicationController
       colors = @generator.update_color_pallette(color_palette)
       Generator.find(@generator.id).update(colors: colors, color_palette: color_palette)
     end
-
     redirect_to "/synthesizer/#{@generator.id}/visualize"
   end
 
@@ -188,7 +185,6 @@ class GeneratorsController < ApplicationController
   end
 
   def create
-    # byebug
     generator_fields = generator_params
     if !Generator.supported_shapes.include?(generator_fields[:shape])
       flash[:danger] = "#{generator_fields[:shape]} is currently not supported."

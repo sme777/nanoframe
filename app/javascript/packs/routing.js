@@ -3,7 +3,7 @@ import oc from "three-orbit-controls";
 import DragControls from "three-dragcontrols";
 import * as RoutingHelpers from "./routingHelpers";
 import * as RoutingControls from "./routingControls";
-import * as VisualizeHelpers from "./visualizeHelpers";
+// import * as VisualizeHelpers from "./visualizeHelpers";
 import { MeshLine, MeshLineMaterial, MeshLineRaycast } from "three.meshline";
 import { Edge } from "./edge";
 import { GenerateStaple } from "./staple";

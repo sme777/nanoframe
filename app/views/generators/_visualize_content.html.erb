@@ -111,7 +111,7 @@
             <div class="modifications-container">
 
 
-                <%= form_with(url: update_generator_path(@generator.id), method: :post) do |f| %>
+                <%= form_with(url: update_generator_path(@generator.id), method: :post, data: { turbo: false }) do |f| %>
                 <div class="row box-state-label">
                     <h6>Modifications</h6>
                 </div>
