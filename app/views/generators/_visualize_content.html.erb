@@ -56,7 +56,7 @@
                 <div class="row box-state-container">
                     <%= form_with(url: "/synthesizer/#{@generator.id}/visualize", method: :post, data: { turbo: false }) do |f| %>
                     <%= hidden_field_tag 'regenerate', true %>
-                    <%= button_tag "Regenerate Routing", class: "btn btn-outline-secondary w-100 regenerate-button"%>
+                        <%= button_tag "Regenerate Routing", class: "btn btn-outline-secondary w-100 regenerate-button", disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id ? true : false) %>
                     <% end %>
                 </div>
                 <div class="box-state-container">
@@ -117,7 +117,7 @@
                 </div>
                 <div class="row box-state-container">
                     <div class="form-floating nopad-container">
-                        <%= f.text_field :bridge_length, type: "number", class: "form-control", value: @generator.bridge_length %>
+                        <%= f.text_field :bridge_length, type: "number", class: "form-control", value: @generator.bridge_length, disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id ? true : false) %>
                         <%= f.label "Bridge Length", for: "bridge_length", class: "form-label"%>
                     </div>
                 </div>
@@ -125,12 +125,13 @@
 
                 <div class="row box-state-container">
                     <div class="form-floating nopad-container">
-                        <%= f.select :color_palette, options_for_select(@color_palettes, selected: @generator.color_palette), {}, {class: "form-select"}%>
+                        <%= f.select :color_palette, options_for_select(@color_palettes, selected: @generator.color_palette), {}, {class: "form-select", disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id) ? true : false  } %>
                         <%= f.label "Color Palette", for: "color_palette", class: "form-label"%>
                     </div>
                 </div>
                 <div class="box-state-container">
-                    <%= f.submit "Update", class: "btn w-100 btn-outline-dark" %>
+                
+                    <%= f.submit "Update", class: "btn w-100 btn-outline-dark", disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id ? true : false) %>
                 </div>
                 <% end %>
             </div>
