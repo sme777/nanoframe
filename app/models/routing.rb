@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 # require 'm'
 require 'matrix'
 
@@ -248,11 +249,11 @@ module Routing
         edges = []
       end
 
-      if v1.side != v2.side && v1 != v2
-        edges << Edge.new(v1, v2)
-        disp_v.delete(v1)
-        disp_v.delete(v2)
-      end
+      next unless v1.side != v2.side && v1 != v2
+
+      edges << Edge.new(v1, v2)
+      disp_v.delete(v1)
+      disp_v.delete(v2)
     end
     # boundary_edges = []
     # disp_c.each do |vertex|
@@ -266,7 +267,7 @@ module Routing
     #   disp2_c << vertex1
     # end
     # byebug
-    edges #boundary_edges]
+    edges # boundary_edges]
   end
 
   def self.find_closest_vertex(corner, vertices)
@@ -304,29 +305,29 @@ module Routing
     running_triangles = []
     failures = 0
     while running_streak < 500
-     
+
       connected_edges = Routing.connect_vertices(outgoer_vertices, corners)
       new_vertices, new_edges = Routing.get_edges(connected_edges)
-      # all_edges = 
+      # all_edges =
       # byebug
-      
-      a1,b1,c1,d1 = Routing.get_plane_equation(new_vertices[0], new_vertices[1], new_vertices[2])
-      translated_vertices = new_vertices.map {|vertex| Vertex.new(vertex.x, vertex.y, vertex.z - d1/c1) }
+
+      a1, b1, c1, d1 = Routing.get_plane_equation(new_vertices[0], new_vertices[1], new_vertices[2])
+      translated_vertices = new_vertices.map { |vertex| Vertex.new(vertex.x, vertex.y, vertex.z - d1 / c1) }
       # a2,b2,c2,d2 = Routing.get_plane_equation(translated_vertices[0], translated_vertices[1], translated_vertices[2])
-      rotation_matrix = Routing.xy_rotation_matrix(a1,b1,c1,d1)
+      rotation_matrix = Routing.xy_rotation_matrix(a1, b1, c1, d1)
       # translated_points = new_vertices.map {|vertex| a * vertex.x + b * vertex.y + c * vertex.z}
-      rotated_points = new_vertices.map {|vertex| rotation_matrix*Vector[vertex.x, vertex.y, vertex.z]}
+      rotated_points = new_vertices.map { |vertex| rotation_matrix * Vector[vertex.x, vertex.y, vertex.z] }
       # translated_points = new_vertices.map {|vertex| rotation_matrix*Vector[vertex.x, vertex.y, vertex.z - d/c]}
-      transformed_vertices = rotated_points.map {|point| Vertex.new(point[0], point[1], point[2] + d1/c1)}
+      transformed_vertices = rotated_points.map { |point| Vertex.new(point[0], point[1], point[2] + d1 / c1) }
       # transformed_vertices = transformed_vertices.map {|vertex| }
-      # projected_points = 
+      # projected_points =
       # byebug
       begin
-        triangles = Delaunator.triangulate(transformed_vertices.map{|vertex| [vertex.x, vertex.y]})
+        triangles = Delaunator.triangulate(transformed_vertices.map { |vertex| [vertex.x, vertex.y] })
         # byebug if new_edges.size == 12
-      rescue => exception
+      rescue StandardError => e
         failures += 1
-        next 
+        next
       end
       # byebug if triangles.size == 18
       current_area = Routing.compute_surface_area(transformed_vertices, triangles)
@@ -349,11 +350,11 @@ module Routing
     # end
 
     # edges.each do |edge|
-      
+
     #   edges.each do |next_edge|
     #     next unless edge.v2 == next_edge.v1 || edge.v2 == next_edge.v2
-    #     if edge.v2 == next_edge.v1 
-          
+    #     if edge.v2 == next_edge.v1
+
     #     else
 
     #     end
@@ -363,12 +364,12 @@ module Routing
 
   def self.compute_surface_area(vertices, triangles)
     total_area = 0
-    (0..triangles.size-1).step(3) do |i|
+    (0..triangles.size - 1).step(3) do |i|
       triangle_area = Routing.compute_polygon_area([
-        vertices[triangles[i]],
-        vertices[triangles[i+1]],
-        vertices[triangles[i+2]],
-      ])
+                                                     vertices[triangles[i]],
+                                                     vertices[triangles[i + 1]],
+                                                     vertices[triangles[i + 2]]
+                                                   ])
       total_area += Math.exp(triangle_area)
     end
     total_area
@@ -408,22 +409,23 @@ module Routing
   end
 
   def self.find_closest_edge(origin, target, edges, visit_map)
-    min_distance = Float::INFINITY 
+    min_distance = Float::INFINITY
     next_edge = nil
     # byebug
     edges.each do |edge|
       next if target == edge || (target.v2 != edge.v1 && target.v2 != edge.v2)
+
       edge_data = visit_map[edge.object_id]
       other = target.v2 == edge.v1 ? edge.v2 : edge.v1
-      
+
       distance = origin.distance_to_squared(other)
       if distance < min_distance && edge_data[1] < edge_data[2]
         min_distance = distance
         next_edge = edge
       end
     end
-    
-    if !next_edge.nil?
+
+    unless next_edge.nil?
       next_edge_data = visit_map[next_edge.object_id]
       next_edge_data[1] += 1
       visit_map[next_edge.object_id] = next_edge_data
@@ -432,19 +434,19 @@ module Routing
     [next_edge, visit_map]
   end
 
-  def self.xy_rotation_matrix(a,b,c,d)
+  def self.xy_rotation_matrix(a, b, c, _d)
     # byebug
-    cos_theta = c / (Math.sqrt(a**2 + b**2 + c**2))
-    sin_theta = Math.sqrt((a**2 + b**2)/(a**2 + b**2 + c**2))
+    cos_theta = c / Math.sqrt(a**2 + b**2 + c**2)
+    sin_theta = Math.sqrt((a**2 + b**2) / (a**2 + b**2 + c**2))
     u1 = b / Math.sqrt((a**2 + b**2 + c**2))
     u2 = - a / Math.sqrt((a**2 + b**2 + c**2))
-    normal_norm = Math.sqrt(u1**2+u2**2)
+    normal_norm = Math.sqrt(u1**2 + u2**2)
     u1 /= normal_norm
     u2 /= normal_norm
 
-    Matrix[[cos_theta + (u1**2)*(1-cos_theta), u1*u2*(1-cos_theta), u2*sin_theta],
-           [u1*u2*(1-cos_theta), cos_theta+(u2**2)*(1-cos_theta), -u1*sin_theta],
-           [-u2*sin_theta, u1*sin_theta, cos_theta]]
+    Matrix[[cos_theta + (u1**2) * (1 - cos_theta), u1 * u2 * (1 - cos_theta), u2 * sin_theta],
+           [u1 * u2 * (1 - cos_theta), cos_theta + (u2**2) * (1 - cos_theta), -u1 * sin_theta],
+           [-u2 * sin_theta, u1 * sin_theta, cos_theta]]
   end
 
   # follows Ex + Fy + Hz + K = 0
@@ -461,12 +463,11 @@ module Routing
   end
 
   def self.compute_polygon_area(vertices)
-    
     ab = vertices[1] - vertices[0]
     ac = vertices[2] - vertices[0]
     u = ab.cross(ac)
-    result = Math.sqrt(u[0]**2 + u[1]**2 + u[2]**2).abs / 2
-    result
+    Math.sqrt(u[0]**2 + u[1]**2 + u[2]**2).abs / 2
+
     # byebug if result.nil?
     # return 0 if edges.size < 3
     # byebug
@@ -480,10 +481,10 @@ module Routing
     #   total.y += prod[1]
     #   # total.z += prod[2]
     # end
-    
+
     # result = total.dot(Vertex.unit_normal(
-    #   Vertex.new(vertices[0].x, vertices[0].y, 0), 
-    #   Vertex.new(vertices[1].x, vertices[1].y, 0), 
+    #   Vertex.new(vertices[0].x, vertices[0].y, 0),
+    #   Vertex.new(vertices[1].x, vertices[1].y, 0),
     #   Vertex.new(vertices[2].x, vertices[2].y, 0)))
     # Math.exp((result/2).abs)
   end
@@ -491,16 +492,17 @@ module Routing
   def self.get_edges(stripes)
     undisected_edges = Utils.deep_copy(stripes)
     intersections = 0
-    for i in (0...undisected_edges.size) do
-      for j in (0...undisected_edges.size) do
+    (0...undisected_edges.size).each do |i|
+      (0...undisected_edges.size).each do |j|
         if i == j
           next
         else
           edge1 = undisected_edges[i]
           edge2 = undisected_edges[j]
           does_intersect, points = intersects(
-            edge1.v1, edge1.v2, 
-            edge2.v1, edge2.v2)
+            edge1.v1, edge1.v2,
+            edge2.v1, edge2.v2
+          )
           if does_intersect
             intersections += 1
             e1_split = Routing.split_edge(edge1, points[0])
@@ -516,7 +518,7 @@ module Routing
 
     new_vertices = []
 
-    disected_edges = undisected_edges.filter {|elem| elem.v1 != elem.v2 }
+    disected_edges = undisected_edges.filter { |elem| elem.v1 != elem.v2 }
     disected_edges.each do |edge|
       edge.v1.round(3)
       edge.v2.round(3)
@@ -535,14 +537,10 @@ module Routing
     eps = 10e-8
     p13 = Vertex.new(p1.x - p3.x, p1.y - p3.y, p1.z - p3.z)
     p43 = Vertex.new(p4.x - p3.x, p4.y - p3.y, p4.z - p3.z)
-    if (p43.x.abs < eps && p43.y.abs < eps && p43.z.abs < eps)
-      return [false, nil]
-    end
+    return [false, nil] if p43.x.abs < eps && p43.y.abs < eps && p43.z.abs < eps
 
     p21 = Vertex.new(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z)
-    if (p21.x.abs < eps && p21.y.abs < eps && p21.z.abs < eps)
-      return [false, nil]
-    end
+    return [false, nil] if p21.x.abs < eps && p21.y.abs < eps && p21.z.abs < eps
 
     d1343 = p13.x * p43.x + p13.y * p43.y + p13.z * p43.z
     d4321 = p43.x * p21.x + p43.y * p21.y + p43.z * p21.z
@@ -552,16 +550,12 @@ module Routing
 
     denom = d2121 * d4343 - d4321 * d4321
 
-    if denom < eps
-      return [false, nil]
-    end
+    return [false, nil] if denom < eps
 
     numer = d1343 * d4321 - d1321 * d4343
     mua = numer / denom
     mub = (d1343 + d4321 * mua) / d4343
-    if mua < 0 || mua > 1
-      return [false, nil]
-    end
+    return [false, nil] if mua.negative? || mua > 1
 
     pa = Routing.crop(p1 + p21 * mua).round(6)
     pb = Routing.crop(p3 + p43 * mub).round(6)

@@ -13,7 +13,7 @@ RSpec.describe 'Face', type: :api do
       [5.773503, -10.0, -4.082483],
       [-11.54701, 0.0, -4.082483],
       [0.0, 0.0, -12.24745]
-  ]
+    ].freeze
   end
 
   it 'generates vertex combinations' do
@@ -31,8 +31,8 @@ RSpec.describe 'Face', type: :api do
     face.sides[2].parent.should be(face)
   end
 
-  it 'generates segemnted vertices with corners' do 
-    face  = Shape::Face.new([0, 1, 4, 2], CUBE_VERTICES)
+  it 'generates segemnted vertices with corners' do
+    face = Shape::Face.new([0, 1, 4, 2], CUBE_VERTICES)
     vertices, corners = face.generate_segmented_vertices(5)
     expect(vertices.size).to eq(16)
     expect(corners.size).to eq(4)
@@ -40,8 +40,8 @@ RSpec.describe 'Face', type: :api do
 end
 
 RSpec.describe 'Shape', type: :api do
-    it 'generates correctly connected faces for augmented dodecahedron' do
-        shape = Shape.new("tetrahedron")
-        shape.plane_map[3].should equal(4)
-    end
+  it 'generates correctly connected faces for augmented dodecahedron' do
+    shape = Shape.new('tetrahedron')
+    shape.plane_map[3].should equal(4)
+  end
 end

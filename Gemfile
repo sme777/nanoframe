@@ -31,8 +31,8 @@ gem 'omniauth-google-oauth2'
 gem 'omniauth-rails_csrf_protection'
 # Paginating Active Record
 gem 'kaminari'
-gem 'will_paginate'
 gem 'pycall'
+gem 'will_paginate'
 # User Active Storage variant
 gem 'mini_magick', '~>4.8'
 # User AWS sdk
@@ -46,10 +46,10 @@ gem 'bootsnap', '>= 1.4.4', require: false
 gem 'erb_lint', require: false
 gem 'rubyzip'
 # Loggers
+gem 'delaunator'
 gem 'oink'
 gem 'ruby-cbc', require: false
 gem 'unicorn'
-gem 'delaunator'
 # gem 'rack-timeout'
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

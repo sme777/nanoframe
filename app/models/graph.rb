@@ -7,11 +7,7 @@ class Graph
   attr_accessor :vertices, :edges, :sets, :route, :planes, :vertex_cuts, :staples, :staple_colors, :boundary_edges,
                 :points, :colors, :shape, :segments, :scaff_length
 
-  # dimension[0] -> width
-  # dimension[1] -> height
-  # dimension[2] -> depth
-  def initialize(generator, dimensions, shape, scaffold, color_palette)
-    # byebug
+  def initialize(generator, dimensions, shape, scaffold, color_palette, update)
     setup_dimensions(dimensions, shape)
     setup_extensions(generator)
     @shape = Shape.new(shape)
@@ -19,19 +15,27 @@ class Graph
     @scaff_length = scaffold.size
     @color_palette = color_palette
     @staple_breaker = Breaker.new(self)
-    @outgoers = create_outgoers(@shape, @segments)
-    @vertices, @edges = create_vertices_and_edges(@shape)
-    # byebug
-    if shape.name == "tetrahedron"
-      @template_planes = find_four_planes2(@edges, @outgoers, @vertices)
-      @planes = find_plane_combination_tetrahedron(@template_planes)
+    if update
+      graph_hash = generator.routing
+      @sorted_vertices = graph_hash['sorted_vertices'].map do |coordinates|
+        Vertex.new(coordinates[0], coordinates[1], coordinates[2])
+      end
+      @scaffold_rotation_labels = graph_hash['scaffold_rotation_labels']
+      @points = generator.positions
     else
-      @template_planes = find_four_planes
-      @planes = find_plane_combination(@template_planes)
+      @outgoers = create_outgoers(@shape, @segments)
+      @vertices, @edges = create_vertices_and_edges(@shape)
+      if shape.name == 'tetrahedron'
+        @template_planes = find_four_planes2(@edges, @outgoers, @vertices)
+        @planes = find_plane_combination_tetrahedron(@template_planes)
+      else
+        @template_planes = find_four_planes
+        @planes = find_plane_combination(@template_planes)
+      end
+
+      @sorted_vertices, @points, @scaffold_rotation_labels = generate_points
+      @colors = Graph.generate_colors(@points.size, @color_palette)
     end
-    
-    @sorted_vertices, @normalized_vertices, @points, @sampling_frequency, @scaffold_rotation_labels = generate_points
-    @colors = Graph.generate_colors(@points.size, @color_palette)
     @sorted_edges, @staples = generate_staples
     @start_idx, @group1, @group2, @boundary_edges = open_structure
     @vertex_cuts = []
@@ -39,7 +43,7 @@ class Graph
       @vertex_cuts << e.v1 unless @vertex_cuts.include?(e.v1)
       @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
-    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, 3)
+    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, generator.bridge_length)
     @staples = @staple_breaker.break_refraction_staples(@staples, @exterior_extensions, @exterior_extension_length)
     if @interior_extension_length.positive?
       @staples = @staple_breaker.extend_interior_staples(@staples, @interior_extensions,
@@ -47,12 +51,12 @@ class Graph
     end
   end
 
-  def setup_dimensions(dimensions, shape)
+  def setup_dimensions(dimensions, _shape)
     # case shape
     # when :cube
-      @width = dimensions['width'].to_f
-      @height = dimensions['height'].to_f
-      @depth = dimensions['depth'].to_f
+    @width = dimensions['width'].to_f
+    @height = dimensions['height'].to_f
+    @depth = dimensions['depth'].to_f
     # when :tetrahedron
     #   @radius = dimensions[0]
     # end
@@ -71,7 +75,7 @@ class Graph
   def create_outgoers(shape, segments)
     outgoers = []
     shape.faces.each do |face|
-      outgoers << face.generate_segmented_vertices(segments)[0].map {|v| v.round(6)}
+      outgoers << face.generate_segmented_vertices(segments)[0].map { |v| v.round(6) }
     end
     outgoers
   end
@@ -201,8 +205,7 @@ class Graph
     end
   end
 
-
-  def dfs2(k, t, last_move, taken_edges, edges, vertices)
+  def dfs2(k, t, _last_move, taken_edges, edges, vertices)
     visited = {}
     edges = deep_copy_edges2(taken_edges, edges)
     # 0 denotes horizontal movement and 1 vertical
@@ -231,12 +234,11 @@ class Graph
           visited[neighbor.hash] << p
         end
       end
-      
+
       explore2(neighbor, next_move, edges, visited)
     end
     visited
   end
-
 
   # randomized algorithm that finds general plane routings
   # by selecting random start and end vertices
@@ -380,7 +382,7 @@ class Graph
     _, largest = Vertex.directional_change_axis(v1, v2)
     return v2 if (largest == :Y && prev != :Y) || (largest == :X && prev != :X) || (largest == :Z && prev != :Z)
   end
-  
+
   # Generates plane routings for other faces of the cube
   # back -> 0
   # top -> 1
@@ -469,11 +471,10 @@ class Graph
   define_clone_and_transform :""
   define_clone_and_transform :reverse_
 
-
   def find_four_planes2(edges, outgoers, vertices)
     planes = []
     edges.each_with_index do |edge_group, idx|
-      planes_group = []  
+      planes_group = []
       ingoers = extract_ingoers(vertices[idx], outgoers[idx])
       4.times do |_|
         planes_group << find_plane_routing2(edge_group, outgoers[idx], ingoers)
@@ -513,13 +514,13 @@ class Graph
     i = 0
     found = false
     combinations = planes.product(planes[0], planes[1], planes[2], planes[3])
-    combinations.each do |c|
+    combinations.each do |_c|
       # arr = transform_array(c)
 
       if has_one_loop(arr)
         found = true
         # reverse_arr = transform_array(arr, 'reverse_')
-        return arr #, reverse_arr]
+        return arr # , reverse_arr]
       end
       i += 1
     end
@@ -550,21 +551,21 @@ class Graph
     curr_face = shape.faces[0]
     face_iter_map = {}
     shape.faces.each do |face|
-      face_iter_map["#{face.object_id}"] = 0
+      face_iter_map[face.object_id.to_s] = 0
     end
 
     while shape.faces.size != routing.size
-      if face_iter_map["#{curr_face.object_id}"] > 3
+      if face_iter_map[curr_face.object_id.to_s] > 3
         face_id, route = routing.pop
-        face_iter_map["#{face_id}"] += 1
+        face_iter_map[face_id.to_s] += 1
         curr_face = curr_face.prev
       end
 
-      curr_face_routing = planes[face_iter_map["#{curr_face.object_id}"]]
+      curr_face_routing = planes[face_iter_map[curr_face.object_id.to_s]]
       if attach?(routing, curr_face_routing)
         routing << [curr_face.object_id, curr_face_routing]
       else
-        face_iter_map["#{curr_face.object_id}"] += 1
+        face_iter_map[curr_face.object_id.to_s] += 1
       end
     end
   end
@@ -617,18 +618,15 @@ class Graph
   def generate_points
     plane_copy = Utils.deep_copy(@planes)
     sorted_vertices = Routing.sort_sets(plane_copy)
-    normalized_vertices = Utils.deep_copy(sorted_vertices)
 
     sorted_vertices = Routing.normalize(sorted_vertices, @width / @segments.to_f, @height / @segments.to_f,
                                         @depth / @segments.to_f, false)
-    normalized_vertices = Routing.normalize(normalized_vertices, @width / @segments.to_f, @height / @segments.to_f,
-                                            @depth / @segments.to_f)
 
     sampled_points = []
     last_corners = nil
-    normalized_vertices.each_with_index do |vertex, i|
-      next_vert = normalized_vertices[(i + 1) % normalized_vertices.size]
-      next_next_vert = normalized_vertices[(i + 2) % normalized_vertices.size]
+    sorted_vertices.each_with_index do |vertex, i|
+      next_vert = sorted_vertices[(i + 1) % sorted_vertices.size]
+      next_next_vert = sorted_vertices[(i + 2) % sorted_vertices.size]
       dr_ch = Edge.new(vertex, next_vert).directional_change
 
       corner_nt = on_boundary?(next_vert) ? 9 : 8 # POTENTIAL SOLUTION: set sampling frequency same, but for refractions add nil for last index, then take average.
@@ -644,9 +642,8 @@ class Graph
     sampled_points = sampled_points.map { |point| [point.x, point.y, point.z] } # Vertex.flatten(sampled_points)
     scaffold_rotation_labels = ([0, 1, 2, 3, 4, 5, 6, 7, 8,
                                  9] * (sampled_points.size / 10).ceil)[...sampled_points.size]
-    freq = 30 # (@scaff_length / sampled_points.size).floor.zero? ? 2 : (@scaff_length / sampled_points.size).floor
 
-    [sorted_vertices, normalized_vertices, sampled_points, freq, scaffold_rotation_labels]
+    [sorted_vertices, sampled_points, scaffold_rotation_labels]
   end
 
   def rounded_corner_points(vertices, smoothness = 8, radius = 1.5, closed = true)
@@ -730,20 +727,20 @@ class Graph
     colors = []
     (0...points_size).each do |i|
       t = i.to_f / points_size
-      case color_palette
-      when "Green Ocean"
-        colors << [t / 3, t / 3 + 0.3, t / 3]
-      when "Leather Vintage"
-        colors << [t + 0.2, t + 0.2, t / 8]
-      when "Cold Breeze"
-        colors << [t / 4, t / 1.5 + 0.15, t + 0.2]
-      when "Red Forest"
-        colors << [t / 3 + 0.3, t / 3, t / 3]
-      when "Violet Storm"
-        colors << [t / 3, t / 8, t / 3 + 0.15]
-      else
-        colors << [t / 3, t / 3 + 0.3, t / 3]  
-      end
+      colors << case color_palette
+                when 'Green Ocean'
+                  [t / 3, t / 3 + 0.3, t / 3]
+                when 'Leather Vintage'
+                  [t + 0.2, t + 0.2, t / 8]
+                when 'Cold Breeze'
+                  [t / 4, t / 1.5 + 0.15, t + 0.2]
+                when 'Red Forest'
+                  [t / 3 + 0.3, t / 3, t / 3]
+                when 'Violet Storm'
+                  [t / 3, t / 8, t / 3 + 0.15]
+                else
+                  [t / 3, t / 3 + 0.3, t / 3]
+                end
     end
     colors
   end
@@ -766,17 +763,20 @@ class Graph
   end
 
   def to_hash
-    return nil if @planes.nil?
+    # return nil if @planes.nil?
 
     graph_hash = {}
-    graph_hash['start'] = @start_idx * @sampling_frequency
-    graph_hash['end'] = (@start_idx + @group1.size) * @sampling_frequency
-    graph_hash['boundary_edges'] = boundary_edges.each(&:to_hash)
-    @planes.each do |plane|
-      p = Plane.new(plane, self, plane.object_id)
-      graph_hash[p.name] = p.to_hash
-    end
-
+    graph_hash['start'] = @start_idx * 30
+    graph_hash['end'] = (@start_idx + @group1.size) * 30
+    # graph_hash['boundary_edges'] = boundary_edges.each(&:to_hash)
+    # vertex_arr = []
+    # @sorted_vertices.each do |vertex|
+    #   vertex_arr << [vertex.x, vertex.y, vertex.z]
+    #   # p = Plane.new(plane, self, plane.object_id)
+    #   # graph_hash[p.name] = p.to_hash
+    # end
+    graph_hash['sorted_vertices'] = @sorted_vertices.map { |vertex| [vertex.x, vertex.y, vertex.z] }
+    graph_hash['scaffold_rotation_labels'] = @scaffold_rotation_labels
     graph_hash
   end
 end

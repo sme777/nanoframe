@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class AddColorPaletteAndReflectionBufferLengthToGenerators < ActiveRecord::Migration[6.1]
   def change
     add_column :generators, :color_palette, :string

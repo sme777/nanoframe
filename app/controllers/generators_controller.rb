@@ -157,7 +157,7 @@ class GeneratorsController < ApplicationController
     @staples = graph.staples_hash
     @start = routing['start']
     @end = routing['end']
-    Generator.find(@generator.id).update(
+    @generator.update(
       routing: routing,
       positions: @positions,
       colors: @colors,
@@ -167,15 +167,21 @@ class GeneratorsController < ApplicationController
   end
 
   def update_generator
-    Generator.find(@generator.id).update(public: !@generator.public) if params[:visibility]
-    if params[:bridge_length] && !@generator.is_current_bridge_length(params[:bridge_length].to_i)
-      new_staples = @generator.update_bridge_length(params[:bridge_length])
-      Generator.find(@generator.id).update(staples: new_staples)
-    end
+    @generator.update(public: !@generator.public) if params[:visibility]
+    bridge_length = params[:bridge_length].to_i
     color_palette = params[:color_palette]
+    if (bridge_length.is_a?(Integer) && bridge_length >= 0) && !@generator.is_current_bridge_length(bridge_length)
+      @generator.update(bridge_length: bridge_length)
+      graph = @generator.update_bridge_length(params[:bridge_length])
+      @generator.update(
+        vertex_cuts: graph.vertex_cuts.size,
+        staples: graph.staples_hash
+      )
+    end
+
     if Generator.color_palettes.include?(color_palette) && !@generator.is_current_color_palette(color_palette)
       colors = @generator.update_color_pallette(color_palette)
-      Generator.find(@generator.id).update(colors: colors, color_palette: color_palette)
+      @generator.update(colors: colors, color_palette: color_palette)
     end
     redirect_to "/synthesizer/#{@generator.id}/visualize"
   end
@@ -218,7 +224,7 @@ class GeneratorsController < ApplicationController
                                    interior_extension_bond_type: generator_fields[:interior_bond_type],
                                    exterior_extensions: exterior_extensions_arr, interior_extensions: interior_extensions_arr,
                                    bridge_length: generator_fields[:bridge_length], color_palette: generator_fields[:color_palette],
-                                   reflection_buffer_length: generator_fields[:reflection_buffer_length]})
+                                   reflection_buffer_length: generator_fields[:reflection_buffer_length] })
       @generator.user_id = @current_user.id unless @current_user.nil?
 
       if @generator.save

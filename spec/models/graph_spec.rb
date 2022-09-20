@@ -138,19 +138,18 @@ RSpec.describe 'Graph', type: :api do
     # end
   end
 
-  it 'creates a new tetrahedron routing' do 
+  it 'creates a new tetrahedron routing' do
     @generator = double(Generator,
-      :exterior_extensions => 0,
-      :interior_extensions => 0,
-      :exterior_extension_length => 0,
-      :interior_extension_length => 0
-    )
+                        exterior_extensions: 0,
+                        interior_extensions: 0,
+                        exterior_extension_length: 0,
+                        interior_extension_length: 0)
     # @generator.stub!(exterior_extensions).and_return(0)
     # @generator.stub!(interior_extensions).and_return(0)
     # @generator.stub!(exterior_extension_length).and_return(0)
     # @generator.stub!(interior_extension_length).and_return(0)
     # byebug
-    @graph = Graph.new(@generator, {"width" => "50", "height" => "50", "depth" => "50", "divisions" => "4"},:tetrahedron, "A"*7249)
-
+    @graph = Graph.new(@generator, { 'width' => '50', 'height' => '50', 'depth' => '50', 'divisions' => '4' },
+                       :tetrahedron, 'A' * 7249)
   end
 end

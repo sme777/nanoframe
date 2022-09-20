@@ -72,7 +72,7 @@ class Shape
         vertices << planars
         corners << corner
       end
-      [vertices.flatten.map {|v| v.round(4)}, corners.map{ |v| v.round(4) }]
+      [vertices.flatten.map { |v| v.round(4) }, corners.map { |v| v.round(4) }]
     end
   end
 
@@ -83,7 +83,7 @@ class Shape
       @v1 = edge[0]
       @v2 = edge[1]
       @parent = parent
-      @id = self.object_id
+      @id = object_id
       @neighbor = nil
     end
 

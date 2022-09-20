@@ -332,22 +332,13 @@ function findIndex(pos) {
 }
 
 function onWindowResize() {
-  const currentCanvas = renderer.domElement;
-  const width = currentCanvas.clientWidth;
-  const height = currentCanvas.clientHeight;
-  const needResize = currentCanvas.width !== width || currentCanvas.height !== height;
-  if (needResize) {
-    renderer.setSize(width, height);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-
-    insetWidth = height / 4;
-    insetHeight = height / 4;
-    camera2.aspect = insetWidth / insetHeight;
-    camera2.updateProjectionMatrix();
-    camera3.aspect = insetWidth / insetHeight;
-    camera3.updateProjectionMatrix();
-  }
+  camera.aspect = canvasContainerWidth / canvasContainerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(canvasContainerWidth, canvasContainerHeight);
+  insetWidth = canvasContainerHeight / 4;
+  insetHeight = canvasContainerHeight / 4;
+  camera2.aspect = insetWidth / insetHeight;
+  camera2.updateProjectionMatrix(line1);
 }
 
 function render() {
@@ -425,7 +416,7 @@ const particleToggler = document.getElementById("box-state-add-particle");
 const particleShape = document.getElementById("add-particle-shape");
 const addParticleButton = document.getElementById("add-particle-btn")
 const closeAddParticleButton = document.getElementById("close-icon-wrapper")
-console.log(canvas.height, canvas.offsetHeight, canvas.clientHeight)
+
 box.addEventListener("click", (e) => {
   if (box.innerHTML === "Open Form") {
     box.innerHTML = "Closed Form";

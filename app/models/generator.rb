@@ -43,14 +43,11 @@ class Generator < ApplicationRecord
   end
 
   def route
-    @graph = Graph.new(self, dimensions, shape_name, scaffold, color_palette)
+    @graph = Graph.new(self, dimensions, shape_name, scaffold, color_palette, false)
   end
 
-  def update_bridge_length(length)
-    staple_arr = regenerate_staples
-    boundary_edge_arr = regenerate_boundary_edges
-    staple_breaker = Breaker.new(id, [width, height, depth], :cube, divisions + 1, scaffold_length)
-    staple_breaker.update_boundary_strands(boundary_edge_arr, staple_arr, length)
+  def update_bridge_length(_length)
+    @graph = Graph.new(self, dimensions, shape_name, scaffold, color_palette, true)
   end
 
   def regenerate_staples

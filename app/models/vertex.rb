@@ -120,21 +120,21 @@ class Vertex
   end
 
   def self.det(a)
-    a[0][0]*a[1][1]*a[2][2] + a[0][1]*a[1][2]*a[2][0] + a[0][2]*a[1][0]*a[2][1] - a[0][2]*a[1][1]*a[2][0] - a[0][1]*a[1][0]*a[2][2] - a[0][0]*a[1][2]*a[2][1]
+    a[0][0] * a[1][1] * a[2][2] + a[0][1] * a[1][2] * a[2][0] + a[0][2] * a[1][0] * a[2][1] - a[0][2] * a[1][1] * a[2][0] - a[0][1] * a[1][0] * a[2][2] - a[0][0] * a[1][2] * a[2][1]
   end
 
   def self.unit_normal(v1, v2, v3)
-    x = Vertex.det([[1,v1.y,v1.z],
-      [1,v2.y,v2.z],
-      [1,v3.y,v3.z]])
-    y = Vertex.det([[v1.x,1,v1.z],
-      [v2.x,1,v2.z],
-      [v3.x,1,v3.z]])
-    z = Vertex.det([[v1.x,v1.y,1],
-      [v2.x,v2.y,1],
-      [v3.x,v3.y,1]])
-    magnitude = (x**2 + y**2 + z**2)**(0.5)
-   Vertex.new(x/magnitude, y/magnitude, z/magnitude)
+    x = Vertex.det([[1, v1.y, v1.z],
+                    [1, v2.y, v2.z],
+                    [1, v3.y, v3.z]])
+    y = Vertex.det([[v1.x, 1, v1.z],
+                    [v2.x, 1, v2.z],
+                    [v3.x, 1, v3.z]])
+    z = Vertex.det([[v1.x, v1.y, 1],
+                    [v2.x, v2.y, 1],
+                    [v3.x, v3.y, 1]])
+    magnitude = (x**2 + y**2 + z**2)**0.5
+    Vertex.new(x / magnitude, y / magnitude, z / magnitude)
   end
 
   def self.directional_change_axis(v1, v2)
