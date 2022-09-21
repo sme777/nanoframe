@@ -11,7 +11,6 @@
                     <a class="search-bar-icon input-group-text"><i class="fa-solid fa-magnifying-glass"></i></a>
                 </div>
             </div>
-
             <div class="sorting-container col-md-3">
                 <div class="dropdown">
                     <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
@@ -19,9 +18,9 @@
                         Sort by: Newly Synthed
                     </button>
                     <ul class="dropdown-menu" style="">
-                        <li><button class="dropdown-item" type="button">Author</button></li>
-                        <li><button class="dropdown-item" type="button">Popularity</button></li>
-                        <li><button class="dropdown-item" type="button">Newly Synthed</button></li>
+                        <li><a href="/synthesizer/<%= @current_page %>?sort_by=author" class="dropdown-item" type="button">Author</a></li>
+                        <li><a href="/synthesizer/<%= @current_page %>?sort_by=popularity" class="dropdown-item" type="button">Popularity</a></li>
+                        <li><a href="/synthesizer/<%= @current_page %>?sort_by=synthed" class="dropdown-item" type="button">Newly Synthed</a></li>
                     </ul>
                 </div>
             </div>

@@ -21,6 +21,7 @@ class GeneratorsController < ApplicationController
   def synthesizer
     @first_page = 1
     @current_page = params[:page].to_i || @first_page
+    @sort_method = params[:sort_by] || "synthed"
     @last_page = (Generator.all.size / 9.0).ceil
     if @current_page < @first_page
       redirect_to "/synthesizer/#{@first_page}"
@@ -32,8 +33,18 @@ class GeneratorsController < ApplicationController
       return
     end
     @feed_synths = Generator.all
-                            .order(created_at: :desc)
+                            .order(sort_to_query(@sort_method))
                             .paginate(page: @current_page, per_page: 9)
+  end
+
+  def sort_to_query(method)
+    if method == "author"
+      "user_id DESC"
+    elsif method == "popularity"
+      "likes DESC"
+    elsif method == "synthed"
+      "created_at DESC"
+    end
   end
 
   def routing
