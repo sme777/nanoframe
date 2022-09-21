@@ -651,7 +651,16 @@ td{
   text-align: center;
 }
 
+.share-item-wrapper:hover {
+  cursor: pointer;
+}
+
 .heart-item-icon {
+  font-size: large;
+  color: green;
+}
+
+.share-item-icon {
   font-size: large;
   color: green;
 }
