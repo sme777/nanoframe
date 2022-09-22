@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'json'
+require 'will_paginate/array'
 
 class GeneratorsController < ApplicationController
   before_action :set_generator, except: [:create]
@@ -19,9 +20,11 @@ class GeneratorsController < ApplicationController
   end
 
   def synthesizer
+    @rest_params = ""
     @first_page = 1
     @current_page = params[:page].to_i || @first_page
     @sort_method = params[:sort_by] || "synthed"
+    @rest_params += "sort_by=#{@sort_method}" if !!params[:sort_by]
     @last_page = (Generator.all.size / 9.0).ceil
     if @current_page < @first_page
       redirect_to "/synthesizer/#{@first_page}"
@@ -32,9 +35,31 @@ class GeneratorsController < ApplicationController
       redirect_to "/synthesizer/#{@last_page}"
       return
     end
-    @feed_synths = Generator.all
-                            .order(sort_to_query(@sort_method))
-                            .paginate(page: @current_page, per_page: 9)
+
+    if params[:search]
+      search_term = params[:search].downcase.gsub(/\s+/, "")
+      searched_synths = Generator.all.select do |generator|  
+        name_condition = generator.shape.downcase.include?(search_term)
+        associated_user = User.find_by(id: generator.user_id)
+        user_condition = associated_user.nil? ? false : associated_user.name.downcase.include?(search_term)
+        name_condition || user_condition
+      end
+      search_column, search_direction = sort_to_query(@sort_method).split(" ")
+      if searched_synths.empty?
+        @feed_synths = []
+      else
+        @feed_synths = searched_synths.sort_by(&:"#{search_column}")
+        @feed_synths = @feed_synths.reverse if search_direction == "DESC"
+        @feed_synths = @feed_synths.paginate(page: @current_page, per_page: 9)
+      end
+        
+    else
+      @feed_synths = Generator.all
+                              .order(sort_to_query(@sort_method))
+                              .paginate(page: @current_page, per_page: 9)
+    
+    end
+
   end
 
   def sort_to_query(method)

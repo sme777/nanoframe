@@ -6,16 +6,22 @@
     <div id="feed-container-header">
         <div class="row">
             <div class="searching-container col-md-9">
-                <div class="input-group mb-3">
-                    <input type="search" class="form-control" placeholder="Search synths by name or author...">
-                    <a class="search-bar-icon input-group-text"><i class="fa-solid fa-magnifying-glass"></i></a>
-                </div>
+                <%= form_with(url: "/synthesizer/1?search", method: :get) do |f| %>
+                    <div class="input-group mb-3">
+                        <%= f.text_field :search, type: "search", class: "form-control", placeholder: "Search synths by name or author..." %>
+                        <%= f.button("", class: "search-bar-icon input-group-text") do %>
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        <%end%>
+                        <%# <input type="search" class="form-control" placeholder="Search synths by name or author...">
+                        <a class="search-bar-icon input-group-text"></a> %>
+                    </div>
+                <% end %>
             </div>
             <div class="sorting-container col-md-3">
                 <div class="dropdown">
                     <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        Sort by: Newly Synthed
+                        Sort by: <%= @sort_method == "synthed" ? "Newly Synthed" : @sort_method.capitalize %>
                     </button>
                     <ul class="dropdown-menu" style="">
                         <li><a href="/synthesizer/<%= @current_page %>?sort_by=author" class="dropdown-item" type="button">Author</a></li>
