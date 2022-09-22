@@ -35,16 +35,26 @@ class GeneratorsController < ApplicationController
       redirect_to "/synthesizer/#{@last_page}"
       return
     end
+    search_column, search_direction = sort_to_query(@sort_method)
 
+    if search_column.nil?
+      redirect_to "/synthesizer/#{@current_page}" 
+      return  
+    end
     if params[:search]
-      search_term = params[:search].downcase.gsub(/\s+/, "")
+      @search_term = params[:search]
+      filtered_term = params[:search].downcase.gsub(/\s+/, "")
+      @rest_params += "search=#{filtered_term}"
       searched_synths = Generator.all.select do |generator|  
-        name_condition = generator.shape.downcase.include?(search_term)
-        associated_user = User.find_by(id: generator.user_id)
-        user_condition = associated_user.nil? ? false : associated_user.name.downcase.include?(search_term)
-        name_condition || user_condition
+        name_condition = generator.shape.downcase.include?(filtered_term)
+        user_condition = generator.user_id.nil? ? false : User.find_by(id: generator.user_id).name.downcase.include?(filtered_term)
+        if search_column == "user_id"
+          !generator.user_id.nil? && (name_condition || user_condition)
+        else
+          name_condition || user_condition
+        end
+        
       end
-      search_column, search_direction = sort_to_query(@sort_method).split(" ")
       if searched_synths.empty?
         @feed_synths = []
       else
@@ -55,20 +65,19 @@ class GeneratorsController < ApplicationController
         
     else
       @feed_synths = Generator.all
-                              .order(sort_to_query(@sort_method))
+                              .order("#{search_column} #{search_direction}")
                               .paginate(page: @current_page, per_page: 9)
     
     end
-
   end
 
   def sort_to_query(method)
     if method == "author"
-      "user_id DESC"
+      ["user_id", "DESC"]
     elsif method == "popularity"
-      "likes DESC"
+      ["likes", "DESC"]
     elsif method == "synthed"
-      "created_at DESC"
+      ["created_at", "DESC"]
     end
   end
 
