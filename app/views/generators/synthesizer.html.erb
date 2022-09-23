@@ -4,58 +4,69 @@
 <div class="feed-container">
     <canvas id="feed-canvas"></canvas>
     <div id="feed-container-header">
-        <div class="row">
-            <div class="searching-container col-md-9">
-                <%= form_with(url: "/synthesizer/1", method: :get, id: "synthesizer_search_form") do |f| %>
-                    <div class="input-group mb-3">
-                        <a href="/synthesizer/<%= @current_page %><%= "?sort_by=#{@sort_method}" if !!@sort_method %>" class="btn-close input-group-text search-clearn-btn"></a>
-                        <%= f.text_field :search, type: "search", class: "form-control", value: (@search_term || ""), placeholder: "Search synths by name or author..." %>
-                        <% if !!@sort_method %>
-                            <%= f.hidden_field :sort_by, value: @sort_method %>
-                        <% end %>
-                        <%= f.button("", class: "search-bar-icon input-group-text") do %>
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        <%end%>
-                    </div>
+        <div class="searching-container">
+            <%= form_with(url: "/synthesizer/1", method: :get, id: "synthesizer_search_form") do |f| %>
+            <div class="input-group mb-3">
+                <a href="/synthesizer/<%= @current_page %><%= "?sort_by=#{@sort_method}" if !!@sort_method %>"
+                    class="btn-close input-group-text search-clearn-btn"></a>
+                <%= f.text_field :search, type: "search", class: "form-control", value: (@search_term || ""), placeholder: "Search synths by name or author..." %>
+                <% if !!@sort_method %>
+                <%= f.hidden_field :sort_by, value: @sort_method %>
                 <% end %>
+                <%= f.button("", class: "search-bar-icon input-group-text") do %>
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <%end%>
             </div>
-            <div class="sorting-container col-md-3">
+            <% end %>
+        </div>
+    </div>
+    <div class="row misc-synthesizer-container">
+        <div class="col-md-6">
+            <a class="btn btn-dark" href="/synthesizer/new"><i class="fa-solid fa-plus"></i>New</a>
+
+        </div>
+        <div class="col-md-6">
+            <div class="sorting-container">
                 <div class="dropdown">
-                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    <button class="btn btn-dark-outline dropdown-toggle" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
-                        Sort by: <%= (@sort_method == "synthed" || @sort_method.nil?) ? "Newly Synthed" : @sort_method.capitalize %>
+                        Sort by:
+                        <%= (@sort_method == "synthed" || @sort_method.nil?) ? "Newly Synthed" : @sort_method.capitalize %>
                     </button>
                     <ul class="dropdown-menu" style="">
-                        <li><a href="/synthesizer/<%= @current_page %>?sort_by=author<%= "&search=#{@search_term}" if !!@search_term %>" class="dropdown-item" type="button">Author</a></li>
-                        <li><a href="/synthesizer/<%= @current_page %>?sort_by=popularity<%= "&search=#{@search_term}" if !!@search_term %>" class="dropdown-item" type="button">Popularity</a></li>
-                        <li><a href="/synthesizer/<%= @current_page %>?sort_by=synthed<%= "&search=#{@search_term}" if !!@search_term %>" class="dropdown-item" type="button">Newly Synthed</a></li>
+                        <li><a href="/synthesizer/<%= @current_page %>?sort_by=author<%= "&search=#{@search_term}" if !!@search_term %>"
+                                class="dropdown-item" type="button">Author</a></li>
+                        <li><a href="/synthesizer/<%= @current_page %>?sort_by=popularity<%= "&search=#{@search_term}" if !!@search_term %>"
+                                class="dropdown-item" type="button">Popularity</a></li>
+                        <li><a href="/synthesizer/<%= @current_page %>?sort_by=synthed<%= "&search=#{@search_term}" if !!@search_term %>"
+                                class="dropdown-item" type="button">Newly Synthed</a></li>
                     </ul>
                 </div>
             </div>
         </div>
-        <a class="btn btn-dark" href="/synthesizer/new"><i class="fa-solid fa-plus"></i>New</a>
+
     </div>
     <div id="feed-container-body">
 
         <% if @feed_synths.size == 0 %>
-            <div class="alert alert-primary d-flex align-items-center" role="alert">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                <div>
-                    No matches were found!
-                </div>
+        <div class="alert alert-primary d-flex align-items-center" role="alert">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <div>
+                No matches were found!
             </div>
+        </div>
 
         <% else %>
-            <input type="hidden" id="generator-size" value="<%= @feed_synths.size %>">
-            <% @feed_synths.each_with_index do |synth, index| %>
-                <% if index % 3 == 0 %>
-                    <div class="row">
-                <% end %>
-                <%= render partial: "feed_item", locals: {synth: synth, index: index}%>
-                <% if (index + 1) % 3 == 0%>
-                    </div>
-                <% end %>
+        <input type="hidden" id="generator-size" value="<%= @feed_synths.size %>">
+        <% @feed_synths.each_with_index do |synth, index| %>
+        <% if index % 3 == 0 %>
+        <div class="row">
             <% end %>
+            <%= render partial: "feed_item", locals: {synth: synth, index: index}%>
+            <% if (index + 1) % 3 == 0%>
+        </div>
+        <% end %>
+        <% end %>
         <% end %>
 
     </div>
