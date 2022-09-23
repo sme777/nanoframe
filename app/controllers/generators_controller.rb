@@ -23,19 +23,10 @@ class GeneratorsController < ApplicationController
     @rest_params = ""
     @first_page = 1
     @current_page = params[:page].to_i || @first_page
-    @sort_method = params[:sort_by] || "synthed"
+    @sort_method = params[:sort_by]
     @rest_params += "sort_by=#{@sort_method}" if !!params[:sort_by]
-    @last_page = (Generator.all.size / 9.0).ceil
-    if @current_page < @first_page
-      redirect_to "/synthesizer/#{@first_page}"
-      return
-    end
 
-    if @current_page > @last_page && @last_page.positive?
-      redirect_to "/synthesizer/#{@last_page}"
-      return
-    end
-    search_column, search_direction = sort_to_query(@sort_method)
+    search_column, search_direction = sort_to_query(@sort_method || "synthed")
 
     if search_column.nil?
       redirect_to "/synthesizer/#{@current_page}" 
@@ -57,9 +48,11 @@ class GeneratorsController < ApplicationController
       end
       if searched_synths.empty?
         @feed_synths = []
+        @last_page = 1
       else
         @feed_synths = searched_synths.sort_by(&:"#{search_column}")
         @feed_synths = @feed_synths.reverse if search_direction == "DESC"
+        @last_page = (@feed_synths.size / 9.0).ceil
         @feed_synths = @feed_synths.paginate(page: @current_page, per_page: 9)
       end
         
@@ -67,7 +60,18 @@ class GeneratorsController < ApplicationController
       @feed_synths = Generator.all
                               .order("#{search_column} #{search_direction}")
                               .paginate(page: @current_page, per_page: 9)
+      @last_page = (Generator.all.size / 9.0).ceil
     
+    end
+
+    if @current_page < @first_page
+      redirect_to "/synthesizer/#{@first_page}"
+      return
+    end
+
+    if @current_page > @last_page && @last_page.positive?
+      redirect_to "/synthesizer/#{@last_page}"
+      return
     end
   end
 

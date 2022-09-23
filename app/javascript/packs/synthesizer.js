@@ -63,3 +63,6 @@ function main() {
 }
 
 main();
+
+
+document.querySelector("#synthesizer_search_form").reset();

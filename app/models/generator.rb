@@ -117,6 +117,18 @@ class Generator < ApplicationRecord
     "0x#{hex}"
   end
 
+  def self.get_rest_params(search_term, sort_method)
+    return "" if search_term.nil? && sort_method.nil?
+    rest_params = "?"
+    if !search_term.nil?
+      rest_params += "search=#{search_term}"
+    end
+    if !sort_method.nil?
+      rest_params += "&sort_by=#{sort_method}"
+    end
+    rest_params
+  end
+
   def filename(logged, user_id)
     if logged
       curr_user = User.find(user_id)

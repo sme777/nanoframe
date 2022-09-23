@@ -6,9 +6,10 @@
     <div id="feed-container-header">
         <div class="row">
             <div class="searching-container col-md-9">
-                <%= form_with(url: "/synthesizer/1?search", method: :get) do |f| %>
+                <%= form_with(url: "/synthesizer/1", method: :get, id: "synthesizer_search_form") do |f| %>
                     <div class="input-group mb-3">
-                        <%= f.text_field :search, type: "search", class: "form-control", value: @search_term, placeholder: "Search synths by name or author..." %>
+                        <a href="/synthesizer/<%= @current_page %><%= "?sort_by=#{@sort_method}" if !!@sort_method %>" class="btn-close input-group-text search-clearn-btn"></a>
+                        <%= f.text_field :search, type: "search", class: "form-control", value: (@search_term || ""), placeholder: "Search synths by name or author..." %>
                         <% if !!@sort_method %>
                             <%= f.hidden_field :sort_by, value: @sort_method %>
                         <% end %>
@@ -35,18 +36,30 @@
         <a class="btn btn-dark" href="/synthesizer/new"><i class="fa-solid fa-plus"></i>New</a>
     </div>
     <div id="feed-container-body">
-        <input type="hidden" id="generator-size" value="<%= @feed_synths.size %>">
-        <% @feed_synths.each_with_index do |synth, index| %>
-            <% if index % 3 == 0 %>
-                <div class="row">
-            <% end %>
-            <%= render partial: "feed_item", locals: {synth: synth, index: index}%>
-            <% if (index + 1) % 3 == 0%>
+
+        <% if @feed_synths.size == 0 %>
+            <div class="alert alert-primary d-flex align-items-center" role="alert">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div>
+                    No matches were found!
                 </div>
+            </div>
+
+        <% else %>
+            <input type="hidden" id="generator-size" value="<%= @feed_synths.size %>">
+            <% @feed_synths.each_with_index do |synth, index| %>
+                <% if index % 3 == 0 %>
+                    <div class="row">
+                <% end %>
+                <%= render partial: "feed_item", locals: {synth: synth, index: index}%>
+                <% if (index + 1) % 3 == 0%>
+                    </div>
+                <% end %>
             <% end %>
         <% end %>
+
     </div>
 </div>
-<%= render partial: "layouts/pages", locals: {tab: "synthesizer"}%>
+<%= render partial: "layouts/pages", locals: {tab: "synthesizer", rest: Generator.get_rest_params(@search_term, @sort_method)}%>
 <%= render "layouts/footer"%>
 <%= javascript_pack_tag 'synthesizer', 'data-turbolinks-track': 'reload'%>

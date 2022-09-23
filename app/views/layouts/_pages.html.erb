@@ -4,31 +4,32 @@
     <ul class="pagination justify-content-center">
         <% if @current_page != 1 %>
         <li class="page-item">
-            <a class="page-link" href="<%=  "/#{tab}/#{@current_page - 1}" %>" aria-label="Previous">
+            <a class="page-link" href="<%=  "/#{tab}/#{@current_page - 1}#{rest}" %>" aria-label="Previous">
             <span aria-hidden="true">&laquo;</span>
             </a>
         </li>
         <% end %>
+        
         <% if @current_page + 1 > @last_page %>
         <% if @current_page - 2 >= @first_page %>
-            <li class="page-item"><%= link_to @current_page - 2,  "/#{tab}/#{@current_page - 2}", class: "page-link" %></li>
+            <li class="page-item"><%= link_to @current_page - 2,  "/#{tab}/#{@current_page - 2}#{rest}", class: "page-link" %></li>
         <% end %>
         <% end %>
         <% if @current_page + 2 > @last_page %>
         <% if @current_page -1 >= @first_page %>
-            <li class="page-item"><%= link_to @current_page - 1,  "/#{tab}/#{@current_page - 1}", class: "page-link" %></li>
+            <li class="page-item"><%= link_to @current_page - 1,  "/#{tab}/#{@current_page - 1}#{rest}", class: "page-link" %></li>
         <% end %>
         <% end %>
-        <li class="page-item active"><%= link_to @current_page, "/#{tab}/#{@current_page}", class: "page-link" %></li>
+        <li class="page-item active"><%= link_to @current_page, "/#{tab}/#{@current_page}#{rest}", class: "page-link" %></li>
         <% if @current_page + 1 <= @last_page %>
-        <li class="page-item"><%= link_to @current_page + 1,  "/#{tab}/#{@current_page + 1}", class: "page-link" %></li>
+        <li class="page-item"><%= link_to @current_page + 1,  "/#{tab}/#{@current_page + 1}#{rest}", class: "page-link" %></li>
         <% end %>
         <% if @current_page + 2 <= @last_page %>
-        <li class="page-item"><%= link_to @current_page + 2,  "/#{tab}/#{@current_page + 2}", class: "page-link" %></li>
+        <li class="page-item"><%= link_to @current_page + 2,  "/#{tab}/#{@current_page + 2}#{rest}", class: "page-link" %></li>
         <% end %>
         <% if @current_page != @last_page %>
         <li class="page-item">
-        <a class="page-link" href="<%=  "/#{tab}/#{@current_page + 1}" %>" aria-label="Next">
+        <a class="page-link" href="<%=  "/#{tab}/#{@current_page + 1}#{rest}" %>" aria-label="Next">
             <span aria-hidden="true">&raquo;</span>
         </a>
         </li>
