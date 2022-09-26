@@ -10,10 +10,10 @@
             <p class="card-text"><small class="text-muted">Created on <%= synth.created_at.strftime("%B %e, %Y")%></small></p>
             <div class="row">
                 <div class="heart-item-container col-md-4">
-                    <a class="heart-item" href=""><i class="fa-regular fa-heart heart-item-icon"></i> 35</a>
+                    <span class="heart-item" id=<%= "generator_#{index}_like" %> value="<%= synth.id %>"><i class="fa-regular fa-heart heart-item-icon"></i> <%= synth.likes.size %></span>
                 </div>
                 <div class="comment-item-container col-md-4">
-                    <a class="comment-item" href=""><i class="fa-regular fa-comment comment-item-icon"></i> 5</a>
+                    <a class="comment-item" href="/synthesizer/<%= synth.id %>/visualize#comments" disabled><i class="fa-regular fa-comment comment-item-icon"></i> <%= synth.comments.size %></a>
                 </div>
                 <div class="comment-item-container col-md-4">
                     <span tabindex="0" id=<%= "generator_#{index}_copier" %> class="comment-item share-item-wrapper" data-bs-container="body" 

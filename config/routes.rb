@@ -30,6 +30,7 @@ Rails.application.routes.draw do
   get '/synthesizer/:id/async_visualize' => 'generators#async_visualize', as: 'generate_async_routing'
   get '/synthesizer/:id/visualize' => 'generators#visualize'
   post '/synthesizer/:id/update_generator' => 'generators#update_generator', as: 'update_generator'
+  post '/synthesizer/:id/update_likes' => 'generators#update_likes'
 
   get '/contact/new' => 'users#get_contact'
   get '/checkemail' => 'users#check_email', :defaults => { format: :json }

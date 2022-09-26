@@ -180,9 +180,6 @@
   <% end %>
 
   <%= render "layouts/footer"%>
-  <% if @current_user.nil?%>
-      <%= javascript_pack_tag 'main', 'mascot', 'data-turbolinks-track': 'reload' %>
-  <% else %>
-    <%= javascript_pack_tag 'main', 'homepage', 'data-turbolinks-track': 'reload' %>
-  <% end %>
+  <%= javascript_pack_tag 'main', 'homepage', 'data-turbolinks-track': 'reload' %>
+
 </body>

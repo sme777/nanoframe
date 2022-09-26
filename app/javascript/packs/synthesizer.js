@@ -67,9 +67,14 @@ function main() {
     for (let i = 0; i < generatorSize; i++) {
         let clipboardCopier = document.querySelector(`#generator_${i}_copier`)
         let generatorLink = document.querySelector(`#generator_${i}_link`)
+        let generatorLike = document.querySelector(`#generator_${i}_like`)
         clipboardCopier.addEventListener("click", () => {
-            console.log(generatorLink.href);
             navigator.clipboard.writeText(generatorLink.href);
+        });
+        generatorLike.addEventListener("click", () => {
+            console.log(`/synthesizer/${generatorLike.getAttribute("value")}/update_likes`)
+            fetch(`synthesizer/${generatorLike.getAttribute("value")}/update_likes`)
+                .then((response) => console.log(response))
         });
     };
 

@@ -63,7 +63,6 @@ class GeneratorsController < ApplicationController
       @last_page = (Generator.all.size / 9.0).ceil
     
     end
-
     if @current_page < @first_page
       redirect_to "/synthesizer/#{@first_page}"
       return
@@ -233,6 +232,12 @@ class GeneratorsController < ApplicationController
       @generator.update(colors: colors, color_palette: color_palette)
     end
     redirect_to "/synthesizer/#{@generator.id}/visualize"
+  end
+
+  def update_likes
+    respond_to do |format|
+      format.json {render json: {"hello": "bye"}}
+    end
   end
 
   def compile
