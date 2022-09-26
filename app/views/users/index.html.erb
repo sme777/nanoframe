@@ -50,9 +50,13 @@
 
   <!-- Start of SIGN UP-->
   <% if @current_user.nil?%>
-  <div class="sign-in-outer-container">
+  <div class="row sign-in-outer-container">
+    <div class="col-md-7 animation-container">
+      <canvas id="animation-canvas">
+      </canvas>
+    </div>
+    <div class="col-md-5 transparent-layer">
 
-    <div class="transparent-layer">
       <div class="sign-in-container">
         <form action='/signin' method='GET' class="row g-3">
           <% flash.each do |key, value| %>
@@ -176,5 +180,9 @@
   <% end %>
 
   <%= render "layouts/footer"%>
-  <%= javascript_pack_tag 'main', 'homepage', 'data-turbolinks-track': 'reload' %>
+  <% if @current_user.nil?%>
+      <%= javascript_pack_tag 'main', 'mascot', 'data-turbolinks-track': 'reload' %>
+  <% else %>
+    <%= javascript_pack_tag 'main', 'homepage', 'data-turbolinks-track': 'reload' %>
+  <% end %>
 </body>

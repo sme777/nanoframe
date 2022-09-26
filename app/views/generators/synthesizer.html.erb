@@ -71,6 +71,7 @@
 
     </div>
 </div>
+
 <%= render partial: "layouts/pages", locals: {tab: "synthesizer", rest: Generator.get_rest_params(@search_term, @sort_method)}%>
 <%= render "layouts/footer"%>
 <%= javascript_pack_tag 'synthesizer', 'data-turbolinks-track': 'reload'%>

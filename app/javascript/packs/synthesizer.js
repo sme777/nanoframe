@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { SetupGeneralScene, SetupItemFeed, ResizeRendererToDisplaySize, Material } from "./sceneUtils";
 
+
 function main() {
 
     const canvas = document.querySelector("#feed-canvas");
@@ -60,9 +61,19 @@ function main() {
         requestAnimationFrame(render);
     }
     requestAnimationFrame(render);
+
+
+    document.querySelector("#synthesizer_search_form").reset();
+    for (let i = 0; i < generatorSize; i++) {
+        let clipboardCopier = document.querySelector(`#generator_${i}_copier`)
+        let generatorLink = document.querySelector(`#generator_${i}_link`)
+        clipboardCopier.addEventListener("click", () => {
+            console.log(generatorLink.href);
+            navigator.clipboard.writeText(generatorLink.href);
+        });
+    };
+
 }
 
 main();
 
-
-document.querySelector("#synthesizer_search_form").reset();
