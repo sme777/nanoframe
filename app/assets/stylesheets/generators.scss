@@ -760,3 +760,38 @@ td{
 .sorting-container {
   text-align: right;
 }
+
+.comment-section-container {
+  padding: 5% 2%;
+  // padding-bottom: ;
+}
+
+.container-textarea-container {
+  padding-right: 1%;
+  padding-left: 1%;
+  
+  // border-radius: 0 !important;
+}
+
+.comment-post-container {
+  text-align: right;
+  padding-right: 1%;
+  padding-bottom: 1%;
+}
+
+.commenter-profile-container {
+  // text-align: center;
+  width: 75px;
+}
+
+.author-name {
+  text-align: left;
+}
+
+.comment-user-image {
+  width: 100%;
+}
+
+.comment-date-time-container {
+  text-align: right;
+}

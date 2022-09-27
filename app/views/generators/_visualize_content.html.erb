@@ -226,7 +226,32 @@
           <button id="add-particle-btn" class="btn btn-dark w-100">Add Particle</button>
         </div>
     </div>
-
   </div>
+<div id="comments" class="comment-section-container">
+      <div class="card">
+      <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="true" href="#comments">Comments</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#likes">Likes</a>
+          </li>
+        </ul>
+      </div>
+      <div class="card-body">
+        <%= render partial: "comment" %>
+      </div>
+        <%= form_with(url: "/synthesizer/#{@generator.id}/comment", method: :post, data: { turbo: false }) do |f| %>
+        <div class="container-textarea-container mb-3">
+            <%= f.text_area "comment_post", class: "form-control", rows: "3", placeholder: "Type your comment here..." %>
+        </div>
+        <div class="comment-post-container">
+            <%= f.button "Like Synth", class: "btn btn-default w-25" %>
+            <%= f.submit "Comment", class: "btn btn-dark w-25"%>
+        </div>
+        <% end %>
+    </div>
 
+</div>
 <%= javascript_pack_tag 'visualize', 'data-turbolinks-track': 'reload'%>
