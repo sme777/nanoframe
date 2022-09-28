@@ -240,15 +240,21 @@
         </ul>
       </div>
       <div class="card-body">
-        <%= render partial: "comment" %>
+        <% @generator.comments.each do |comment| %>
+            <%= render partial: "comment", locals: {comment: comment} %>
+        <% end %>
       </div>
-        <%= form_with(url: "/synthesizer/#{@generator.id}/comment", method: :post, data: { turbo: false }) do |f| %>
+        <%# <%= turbo_frame_tag :generator_comment, src: comment_path, loading: :lazy do %>
+        <%= form_with(url: comment_path, method: :post, data: { turbo: false }) do |f| %>
         <div class="container-textarea-container mb-3">
-            <%= f.text_area "comment_post", class: "form-control", rows: "3", placeholder: "Type your comment here..." %>
+            <% if !@current_user.nil? %>
+                <%= f.hidden_field "user_id", value: @current_user.id %>
+            <% end %>
+            <%= f.text_area "content", class: "form-control", rows: "3", placeholder: "Type your comment here...", disabled: @current_user.nil? ? true : false %>
         </div>
         <div class="comment-post-container">
-            <%= f.button "Like Synth", class: "btn btn-default w-25" %>
-            <%= f.submit "Comment", class: "btn btn-dark w-25"%>
+            <button value=<%= "#{@generator.id}" %> class="btn btn-default w-25" <%= "disabled" if @current_user.nil?%>>Like Synth</button>
+            <%= f.submit "Comment", class: "btn btn-dark w-25", disabled: @current_user.nil? ? true : false%>
         </div>
         <% end %>
     </div>
