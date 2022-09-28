@@ -4,7 +4,8 @@ class CommentsController < ApplicationController
         if params[:comment_id] && !Comment.where(id: params[:comment_id]).empty?
             Comment.delete(params[:comment_id])
         end
-        render "comment_section"
+        @generator = Generator.find_by(id: params[:id])
+        render partial: "comment_section"
     end
 
     def create
@@ -12,6 +13,6 @@ class CommentsController < ApplicationController
             @comment = Comment.create(content: params[:content], upvotes: 0, user_id: params[:user_id].to_i, generator_id: params[:id].to_i)
         end
         @generator = Generator.find_by(id: params[:id])
-        render "comment_section"
+        render partial: "comment_section"
     end
 end

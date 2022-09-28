@@ -646,3 +646,6 @@ function save(blob, filename) {
   link.download = filename;
   link.click();
 }
+
+document.querySelector("#comment_post_form").reset();
+

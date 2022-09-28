@@ -18,8 +18,20 @@
                 <div class="row">
                  <ul class="list-group list-group-flush comment-edit-list-group">
                     <li class="dashboard-block list-group-item">
-                    <span class="edit-comment-wrapper"><i class="fa-solid fa-pen-to-square"></i></span>
-                    <a href=<%= remove_comment_path(@generator.id, comment.id) %>><i class="fa-solid fa-trash"></i></a>
+                    <%= form_with(url: "") do |f| %>
+                        <div class="edit-comment-container">
+                            <%= f.button("", class: "edit-comment-icon input-group-text") do %>
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            <%end%>
+                        </div>
+                    <% end %>
+                    <%= form_with(url: remove_comment_path(@generator.id, comment.id)) do |f| %>
+                        <div class="delete-comment-container">
+                            <%= f.button("", class: "delete-comment-icon input-group-text") do %>
+                                <i class="fa-solid fa-trash"></i>
+                            <% end %>
+                        </div>
+                    <% end %>
                     </li>
                  </ul>
                 </div>

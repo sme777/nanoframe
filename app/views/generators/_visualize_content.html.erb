@@ -242,16 +242,16 @@
       <div class="card-body">
         <%= render "comments/comment_section" %>
       </div>
-        <%= form_with(url: comment_path, method: :post, data: { turbo: false, turbo_frame: "comment_section"}) do |f| %>
+        <%= form_with(url: comment_path, method: :post, id: "comment_post_form", data: { turbo: false, turbo_frame: "comment_section"}) do |f| %>
         <div class="container-textarea-container mb-3">
             <% if !@current_user.nil? %>
                 <%= f.hidden_field "user_id", value: @current_user.id %>
             <% end %>
-            <%= f.text_area "content", class: "form-control", rows: "3", placeholder: "Type your comment here...", disabled: @current_user.nil? ? true : false %>
+            <%= f.text_area "content", id: "comment_post_textarea", class: "form-control", rows: "3", placeholder: "Type your comment here...", disabled: @current_user.nil? ? true : false %>
         </div>
         <div class="comment-post-container">
             <button value=<%= "#{@generator.id}" %> class="btn btn-default w-25" <%= "disabled" if @current_user.nil?%>>Like Synth</button>
-            <%= f.submit "Comment", class: "btn btn-dark w-25", disabled: @current_user.nil? ? true : false%>
+            <%= f.submit "Comment", id: "comment_post_button", class: "btn btn-dark w-25", disabled: @current_user.nil? ? true : false%>
         </div>
         <% end %>
     </div>
