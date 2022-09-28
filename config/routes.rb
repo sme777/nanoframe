@@ -28,7 +28,7 @@ Rails.application.routes.draw do
   get '/synthesizer/:user/:id/visualize' => 'generators#user_visualize'
   post '/synthesizer/:id/visualize' => 'generators#visualize', as: 'generate_routing'
   post '/synthesizer/:id/comment' => 'comments#create', as: 'comment'
-  post '/synthesizer/:id/remove_comment' => 'comments#destroy', as: 'remove_comment'
+  post '/synthesizer/:id/:comment_id/remove_comment' => 'comments#destroy', as: 'remove_comment'
   get '/synthesizer/:id/async_visualize' => 'generators#async_visualize', as: 'generate_async_routing'
   get '/synthesizer/:id/visualize' => 'generators#visualize'
   post '/synthesizer/:id/update_generator' => 'generators#update_generator', as: 'update_generator'

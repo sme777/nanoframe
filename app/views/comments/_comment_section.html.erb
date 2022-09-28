@@ -1,0 +1,7 @@
+<%= turbo_frame_tag :comment_section do %>
+    <% @generator.comments.each do |comment| %>
+        <%= turbo_frame_tag comment do %>
+            <%= render partial: "comments/comment", locals: {comment: comment} %>
+        <% end %>
+    <% end %>
+<% end %>

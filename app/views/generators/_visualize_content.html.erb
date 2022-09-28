@@ -240,12 +240,9 @@
         </ul>
       </div>
       <div class="card-body">
-        <% @generator.comments.each do |comment| %>
-            <%= render partial: "comment", locals: {comment: comment} %>
-        <% end %>
+        <%= render "comments/comment_section" %>
       </div>
-        <%# <%= turbo_frame_tag :generator_comment, src: comment_path, loading: :lazy do %>
-        <%= form_with(url: comment_path, method: :post, data: { turbo: false }) do |f| %>
+        <%= form_with(url: comment_path, method: :post, data: { turbo: false, turbo_frame: "comment_section"}) do |f| %>
         <div class="container-textarea-container mb-3">
             <% if !@current_user.nil? %>
                 <%= f.hidden_field "user_id", value: @current_user.id %>
