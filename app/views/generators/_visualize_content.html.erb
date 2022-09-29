@@ -233,7 +233,11 @@
 <div class="generator-description-container">
     <div class="card">
         <div class="card-body">
-            <h5 class="card-title"><i class="fa-sharp fa-solid fa-code-fork"></i><%= @generator.shape %></h5>
+            <% if @generator.fork %>
+                <h5 class="card-title"><i class="fa-sharp fa-solid fa-code-fork"></i><%= @generator.shape %></h5>
+            <% else %>
+                <h5 class="card-title"><i class="fa-sharp fa-solid fa-code-pull-request"></i><%= @generator.shape %></h5>
+            <% end %>
             <hr>
             <p class="card-text text-secondary">The author of this synth has not provided description.</p>
             <%= form_with(url: clone_path(@generator.id), method: :post, id: "clone_generator_form", data: {turbo: false}) do |f| %>
