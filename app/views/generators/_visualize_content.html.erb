@@ -1,153 +1,156 @@
 <div class="outer-regenerate-container">
     <div class="generator-sidebar" data-bs-spy="scroll" data-bs-offset="0" tabindex="0">
         <div class="generator-sidebar-content">
-        <div class="regenerate-container">
+            <div class="regenerate-container">
 
-            <div class="info-container">
-                <div class="row box-state-label">
-                    <h6>Info</h6>
-                </div>
-
-                <div class="row box-state-container">
-                    <div class="form-floating nopad-container">
-                        <input type="text" class="form-control" id="dimension_info"
-                            value="<%= @generator.get_dimensions %>" disabled>
-                        <label for="dimension_info">Dimensions</label>
+                <div class="info-container">
+                    <div class="row box-state-label">
+                        <h6>Info</h6>
                     </div>
-                </div>
 
-                <div class="row box-state-container">
-                    <div class="form-floating nopad-container">
-                        <input type="text" class="form-control" id="vertex_cut_info" value="<%= @vertex_cuts %>"
-                            disabled>
-                        <label for="vertex_cut_info">Vertex Cuts</label>
+                    <div class="row box-state-container">
+                        <div class="form-floating nopad-container">
+                            <input type="text" class="form-control" id="dimension_info"
+                                value="<%= @generator.get_dimensions %>" disabled>
+                            <label for="dimension_info">Dimensions</label>
+                        </div>
                     </div>
-                </div>
 
-                <div class="row box-state-container">
-                    <div class="form-floating nopad-container">
-                        <input type="text" class="form-control" id="sequence_base_info" value="A" disabled>
-                        <label for="dimension_info">Base</label>
+                    <div class="row box-state-container">
+                        <div class="form-floating nopad-container">
+                            <input type="text" class="form-control" id="vertex_cut_info" value="<%= @vertex_cuts %>"
+                                disabled>
+                            <label for="vertex_cut_info">Vertex Cuts</label>
+                        </div>
                     </div>
-                </div>
 
-                <div class="row box-state-container">
-                    <div class="form-floating nopad-container">
-                        <input type="text" class="form-control" id="sequence_id_info" value="1" disabled>
-                        <label for="dimension_info">Position</label>
+                    <div class="row box-state-container">
+                        <div class="form-floating nopad-container">
+                            <input type="text" class="form-control" id="sequence_base_info" value="A" disabled>
+                            <label for="dimension_info">Base</label>
+                        </div>
                     </div>
-                </div>
 
-                <div class="row box-state-container">
-                    <div class="form-floating nopad-container">
-                        <input type="text" class="form-control" id="shape_side_info"
-                            value="<%= @generator.get_dimensions %>" disabled>
-                        <label for="dimension_info">Side</label>
+                    <div class="row box-state-container">
+                        <div class="form-floating nopad-container">
+                            <input type="text" class="form-control" id="sequence_id_info" value="1" disabled>
+                            <label for="dimension_info">Position</label>
+                        </div>
                     </div>
+
+                    <div class="row box-state-container">
+                        <div class="form-floating nopad-container">
+                            <input type="text" class="form-control" id="shape_side_info"
+                                value="<%= @generator.get_dimensions %>" disabled>
+                            <label for="dimension_info">Side</label>
+                        </div>
+                    </div>
+
                 </div>
 
-            </div>
+                <div class="actions-container">
 
-            <div class="actions-container">
-
-                <div class="row box-state-label">
-                    <h6>Actions</h6>
-                </div>
-                <div class="row box-state-container">
-                    <%= form_with(url: "/synthesizer/#{@generator.id}/visualize", method: :post, data: { turbo: false }) do |f| %>
-                    <%= hidden_field_tag 'regenerate', true %>
+                    <div class="row box-state-label">
+                        <h6>Actions</h6>
+                    </div>
+                    <div class="row box-state-container">
+                        <%= form_with(url: "/synthesizer/#{@generator.id}/visualize", method: :post, data: { turbo: false }) do |f| %>
+                        <%= hidden_field_tag 'regenerate', true %>
                         <%= button_tag "Regenerate Routing", class: "btn btn-outline-secondary w-100 regenerate-button", disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id ? true : false) %>
+                        <% end %>
+                    </div>
+                    <div class="box-state-container">
+                        <button id="box-state" class="btn btn-outline-secondary w-100">Open Form</button>
+                    </div>
+                    <div class="box-state-container">
+                        <button id="box-state-staples" class="btn btn-outline-secondary w-100">Show Staples</button><br>
+                    </div>
+
+                    <div class="box-state-container">
+                        <button id="box-stable-table" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#staple_table_container" aria-expanded="false"
+                            aria-controls="staple_table_container" class="btn btn-outline-secondary w-100">View Sequence
+                            Table</button>
+                    </div>
+
+                    <div class="box-state-container">
+                        <button id="box-state-zoom" class="btn btn-outline-secondary w-100">Enable Zoom</button><br>
+                    </div>
+
+                    <div class="box-state-container">
+                        <button id="box-state-add-particle" class="btn btn-outline-secondary w-100">Add Particle</button><br>
+                    </div>
+
+                    <div class="box-state-container">
+                        <button id="box-state-viewport" class="btn btn-outline-secondary w-100">Change Viewport</button><br>
+                    </div>
+
+                    <div class="box-state-container">
+                        <div class="dropdown download-file-container">
+                            <button class="btn btn-outline-secondary dropdown-toggle file-dropdown-menu w-100"
+                                type="button" id="download-file-dropdown" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                Download Files
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-dark file-dropdown-menu">
+                                <% @supported_files.each do |file| %>
+                                <li>
+                                    <%= form_with(url: "/synthesizer/#{@generator.id}/visualize", method: :post, data: { turbo: false }) do |f| %>
+                                    <%= hidden_field_tag 'type', file %>
+                                    <%= button_tag file, class: "dropdown-item"%>
+                                    <% end %>
+
+                                </li>
+
+                                <% end %>
+                                <li id="gltf_export" class="dropdown-item">
+                                    GLTF
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modifications-container">
+
+
+                    <%= form_with(url: update_generator_path(@generator.id), method: :post, data: { turbo: false }) do |f| %>
+                    <div class="row box-state-label">
+                        <h6>Modifications</h6>
+                    </div>
+                    <div class="row box-state-container">
+                        <div class="form-floating nopad-container">
+                            <%= f.text_field :bridge_length, type: "number", class: "form-control", value: @generator.bridge_length, disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id ? true : false) %>
+                            <%= f.label "Bridge Length", for: "bridge_length", class: "form-label"%>
+                        </div>
+                    </div>
+
+
+                    <div class="row box-state-container">
+                        <div class="form-floating nopad-container">
+                            <%= f.select :color_palette, options_for_select(@color_palettes, selected: @generator.color_palette), {}, {class: "form-select", disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id) ? true : false  } %>
+                            <%= f.label "Color Palette", for: "color_palette", class: "form-label"%>
+                        </div>
+                    </div>
+                    <div class="box-state-container">
+
+                        <%= f.submit "Update", class: "btn w-100 btn-outline-dark", disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id ? true : false) %>
+                    </div>
                     <% end %>
                 </div>
-                <div class="box-state-container">
-                    <button id="box-state" class="btn btn-outline-secondary w-100">Open Form</button>
-                </div>
-                <div class="box-state-container">
-                    <button id="box-state-staples" class="btn btn-outline-secondary w-100">Show Staples</button><br>
-                </div>
-
-                <div class="box-state-container">
-                    <button id="box-stable-table" type="button" data-bs-toggle="collapse" data-bs-target="#staple_table_container" 
-                    aria-expanded="false" aria-controls="staple_table_container" class="btn btn-outline-secondary w-100">View Sequence Table</button>
-                </div>
-
-                <div class="box-state-container">
-                    <button id="box-state-zoom" class="btn btn-outline-secondary w-100">Enable Zoom</button><br>
-                </div>
-
-                <div class="box-state-container">
-                    <button id="box-state-add-particle" class="btn btn-outline-secondary w-100">Add Particle</button><br>
-                </div>
-
-                <div class="box-state-container">
-                    <button id="box-state-viewport" class="btn btn-outline-secondary w-100">Change Viewport</button><br>
-                </div>
-
-                <div class="box-state-container">
-                    <div class="dropdown download-file-container">
-                        <button class="btn btn-outline-secondary dropdown-toggle file-dropdown-menu w-100" type="button"
-                            id="download-file-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            Download Files
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-dark file-dropdown-menu">
-                            <% @supported_files.each do |file| %>
-                            <li>
-                                <%= form_with(url: "/synthesizer/#{@generator.id}/visualize", method: :post, data: { turbo: false }) do |f| %>
-                                <%= hidden_field_tag 'type', file %>
-                                <%= button_tag file, class: "dropdown-item"%>
-                                <% end %>
-
-                            </li>
-
-                            <% end %>
-                            <li id="gltf_export" class="dropdown-item">
-                                GLTF
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
             </div>
-            <div class="modifications-container">
-
-
-                <%= form_with(url: update_generator_path(@generator.id), method: :post, data: { turbo: false }) do |f| %>
-                <div class="row box-state-label">
-                    <h6>Modifications</h6>
-                </div>
-                <div class="row box-state-container">
-                    <div class="form-floating nopad-container">
-                        <%= f.text_field :bridge_length, type: "number", class: "form-control", value: @generator.bridge_length, disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id ? true : false) %>
-                        <%= f.label "Bridge Length", for: "bridge_length", class: "form-label"%>
-                    </div>
-                </div>
-
-
-                <div class="row box-state-container">
-                    <div class="form-floating nopad-container">
-                        <%= f.select :color_palette, options_for_select(@color_palettes, selected: @generator.color_palette), {}, {class: "form-select", disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id) ? true : false  } %>
-                        <%= f.label "Color Palette", for: "color_palette", class: "form-label"%>
-                    </div>
-                </div>
-                <div class="box-state-container">
-                
-                    <%= f.submit "Update", class: "btn w-100 btn-outline-dark", disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id ? true : false) %>
-                </div>
-                <% end %>
-            </div>
-        </div>
         </div>
     </div>
 </div>
 
 
 <script type="text/javascript">
-    var scaffoldPositions = <%= @positions %>;
-    var scaffoldColors = <%= @colors %>;
+    var scaffoldPositions = <%= @positions %> ;
+    var scaffoldColors = <%= @colors %> ;
     var scaffold = "<%= @scaffold %>";
-    var start = <%= @start %>;
-    var end = <%= @end %>;
-    var staples = <%= @staples.to_json.html_safe %>;
+    var start = <%= @start %> ;
+    var end = <%= @end %> ;
+    var staples = <%= @staples.to_json.html_safe %> ;
     var signOutBtn = null;
     var generatorSize = null;
     var boxState = 1;
@@ -186,8 +189,8 @@
     </div>
 </div>
 
-  <div class="add-particle-container">
-        <div class="add-particle-wrapper">
+<div class="add-particle-container">
+    <div class="add-particle-wrapper">
         <div class="add-particle-close-wrapper">
             <span id="close-icon-wrapper"><i class="fa-solid fa-xmark"></i></span>
         </div>
@@ -211,7 +214,7 @@
             <span class="input-group-text w-25">Height</span>
             <input type="text" class="form-control height-field" placeholder="45 nm">
         </div>
-        
+
         <div class="input-group add-particle-group depth-group">
             <span class="input-group-text w-25">Depth</span>
             <input type="text" class="form-control depth-field" placeholder="45 nm">
@@ -223,34 +226,47 @@
         </div>
 
         <div class="add-particle-btn-container add-particle-group">
-          <button id="add-particle-btn" class="btn btn-dark w-100">Add Particle</button>
+            <button id="add-particle-btn" class="btn btn-dark w-100">Add Particle</button>
         </div>
     </div>
-  </div>
+</div>
+<div class="generator-description-container">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title"><i class="fa-sharp fa-solid fa-code-fork"></i><%= @generator.shape %></h5>
+            <hr>
+            <p class="card-text text-secondary">The author of this synth has not provided description.</p>
+            <%= form_with(url: clone_path(@generator.id), method: :post, id: "clone_generator_form", data: {turbo: false}) do |f| %>
+                <%= f.submit "Clone Synth", id: "clone_generator_button", class: "btn btn-outline-dark" %>
+            <% end %>
+        </div>
+    </div>
+</div>
 <div id="comments" class="comment-section-container">
-      <div class="card">
-      <div class="card-header">
-        <ul class="nav nav-tabs card-header-tabs">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="true" href="#comments">Comments</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#likes">Likes</a>
-          </li>
-        </ul>
-      </div>
-      <div class="card-body">
-        <%= render "comments/comment_section" %>
-      </div>
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="true" href="#comments">Comments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#likes">Likes</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <%= render "comments/comment_section" %>
+        </div>
         <%= form_with(url: comment_path, method: :post, id: "comment_post_form", data: { turbo: false, turbo_frame: "comment_section"}) do |f| %>
         <div class="container-textarea-container mb-3">
             <% if !@current_user.nil? %>
-                <%= f.hidden_field "user_id", value: @current_user.id %>
+            <%= f.hidden_field "user_id", value: @current_user.id %>
             <% end %>
             <%= f.text_area "content", id: "comment_post_textarea", class: "form-control", rows: "3", placeholder: "Type your comment here...", disabled: @current_user.nil? ? true : false %>
         </div>
         <div class="comment-post-container">
-            <button value=<%= "#{@generator.id}" %> class="btn btn-default w-25" <%= "disabled" if @current_user.nil?%>>Like Synth</button>
+            <button value=<%= "#{@generator.id}" %> class="btn btn-default w-25"
+                <%= "disabled" if @current_user.nil?%>>Like Synth</button>
             <%= f.submit "Comment", id: "comment_post_button", class: "btn btn-dark w-25", disabled: @current_user.nil? ? true : false%>
         </div>
         <% end %>

@@ -762,8 +762,10 @@ td{
 }
 
 .comment-section-container {
-  padding: 5% 2%;
-  // padding-bottom: ;
+  padding-right: 2%;
+  padding-left: 2%;
+  padding-top: 3%;
+  padding-bottom: 5%;
 }
 
 .container-textarea-container {
@@ -810,4 +812,10 @@ td{
   // float: right;
   // justify-content: right;
   // align-items: right;
+}
+
+.generator-description-container {
+  padding-top: 2%;
+  padding-right: 2%;
+  padding-left: 2%;
 }

@@ -14,7 +14,7 @@
                 </div>
             </div>
             <div class="col-md-6 comment-reaction-container">
-                <% if comment.user.id == @current_user.id %>
+                <% if !!@current_user && comment.user.id == @current_user.id %>
                 <div class="row">
                  <ul class="list-group list-group-flush comment-edit-list-group">
                     <li class="dashboard-block list-group-item">

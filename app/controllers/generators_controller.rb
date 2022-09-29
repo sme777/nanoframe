@@ -94,6 +94,11 @@ class GeneratorsController < ApplicationController
     @supported_files = Generator.supported_files
   end
 
+  def clone
+    @cloned_generator = Generator.create(@generator.attributes.except("id"))
+    redirect_to "/synthesizer/#{@cloned_generator.id}/visualize"
+  end
+
   def download
     type = params[:type]
     unless type.nil?

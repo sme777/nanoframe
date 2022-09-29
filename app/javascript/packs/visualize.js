@@ -461,6 +461,7 @@ tableToggler.addEventListener("click", () => {
 });
 
 particleToggler.addEventListener("click", () => {
+  console.log(particleToggler.innerHTML)
   if (particleToggler.innerHTML === "Add Particle") {
     document.querySelector(".add-particle-container").style.display = "block";
     document.querySelector('.add-particle-container').setAttribute("style", "display:block");
