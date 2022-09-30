@@ -650,3 +650,22 @@ function save(blob, filename) {
 
 document.querySelector("#comment_post_form").reset();
 
+const commentsTab = document.querySelector("#comments_tab_button");
+const likesTab = document.querySelector("#likes_tab_button");
+
+commentsTab.addEventListener("click", () => {
+  if (!commentsTab.classList.contains("active")) {
+    commentsTab.classList.add("active");
+    likesTab.classList.remove("active");
+    document.querySelector("#comment_post_form").style.display = 'block';
+  }
+});
+
+likesTab.addEventListener("click", () => {
+  if (!likesTab.classList.contains("active")) {
+    likesTab.classList.add("active");
+    commentsTab.classList.remove("active");
+    document.querySelector("#comment_post_form").style.display = 'none';
+  }
+});
+

@@ -28,6 +28,8 @@ Rails.application.routes.draw do
   get '/synthesizer/:user/:id/visualize' => 'generators#user_visualize'
   post '/synthesizer/:id/visualize' => 'generators#visualize', as: 'generate_routing'
   post '/synthesizer/:id/comment' => 'comments#create', as: 'comment'
+  get '/synthesizer/:id/comment_tab' => 'comments#comment_tab', as: 'comment_tab'
+  get '/synthesizer/:id/like_tab' => 'comments#like_tab', as: 'like_tab'
   post '/synthesizer/:id/:comment_id/remove_comment' => 'comments#destroy', as: 'remove_comment'
   post '/synthesizer/:id/clone' => 'generators#clone', as: 'clone'
   get '/synthesizer/:id/async_visualize' => 'generators#async_visualize', as: 'generate_async_routing'

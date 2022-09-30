@@ -251,17 +251,23 @@
         <div class="card-header">
             <ul class="nav nav-tabs card-header-tabs">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="true" href="#comments">Comments</a>
+                    <%= form_with(url: comment_tab_path, method: :get, id: "comment_tab", data: { turbo: false, turbo_frame: "content_tab"}) do |f| %>
+                        <%= f.button "Comments", class: "nav-link active", id: "comments_tab_button" %>
+                    <% end %>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#likes">Likes</a>
+                    <%= form_with(url: like_tab_path, method: :get, id: "like_tab", data: { turbo: false, turbo_frame: "content_tab"}) do |f| %>
+                        <%= f.button "Likes", class: "nav-link", id: "likes_tab_button" %>
+                    <% end %>
                 </li>
             </ul>
         </div>
         <div class="card-body">
+        <%= turbo_frame_tag :content_tab do %>
             <%= render "comments/comment_section" %>
+        <% end %>
         </div>
-        <%= form_with(url: comment_path, method: :post, id: "comment_post_form", data: { turbo: false, turbo_frame: "comment_section"}) do |f| %>
+        <%= form_with(url: comment_path, method: :post, id: "comment_post_form", data: { turbo: false, turbo_frame: "content_tab"}) do |f| %>
         <div class="container-textarea-container mb-3">
             <% if !@current_user.nil? %>
             <%= f.hidden_field "user_id", value: @current_user.id %>
@@ -269,8 +275,6 @@
             <%= f.text_area "content", id: "comment_post_textarea", class: "form-control", rows: "3", placeholder: "Type your comment here...", disabled: @current_user.nil? ? true : false %>
         </div>
         <div class="comment-post-container">
-            <button value=<%= "#{@generator.id}" %> class="btn btn-default w-25"
-                <%= "disabled" if @current_user.nil?%>>Like Synth</button>
             <%= f.submit "Comment", id: "comment_post_button", class: "btn btn-dark w-25", disabled: @current_user.nil? ? true : false%>
         </div>
         <% end %>

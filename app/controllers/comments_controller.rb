@@ -9,7 +9,7 @@ class CommentsController < ApplicationController
     end
 
     def update
-        
+
     end
 
     def destroy
@@ -18,5 +18,15 @@ class CommentsController < ApplicationController
         end
         @generator = Generator.find_by(id: params[:id])
         render partial: "comment_section"
+    end
+
+    def comment_tab
+        @generator = Generator.find_by(id: params[:id])
+        render partial: "comment_section"
+    end
+
+    def like_tab
+        @generator = Generator.find_by(id: params[:id])
+        render partial: "like_section"
     end
 end
