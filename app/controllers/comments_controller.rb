@@ -24,9 +24,4 @@ class CommentsController < ApplicationController
         @generator = Generator.find_by(id: params[:id])
         render partial: "comment_section"
     end
-
-    def like_tab
-        @generator = Generator.find_by(id: params[:id])
-        render partial: "like_section"
-    end
 end

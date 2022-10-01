@@ -1,0 +1,16 @@
+<div class="like-element-container">
+    <div class="row">
+        <div class="like-profile-container col-md-4">
+            <%= image_tag("default-profile-pic.png", class: "comment-user-image")%>
+
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+                <h6 class="author-name"><%= like.user.name %></h6>
+            </div>
+            <div class="row">
+                <p class="text-secondary"><i><%= like.user.username %></i></p> 
+            </div>
+        </div>
+    </div>
+</div>

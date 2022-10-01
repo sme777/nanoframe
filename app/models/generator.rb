@@ -8,6 +8,7 @@ require 'oxdna_maker'
 
 class Generator < ApplicationRecord
   has_many :comments
+  has_many :likes
   
   def self.generate_objects(step_size, loopout_length, min_len, max_len, scaff_length)
     min_len = min_len.to_i

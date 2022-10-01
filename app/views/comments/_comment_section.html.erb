@@ -2,4 +2,15 @@
     <% @generator.comments.each do |comment| %>
         <%= render partial: "comments/comment", locals: {comment: comment} %>
     <% end %>
+    <%= form_with(url: comment_path, method: :post, id: "comment_post_form" ) do |f| %>
+    <div class="container-textarea-container mb-3">
+        <% if !@current_user.nil? %>
+        <%= f.hidden_field "user_id", value: @current_user.id %>
+        <% end %>
+        <%= f.text_area "content", id: "comment_post_textarea", class: "form-control", rows: "3", placeholder: "Type your comment here...", disabled: @current_user.nil? ? true : false %>
+    </div>
+    <div class="comment-post-container">
+        <%= f.submit "Comment", id: "comment_post_button", class: "btn btn-dark w-25", disabled: @current_user.nil? ? true : false %>
+    </div>
+    <% end %>
 <% end %>
