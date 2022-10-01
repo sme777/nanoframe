@@ -1,9 +1,7 @@
 class LikesController < ApplicationController
     before_action :find_generator, :has_liked
-    # after_action :render_turboframe, only: [:create, :destory, :like_tab]
 
     def create
-        # byebug
         if !!@current_user && !@generator.nil?
             @already_liked = !@generator.likes.filter {|like| like.user_id == @current_user.id}.empty?
             if !@already_liked
