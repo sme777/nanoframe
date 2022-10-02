@@ -41,7 +41,7 @@ Rails.application.routes.draw do
   get '/synthesizer/:id/cancel_update_description' => 'generators#cancel_update_description', as: 'cancel_update_description'
   get '/synthesizer/:id/edit_name' => 'generators#edit_name', as: 'edit_name'
   post '/synthesizer/:id/update_name' => 'generators#update_name', as: 'update_name'
-  get '/synthesizer/:id/cancel_update_name' => 'generators#edit_name', as: 'cancel_update_name'
+  get '/synthesizer/:id/cancel_update_name' => 'generators#cancel_update_name', as: 'cancel_update_name'
   post '/synthesizer/:id/clone' => 'generators#clone', as: 'clone'
   get '/synthesizer/:id/async_visualize' => 'generators#async_visualize', as: 'generate_async_routing'
   get '/synthesizer/:id/visualize' => 'generators#visualize'

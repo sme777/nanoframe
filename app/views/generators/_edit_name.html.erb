@@ -1,17 +1,26 @@
 <%= turbo_frame_tag :name_field do %>
     <div class="row">
         <div class="col-md-6">
-            <%= form_with(url: update_name_path(@generator.id), method: :post) do |f| %>
-                <%= f.text_area "name_content", class: "form-control", rows: "1", value: (@generator.name || @generator.shape) %>
-                <%= f.button "Save", id: "update_name_button", class: "btn btn-outline-dark" %>
-            <% end %>
-        </div>
-        <div class="edit-tools-container col-md-6">
-            <%= form_with(url: edit_name_path(@generator.id), method: :get) do |f| %>
-                <%= f.button "", class: "clean-button" do %>
-                    <i class="fa-solid fa-pen-to-square"></i>
+                <%= form_with(url: update_name_path(@generator.id), class: "row gy-2 gx-3 align-items-center", method: :post) do |f| %>
+                    <div class="col-auto">
+                        <%= f.text_field "name_content", class: "form-control", rows: "1", value: (@generator.name || @generator.shape) %>
+                    </div>
+                    <div class="col-auto">
+                        <%= f.button "Save", id: "update_name_button", class: "btn btn-outline-dark" %>
+                    </div>
+                    <div class="col-auto">
+                        <%= link_to "Cancel", cancel_update_name_path(@generator.id), class: "btn btn-dark" %>
+                    </div>
                 <% end %>
-            <% end %>
         </div>
+        <% if !@current_user.nil? %>
+            <div class="edit-tools-container col-md-6">
+                <%= form_with(url: edit_name_path(@generator.id), method: :get) do |f| %>
+                    <%= f.button "", class: "clean-button" do %>
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    <% end %>
+                <% end %>
+            </div>
+        <% end %>
     </div>
 <% end %>

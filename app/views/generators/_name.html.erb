@@ -7,12 +7,14 @@
                 <h5 class="card-title"><i class="fa-sharp fa-solid fa-code-pull-request"></i><%= @generator.name || @generator.shape %></h5>
             <% end %>
         </div>
-        <div class="edit-tools-container col-md-6">
-            <%= form_with(url: edit_name_path(@generator.id), method: :get) do |f| %>
-                <%= f.button "", class: "clean-button" do %>
-                    <i class="fa-solid fa-pen-to-square"></i>
+        <% if !@current_user.nil? %>
+            <div class="edit-tools-container col-md-6">
+                <%= form_with(url: edit_name_path(@generator.id), method: :get) do |f| %>
+                    <%= f.button "", class: "clean-button" do %>
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    <% end %>
                 <% end %>
-            <% end %>
-        </div>
+            </div>
+        <% end %>
     </div>
 <% end %>
