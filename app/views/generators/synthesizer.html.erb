@@ -22,13 +22,13 @@
     </div>
     <div class="row misc-synthesizer-container">
         <div class="col-md-6">
-            <a class="btn btn-dark" href="/synthesizer/new"><i class="fa-solid fa-plus"></i>New</a>
+            <a class="btn btn-dominant" href="/synthesizer/new"><i class="fa-solid fa-plus"></i>New</a>
 
         </div>
         <div class="col-md-6">
             <div class="sorting-container">
                 <div class="dropdown">
-                    <button class="btn btn-dark-outline dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                    <button class="btn btn-auxiliary dropdown-toggle" type="button" data-bs-toggle="dropdown"
                         aria-expanded="false">
                         Sort by:
                         <%= (@sort_method == "synthed" || @sort_method.nil?) ? "Newly Synthed" : @sort_method.capitalize %>

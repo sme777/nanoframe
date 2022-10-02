@@ -56,38 +56,38 @@
                     <div class="row box-state-container">
                         <%= form_with(url: "/synthesizer/#{@generator.id}/visualize", method: :post, data: { turbo: false }) do |f| %>
                         <%= hidden_field_tag 'regenerate', true %>
-                        <%= button_tag "Regenerate Routing", class: "btn btn-outline-secondary w-100 regenerate-button", disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id ? true : false) %>
+                        <%= button_tag "Regenerate Routing", class: "btn btn-auxiliary w-100 regenerate-button", disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id ? true : false) %>
                         <% end %>
                     </div>
                     <div class="box-state-container">
-                        <button id="box-state" class="btn btn-outline-secondary w-100">Open Form</button>
+                        <button id="box-state" class="btn btn-auxiliary w-100">Open Form</button>
                     </div>
                     <div class="box-state-container">
-                        <button id="box-state-staples" class="btn btn-outline-secondary w-100">Show Staples</button><br>
+                        <button id="box-state-staples" class="btn btn-auxiliary w-100">Show Staples</button><br>
                     </div>
 
                     <div class="box-state-container">
                         <button id="box-stable-table" type="button" data-bs-toggle="collapse"
                             data-bs-target="#staple_table_container" aria-expanded="false"
-                            aria-controls="staple_table_container" class="btn btn-outline-secondary w-100">View Sequence
+                            aria-controls="staple_table_container" class="btn btn-auxiliary w-100">View Sequence
                             Table</button>
                     </div>
 
                     <div class="box-state-container">
-                        <button id="box-state-zoom" class="btn btn-outline-secondary w-100">Enable Zoom</button><br>
+                        <button id="box-state-zoom" class="btn btn-auxiliary w-100">Enable Zoom</button><br>
                     </div>
 
                     <div class="box-state-container">
-                        <button id="box-state-add-particle" class="btn btn-outline-secondary w-100">Add Particle</button><br>
+                        <button id="box-state-add-particle" class="btn btn-auxiliary w-100">Add Particle</button><br>
                     </div>
 
                     <div class="box-state-container">
-                        <button id="box-state-viewport" class="btn btn-outline-secondary w-100">Change Viewport</button><br>
+                        <button id="box-state-viewport" class="btn btn-auxiliary w-100">Change Viewport</button><br>
                     </div>
 
                     <div class="box-state-container">
                         <div class="dropdown download-file-container">
-                            <button class="btn btn-outline-secondary dropdown-toggle file-dropdown-menu w-100"
+                            <button class="btn btn-auxiliary dropdown-toggle file-dropdown-menu w-100"
                                 type="button" id="download-file-dropdown" data-bs-toggle="dropdown"
                                 aria-expanded="false">
                                 Download Files
@@ -134,7 +134,7 @@
                     </div>
                     <div class="box-state-container">
 
-                        <%= f.submit "Update", class: "btn w-100 btn-outline-dark", disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id ? true : false) %>
+                        <%= f.submit "Update", class: "btn w-100 btn-dominant", disabled: (@current_user.nil? || @current_user.id.to_s != @generator.user_id ? true : false) %>
                     </div>
                     <% end %>
                 </div>
@@ -242,7 +242,7 @@
             </div>
             
             <%= form_with(url: clone_path(@generator.id), method: :post, id: "clone_generator_form", data: {turbo: false}) do |f| %>
-                <%= f.submit "Clone Synth", id: "clone_generator_button", class: "btn btn-outline-dark" %>
+                <%= f.submit "Clone Synth", id: "clone_generator_button", class: "btn btn-auxiliary" %>
             <% end %>
         </div>
     </div>

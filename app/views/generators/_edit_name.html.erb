@@ -6,10 +6,10 @@
                         <%= f.text_field "name_content", class: "form-control", rows: "1", value: (@generator.name || @generator.shape) %>
                     </div>
                     <div class="col-auto">
-                        <%= f.button "Save", id: "update_name_button", class: "btn btn-outline-dark" %>
+                        <%= f.button "Save", id: "update_name_button", class: "btn btn-auxiliary" %>
                     </div>
                     <div class="col-auto">
-                        <%= link_to "Cancel", cancel_update_name_path(@generator.id), class: "btn btn-dark" %>
+                        <%= link_to "Cancel", cancel_update_name_path(@generator.id), class: "btn btn-dominant" %>
                     </div>
                 <% end %>
         </div>

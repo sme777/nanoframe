@@ -798,10 +798,12 @@ td{
 }
 
 .comment-reaction-container {
+  padding: 0 !important;
   text-align: right;
 }
 
 .comment-edit-list-group {
+  padding: 0 !important;
   // margin-left: auto;
   // float: right;
   // justify-content: right;
@@ -816,5 +818,9 @@ td{
 
 .edit-tools-container {
   text-align: right;
+}
+
+.generator-description-text-container {
+  padding-bottom: 1%;
 }
 

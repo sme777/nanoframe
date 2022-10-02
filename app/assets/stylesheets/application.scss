@@ -13,4 +13,33 @@
  *= require_tree .
  *= require_self
  */
+
+$predominant: #222831;
+$dominant: #393E46;
+$preauxiliary: #C9D6DF;
+$auxiliary: #F0F5F9;
+
+.btn-dominant {
+    border-color: $dominant;
+    background-color: $dominant;
+    color: $auxiliary;
+}
+
+.btn-dominant:hover {
+    border-color: $predominant;
+    background-color: $predominant;
+    color: $auxiliary;
+}
+
+.btn-auxiliary {
+    border-color: $predominant;
+    background-color: $auxiliary;
+    color: $predominant;
+}
+
+.btn-auxiliary:hover {
+    border-color: $predominant;
+    background-color: $preauxiliary;
+    color: $predominant;
+}
  

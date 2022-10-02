@@ -10,7 +10,7 @@
         <%= f.text_area "content", id: "comment_post_textarea", class: "form-control", rows: "3", placeholder: "Type your comment here...", disabled: @current_user.nil? ? true : false %>
     </div>
     <div class="comment-post-container">
-        <%= f.submit "Comment", id: "comment_post_button", class: "btn btn-dark w-25", disabled: @current_user.nil? ? true : false %>
+        <%= f.submit "Comment", id: "comment_post_button", class: "btn btn-dominant w-25", disabled: @current_user.nil? ? true : false %>
     </div>
     <% end %>
 <% end %>

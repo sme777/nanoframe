@@ -14,9 +14,9 @@
     <%= form_with(url: (@already_liked ? dislike_path(@generator.id, @like.id) : like_path(@generator.id)), method: :post, id: "like_post_form") do |f| %>
         <div class="like-post-container">
             <% if @already_liked %>
-                <%= f.submit "Dislike Synth", id: "dislike_post_button", class: "btn btn-dark w-25" %>
+                <%= f.submit "Dislike Synth", id: "dislike_post_button", class: "btn btn-dominant w-25" %>
             <% else %>
-                <%= f.submit "Like Synth", id: "like_post_button", class: "btn btn-dark w-25", disabled: @current_user.nil? ? true : false %>
+                <%= f.submit "Like Synth", id: "like_post_button", class: "btn btn-dominant w-25", disabled: @current_user.nil? ? true : false %>
             <% end %>
         </div>
     <% end %>

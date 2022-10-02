@@ -18,7 +18,7 @@
         <input class="file-upload" type="file" accept="image/*" />
       </div>
       <div class="signout-link-container">
-        <a class="btn btn-default" id="signOutButton" href="/signout">Log Out <i
+        <a class="btn btn-auxiliary" id="signOutButton" href="/signout">Log Out <i
             class="fa-solid fa-arrow-right-to-bracket"></i></a>
       </div>
   </div>
@@ -30,7 +30,7 @@
 
   <div class="sorting-container">
     <div class="dropdown">
-      <button class="btn btn-dark dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <button class="btn btn-dominant dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
         Sort by: Public
       </button>
       <ul class="dropdown-menu" style="">
@@ -79,7 +79,7 @@
           </div>
           <div>
             <div class="log-in-container">
-              <button class="btn btn-lg btn-dark w-100 p-2" type="submit">Log In</button>
+              <button class="btn btn-lg btn-dominant w-100 p-2" type="submit">Log In</button>
             </div>
             <div class="forgot-password-container">
               <a href="">Forgot Password?</a>
@@ -109,7 +109,7 @@
         </div>
         <%= submit_tag "", class: "invisible", id: "github-sign-in" %>
         <% end %>
-        <a id="signup-btn" class="btn btn-lg btn-outline-dark w-50">Sign Up</a>
+        <a id="signup-btn" class="btn btn-lg btn-auxiliary w-50">Sign Up</a>
       </div>
     </div>
 
@@ -155,7 +155,7 @@
             name="user[password]">
         </div>
         <div class="sign-up-btn-container">
-          <button id="signUpSubmit" class="btn btn-dark w-50" type="submit">Sign Up</button>
+          <button id="signUpSubmit" class="btn btn-dominant w-50" type="submit">Sign Up</button>
         </div>
 
       </form>

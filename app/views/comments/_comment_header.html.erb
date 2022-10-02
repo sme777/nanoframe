@@ -17,7 +17,7 @@
                 <% if !!@current_user && comment.user.id == @current_user.id %>
                 <div class="row">
                  <ul class="list-group list-group-flush comment-edit-list-group">
-                    <li class="dashboard-block list-group-item">
+                    <li class="dashboard-block list-group-item edit-tools">
                     <%= form_with(url: edit_comment_path(@generator.id, comment.id), method: :get) do |f| %>
                         <div class="edit-comment-container">
                             <%= f.button("", class: "edit-comment-icon input-group-text") do %>
@@ -43,12 +43,12 @@
             <%= form_with(url: update_comment_path(@generator.id, comment.id)) do |f| %>
                 <%= f.text_area "comment_content", class: "form-control", rows: "3", value: comment.content %>
                 <div class="update-comment-button-container">
-                    <%= f.submit "Save", id: "update_comment_button", class: "btn btn-outline-dark" %>
+                    <%= f.submit "Save", id: "update_comment_button", class: "btn btn-auxiliary" %>
                 </div>
             <% end %>
             <%= form_with(url: cancel_update_comment_path(@generator.id, comment.id), method: :get) do |f| %>
                 <div class="cancel-update-comment-button-container">
-                    <%= f.submit "Cancel", id: "cancel_comment_update_button", class: "btn btn-dark" %>
+                    <%= f.submit "Cancel", id: "cancel_comment_update_button", class: "btn btn-dominant" %>
                 </div>
             <% end %>
         <% else %>
