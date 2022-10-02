@@ -1,0 +1,18 @@
+<%= turbo_frame_tag :description_field do %>
+    <div class="row">
+        <div class="col-md-10">
+            <% if @generator.description.nil? || @generator.description == "" %>
+                <p class="card-text text-secondary">The author of this synth has not provided description.</p>
+            <% else %>
+                <p><%= @generator.description %></p>
+            <% end %>
+        </div>
+        <div class="edit-tools-container col-md-2">
+            <%= form_with(url: edit_description_path(@generator.id), method: :get) do |f| %>
+                <%= f.button "", class: "clean-button" do %>
+                    <i class="fa-solid fa-pen-to-square"></i>
+                <% end %>
+            <% end %>
+        </div>
+    </div>
+<% end %>

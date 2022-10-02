@@ -1,0 +1,18 @@
+<%= turbo_frame_tag :name_field do %>
+    <div class="row">
+        <div class="col-md-6">
+            <% if @generator.fork %>
+                <h5 class="card-title"><i class="fa-sharp fa-solid fa-code-fork"></i><%= @generator.name || @generator.shape %></h5>
+            <% else %>
+                <h5 class="card-title"><i class="fa-sharp fa-solid fa-code-pull-request"></i><%= @generator.name || @generator.shape %></h5>
+            <% end %>
+        </div>
+        <div class="edit-tools-container col-md-6">
+            <%= form_with(url: edit_name_path(@generator.id), method: :get) do |f| %>
+                <%= f.button "", class: "clean-button" do %>
+                    <i class="fa-solid fa-pen-to-square"></i>
+                <% end %>
+            <% end %>
+        </div>
+    </div>
+<% end %>

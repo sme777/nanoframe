@@ -245,6 +245,33 @@ class GeneratorsController < ApplicationController
     end
   end
 
+
+  def edit_name
+    render partial: "edit_name"
+  end
+
+  def update_name
+    @generator.update(name: params[:name_content])
+    render partial: "name"
+  end
+
+  def cancel_update_name
+    render partial: "name"
+  end
+
+  def edit_description
+    render partial: "edit_description"
+  end
+
+  def update_description
+    @generator.update(description: params[:description_content])
+    render partial: "description"
+  end
+
+  def cancel_update_description
+    render partial: "description"
+  end
+
   def compile
     redirect_to '/' if logged_in?
   end
