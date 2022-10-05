@@ -12,11 +12,13 @@
 }
 
 .nanoframe-doc-item:hover {
-    background-color: rgba(255, 0, 0, 0.2);
+    background-color: #00ADB530;
+    // opacity: 0.2;
 }
 
 .nanoframe-doc-selected-item {
-    background-color: rgba(255, 0, 0, 0.2);
+    background-color: #00ADB530;
+    // opacity: ;
 }
 
 .nanoframe-doc-link {
@@ -29,4 +31,31 @@
 
 .page-title-container {
     text-align: center;
+}
+
+.page-body-text {
+    text-align: justify;
+}
+
+.docs-header-link {
+    text-decoration: none;
+    color: #00ADB5;
+}
+
+.docs-header-link:hover {
+    color: #393E46;
+}
+
+.page-body-container {
+    padding: 5% 0;
+}
+
+.page-body-image-container {
+    text-align: center;
+    padding: 1% 0;
+}
+
+.page-code-section {
+    text-align: center;
+    padding: 1% 0;
 }

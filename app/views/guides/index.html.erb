@@ -1,0 +1,26 @@
+<%= stylesheet_link_tag 'application', media: 'all' %>
+<%= render partial: "layouts/nav", locals: {tab: "other"} %>
+
+<div class="row">
+    <div class="docs-sidebar-container col-md-3">
+        <%= render partial: "sidenav", locals: {main: "", section: ""} %>
+    </div>
+    <div class="col-md-9">
+        <div class="page-container">
+            <div class="page-title-container">
+                <h3>NanoFrame Guides</h3>
+            </div>
+            <div class="page-body-container">
+            <p class="page-body-text">
+
+                Welcome to NanoFrame! This portion of the website is intended to give the reader all the neccessary tools
+                to get started synthsyizing with nanoframes. The guides is divided into multiple sections shown on the right sidebar.
+                Throughout the development of our software we prioritized the ease of access and chose to model nanoframe.org in the realm
+                of software as a service; that way you will never have to worry about installation, saving progress, or viewing what other
+                researcher and scientists are up to. Ready to become nanoframe.org poweruser? Start <a href="/guides/home">here</a>.
+            </p>
+            </div>
+        </div>
+    </div>
+</div>
+<%= render "layouts/footer" %>

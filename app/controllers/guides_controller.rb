@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class GuidesController < ApplicationController
+  
+  def index; end
+  
   def home; end
 
   def feed; end

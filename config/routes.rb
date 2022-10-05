@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   get '/profile' => 'users#profile'
   get '/signin' => 'users#sign_in'
   get '/signout' => 'users#sign_out'
-  get '/guides' => redirect('/guides/home')
+  get '/guides' => 'guides#index'
   get '/synthesizer' => redirect('/synthesizer/1')
   get '/playground' => 'playground#index'
 

@@ -11,6 +11,34 @@
                 <h3>Api Keys</h3>
             </div>
             <div class="page-body-container">
+                <p class="page-body-text">
+                    NanoFrame provides and API interface for almost all site functionality. However, before any action can be taken
+                    an API key must be obtained. This is only feasible for users who have registered with nanoframe.org wither through single-sign on
+                    (Github/Google) or registered directly with the site. Once signed in, navigate to home page and look for <i>Generate or Obtain API Keys.</i> 
+                    Each user is restricted to a single API key which has an expiration date set on it. The date is visible on the home page.
+                </p>
+                <p class="page-body-text">
+                    Once an API key is obtained, we recommend users make the following request to validate key activation.
+                </p>
+                <div class="page-code-section">
+                    <code>
+                    <kbd>GET www.nanoframe.org/foo?api=YOUR_API_KEY</kbd>
+                    </code>
+                </div>
+                <p class="page-body-text">If the API key activation was successful, the response should be a single JSON file containing the following entry:<p>
+                <div class="page-code-section">
+                    <code>
+                    <kbd>{"foo": "bar"}</kbd>
+                    </code>
+                </div>
+                <p class="page-body-text">
+                    Any other entry indicates that the API key was either not successful created or is still being activated. We recommend checking back in around 10 minutes.
+                    If the same problem is encountered, retry generating the API key.
+                </p>
+
+                <p class="page-body-text">
+                    Once activation is successful, naviagte to page-specific API action for details.
+                </p>
             </div>
         </div>
     </div>
