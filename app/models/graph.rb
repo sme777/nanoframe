@@ -23,7 +23,8 @@ class Graph
       @scaffold_rotation_labels = graph_hash['scaffold_rotation_labels']
       @points = generator.positions
     else
-      @outgoers = create_outgoers(@shape, @segments)
+      # @outgoers = create_outgoers(@shape, @segments)
+      byebug
       @vertices, @edges = create_vertices_and_edges(@shape)
       if shape.name == 'tetrahedron'
         @template_planes = find_four_planes2(@edges, @outgoers, @vertices)
@@ -72,13 +73,13 @@ class Graph
     @interior_extension_length = generator.interior_extension_length
   end
 
-  def create_outgoers(shape, segments)
-    outgoers = []
-    shape.faces.each do |face|
-      outgoers << face.generate_segmented_vertices(segments)[0].map { |v| v.round(6) }
-    end
-    outgoers
-  end
+  # def create_outgoers(shape, segments)
+  #   outgoers = []
+  #   shape.faces.each do |face|
+  #     outgoers << face.generate_segmented_vertices(segments)[0].map { |v| v.round(6) }
+  #   end
+  #   outgoers
+  # end
 
   def create_vertices_and_edges(shape)
     v = []
@@ -110,8 +111,14 @@ class Graph
 
       end
     else
-      @outgoers.each do |outgoer_group|
-        edges = Routing.get_edges(Routing.connect_vertices(outgoer_group))
+      @outgoers, @corners = [], []
+        shape.faces.each do |face|
+          result = face.generate_segmented_vertices(segments)
+          @outgoers << result[0]
+          @corners << result[1]
+        end
+      @outgoers.each_with_index do |outgoer_group, idx|
+        edges = Routing.find_optimal_edges(outgoer_group, @corners[idx])
         vertices = Routing.get_vertices(edges)
         e << edges
         v << vertices

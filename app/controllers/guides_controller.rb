@@ -12,8 +12,6 @@ class GuidesController < ApplicationController
 
   def scaffolds; end
 
-  def wireframe; end
-
   def dimensions; end
 
   def advanced; end

@@ -57,7 +57,6 @@ Rails.application.routes.draw do
   get '/guides/feed' => 'guides#feed'
   get '/guides/shapes' => 'guides#shapes'
   get '/guides/scaffolds' => 'guides#scaffolds'
-  get '/guides/wireframe' => 'guides#wireframe'
   get '/guides/dimensions' => 'guides#dimensions'
   get '/guides/advanced' => 'guides#advanced'
   get '/guides/canvas_gui' => 'guides#canvas_gui'

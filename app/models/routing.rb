@@ -304,7 +304,7 @@ module Routing
     edges = []
     running_triangles = []
     failures = 0
-    while running_streak < 500
+    while running_streak < 10
 
       connected_edges = Routing.connect_vertices(outgoer_vertices, corners)
       new_vertices, new_edges = Routing.get_edges(connected_edges)
@@ -341,8 +341,8 @@ module Routing
         running_streak += 1
       end
     end
-    byebug
-    [edges, failures]
+    # byebug
+    edges
 
     # edge_visit_map = {}
     # edges.each do |edge|
