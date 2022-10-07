@@ -11,6 +11,52 @@
                 <h3>Advanced</h3>
             </div>
             <div class="page-body-container">
+                <p class="page-body-text">
+                    Everything covered so far is mandatory for generating any nanoframes. In this section, we will cover additional
+                    properties that one can specify for each synthesized nanoframe.
+                </p>
+                <div class="page-body-image-container">
+                    <%= image_tag("guides/advanced_demo.png", class: "page-body-image") %>
+                </div>
+                <h6>Edge Types</h6>
+                <p class="page-body-text">
+                    By default, the helices that pass through a face of the polyhedron are single-bundle. While this saves on how much DNA
+                    is used to synthesize an object of some dimensions, it also makes the structure inherently flexible. We provide the option of choosing
+                    between single-helix, double-helix, and six-helix bundles for edges of any nanoframe.
+                </p>
+                <hr>
+                <h6>Exterior and Interior Extensions</h6>
+                <p class="page-body-text">
+                    A unique property of nanoframes is their ability to self-assemble into larger organized structures and also trap particles within.
+                    These features are enables by exterior and interior extensions which can be disabled if desired. The lengths can be adjusted and a sequence can be uploaded
+                    for cutomizable extension types. We recommend adding extensions caps if any subset of extensions will not be in use, this will reduce the probability of
+                    aggregation. Extension caps are specialized staples that fit perpendicularly to an extension opening at the edge corners of the nanoframe.
+                </p>
+                <hr>
+                <h6>Bond Types</h6>
+                <p class="page-body-text">
+                    Two bond types exist in nanoframes - Zip Bonds and Arm Bonds. Zip Bonds fold on the second base pair and act like zippers. These bond types have two unpaired (TT) nucleotides for flexibility.
+                    Arm bond types on the other hand attached to each other in an anti-parallel fashion, and do not have spare nucleotides for flexibility. 
+                </p>
+                <hr>
+                <h6>Bridge Length</h6>
+                <p class="page-body-text">
+                    A key property of nanoframes is their ability to open under thermal control. For this to occur, an optimal set of boundary edges is computed, and the staples that
+                    fall on these edges are ligated and nicked accordingly. An intersection is defined as the region where the primary movement domain shift from one axis to another. 
+                    For instance, if the scaffold is moving in the <i>x</i> direction and then makes a turn to the <i>y,</i> this is called an intersection. The bridge distance is then 
+                    how many nucleotides are left above equilibrium point.
+                </p>
+                <hr>
+                <h6>Reflection Buffer Length</h6>
+                <p class="page-body-text">
+                    Recall the defition of intersection point. A 90 degree turn is often not an equilibrium point, so to reduce the stress on the strucutre, we include buffer bases that do not
+                    bind to any domain. These buffer length are reflected in the staples and not the scaffold.  
+                </p>
+                <hr>
+                <h6>Color Palette</h6>
+                <p class="page-body-text">
+                    We have provided an option to toggle the color palletes used for nanoframes. These are only for aesthetic purposes, and can be changed later.
+                </p>
             </div>
         </div>
     </div>
