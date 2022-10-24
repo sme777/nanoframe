@@ -1,35 +1,3 @@
-<%
-=begin%>
- <nav class="navbar navbar-expand-custom navbar-mainbg">
-    <a class="navbar-brand navbar-logo" id="navbarDTALogo" href="/">NanoFrame</a>
-    <button class="navbar-toggler" type="button" aria-controls="navbarSupportedContent" aria-expanded="false"
-        aria-label="Toggle navigation">
-        <span class="text-muted"><i class="fas fa-bars text-white"></i></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav ms-auto">
-            <div class="hori-selector">
-                <div class="left"></div>
-                <div class="right"></div>
-            </div>
-            <li class="nav-item <%= "active" if tab=="home"%>">
-                <a class="nav-link" href="/"><i class="fas fa-user"></i>Home</a>
-            </li>
-            <li class="nav-item <%= "active" if tab=="synthesizer"%>">
-                <a class="nav-link" href="/synthesizer"><i class="fas fa-flask"></i>Synthesizer</a>
-            </li>
-            <li class="nav-item <%= "active" if tab=="playground"%>">
-                <a class="nav-link" href="/playground"><i class="fas fa-puzzle-piece"></i>Playground</a>
-            </li>
-            <li class="nav-item <%= "active" if tab=="other"%>">
-                <a class="nav-link" href="/guides"><i class="fas fa-book"></i>Guides</a>
-            </li>
-        </ul>
-    </div>
-</nav> 
-<%
-=end%>
-
 <nav class="navbar navbar-dark bg-dark">
  <a class="navbar-brand navbar-logo" id="navbarDTALogo" href="/">NanoFrame</a>
     <div class="expand-navbar-button-container">

@@ -31,12 +31,17 @@
   <div class="sorting-container">
     <div class="dropdown">
       <button class="btn btn-dominant dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Sort by: Public
+        Sort by: <%= (@sort_method == "synthed" || @sort_method.nil?) ? "Newly Synthed" : @sort_method.capitalize %>
       </button>
-      <ul class="dropdown-menu" style="">
-        <li><button class="dropdown-item" type="button">Author</button></li>
-        <li><button class="dropdown-item" type="button">Popularity</button></li>
-        <li><button class="dropdown-item" type="button">Newly Synthed</button></li>
+      <ul class="dropdown-menu" style="">        
+        <li><a href="/home/<%= @current_page %>?sort_by=popularity"
+                class="dropdown-item" type="button">Popularity</a></li>
+        <li><a href="/home/<%= @current_page %>?sort_by=synthed"
+                class="dropdown-item" type="button">Newly Synthed</a></li>
+        <li><a href="/home/<%= @current_page %>?sort_by=public"
+                class="dropdown-item" type="button">Public First</a></li>
+        <li><a href="/home/<%= @current_page %>?sort_by=private"
+                class="dropdown-item" type="button">Private First</a></li>
       </ul>
     </div>
   </div>
@@ -170,13 +175,13 @@
     <canvas id="homepage-canvas"></canvas>
 
     <div class="public-generators-container">
-      <input type="hidden" id="generator-size" value="<%= @generators.size %>">
-      <% @generators.each_with_index do |item, index| %>
+      <input type="hidden" id="generator-size" value="<%= @home_synths.size %>">
+      <% @home_synths.each_with_index do |item, index| %>
       <%= render partial: "item", locals: {homepageItem: item, index: index}%>
       <% end %>
     </div>
   </div>
-  <%= render partial: "layouts/pages", locals: {tab: "home", rest: ""}%>
+  <%= render partial: "layouts/pages", locals: {tab: "home", rest: "?#{@rest_params}"}%>
   <% end %>
 
   <%= render "layouts/footer"%>

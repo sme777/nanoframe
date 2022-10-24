@@ -40,7 +40,6 @@ class LikesController < ApplicationController
     end
 
     def render_turboframe
-        byebug
         render partial: "like_section"
     end
 end

@@ -221,7 +221,7 @@ class GeneratorsController < ApplicationController
 
   def update_generator
     @generator.update(public: !@generator.public) if params[:visibility]
-    bridge_length = params[:bridge_length].to_i
+    bridge_length = params[:bridge_length].to_i unless params[:bridge_length].nil?
     color_palette = params[:color_palette]
     if (bridge_length.is_a?(Integer) && bridge_length >= 0) && !@generator.is_current_bridge_length(bridge_length)
       @generator.update(bridge_length: bridge_length)

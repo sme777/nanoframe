@@ -24,7 +24,6 @@ class Graph
       @points = generator.positions
     else
       # @outgoers = create_outgoers(@shape, @segments)
-      byebug
       @vertices, @edges = create_vertices_and_edges(@shape)
       if shape.name == 'tetrahedron'
         @template_planes = find_four_planes2(@edges, @outgoers, @vertices)
@@ -178,7 +177,6 @@ class Graph
   end
 
   def find_plane_routing2(edges, outgoers, ingoers)
-    byebug
     total_outgoers = outgoers.length
     taken_outgoers = []
     taken_edges = []

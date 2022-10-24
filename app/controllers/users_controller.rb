@@ -1,36 +1,55 @@
 # frozen_string_literal: true
 
 class UsersController < ApplicationController
+
   def index
-    if params[:type]
-      filter_generators
-    else
-      @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
-      unless @current_user.nil?
-        @first_page = 1
-        @current_page = params[:page].to_i || @first_page
-        @last_page = (@current_user.generators.size / 5.0).ceil
-        if @current_page < @first_page
-          redirect_to "/home/#{@first_page}"
-          return
-        end
+    @current_user = User.find_by(id: session[:user_id]) unless session[:user_id].nil?
+    @rest_params = ""
+    unless @current_user.nil?
+      @sort_method = params[:sort_by]
+      @rest_params += "sort_by=#{@sort_method}" if !!params[:sort_by]
+      search_column, search_direction = sort_to_query(@sort_method || "synthed")
 
-        if @current_page > @last_page && @last_page.positive?
-          redirect_to "/home/#{@last_page}"
-          return
-        end
-
-        @generators = @current_user.generators
-                                   .order(created_at: :desc)
-                                   .paginate(page: @current_page, per_page: 5)
-
+      @first_page = 1
+      @current_page = params[:page].to_i || @first_page
+      @last_page = (@current_user.generators.size / 5.0).ceil
+      if @current_page < @first_page
+        redirect_to "/home/#{@first_page}"
+        return
       end
 
-      @supported_files = Generator.supported_files
+      if @current_page > @last_page && @last_page.positive?
+        redirect_to "/home/#{@last_page}"
+        return
+      end
+      # byebug
+      if search_column == "likes"
+        @home_synths = Generator.left_joins(:likes)
+                                .group(:id)
+                                .order("COUNT(likes.id)")
+      elsif search_column == "public" || search_column == "private"
+        @home_synths = @current_user.generators.sort_by { |synth| (!!synth.public).to_i }
+      else
+        @home_synths = @current_user.generators.sort_by(&:"#{search_column}")
+      end
+      @home_synths = @home_synths.reverse if search_direction == "DESC"
+      @home_synths = @home_synths.paginate(page: @current_page, per_page: 5)
     end
+
+    @supported_files = Generator.supported_files
   end
 
-  def miscellaneous; end
+  def sort_to_query(method)
+    if method == "public"
+      ["public", "DESC"]
+    elsif method == "private"
+      ["private", "ASC"]
+    elsif method == "popularity"
+      ["likes", "DESC"]
+    elsif method == "synthed"
+      ["created_at", "DESC"]
+    end
+  end
 
   def profile
     if !session[:user_id].nil?
@@ -118,3 +137,6 @@ class UsersController < ApplicationController
     params.require(:user).permit(:login_username, :login_password)
   end
 end
+
+class FalseClass; def to_i; 0 end end
+class TrueClass; def to_i; 1 end end
