@@ -7,4 +7,16 @@ class User < ApplicationRecord
   # associations
   has_many :generators
   has_many :comments
+
+  def generate_password_token!
+    self.reset_password_token = generate_token
+    self.reset_password_sent_at = Time.now.utc
+    save!
+  end
+
+  private
+
+  def generate_token
+    SecureRandom.hex(10)
+  end
 end

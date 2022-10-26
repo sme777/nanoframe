@@ -33,7 +33,7 @@ class UsersController < ApplicationController
         @home_synths = @current_user.generators.sort_by(&:"#{search_column}")
       end
       @home_synths = @home_synths.reverse if search_direction == "DESC"
-      @home_synths = @home_synths.paginate(page: @current_page, per_page: 5)
+      @home_synths = @home_synths.paginate(page: @current_page, per_page: 5) unless @home_synths.empty?
     end
 
     @supported_files = Generator.supported_files
@@ -138,6 +138,16 @@ class UsersController < ApplicationController
       if params[:email].blank?
         flash[:danger] = "Please input a valid email address."
         redirect_to forgot_password_path
+      else
+        user = User.find_by(email: params[:email])
+        if user.present?
+          user.generate_password_token!
+          flash[:success] = "A verification email has been sent to your email address. Please check your inbox for password reset instructions."
+          redirect_to forgot_password_path
+        else
+          flash[:danger] = "No user is registered with provided email address."
+          redirect_to forgot_password_path
+        end
       end
   end
 

@@ -23,7 +23,7 @@ Rails.application.routes.draw do
   # user
   get '/login/forgot_password' => 'users#forgot_password', as: 'forgot_password'
   post '/login/forgot_password' => 'users#email_verification', as: 'email_verification'
-  get '/login/reset_password' => 'users#reset_password'
+  get '/login/reset_password' => 'users#reset_password', as: 'new_password'
   post '/login/reset_password' => 'users#update_password', as: 'reset_password'
 
   # synthesizer
