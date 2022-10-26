@@ -2,9 +2,11 @@
 <div class="card comment-item-container">
     <div class="card-body">
         <div class="row">
-            <span class="commenter-profile-container">
-                <%= image_tag("default-profile-pic.png", class: "comment-user-image")%>
-            </span>
+            <div class="col-md-1">
+                <div class="commenter-profile-container">
+                    <%= image_tag("default-profile-pic.png", class: "comment-user-image")%>
+                </div>
+            </div>
             <div class="col-md-5">
                 <div class="row">
                     <h6 class="author-name"><%= comment.user.name %></h6>
@@ -13,29 +15,31 @@
                     <p class="text-secondary"><i><%= comment.user.username %></i></p> 
                 </div>
             </div>
-            <div class="col-md-6 comment-reaction-container">
-                <% if !!@current_user && comment.user.id == @current_user.id %>
-                <div class="row">
-                 <ul class="list-group list-group-flush comment-edit-list-group">
-                    <li class="dashboard-block list-group-item edit-tools">
-                    <%= form_with(url: edit_comment_path(@generator.id, comment.id), method: :get) do |f| %>
-                        <div class="edit-comment-container">
-                            <%= f.button("", class: "edit-comment-icon input-group-text") do %>
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            <%end%>
-                        </div>
+            <div class="col-md-6">
+                <div class="comment-reaction-container">
+                    <% if !!@current_user && comment.user.id == @current_user.id %>
+                    <div class="row">
+                    <ul class="list-group list-group-flush comment-edit-list-group">
+                        <li class="dashboard-block list-group-item edit-tools">
+                        <%= form_with(url: edit_comment_path(@generator.id, comment.id), method: :get) do |f| %>
+                            <div class="edit-comment-container">
+                                <%= f.button("", class: "edit-comment-icon input-group-text") do %>
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                <%end%>
+                            </div>
+                        <% end %>
+                        <%= form_with(url: remove_comment_path(@generator.id, comment.id), method: :post) do |f| %>
+                            <div class="delete-comment-container">
+                                <%= f.button("", class: "delete-comment-icon input-group-text") do %>
+                                    <i class="fa-solid fa-trash"></i>
+                                <% end %>
+                            </div>
+                        <% end %>
+                        </li>
+                    </ul>
+                    </div>
                     <% end %>
-                    <%= form_with(url: remove_comment_path(@generator.id, comment.id), method: :post) do |f| %>
-                        <div class="delete-comment-container">
-                            <%= f.button("", class: "delete-comment-icon input-group-text") do %>
-                                <i class="fa-solid fa-trash"></i>
-                            <% end %>
-                        </div>
-                    <% end %>
-                    </li>
-                 </ul>
                 </div>
-                <% end %>
             </div>
         </div>
         <blockquote class="blockquote mb-0">

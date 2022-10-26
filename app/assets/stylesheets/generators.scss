@@ -777,7 +777,10 @@ td{
 
 .commenter-profile-container {
   // text-align: center;
-  width: 75px;
+  // width: 75px;
+  // width: ;
+  min-width: 50px;
+  max-width: 75px;
 }
 
 .author-name {
