@@ -127,6 +127,28 @@ class UsersController < ApplicationController
     # render :index
   end
 
+  def forgot_password
+    # if params[:email].blank?
+    #   flash[:danger] = "Please input a valid email address."
+
+    # end
+  end
+
+  def email_verification
+      if params[:email].blank?
+        flash[:danger] = "Please input a valid email address."
+        redirect_to forgot_password_path
+      end
+  end
+
+  def reset_password
+
+  end
+
+  def update_password
+
+  end
+
   private
 
   def user_params

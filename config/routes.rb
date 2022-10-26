@@ -20,6 +20,12 @@ Rails.application.routes.draw do
   get 'auth/failure' => 'session#failure'
   get 'logout' => 'session#destroy'
 
+  # user
+  get '/login/forgot_password' => 'users#forgot_password', as: 'forgot_password'
+  post '/login/forgot_password' => 'users#email_verification', as: 'email_verification'
+  get '/login/reset_password' => 'users#reset_password'
+  post '/login/reset_password' => 'users#update_password', as: 'reset_password'
+
   # synthesizer
   get '/synthesizer/new' => 'generators#new'
   post '/synthesizer/new' => 'generators#create'
