@@ -3,17 +3,26 @@
 class User < ApplicationRecord
   # validations
   validates :username, presence: true, uniqueness: true
+  # validate :password_format
+  validates :password, presence: true, length: {in: 8..128}, if: :password_validation
+  # validates :password, on: :update
   has_secure_password
   # associations
   has_many :generators
   has_many :comments
 
-  def generate_password_token!
-    self.reset_password_token = generate_token
-    self.reset_password_sent_at = Time.now.utc
-    save!
+  def generate_password_reset_code
+    update!(reset_password_token: generate_token, 
+      reset_password_sent_at: Time.now.utc, 
+      reset_password_verified: false,
+      )
+    reset_password_token
   end
 
+  def password_validation
+    new_record? || password_digest_changed?
+  end
+  
   private
 
   def generate_token

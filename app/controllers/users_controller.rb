@@ -22,7 +22,6 @@ class UsersController < ApplicationController
         redirect_to "/home/#{@last_page}"
         return
       end
-      # byebug
       if search_column == "likes"
         @home_synths = Generator.left_joins(:likes)
                                 .group(:id)
@@ -73,9 +72,10 @@ class UsersController < ApplicationController
     user = User.new({ name: name, username: username, email: email, password: user_params[:password] })
     if user.save
       session[:user_id] = user.id
+      UserMailer.welcome_email(user).deliver_now
     else
       flash[:register_errors] = user.errors.full_messages
-    end
+    end    
     redirect_to '/'
   end
 
@@ -141,9 +141,11 @@ class UsersController < ApplicationController
       else
         user = User.find_by(email: params[:email])
         if user.present?
-          user.generate_password_token!
-          flash[:success] = "A verification email has been sent to your email address. Please check your inbox for password reset instructions."
-          redirect_to forgot_password_path
+          password_reset_code = user.generate_password_reset_code
+          session[:password_reset_email] = params[:email]
+          # pass
+          UserMailer.forgot_password(user, password_reset_code).deliver_now
+          redirect_to verify_authenticity_path
         else
           flash[:danger] = "No user is registered with provided email address."
           redirect_to forgot_password_path
@@ -151,12 +153,56 @@ class UsersController < ApplicationController
       end
   end
 
-  def reset_password
+  def verify_authenticity
+    
+  end
 
+  def submit_authenticity_code
+    if params[:authentication_code].blank?
+      flash[:danger] = "Invalid or expired authentication code!"
+      redirect_to verify_authenticity_path
+    else
+      user = User.find_by(email: session[:password_reset_email])
+      if user.present? && user.reset_password_token == params[:authentication_code] && with_5_minutes?(user.reset_password_sent_at)
+        user.reset_password_verified = true
+        user.save!
+        redirect_to new_password_path
+      else
+        flash[:danger] = "Invalid or expired authentication code!"
+        redirect_to verify_authenticity_path
+      end
+    end
+  end
+
+  def reset_password
+    user = User.find_by(email: session[:password_reset_email])
+    redirect_to verify_authenticity_path if user.nil? || !user.reset_password_verified
   end
 
   def update_password
-
+    if params[:new_password] != params[:confirm_password]
+      flash[:danger] = "Passwords do not match!"
+      redirect_to new_password_path
+    else
+      user = User.find_by(email: session[:password_reset_email])
+      if user.present? && user.reset_password_verified
+        user.update(password: params[:new_password],
+                    reset_password_token: "",
+                    reset_password_sent_at: "",
+                    reset_password_verified: "")
+        if !user.valid?
+          flash[:danger] = user.errors.full_messages.first
+          redirect_to new_password_path
+          return
+        end
+        session[:user_id] = user.id
+        session[:password_reset_email] = nil
+        redirect_to root_path
+      else
+        flash[:danger] = "Please verify authenticity first!"
+        redirect_to verify_authenticity_path
+      end
+    end
   end
 
   private
@@ -167,6 +213,14 @@ class UsersController < ApplicationController
 
   def login_params
     params.require(:user).permit(:login_username, :login_password)
+  end
+
+  def with_5_minutes?(time)
+    Time.now - time < 5 * 60
+  end
+
+  def dumb_hash(input)
+    input.bytes.reduce(:+)
   end
 end
 

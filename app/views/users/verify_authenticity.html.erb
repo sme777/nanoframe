@@ -1,14 +1,13 @@
 <%= render partial: "layouts/nav", locals: {tab: "home"}%>
 <%= stylesheet_link_tag 'application', media: 'all' %>
-
 <div class="modal modal-sheet position-static d-block py-5" tabindex="-1" role="dialog" id="modalSheet">
   <div class="modal-dialog" role="document">
     <div class="modal-content rounded-4 shadow">
       <div class="modal-header border-bottom-0">
-        <h1 class="modal-title fs-5">Reset Password</h1>
+        <h1 class="modal-title fs-5">Recover Your Account</h1>
       </div>
       <div class="modal-body py-0">
-        <p>Authenticity has been verified!</p>
+        <p>Enter the authentication code sent to the provided email address. The code expires 5 minutes from original sent time.</p>
       </div>
       <div class="modal-footer flex-column border-top-0">
         <% flash.each do |key, value| %>
@@ -17,16 +16,13 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         <% end %>
-        <%= form_with(url: reset_password_path, class: "forgot-password-form") do |f| %>
+
+        <%= form_with(url: submit_authenticity_code_path, class: "forgot-password-form") do |f| %>
             <div class="form-floating mb-3">
-                <%= f.text_field :new_password, type: "password", class: "form-control", id: "new-password", placeholder: "nOtApAaSsWoRd" %>
-                <%= f.label "New Password", for: "new-password" %>
+                <%= f.text_field :authentication_code, class: "form-control", id: "recovery-email", placeholder: "name@example.com" %>
+                <%= f.label "Authentication Code", for: "recovery-email" %>
             </div>
-            <div class="form-floating mb-3">
-                <%= f.text_field :confirm_password, type: "password", class: "form-control", id: "confirm-password", placeholder: "nOtApAaSsWoRd" %>
-                <%= f.label "Confirm Password", for: "confirm-password" %>
-            </div>
-        <%= f.submit "Reset Password", class: "btn btn-lg btn-dominant w-100 mx-0 mb-2"%>
+        <%= f.submit "Confirm", class: "btn btn-lg btn-dominant w-100 mx-0 mb-2"%>
         <% end %>
         </div>
     </div>
