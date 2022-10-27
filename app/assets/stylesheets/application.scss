@@ -42,3 +42,27 @@ $auxiliary: #F0F5F9;
     background-color: $preauxiliary;
     color: $predominant;
 }
+
+.btn-twitter-outline {
+    border-color: #1DA1F2;
+    background-color: white;
+    color: #1DA1F2;
+}
+
+.btn-twitter-outline:hover {
+    border-color: #1DA1F2 !important;
+    background-color: #1DA1F2 !important;
+    color: #F5F8FA !important;
+}
+
+.btn-google-outline {
+    border-color: #DB4437;
+    background-color: white;
+    color: #DB4437;
+}
+
+.btn-google-outline:hover {
+    border-color: #DB4437 !important;
+    background-color: #DB4437 !important;
+    color: #F5F8FA !important;
+}

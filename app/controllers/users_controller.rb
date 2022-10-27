@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'will_paginate/array'
 
 class UsersController < ApplicationController
 
@@ -32,6 +33,7 @@ class UsersController < ApplicationController
         @home_synths = @current_user.generators.sort_by(&:"#{search_column}")
       end
       @home_synths = @home_synths.reverse if search_direction == "DESC"
+      # byebug
       @home_synths = @home_synths.paginate(page: @current_page, per_page: 5) unless @home_synths.empty?
     end
 

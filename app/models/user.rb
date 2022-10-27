@@ -3,9 +3,7 @@
 class User < ApplicationRecord
   # validations
   validates :username, presence: true, uniqueness: true
-  # validate :password_format
   validates :password, presence: true, length: {in: 8..128}, if: :password_validation
-  # validates :password, on: :update
   has_secure_password
   # associations
   has_many :generators
