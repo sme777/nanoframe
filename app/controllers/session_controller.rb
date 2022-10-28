@@ -12,6 +12,10 @@ class SessionController < ApplicationController
     create_session(:create_github_user)
   end
 
+  def twitter
+    create_session(:create_twitter_user)
+  end
+
   def create_session(create_if_not_exists)
     user_info = request.env['omniauth.auth']
     user = find_or_create_user(user_info, create_if_not_exists)
@@ -58,6 +62,10 @@ class SessionController < ApplicationController
       email: user_info['info']['email'],
       password: :password
     )
+  end
+
+  def create_twitter_user(user_info)
+  
   end
 
   def failure

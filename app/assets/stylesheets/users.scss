@@ -13,6 +13,7 @@ $button-active-blue: #1669f2;
 .sign-up-outer-container {
   display: none;
   position: fixed;
+  width: 50%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -23,7 +24,7 @@ $button-active-blue: #1669f2;
   background-color: white;
   border-radius: 2%;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-
+  z-index: 10;
   opacity: 1;
   filter: alpha(opacity=100);
 }
