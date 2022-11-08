@@ -4,6 +4,7 @@
         <div id=<%= "page_item_#{index}" %> class="col-md-7 px-3 object-container">
             <input type="hidden" id=<%= "item#{index}_geometry" %> value="<%= homepageItem.positions %> ">
             <input type="hidden" id=<%= "item#{index}_material" %> value="<%= homepageItem.colors %> ">
+            <input type="hidden" id=<%= "item#{index}_staples" %> value="<%= homepageItem.staples.to_json %> ">
         </div>
         <div class="col-md-5 object-info-container">
             <div class="row first">

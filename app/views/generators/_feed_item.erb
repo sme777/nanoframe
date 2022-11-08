@@ -3,6 +3,7 @@
         <div id="<%= "page_item_#{index}"%>" class="feed-item-container">
             <input type="hidden" id=<%= "item#{index}_geometry" %> value="<%= synth.positions %>">
             <input type="hidden" id=<%= "item#{index}_material" %> value="<%= synth.colors %>">
+            <input type="hidden" id=<%= "item#{index}_staples" %> value="<%= synth.staples.to_json %>">
         </div>
         <div class="card-body">
             <h5 class="card-title"><a id=<%= "generator_#{index}_link" %> href="/synthesizer/<%= synth.id %>/visualize"><%= synth.shape %></a></h5>

@@ -7,6 +7,10 @@ import {
   ResizeRendererToDisplaySize,
   Material
 } from "./sceneUtils";
+import {
+  LineGeometry
+} from "./threejs/LineGeometry";
+
 
 function main() {
   const canvas = document.querySelector("#playground-canvas");
@@ -43,15 +47,15 @@ function main() {
     document
       .getElementById(`add_playground_item_${i}`)
       .addEventListener("click", () => {
-        const routingObject = playgroundItemsScenes[i].scene
-          .getObjectByName("routingObject")
+        const wireframeObject = playgroundItemsScenes[i].scene
+          .getObjectByName("wireframeObject")
           .clone();
 
-        addItemToPlayground(routingObject);
+        addItemToPlayground(wireframeObject);
       });
   }
 
-  renderer.setPixelRatio(playGroundContainer.devicePixelRatio);
+  renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(modelItemContainer.width, modelItemContainer.height);
 
   function addItemToPlayground(item) {
@@ -98,6 +102,7 @@ function main() {
     renderer.render(scene, camera);
   }
 
+
   function render() {
     ResizeRendererToDisplaySize(renderer, playGroundScene.camera);
 
@@ -125,7 +130,9 @@ function main() {
    * Event Listeners
    */
 
-  const zoomToggle = document.querySelector(".enableZoom");
+  const zoomToggle = document.querySelector("#zoom_enabler");
+  const stapleToggler = document.querySelector("#switch_staples_showing");
+  const resetPlayground = document.querySelector("#reset_playground");
 
   zoomToggle.addEventListener("click", () => {
     if (playGroundControls.enableZoom) {
@@ -143,6 +150,19 @@ function main() {
   playGroundDraggers.addEventListener("dragend", (e) => {
     playGroundControls.enabled = true;
   });
+
+  stapleToggler.addEventListener("click", () => {
+    const isHidden = stapleToggler.checked ? true : false;
+    for (let i = 0; i < playGroundObjects.length; i++) {
+      playGroundObjects[i].getObjectByName("stapleObject").visible = isHidden;
+    }
+  });
+
+  resetPlayground.addEventListener("click", () => {
+    for (let i = 0; i < playGroundObjects.length; i++) {
+      playGroundScene.scene.remove(playGroundScene.scene.getObjectByName(playGroundObjects[i].name));
+    }
+  })
 }
 
 main();

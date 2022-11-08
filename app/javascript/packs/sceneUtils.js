@@ -38,10 +38,40 @@ export function SetupItemFeed(itemCount) {
     return itemScenes;
 }
 
+function generateStapleGroup(staples, sceneInfo) {
+    const group = new THREE.Group();
+    group.visible = false;
+    for (let i = 0; i < staples.data.length; i++) {
+        let staplePositions = staples.data[i].positions;
+        let stapleColors = [].concat(...Array(staplePositions.length).fill(staples.data[i].color));
+        let geometry = new LineGeometry();
+        geometry.setPositions(staplePositions.flat());
+        geometry.setColors(stapleColors.flat());
+    
+        let stapleLine = new Line2(geometry, Material);
+    
+        sceneInfo.camera.lookAt(stapleLine.position);
+    
+        let stapleGeo = new THREE.BufferGeometry();
+    
+        stapleGeo.setAttribute(
+          "position",
+          new THREE.Float32BufferAttribute(staplePositions, 3)
+        );
+        stapleGeo.setAttribute(
+          "color",
+          new THREE.Float32BufferAttribute(stapleColors, 3)
+        );
+        group.add(stapleLine);
+      }
+      return group;
+}
+
 function setupItemScene(idx) {
     if (document.querySelector(`#item${idx}_geometry`) == null) {
         return null;
     }
+    const itemGroup = new THREE.Group();
     const positions = JSON.parse(
         document.querySelector(`#item${idx}_geometry`).value
     ).flat();
@@ -49,19 +79,31 @@ function setupItemScene(idx) {
         document.querySelector(`#item${idx}_material`).value
     ).flat();
 
+    const staples = JSON.parse(
+        document.querySelector(`#item${idx}_staples`).value
+    );
+
     const wrapperItemContainer = document.querySelector(
         `#page_item_${idx}`
     );
     const sceneInfo = makeScene(wrapperItemContainer);
+    const stapleGroup = generateStapleGroup(staples, sceneInfo);
+    stapleGroup.name = "stapleObject"
+    itemGroup.add(stapleGroup);
     const geometry = new LineGeometry();
     geometry.setPositions(positions);
     geometry.setColors(colors);
 
     const line = new Line2(geometry, Material);
-    line.geometry.center();
     line.name = "routingObject";
-    sceneInfo.scene.add(line);
-    sceneInfo.mesh = line;
+    itemGroup.add(line)
+    new THREE.Box3()
+    .setFromObject(itemGroup)
+    .getCenter(itemGroup.position)
+    .multiplyScalar(-1);
+    itemGroup.name = "wireframeObject"
+    sceneInfo.scene.add(itemGroup);
+    sceneInfo.mesh = itemGroup;
 
     const controls = new OrbitControls(sceneInfo.camera, wrapperItemContainer)
     controls.minDistance = 0.1;
