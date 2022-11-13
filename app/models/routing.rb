@@ -304,7 +304,7 @@ module Routing
     edges = []
     running_triangles = []
     failures = 0
-    while running_streak < 10
+    while running_streak < 2
 
       connected_edges = Routing.connect_vertices(outgoer_vertices, corners)
       new_vertices, new_edges = Routing.get_edges(connected_edges)

@@ -109,8 +109,9 @@ $(document).ready(function () {
       const width = parseInt($(".width-input").val());
       const segments = parseInt($(".divisions-input").val());
       let scaffold_length;
+      const multiplier = $("#2hb_edge_type").is(':checked')  ? 2 : ($("#6hb_edge_type").is(':checked')  ? 6 : 1)
       const used =
-        (width * segments * 4 + height * segments * 4 + depth * segments * 4) /
+        (width * segments * 4 + height * segments * 4 + depth * segments * 4) * multiplier /
         0.332;
 
       if ($("#generator_scaffold_name").val() == "M13mp18 p7249") {

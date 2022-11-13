@@ -96,7 +96,6 @@ class Shape
                                side = @id)
       end
       [vertices[0], vertices[1...-1]]
-      # vertices[1...-1]
     end
   end
 end

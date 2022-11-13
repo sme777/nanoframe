@@ -9,26 +9,24 @@ RSpec.describe 'Routing', type: :model do
   #     connected_edges = Routing.connect_vertices(outgoer_vertices, corners)
   # end
 
-  it 'find optimal edges for a tetrahedron' do
-    shape = Shape.new(:tetrahedron)
-    outgoers, corners = [], []
-    e, v = [], []
-    shape.faces.each do |face|
-      result = face.generate_segmented_vertices(5)
-      outgoers << result[0]
-      corners << result[1]
-    end
+  # it 'find optimal edges for a tetrahedron' do
+  #   shape = Shape.new(:tetrahedron)
+  #   outgoers, corners = [], []
+  #   e, v = [], []
+  #   shape.faces.each do |face|
+  #     result = face.generate_segmented_vertices(5)
+  #     outgoers << result[0]
+  #     corners << result[1]
+  #   end
 
-    byebug
+  #   outgoers.each_with_index do |outgoer_group, idx|
+  #     edges = Routing.find_optimal_edges(outgoer_group, corners[idx])
+  #     vertices = Routing.get_vertices(edges)
+  #     e << edges
+  #     v << vertices
+  #   end
 
-    outgoers.each_with_index do |outgoer_group, idx|
-      edges = Routing.find_optimal_edges(outgoer_group, corners[idx])
-      vertices = Routing.get_vertices(edges)
-      e << edges
-      v << vertices
-    end
-
-  end
+  # end
 
   it 'finds optimal edges for a cube' do
     shape = Shape.new(:cube)
@@ -72,6 +70,24 @@ RSpec.describe 'Routing', type: :model do
     #                  edge.v1 == Vertex.new(5.774, 3.333, 4.082))
     #        end).to_not be_nil
     # optimal_vertices = Routing.get_vertices(optimal_edges)
+  end
+
+  it 'find optimal edges for tetrahedron' do
+    shape = Shape.new(:cube)
+    segments = 5
+    byebug
+    outgoers, corners, edges, vertices = [], [], [], []
+    shape.faces.each do |face|
+      outgoer, corner = face.generate_segmented_vertices(segments)
+      outgoers << outgoer
+      corners << corner
+    end
+    outgoers.each_with_index do |outgoer_group, idx|
+      group_edges = Routing.find_optimal_edges(outgoer_group, corners[idx])
+      group_vertices = Routing.get_vertices(group_edges)
+      edges << group_edges
+      vertices << group_vertices
+    end
   end
 
   it 'find plane equations' do

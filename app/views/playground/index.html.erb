@@ -13,50 +13,70 @@
                 <div class="col-md-9">
                     <div class="playgroundToolbar">
                         <div class="row">
-                        <div class="col-md-6">
-                        <ul class="nav nav-pills">
-                            <li class="nav-item dropdown">
-                                <span class="nav-link dropdown-toggle btn-auxiliary" data-bs-toggle="dropdown" role="button" aria-expanded="false">File</span>
-                                <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Import Project</a></li>
-                                <li><a class="dropdown-item" href="#">Download Staples</a></li>
-                                <li><a class="dropdown-item" href="#">Download as NFR</a></li>
-                                <li><a class="dropdown-item" href="#">Download as oxDNA</a></li>
-                                <li><a class="dropdown-item" href="#">Download as PDB</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><span class="dropdown-item" id="reset_playground">Reset Playground</span></li>
+                            <div class="col-md-6">
+                                <ul class="nav nav-pills">
+                                    <li class="nav-item dropdown">
+                                        <span class="nav-link dropdown-toggle btn-auxiliary" data-bs-toggle="dropdown"
+                                            role="button" aria-expanded="false">Menu</span>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                            <div class="import-project-container">
+                                                <label for="customFileInput"
+                                                    class="dropdown-item uploadCustomButton">Import Project</label>
+                                                <input type="file" class="dropdown-item uploadCustomButton" id="customFileInput"
+                                                    accept=".pdb, .oxview, .nfr">
+                                            </div>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><span id="download_playground_staples" class="dropdown-item">Download Staples</span></li>
+                                            <li><span id="download_playground_as_nfr" class="dropdown-item">Download as NFR</span></li>
+                                            <li><span id="download_playground_as_oxdna" class="dropdown-item">Download as oxDNA</span></li>
+                                            <li><span id="download_playground_as_pdb" class="dropdown-item">Download as PDB</span></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><span class="dropdown-item" id="reset_playground">Reset
+                                                    Playground</span></li>
+                                        </ul>
+                                    </li>
+
+                                    <li class="nav-item toolbar-function-item">
+                                        <div class="form-check toolbar-function">
+                                            <input class="form-check-input" type="checkbox" value="" id="zoom_enabler"
+                                                checked>
+                                            <label class="form-check-label" for="zoom_enabler">Enable Zoom</label>
+                                        </div>
+                                    </li>
+                                    <li class="nav-item toolbar-function-item">
+                                        <div class="form-check form-switch toolbar-function">
+                                            <input class="form-check-input" type="checkbox" role="switch"
+                                                id="switch_staples_showing">
+                                            <label class="form-check-label" for="switch_staples_showing">Show
+                                                Staples</label>
+                                        </div>
+                                    </li>
                                 </ul>
-                            </li>
-
-                            <li class="nav-item toolbar-function-item">
-                            <div class="form-check toolbar-function">
-                                <input class="form-check-input" type="checkbox" value="" id="zoom_enabler" checked>
-                                <label class="form-check-label" for="zoom_enabler">Enable Zoom</label>
                             </div>
-                            </li>
-                            <li class="nav-item toolbar-function-item">
-                                <div class="form-check form-switch toolbar-function">
-                                    <input class="form-check-input" type="checkbox" role="switch" id="switch_staples_showing">
-                                    <label class="form-check-label" for="switch_staples_showing">Show Staples</label>
-                                </div>
-                            </li>
-                        </ul>
-                        </div>
-                        <div class="col-md-6">
-                            <ul class="nav nav-pills justify-content-end">
-                                <li class="nav-item">
-                                    <button class="btn settingButton"><img class="fullscreen" src="https://nanoframe.s3.us-west-1.amazonaws.com/expand.png"></button>
-                                </li>
-                                <li class="nav-item">
-                                    <button class="btn settingButton"><img class="camera" src="https://nanoframe.s3.us-west-1.amazonaws.com/camera.png"></button>
-                                </li>
-                                <li class="nav-item">
-                                    <button class="btn settingButton"><img class="save" src="https://nanoframe.s3.us-west-1.amazonaws.com/diskette.png"></button>
-                                </li>
-                            </ul>
-                        </div>
+                            <div class="col-md-6">
+                                <ul class="nav nav-pills justify-content-end">
+                                    <li class="nav-item">
+                                        <button class="btn settingButton"><img class="fullscreen"
+                                                src="https://nanoframe.s3.us-west-1.amazonaws.com/expand.png"></button>
+                                    </li>
+                                    <li class="nav-item">
+                                        <button class="btn settingButton"><img class="camera"
+                                                src="https://nanoframe.s3.us-west-1.amazonaws.com/camera.png"></button>
+                                    </li>
+                                    <li class="nav-item">
+                                        <button class="btn settingButton"><img class="save"
+                                                src="https://nanoframe.s3.us-west-1.amazonaws.com/diskette.png"></button>
+                                    </li>
+                                </ul>
+                            </div>
 
-                    </div>
+                        </div>
                     </div>
                     <div id="playground" class="diagram left playground">
                     </div>
@@ -72,11 +92,12 @@
                                 <input type="search" class="sidebarSearchField form-control">
                                 <div class="exitSearchBar"></div>
                                 <div class="row">
-                                <div class="uploadCustomShape col-md-6">
-                                    <label for="customFileInput" class="btn btn-link uploadCustomButton">Upload</label>
-                                    <input type="file" class="btn btn-link uploadCustomButton" id="customFileInput" accept=".pdb, .oxview, .nfr">
-                                    
-                                </div>
+                                    <div class="uploadCustomShape col-md-6">
+                                        <label for="customFileInput"
+                                            class="btn btn-link uploadCustomButton">Upload</label>
+                                        <input type="file" class="btn btn-link uploadCustomButton" id="customFileInput"
+                                            accept=".pdb, .oxview, .nfr">
+                                    </div>
                                 </div>
                                 <hr>
                             </div>
@@ -87,7 +108,7 @@
                             <input type="hidden" id="playground_item_listing" value="<%= @playground_items.length %>">
 
                             <% @playground_items.each_with_index do |item, idx| %>
-                                <%= render partial: "item", locals: {item: item, index: idx} %>
+                            <%= render partial: "item", locals: {item: item, index: idx} %>
                             <% end %>
 
                         </div>

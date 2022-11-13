@@ -149,16 +149,16 @@
               </div>
               <div class="col-md-8 helix-bundles-container">
                 <div class="form-check form-check-inline">
-                  <%= f.radio_button :edge_type, :single_hb, class: "form-check-input", id: "1hb_edge_type", autocomplete: "off", checked: true %>
-                  <%= f.label :single_hb, "1 HB", for: "generator_edge_type", class: "form-check-label"%>
+                  <%= f.radio_button :edge_type, "1HB", class: "form-check-input", id: "1hb_edge_type", autocomplete: "off", checked: true %>
+                  <%= f.label "1 HB", "1 HB", for: "generator_edge_type", class: "form-check-label"%>
                 </div>
                 <div class="form-check form-check-inline">
-                  <%= f.radio_button :edge_type, :double_hb, class: "form-check-input", id: "2hb_edge_type", autocomplete: "off" %>
-                  <%= f.label :double_hb, "2 HB", for: "generator_edge_type", class: "form-check-label"%>
+                  <%= f.radio_button :edge_type, "2HB", class: "form-check-input", id: "2hb_edge_type", autocomplete: "off" %>
+                  <%= f.label "2 HB", "2 HB", for: "generator_edge_type", class: "form-check-label"%>
                 </div>
                 <div class="form-check form-check-inline">
-                  <%= f.radio_button :edge_type, :six_hb, class: "form-check-input", id: "6hb_edge_type", autocomplete: "off" %>
-                  <%= f.label :six_hb, "6 HB", for: "generator_edge_type", class: "form-check-label"%>
+                  <%= f.radio_button :edge_type, "6HB", class: "form-check-input", id: "6hb_edge_type", autocomplete: "off" %>
+                  <%= f.label "6 HB", "6 HB", for: "generator_edge_type", class: "form-check-label"%>
                 </div>
               </div>
 

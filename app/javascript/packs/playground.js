@@ -133,6 +133,10 @@ function main() {
   const zoomToggle = document.querySelector("#zoom_enabler");
   const stapleToggler = document.querySelector("#switch_staples_showing");
   const resetPlayground = document.querySelector("#reset_playground");
+  const stapleDownloader = document.querySelector("#download_playground_staples");
+  const nfrDownloader = document.querySelector("#download_playground_as_nfr");
+  const oxdnaDownloader = document.querySelector("#download_playground_as_oxdna");
+  const pdbDownloader = document.querySelector("#download_playground_as_pdb");
 
   zoomToggle.addEventListener("click", () => {
     if (playGroundControls.enableZoom) {

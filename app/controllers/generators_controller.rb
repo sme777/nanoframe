@@ -310,7 +310,8 @@ class GeneratorsController < ApplicationController
                                    interior_extension_bond_type: generator_fields[:interior_bond_type],
                                    exterior_extensions: exterior_extensions_arr, interior_extensions: interior_extensions_arr,
                                    bridge_length: generator_fields[:bridge_length], color_palette: generator_fields[:color_palette],
-                                   reflection_buffer_length: generator_fields[:reflection_buffer_length] })
+                                   reflection_buffer_length: generator_fields[:reflection_buffer_length],
+                                   edge_type: generator_fields[:edge_type] })
       @generator.user_id = @current_user.id unless @current_user.nil?
 
       if @generator.save
@@ -390,7 +391,7 @@ class GeneratorsController < ApplicationController
     params.require(:generator).permit(:height, :width, :depth, :shape, :divisions, :scaffold_name, :visibility,
                                       :exterior_extensions, :exterior_bond_type, :interior_extensions, :interior_bond_type,
                                       :exterior_extension_sequence, :interior_extension_sequence, :bridge_length, :reflection_buffer_length,
-                                      :color_palette)
+                                      :color_palette, :edge_type)
   end
 
   def user_generator_params

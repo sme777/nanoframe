@@ -11,8 +11,8 @@ class Graph
     setup_dimensions(dimensions, shape)
     setup_extensions(generator)
     @shape = Shape.new(shape)
-    @segments = dimensions['divisions'].to_i + 1
     @scaff_length = scaffold.size
+    @edge_type = generator.edge_type
     @color_palette = color_palette
     @staple_breaker = Breaker.new(self)
     if update
@@ -32,7 +32,7 @@ class Graph
         @template_planes = find_four_planes
         @planes = find_plane_combination(@template_planes)
       end
-
+      # byebug
       @sorted_vertices, @points, @scaffold_rotation_labels = generate_points
       @colors = Graph.generate_colors(@points.size, @color_palette)
     end
@@ -43,12 +43,12 @@ class Graph
       @vertex_cuts << e.v1 unless @vertex_cuts.include?(e.v1)
       @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
-    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, generator.bridge_length)
-    @staples = @staple_breaker.break_refraction_staples(@staples, @exterior_extensions, @exterior_extension_length)
-    if @interior_extension_length.positive?
-      @staples = @staple_breaker.extend_interior_staples(@staples, @interior_extensions,
-                                                         @interior_extension_length)
-    end
+    # @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, generator.bridge_length)
+    # @staples = @staple_breaker.break_refraction_staples(@staples, @exterior_extensions, @exterior_extension_length)
+    # if @interior_extension_length.positive?
+    #   @staples = @staple_breaker.extend_interior_staples(@staples, @interior_extensions,
+    #                                                      @interior_extension_length)
+    # end
   end
 
   def setup_dimensions(dimensions, _shape)
@@ -57,6 +57,7 @@ class Graph
     @width = dimensions['width'].to_f
     @height = dimensions['height'].to_f
     @depth = dimensions['depth'].to_f
+    @segments = dimensions['divisions'].to_i + 1
     # when :tetrahedron
     #   @radius = dimensions[0]
     # end
@@ -648,7 +649,95 @@ class Graph
     scaffold_rotation_labels = ([0, 1, 2, 3, 4, 5, 6, 7, 8,
                                  9] * (sampled_points.size / 10).ceil)[...sampled_points.size]
 
-    [sorted_vertices, sampled_points, scaffold_rotation_labels]
+    add_edge_layers(sorted_vertices, sampled_points, scaffold_rotation_labels)
+  end
+
+  def add_edge_layers(sorted_vertices, sampled_points, scaffold_rotation_labels)
+    case @edge_type
+    when "1HB"
+      [sorted_vertices, sampled_points, scaffold_rotation_labels]
+    when "2HB"
+      byebug
+      delta_sorted_vertices = []
+      ordered_layered_vertices = []
+      
+      sorted_vertices.each_with_index do |vertex, idx|
+        delta = 0.2
+        delta_axis = Edge.new(sorted_vertices[idx-1], vertex).directional_change
+        positive_delta_vertex = Vertex.new(vertex.x, vertex.y, vertex.z)
+        negative_delta_vertex = Vertex.new(vertex.x, vertex.y, vertex.z)
+        case delta_axis
+        when :x
+          positive_delta_vertex.x += delta
+          negative_delta_vertex.x -= delta
+        when :y
+          positive_delta_vertex.y += delta
+          negative_delta_vertex.y -= delta
+        when :z
+          positive_delta_vertex.z += delta
+          negative_delta_vertex.z -= delta
+        end
+        delta_sorted_vertices << [positive_delta_vertex, negative_delta_vertex]
+      end
+      first_loop, second_loop = [delta_sorted_vertices[-1][0]], [delta_sorted_vertices[-1][1]]
+      delta_sorted_vertices.each_with_index do |vertex_group, idx|
+        # if idx == 0
+        #   prev_positive_delta_vertex, prev_negative_delta_vertex = delta_sorted_vertices[idx-1]
+        # else
+        prev_positive_delta_vertex = first_loop.last
+        prev_negative_delta_vertex = second_loop.last
+        # end
+        curr_positive_delta_vertex, curr_negative_delta_vertex = vertex_group
+        
+        connection_option1 = ((prev_positive_delta_vertex.x - curr_positive_delta_vertex.x) + (prev_positive_delta_vertex.y - curr_positive_delta_vertex.y)).abs
+        connection_option2 = ((prev_positive_delta_vertex.x - curr_negative_delta_vertex.x) + (prev_positive_delta_vertex.y - curr_negative_delta_vertex.y)).abs
+        if connection_option1 > connection_option2
+          first_loop << curr_positive_delta_vertex
+          second_loop << curr_negative_delta_vertex
+        else
+          first_loop << curr_negative_delta_vertex
+          second_loop << curr_positive_delta_vertex
+        end
+      end
+      ordered_layered_vertices = first_loop[...-1] + second_loop[...-1]
+      ordered_layered_points = sample_points(ordered_layered_vertices)
+      ordered_layered_rotation_labels = sample_rotation_labels(ordered_layered_points)
+      # new_sorted_vertices = sorted_vertices * 2
+      # second_layer_points = Utils.deep_copy(sampled_points)
+      # new_sampled_points = sampled_points + second_layer_points.map {|point| [point[0] + 1, point[1], point[2]]}
+      # new_scaffold_rotation_labels = scaffold_rotation_labels * 2
+      [ordered_layered_vertices, ordered_layered_points, ordered_layered_rotation_labels]
+    when "6HB"
+      new_sorted_vertices = sorted_vertices * 6
+      new_sampled_points = sampled_points * 6
+      new_scaffold_rotation_labels = scaffold_rotation_labels * 6
+      [new_sorted_vertices, new_sampled_points, new_scaffold_rotation_labels]
+    end
+  end
+
+  def sample_points(vertices)
+    sampled_points = []
+    last_corners = nil
+    vertices.each_with_index do |vertex, i|
+      next_vert = vertices[(i + 1) % vertices.size]
+      next_next_vert = vertices[(i + 2) % vertices.size]
+      dr_ch = Edge.new(vertex, next_vert).directional_change
+
+      corner_nt = on_boundary?(next_vert) ? 9 : 8 # POTENTIAL SOLUTION: set sampling frequency same, but for refractions add nil for last index, then take average.
+      edge_sampled_points = Vertex.linspace(dr_ch, sample_dir_map[dr_ch], vertex, next_vert)
+
+      edge_corners = rounded_corner_points([vertex, next_vert, next_next_vert], corner_nt)[-corner_nt...]
+      edge_sampled_points[...(corner_nt / 2.0).floor] = last_corners unless last_corners.nil?
+      edge_sampled_points[-(corner_nt / 2.0).floor...] = edge_corners[...(corner_nt / 2.0).ceil]
+      last_corners = edge_corners[(corner_nt / 2.0).ceil...]
+      sampled_points.concat(edge_sampled_points)
+    end
+
+    sampled_points.map { |point| [point.x, point.y, point.z] }
+  end
+
+  def sample_rotation_labels(points)
+    ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9] * (points.size / 10).ceil)[...points.size]
   end
 
   def rounded_corner_points(vertices, smoothness = 8, radius = 1.5, closed = true)
