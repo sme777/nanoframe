@@ -136,10 +136,10 @@ class Breaker
      problem.value_of(z2), problem.value_of(z3), problem.value_of(z4)]
   end
 
-  def generate_staple_strands(vertices, staple_len_map, scaffold_rotation_labels)
+  def generate_staple_strands(vertices, staple_len_map, scaffold_rotation_labels, edge_type)
     edges = generate_shape_edges(vertices, scaffold_rotation_labels)
     staples = []
-
+    return [[], []] if edge_type == "2HB"
     edges.each do |edge|
       curr_side = edge_side(edge)
       refl, refl1, refl2, refr, ext_b_hor, ext_b_vert, ext_hor, ext_vert = staple_len_map[curr_side]

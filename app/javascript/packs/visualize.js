@@ -82,8 +82,8 @@ let group2LinearPoints = doublePoints.slice(end, scaffoldPositions.length + star
 [xGroup2Count, yGroup2Count, zGroup2Count] = findBorderPointCount(group2LinearPoints);
 group1LinearPoints = adjustSplitPosition(group1LinearPoints.flat(), "group1");
 group2LinearPoints = adjustSplitPosition(group2LinearPoints.flat(), "group2");
-generateDisplay(group1LinearPoints, doubleColors.slice(start, end).flat(), "group1");
-generateDisplay(group2LinearPoints, doubleColors.slice(end, scaffoldPositions.length + start).flat(), "group2");
+// generateDisplay(group1LinearPoints, doubleColors.slice(start, end).flat(), "group1");
+// generateDisplay(group2LinearPoints, doubleColors.slice(end, scaffoldPositions.length + start).flat(), "group2");
 
 new THREE.Box3()
   .setFromObject(splitLinearGroup)

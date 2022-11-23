@@ -67,6 +67,45 @@ class Generator < ApplicationRecord
     Graph.generate_colors(positions.size, color_palette)
   end
 
+  # Computes the Molecular Weight of the Structure
+  def compute_mw
+    mw = 0
+    an = 313.2
+    tn = 304.2
+    cn = 289.2
+    gn = 329.2
+    for nt in scaffold.split("")
+      case nt
+      when "A"
+        mw += an
+      when "T"
+        mw += tn
+      when "C"
+        mw += cn
+      when "G"
+        mw += gn
+      end
+      mw += 79.0
+    end
+
+    for staple in staples["data"]
+      for nt in staple["sequence"].split("")
+        case nt
+        when "A"
+          mw += an
+        when "T"
+          mw += tn
+        when "C"
+          mw += cn
+        when "G"
+          mw += gn
+        end
+      end
+      mw += 79.0
+    end
+    mw.round(4)
+  end
+
   def make_staples_file(staples, descriptions)
     filename = "#{width}x#{height}x#{depth}-#{width_segment}"
     file = File.open("app/assets/results/#{filename}.csv", 'w')

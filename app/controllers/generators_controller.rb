@@ -198,6 +198,7 @@ class GeneratorsController < ApplicationController
     @staples = @generator.staples
     @start = @generator.routing['start']
     @end = @generator.routing['end']
+    @mw = @generator.mw
   end
 
   def populate_generator
@@ -210,12 +211,14 @@ class GeneratorsController < ApplicationController
     @staples = graph.staples_hash
     @start = routing['start']
     @end = routing['end']
+    @mw = @generator.compute_mw
     @generator.update(
       routing: routing,
       positions: @positions,
       colors: @colors,
       vertex_cuts: @vertex_cuts,
-      staples: @staples
+      staples: @staples,
+      mw: @mw
     )
   end
 
