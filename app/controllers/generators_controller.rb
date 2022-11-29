@@ -211,7 +211,7 @@ class GeneratorsController < ApplicationController
     @staples = graph.staples_hash
     @start = routing['start']
     @end = routing['end']
-    @mw = @generator.compute_mw
+    @mw = @generator.compute_mw(@staples)
     @generator.update(
       routing: routing,
       positions: @positions,

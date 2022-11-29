@@ -68,7 +68,7 @@ class Generator < ApplicationRecord
   end
 
   # Computes the Molecular Weight of the Structure
-  def compute_mw
+  def compute_mw(staples)
     mw = 0
     an = 313.2
     tn = 304.2
@@ -85,9 +85,10 @@ class Generator < ApplicationRecord
       when "G"
         mw += gn
       end
-      mw += 79.0
+      
     end
-
+    mw += 79.0
+    
     for staple in staples["data"]
       for nt in staple["sequence"].split("")
         case nt
