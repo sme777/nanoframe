@@ -139,7 +139,7 @@ function main() {
   const oxdnaDownloader = document.querySelector("#download_playground_as_oxdna");
   const pdbDownloader = document.querySelector("#download_playground_as_pdb");
   const fullscreenToggler = document.querySelector("#fullscreen_toggler");
-
+  const screenCapture = document.querySelector("#camera_capture");
 
   zoomToggle.addEventListener("click", () => {
     if (playGroundControls.enableZoom) {
@@ -174,6 +174,19 @@ function main() {
   fullscreenToggler.addEventListener("click", () => {
     toggleFullscreen();
   })
+
+  screenCapture.addEventListener("click", () => {
+    captureScreen();
+  })
+
+  function captureScreen() {
+    const w = window.open('', '');
+    w.document.title = "Screenshot";
+    const img = new Image();
+    renderer.render(playGroundScene.scene, playGroundScene.camera);
+    img.src = renderer.domElement.toDataURL();
+    w.document.body.appendChild(img);
+  }
 
   function toggleFullscreen(elem) {
     elem = elem || document.documentElement;

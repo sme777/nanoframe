@@ -17,7 +17,7 @@ Rails.application.routes.draw do
   # oauth
   get 'auth/github/callback' => 'session#github'
   get 'auth/google_oauth2/callback' => 'session#google_oauth2'
-  get 'auth/twitter/callback' => 'session#twitter'
+  get 'auth/twitter2/callback' => 'session#twitter2'
   get 'auth/failure' => 'session#failure'
   get 'logout' => 'session#destroy'
 

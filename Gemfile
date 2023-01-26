@@ -28,6 +28,7 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'omniauth', '~> 2.0'
 gem 'omniauth-github', '~> 2.0.0'
 gem 'omniauth-google-oauth2'
+gem 'omniauth-twitter2'
 gem 'omniauth-rails_csrf_protection'
 # Paginating Active Record
 gem 'kaminari'

@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
 class SessionController < ApplicationController
-  skip_before_action :verify_authenticity_token, only: :google_oauth2
-  skip_before_action :verify_authenticity_token, only: :github
+  skip_before_action :verify_authenticity_token, only: [:google_oauth2, :github, :twitter]
 
   def google_oauth2
     create_session(:create_google_user)
@@ -12,12 +11,12 @@ class SessionController < ApplicationController
     create_session(:create_github_user)
   end
 
-  def twitter
-    create_session(:create_twitter_user)
+  def twitter2
+    create_session(:create_twitter2_user)
   end
 
   def create_session(create_if_not_exists)
-    user_info = request.env['omniauth.auth']
+    user_info = auth_hash
     user = find_or_create_user(user_info, create_if_not_exists)
     session[:user_id] = user.id
     redirect_to root_path
@@ -64,8 +63,23 @@ class SessionController < ApplicationController
     )
   end
 
-  def create_twitter_user(user_info)
-  
+  def create_twitter2_user(user_info)
+    name = user_info['info']['name']
+    username = user_info['info']['nickname']
+    if name.nil?
+      first_name = 'Anon'
+      last_name = 'User'
+    else
+      first_name, last_name = user_info['info']['name'].strip.split(/\s+/, 2)
+    end
+    User.create!(
+      id: user_info['uid'].to_s[...8].to_i,
+      provider: :twitter2,
+      name: "#{first_name} #{last_name}",
+      username: username,
+      email: user_info['info']['email'],
+      password: :password
+    )
   end
 
   def failure

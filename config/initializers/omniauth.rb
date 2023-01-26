@@ -10,6 +10,10 @@ def setup_omniauth_mocks
     :github,
     omniauth_github_mock
   )
+  OmniAuth.config.add_mock(
+    :twitter2,
+    omniauth_twitter_mock
+  )
 end
 
 def omniauth_google_mock
@@ -36,9 +40,24 @@ def omniauth_github_mock
   }
 end
 
+def omniauth_twitter_mock
+  user = YAML.safe_load(File.read("#{Rails.root}/db/twitter_mock_login.yml"))[Rails.env]
+  {
+    uid: '3251295393',
+    info: {
+      name: user['name'],
+      nickname: user['nickname'],
+      email: user['email'],
+      type_user: user['user_type']
+    }
+  }
+end
+
 Rails.application.config.middleware.use OmniAuth::Builder do
   setup_omniauth_mocks unless Rails.env.production?
+  provider :twitter2, Rails.application.credentials[:TWITTER_CLIENT_ID], Rails.application.credentials[:TWITTER_CLIENT_SECRET]
   provider :github, Rails.application.credentials[:GITHUB_KEY], Rails.application.credentials[:GITHUB_SECRET]
   provider :google_oauth2, Rails.application.credentials[:GOOGLE_CLIENT_ID],
            Rails.application.credentials[:GOOGLE_CLIENT_SECRET]
+  
 end
