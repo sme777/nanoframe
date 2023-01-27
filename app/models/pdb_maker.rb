@@ -30,7 +30,7 @@ class PDBMaker
 
     end
 
-    def rotate(R)
+    def rotate(rot)
 
     end
 
