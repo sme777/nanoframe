@@ -83,4 +83,4 @@ production:
   <<: *default
   database: nanoframe_production
   username: nanoframe
-  password: <%= ENV['NANOFRAME_HEROKU_POSTGRESQL_PUCE_PASSWORD'] %>
+  password: <%= ENV['NANOFRAME_DATABASE_PASSWORD'] %>
