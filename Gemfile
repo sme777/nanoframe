@@ -46,6 +46,8 @@ gem 'bootsnap', '>= 1.4.4', require: false
 # File zipper
 gem 'erb_lint', require: false
 gem 'rubyzip'
+
+gem 'spicy-proton'
 # Loggers
 gem 'delaunator'
 gem 'oink'

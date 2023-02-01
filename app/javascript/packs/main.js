@@ -32,14 +32,6 @@ $(document).ready(function () {
     $("#passwordField").removeClass("is-invalid");
   });
 
-  // $("html").click(function(e){
-  //     if (n == 1 && $(".sign-up-outer-container").css("display") == "block") {
-  //         $(".sign-up-outer-container").css({"display": "none"});
-  //         $(".sign-in-container").css({"opacity": "1"});
-  //         n = 0;
-  //         //alert("clickoutside");
-  //     }
-  // });
 });
 
 $(document).ready(function () {

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require 'spicy-proton'
 
 class User < ApplicationRecord
   # validations
@@ -21,6 +22,11 @@ class User < ApplicationRecord
     new_record? || password_digest_changed?
   end
   
+
+  def self.generate_username
+    Spicy::Proton.pair
+  end
+
   private
 
   def generate_token

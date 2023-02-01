@@ -148,10 +148,13 @@
     </div>
 
   </div>
-  <% end%>
+  <% end %>
 
   <% if @current_user.nil? %>
   <div class="sign-up-outer-container">
+      <div class="sign-up-form-closer">
+        <span class="close-btn" id="close-icon-wrapper"><i class="fa-solid fa-xmark"></i></span>
+      </div>
     <div class="sign-up-form">
 
       <div class="sign-up-form-header">

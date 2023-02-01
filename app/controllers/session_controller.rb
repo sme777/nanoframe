@@ -38,7 +38,7 @@ class SessionController < ApplicationController
       id: user_info['uid'].to_s[...8].to_i,
       provider: :google_oauth2,
       name: user_info['info']['name'],
-      username: user_info['info']['name'],
+      username: User.generate_username,
       email: user_info['info']['email'],
       password: :password
     )
@@ -46,7 +46,7 @@ class SessionController < ApplicationController
 
   def create_github_user(user_info)
     name = user_info['info']['name']
-    username = user_info['info']['nickname'] || user_info['info']['email'][/([^@]+)/]
+    username = User.generate_username
     if name.nil?
       first_name = 'Anon'
       last_name = 'User'
@@ -65,7 +65,7 @@ class SessionController < ApplicationController
 
   def create_twitter2_user(user_info)
     name = user_info['info']['name']
-    username = user_info['info']['nickname']
+    username = User.generate_username
     if name.nil?
       first_name = 'Anon'
       last_name = 'User'
