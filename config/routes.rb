@@ -29,6 +29,9 @@ Rails.application.routes.draw do
   get '/auth/verify_authenticity' => 'users#verify_authenticity', as: 'verify_authenticity'
   post '/auth/verify_authenticity' => 'users#submit_authenticity_code', as: 'submit_authenticity_code'
 
+  # nfr projects
+  post '/upload_nfr_project' => 'generators#upload_nfr_project', as: 'upload_nfr_project'
+
   # synthesizer
   get '/synthesizer/new' => 'generators#new'
   post '/synthesizer/new' => 'generators#create'

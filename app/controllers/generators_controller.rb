@@ -84,6 +84,52 @@ class GeneratorsController < ApplicationController
     end
   end
 
+  def upload_nfr_project
+    nfr_file = params[:nfr_project]
+    nfr_content = JSON.parse(nfr_file.read)
+    nfr_generator_hash = {
+      shape: nfr_content["shape"] || "",
+      scaffold_name: nfr_content["scaffold_name"] || "M13mp18 p7249",
+      vertex_cuts: nfr_content["vertex_cuts"],
+      bridge_length: nfr_content["bridge_length"],
+      dimensions: nfr_content["dimensions"] || {},
+      scaffold: nfr_content["scaffold"] || Generator.m13mp18_p7249,
+      colors: nfr_content["colors"] || [],
+      positions: nfr_content["positions"] || [],
+      staples: nfr_content["staples"] || {},
+      routing: nfr_content["routing"] || {},
+      type: nfr_content["type"],
+      user_id: @current_user.id,
+      public: nfr_content["public"] || false,
+      exterior_extension_length: nfr_content["exterior_extension_length"] || 10,
+      interior_extension_length: nfr_content["interior_extension_length"] || 10,
+      exterior_extension_bond_type: nfr_content["exterior_extension_bond_type"] || "zipbond",
+      interior_extension_bond_type: nfr_content["interior_extension_bond_type"] || "zipbond",
+      exterior_extensions: nfr_content["exterior_extensions"] || [],
+      interior_extensions: nfr_content["interior_extensions"] || [],
+      description: nfr_content["description"],
+      rigid: nfr_content["rigid"],
+      color_palette: nfr_content["color_palette"] || "Green Ocean",
+      reflection_buffer_length: nfr_content["reflection_buffer_length"] || 1,
+      likes: [],
+      comments: [],
+      name: nfr_content["name"],
+      fork: nfr_content["fork"] || false,
+      edge_type: nfr_content["edge_type"],
+      mw: nfr_content["mw"]
+    }
+
+    nfr_generator_hash[:created_at] = nfr_content[:created_at] unless nfr_content[:created_at].nil?
+    nfr_generator_hash[:updated_at] = nfr_content[:updated_at] unless nfr_content[:updated_at].nil?
+
+    nfr_generator = Generator.new(nfr_generator_hash)
+
+    if !nfr_generator.save
+      flash[:message] = 'Could not upload NFR project. Check for typos!'
+    end
+    redirect_to root_path
+  end
+
   def routing
     @generator = Generator.find(generator_id)
     @positions = @generator.positions
