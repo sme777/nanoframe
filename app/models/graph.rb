@@ -32,7 +32,6 @@ class Graph
         @template_planes = find_four_planes
         @planes = find_plane_combination(@template_planes)
       end
-      # byebug
       @sorted_vertices, @points, @scaffold_rotation_labels = generate_points
       @colors = Graph.generate_colors(@points.size, @color_palette)
     end
@@ -633,7 +632,7 @@ class Graph
 
   def add_edge_layers(sorted_vertices)
     case @edge_type
-    when "1HB"
+    when "1HB", nil
       sampled_points = sample_points(sorted_vertices)
       scaffold_rotation_labels = sample_rotation_labels(sampled_points)
       [sorted_vertices, sampled_points, scaffold_rotation_labels]
@@ -855,8 +854,8 @@ class Graph
     # return nil if @planes.nil?
 
     graph_hash = {}
-    graph_hash['start'] = 0 #@start_idx * 30
-    graph_hash['end'] = 0 #(@start_idx + @group1.size) * 30
+    graph_hash['start'] = @start_idx * 30
+    graph_hash['end'] = (@start_idx + @group1.size) * 30
     # graph_hash['boundary_edges'] = boundary_edges.each(&:to_hash)
     # vertex_arr = []
     # @sorted_vertices.each do |vertex|

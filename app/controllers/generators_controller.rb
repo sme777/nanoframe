@@ -91,7 +91,7 @@ class GeneratorsController < ApplicationController
       shape: nfr_content["shape"] || "",
       scaffold_name: nfr_content["scaffold_name"] || "M13mp18 p7249",
       vertex_cuts: nfr_content["vertex_cuts"],
-      bridge_length: nfr_content["bridge_length"],
+      bridge_length: nfr_content["bridge_length"] || 3,
       dimensions: nfr_content["dimensions"] || {},
       scaffold: nfr_content["scaffold"] || Generator.m13mp18_p7249,
       colors: nfr_content["colors"] || [],
