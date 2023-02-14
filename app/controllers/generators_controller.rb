@@ -119,8 +119,8 @@ class GeneratorsController < ApplicationController
       mw: nfr_content["mw"]
     }
 
-    nfr_generator_hash[:created_at] = nfr_content[:created_at] unless nfr_content[:created_at].nil?
-    nfr_generator_hash[:updated_at] = nfr_content[:updated_at] unless nfr_content[:updated_at].nil?
+    nfr_generator_hash[:created_at] = nfr_content["created_at"] unless nfr_content["created_at"].nil?
+    nfr_generator_hash[:updated_at] = nfr_content["updated_at"] unless nfr_content["updated_at"].nil?
 
     nfr_generator = Generator.new(nfr_generator_hash)
 
