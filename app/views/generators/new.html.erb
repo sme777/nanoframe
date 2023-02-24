@@ -36,7 +36,10 @@
       <!-- <div class="datGUI"></div> -->
       <canvas id="synthesizer"></canvas>
     </div>
+
+
     <div class="controls-outer-container col-md-6">
+
       <div id="controls-container">
         <div class="synthesizer-header">
           <h6>Select Synthesizing Options</h6>
@@ -50,9 +53,19 @@
                 <%= f.label "Shape", for: "generator_shape_id" %>
               </div>
             </div>
+
+            <div class="list-group list-group-horizontal">
+              <button type="button" id="dna-synthesizer-option" class="list-group-item list-group-item-action active" aria-current="true">
+                DNA
+              </button>
+              <button type="button" id="rna-synthesizer-option" class="list-group-item list-group-item-action">
+              RNA
+              </button>
+            </div>
+
             <div class="synthesizer-item">
               <div class="form-floating">
-                <%= f.select :scaffold_name, @scaffolds, {}, {class: "form-select"} %>
+                <%= f.select :scaffold_name, @dna_scaffolds, {}, {class: "form-select"} %>
                 <%= f.label "Scaffold", for: "generator_scaffold_name" %>
               </div>
               <%# <%= select_tag(:shape,  options_for_select(@options, :select => "2", :disabled => "0"), id: "synthesizer-shape", class: "form-select")%>

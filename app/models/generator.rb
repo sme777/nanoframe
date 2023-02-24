@@ -364,11 +364,21 @@ class Generator < ApplicationRecord
     [oxdna_files, nfr_file, staples_384_wells_file, staples_debug_file].flatten
   end
 
-  def self.scaffolds
+  def self.dna_scaffolds
     {
       "M13mp18 p7249": 'M13mp18 p7249',
-      "M13mp18 p8064": 'M13mp18 p8064',
+      "M13 p7308": "M13 p7308",
+      "M13 p7560": "M13 p7560",
+      "M13 p8064": "M13 p8064",
+      "M13 p8634": "M13 p8634",
       "Custom": 'Custom'
+    }
+  end
+
+  def self.rna_scaffolds
+    {
+      "EGFP mRNA p720": "EGFP mRNA p720",
+      "Custom": "Custom"
     }
   end
 

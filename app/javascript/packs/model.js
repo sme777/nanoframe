@@ -129,3 +129,68 @@ document.querySelector("#generator_shape").onclick = () => {
     scene.add(mesh);
     scene.add(lines);
 }
+
+const scaffoldDropDown = document.querySelector("#generator_scaffold_name");
+const dnaOptionSelection = document.querySelector("#dna-synthesizer-option");
+const rnaOptionSelection = document.querySelector("#rna-synthesizer-option");
+dnaOptionSelection.onclick = () => {
+  if (!isCurrentSelection("M13mp18 p7249")) {
+    rnaOptionSelection.classList.remove("active");
+    dnaOptionSelection.classList.add("active");
+    clearDropdownSelection(scaffoldDropDown);
+    var dnaOptions = [
+      { value: "M13mp18 p7249", label: "M13mp18 p7249" },
+      { value: "M13 p7308", label: "M13 p7308" },
+      { value: "M13 p7560", label: "M13 p7560" },
+      { value: "M13 p8064", label: "M13 p8064" },
+      { value: "M13 p8634", label: "M13 p8634" },
+      { value: "Custom", label: "Custom"}
+    ];
+    
+    // Loop through the options and add them to the dropdown
+    for (var i = 0; i < dnaOptions.length; i++) {
+      var option = document.createElement("option");
+      option.text = dnaOptions[i].label;
+      option.value = dnaOptions[i].value;
+      scaffoldDropDown.add(option);
+    }
+  }
+  
+}
+
+rnaOptionSelection.onclick = () => {
+  if (!isCurrentSelection("EGFP mRNA p720")) {
+    rnaOptionSelection.classList.add("active");
+    dnaOptionSelection.classList.remove("active");
+    clearDropdownSelection(scaffoldDropDown);
+    var dnaOptions = [
+      { value: "EGFP mRNA p720", label: "EGFP mRNA p720" },
+      { value: "Custom", label: "Custom"}
+    ];
+    
+    // Loop through the options and add them to the dropdown
+    for (var i = 0; i < dnaOptions.length; i++) {
+      var option = document.createElement("option");
+      option.text = dnaOptions[i].label;
+      option.value = dnaOptions[i].value;
+      scaffoldDropDown.add(option);
+    }
+  }
+}
+
+function isCurrentSelection(item) {
+  for (var i = 0; i < scaffoldDropDown.options.length; i++) {
+    const optionValue = scaffoldDropDown.options[i].value;
+    if (optionValue === item) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function clearDropdownSelection(dropdown) {
+  for (var i = 0; i < dropdown.options.length; i++) {
+      dropdown.remove(i);
+      i--;
+  }
+}

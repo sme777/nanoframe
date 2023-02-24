@@ -10,12 +10,14 @@ class GeneratorsController < ApplicationController
 
   def index
     @shapes = Generator.shapes
-    @scaffolds = Generator.scaffolds
+    @dna_scaffolds = Generator.dna_scaffolds
+    @rna_scaffolds = Generator.rna_scaffolds
   end
 
   def new
     @shapes = Generator.shapes
-    @scaffolds = Generator.scaffolds
+    @dna_scaffolds = Generator.dna_scaffolds
+    @rna_scaffolds = Generator.rna_scaffolds
     @color_palettes = Generator.color_palettes
   end
 
