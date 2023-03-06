@@ -59,11 +59,7 @@ class Staple
   end
 
   def buffer_bp
-    bpb = ''
-    @buffer.times do |_i|
-      bpb += Staple.complementary_bp.keys.sample.to_s
-    end
-    bpb
+    'A' * @buffer
   end
 
   def compute_positions(start_pos, end_pos, _extendable = nil, _sample = 10)

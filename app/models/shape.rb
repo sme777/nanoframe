@@ -37,7 +37,7 @@ class Shape
   def generate_plane_map; end
 
   class Face
-    attr_accessor :sides
+    attr_accessor :sides, :vertices
 
     def initialize(raw_face, vertices)
       @vertices = vertices

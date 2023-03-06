@@ -36,18 +36,20 @@ class Graph
       @colors = Graph.generate_colors(@points.size, @color_palette)
     end
     @sorted_edges, @staples = generate_staples(@edge_type)
+    # @sorted_edges = @sorted_edges[..10]
+    # @staples = @staples[..10]
     @start_idx, @group1, @group2, @boundary_edges = open_structure
     @vertex_cuts = []
     @boundary_edges.each do |e|
       @vertex_cuts << e.v1 unless @vertex_cuts.include?(e.v1)
       @vertex_cuts << e.v2 unless @vertex_cuts.include?(e.v2)
     end
-    @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, generator.bridge_length)
-    @staples = @staple_breaker.break_refraction_staples(@staples, @exterior_extensions, @exterior_extension_length)
-    if @interior_extension_length.positive?
-      @staples = @staple_breaker.extend_interior_staples(@staples, @interior_extensions,
-                                                         @interior_extension_length)
-    end
+    # @staples = @staple_breaker.update_boundary_strands(@boundary_edges, @staples, generator.bridge_length)
+    # @staples = @staple_breaker.break_refraction_staples(@staples, @exterior_extensions, @exterior_extension_length)
+    # if @interior_extension_length.positive?
+    #   @staples = @staple_breaker.extend_interior_staples(@staples, @interior_extensions,
+    #                                                      @interior_extension_length)
+    # end
   end
 
   def setup_dimensions(dimensions, _shape)
@@ -734,7 +736,7 @@ class Graph
     ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9] * (points.size / 10).ceil)[...points.size]
   end
 
-  def rounded_corner_points(vertices, smoothness = 8, radius = 1.5, closed = true)
+  def rounded_corner_points(vertices, smoothness = 8, radius = 2.0, closed = true)
     min_vector = (vertices[0] - vertices[1])
     min_length = min_vector.distance
     vertices.each_with_index do |_v, idx|

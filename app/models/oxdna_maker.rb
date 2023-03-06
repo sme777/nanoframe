@@ -116,9 +116,24 @@ class OxDNAMaker
 
       staple_idxs.each_with_index do |idx, i|
         case idx
+        
         when 'skip'
-          prev_complimentary_data = scaffold_nt_hash[staple_idxs[i - 1]]
-          next_complimentary_data = scaffold_nt_hash[staple_idxs[i + 1]]
+          # byebug
+          # next if staple_idxs[i - 1] == "skip"
+          # prev_complimentary_data = scaffold_nt_hash[staple_idxs[i - 1]]
+          # next_complimentary_data, length = find_next_anchor_point(scaffold_nt_hash, staple_idxs, i + 1)
+          # # byebug if length.nil?
+          # next if length.nil?
+          # length.times do |step|
+          #   staple_positions << (length - step) / length.to_f * prev_complimentary_data[0] + (step) / length.to_f * next_complimentary_data[0]
+          #   staple_a1s << (length - step) / length.to_f * prev_complimentary_data[1] + (step) / length.to_f * next_complimentary_data[1]
+          #   staple_a3s << (length - step) / length.to_f * prev_complimentary_data[2] + (step) / length.to_f * next_complimentary_data[2]
+          # end
+          scaffold_nt_hash[staple_idxs[i + 1]]
+          if prev_complimentary_data.nil? || next_complimentary_data.nil?
+            prev_complimentary_data, next_complimentary_data = find_closest_anchor_points_and_range(scaffold_nt_hash, idx)
+          end
+          next if next_complimentary_data.nil? || prev_complimentary_data.nil?
           staple_positions << (prev_complimentary_data[0] + next_complimentary_data[0]) / 2
           staple_a1s << (prev_complimentary_data[1] + next_complimentary_data[1]) / 2
           staple_a3s << (prev_complimentary_data[2] + next_complimentary_data[2]) / 2
@@ -214,8 +229,12 @@ class OxDNAMaker
           ein_positions = []
           ein_a1s = []
           ein_a3s = []
-          last_rb = scaffold_nt_hash[staple_idxs[i - 1]][3]
-          v1 = scaffold_nt_hash[staple_idxs[i - 1]][1]
+          # begin/
+            last_rb = scaffold_nt_hash[staple_idxs[i - 5]][3] # changed from -1
+          # rescue NoMethodError => e
+          #   byebug
+          # end
+          v1 = scaffold_nt_hash[staple_idxs[i - 5]][1]
           v1 -= a3 * a3.inner_product(v1)
           v1 = v1.normalize
           a1 = v1
@@ -247,6 +266,16 @@ class OxDNAMaker
     end
 
     [scaffold_positions, scaffold_a1s, scaffold_a3s, staples_positions, staples_a1s, staples_a3s]
+  end
+
+
+  def find_next_anchor_point(staple_nt_hash, staple_idx, idx)
+    for i in idx...staple_idx.size
+      if staple_idx[i] != "skip" || staple_idx[i] != "eout1" || staple_idx[i] != "eout2" || staple_idx[i] != "ein1" || staple_idx[i] != "ein2" 
+        # byebug if staple_nt_hash[staple_idx[i]].nil?
+        return [staple_nt_hash[staple_idx[i]], i-idx+1]
+      end
+    end
   end
 
   def orthogonal_dimension(v1, v2, shape, dimensions)

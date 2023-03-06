@@ -66,6 +66,10 @@ class Edge
     end
   end
 
+  def length
+    Math.sqrt((@v1.x - @v2.x) ** 2 + (@v1.y - @v2.y) ** 2 + (@v1.z - @v2.z) ** 2)
+  end
+
   def self.find_edge(v1, v2, edges)
     edges.each do |e|
       if e.v1.x == v1.x && e.v1.y == v1.y && e.v1.z == v1.z && e.v2.x == v2.x && e.v2.y == v2.y && e.v2.z == v2.z

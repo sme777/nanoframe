@@ -1,6 +1,6 @@
 require 'set'
 
-module GraphRoutine
+module GraphModule
     # performs depth-first search from a given node
     # Params
     # graph   -- Graph construct

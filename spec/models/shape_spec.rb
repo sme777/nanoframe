@@ -42,6 +42,7 @@ end
 RSpec.describe 'Shape', type: :api do
   it 'generates correctly connected faces for augmented dodecahedron' do
     shape = Shape.new('tetrahedron')
+    byebug
     shape.plane_map[3].should equal(4)
   end
 end

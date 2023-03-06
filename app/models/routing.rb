@@ -236,6 +236,27 @@ module Routing
     end
   end
 
+
+  def self.connect_all_vertices(vs)
+    edges = []
+    vs.each do |vertex1|
+      vs.each do |vertex2|
+        next unless (vertex1 != vertex2) && vertex1.side != vertex2.side
+        
+        new_edge = Edge.new(vertex1, vertex2)
+        already_exisst = false
+        edges.each do |edge|
+          if (new_edge.v1 == edge.v1 && new_edge.v2 == edge.v2) || (new_edge.v1 == edge.v2 && new_edge.v2 == edge.v1)
+            already_exisst = true
+            break
+          end
+        end
+        edges << new_edge unless already_exisst
+      end
+    end
+    edges
+  end
+
   def self.connect_vertices(vs, corners)
     disp_v = Utils.deep_copy(vs)
     disp_c = Utils.deep_copy(corners) + Utils.deep_copy(vs)
@@ -489,44 +510,157 @@ module Routing
     # Math.exp((result/2).abs)
   end
 
-  def self.get_edges(stripes)
-    undisected_edges = Utils.deep_copy(stripes)
-    intersections = 0
-    (0...undisected_edges.size).each do |i|
-      (0...undisected_edges.size).each do |j|
-        if i == j
-          next
-        else
-          edge1 = undisected_edges[i]
-          edge2 = undisected_edges[j]
-          does_intersect, points = intersects(
-            edge1.v1, edge1.v2,
-            edge2.v1, edge2.v2
-          )
-          if does_intersect
-            intersections += 1
-            e1_split = Routing.split_edge(edge1, points[0])
-            e2_split = Routing.split_edge(edge2, points[0])
-            undisected_edges.delete(edge1)
-            undisected_edges.delete(edge2)
-            undisected_edges.concat(e1_split)
-            undisected_edges.concat(e2_split)
-          end
+  def divide_intersecting_segments(segments)
+    non_intersecting_segments = []
+    for i in 0...segments.length
+      u1, v1 = segments[i].v1, segemnts[i].v2
+      for j in i+1...segments.length
+        u2, v2 = segments[j].v1, segments[j].v2
+        if do_line_segments_intersect(u1, v1, u2, v2)
+          intersection_point = compute_intersection_point(u1, v1, u2, v2)
+          non_intersecting_segments << Edge.new(u1, intersection_point)
+          non_intersecting_segments << Edge.new(intersection_point, v2)
+          u1, v1 = intersection_point, v1
+          u2, v2 = intersection_point, u2
         end
       end
+      non_intersecting_segments << [u1, v1]
+    end
+    return non_intersecting_segments
+  end
+
+  def do_line_segments_intersect(p1, p2, q1, q2)
+    """
+    Returns true if line segment segment1 intersects line segment segment2.
+    """
+    # p1, p2 = segment1
+    # q1, q2 = segment2
+  
+    # Compute cross products
+    r = p2 - p1
+    s = q2 - q1
+    rp = (q1 - p1).cross(r)
+    sp = (q1 -p1).cross(s)
+  
+    # Check for collinear segments
+    if rp == 0 && sp == 0
+      # Segments are collinear
+      return is_point_on_segment(q1, p1, p2) || is_point_on_segment(q2, p1, p2) || is_point_on_segment(p1, q1, q2) || is_point_on_segment(p2, q1, q2)
+    end
+  
+    # Check for parallel segments
+    if rp == 0 || sp == 0
+      # Segments are parallel
+      return false
+    end
+  
+    # Compute intersection point
+    t = (q1 - p1).cross(s) / sp
+    u = rp / sp
+    if t >= 0 && t <= 1 && u >= 0 && u <= 1
+      # Segments intersect at point p + t*r = q + u*s
+      return true
+    end
+  
+    # Segments do not intersect
+    return false
+  end
+
+  def is_point_on_segment(point, segment_start, segment_end)
+    """
+    Returns true if point lies on the line segment defined by segment_start and segment_end.
+    """
+    return point == segment_start || point == segment_end || (point.x >= [segment_start.x, segment_end.x].min && point.x <= [segment_start.x, segment_end.x].max && point.y >= [segment_start.y, segment_end.y].min && point.y <= [segment_start.y, segment_end.y].max && (point.x - segment_start.x) * (segment_end.y - segment_start.y) == (segment_end.x - segment_start.x) * (point.y - segment_start.y))
+  end
+  
+  
+  
+  def compute_intersection_point(segment1, segment2)
+    """
+    Returns the intersection point of line segment segment1 and line segment segment2.
+    Assumes that the segments intersect at a single point.
+    """
+    p1, p2 = segment1
+    q1, q2 = segment2
+  
+    # Compute cross products
+    r = subtract_points(p2, p1)
+    s = subtract_points(q2, q1)
+    rp = cross_product(subtract_points(q1, p1), r)
+    sp = cross_product(subtract_points(q1, p1), s)
+  
+    # Compute intersection point
+    t = cross_product(subtract_points(q1, p1), s) / sp
+    return add_points(p1, multiply_point_by_scalar(r, t))
+  end
+  
+  def self.compute_all_segements(stripes, outgoers)
+    prev_iter = 0
+    next_iter = -1
+    nodes = []
+    edges = stripes
+    byebug
+    while prev_iter != next_iter
+      nodes, edges = Routing.get_edges(edges, outgoers)
+      prev_iter = next_iter
+      next_iter = nodes.size
+    end
+    [nodes, edges]
+  end
+
+
+  def self.get_edges(stripes, outgoers)
+    # undisected_edges = Utils.deep_copy(stripes)
+    disected_edges = []
+    # intersections = 0
+    for i in 0...stripes.size
+      for j in i+1...stripes.size
+
+        edge1 = stripes[i]
+        edge2 = stripes[j]
+
+        # skip the edge if they only share an end vertex
+        # this will prevent perpetual dividing of edges
+        next unless !((edge1.v1 == edge2.v1 || edge1.v1 == edge2.v2 || 
+                     edge1.v2 == edge2.v1 || edge1.v2 == edge2.v2))
+        
+        
+        does_intersect, points = intersects(
+          edge1.v1, edge1.v2,
+          edge2.v1, edge2.v2
+        )
+        if does_intersect
+          disected_edges << Edge.new(edge1.v1, points[0])
+          disected_edges << Edge.new(points[0], edge1.v2)
+          disected_edges << Edge.new(edge2.v1, points[0])
+          disected_edges << Edge.new(points[0], edge2.v2)
+        end
+      end
+      
     end
 
     new_vertices = []
-
-    disected_edges = undisected_edges.filter { |elem| elem.v1 != elem.v2 }
     disected_edges.each do |edge|
-      edge.v1.round(3)
-      edge.v2.round(3)
+      if outgoers.include?(edge.v1) && outgoers.include?(edge.v2)
+        # byebug
+        disected_edges.delete(edge)
+      end
+      # edge.v1.round(3)
+      # edge.v2.round(3)
       new_vertices << edge.v1 unless new_vertices.include?(edge.v1)
       new_vertices << edge.v2 unless new_vertices.include?(edge.v2)
     end
+
     [new_vertices, disected_edges]
-    # [undisected_edges.filter {|elem| elem.v1 != elem.v2 }, intersections]
+  end
+
+  def self.includes_outgoer(outgoers, node)
+    outgoers.each do |outgoer|
+      if outgoer == node
+        return true
+      end
+    end
+    return false
   end
 
   def self.split_edge(edge, point)
