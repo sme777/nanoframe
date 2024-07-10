@@ -1,94 +1,89 @@
 {
   "RSpec": {
     "coverage": {
-      "/home/sme777/Desktop/nanoframe/spec/models/graph_routine_spec.rb": [
-        null,
-        null,
-        1,
-        1,
-        null,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        null,
-        null,
-        null
-      ],
-      "/home/sme777/Desktop/nanoframe/spec/rails_helper.rb": [
-        null,
-        null,
-        null,
-        1,
-        1,
-        1,
-        1,
-        1,
-        null,
-        1,
-        1,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
+      "/home/ben/nanoframe/spec/models/breaker_ilp_spec.rb": [
         null,
         1,
         null,
         0,
         0,
+        0,
         null,
-        1,
-        null,
-        1,
-        null,
-        null,
-        null,
-        null,
-        1,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
+        null
+      ],
+      "/home/ben/nanoframe/spec/rails_helper.rb": [
         null,
         null,
         null,
         1,
-        null,
+        0,
+        0,
         null,
         1,
+        1,
+        1,
+        null,
+        1,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        0,
+        null,
+        0,
+        0,
+        null,
+        0,
+        null,
+        0,
+        null,
+        null,
+        null,
+        null,
+        0,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        0,
+        null,
+        null,
+        0,
         null,
         null,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/config/environment.rb": [
+      "/home/ben/nanoframe/config/environment.rb": [
         null,
         null,
         null,
@@ -97,7 +92,7 @@
         null,
         1
       ],
-      "/home/sme777/Desktop/nanoframe/config/application.rb": [
+      "/home/ben/nanoframe/config/application.rb": [
         null,
         null,
         1,
@@ -127,7 +122,7 @@
         null,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/config/boot.rb": [
+      "/home/ben/nanoframe/config/boot.rb": [
         null,
         null,
         1,
@@ -135,7 +130,7 @@
         1,
         1
       ],
-      "/home/sme777/Desktop/nanoframe/config/spring.rb": [
+      "/home/ben/nanoframe/config/spring.rb": [
         null,
         null,
         1,
@@ -145,7 +140,7 @@
         null,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/config/environments/test.rb": [
+      "/home/ben/nanoframe/config/environments/test.rb": [
         null,
         null,
         1,
@@ -209,7 +204,7 @@
         null,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/application_controller_renderer.rb": [
+      "/home/ben/nanoframe/config/initializers/application_controller_renderer.rb": [
         null,
         null,
         null,
@@ -220,7 +215,7 @@
         null,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/assets.rb": [
+      "/home/ben/nanoframe/config/initializers/assets.rb": [
         null,
         null,
         null,
@@ -238,7 +233,7 @@
         null,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/aws-sdk.rb": [
+      "/home/ben/nanoframe/config/initializers/aws-sdk.rb": [
         null,
         null,
         1,
@@ -249,7 +244,7 @@
         null,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/backtrace_silencers.rb": [
+      "/home/ben/nanoframe/config/initializers/backtrace_silencers.rb": [
         null,
         null,
         null,
@@ -261,7 +256,7 @@
         null,
         1
       ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/cbc_linker.rb": [
+      "/home/ben/nanoframe/config/initializers/cbc_linker.rb": [
         null,
         null,
         1,
@@ -270,7 +265,7 @@
         0,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/content_security_policy.rb": [
+      "/home/ben/nanoframe/config/initializers/content_security_policy.rb": [
         null,
         null,
         null,
@@ -303,7 +298,7 @@
         null,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/cookies_serializer.rb": [
+      "/home/ben/nanoframe/config/initializers/cookies_serializer.rb": [
         null,
         null,
         null,
@@ -312,7 +307,7 @@
         null,
         1
       ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/filter_parameter_logging.rb": [
+      "/home/ben/nanoframe/config/initializers/filter_parameter_logging.rb": [
         null,
         null,
         null,
@@ -322,108 +317,12 @@
         null,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/inflections.rb": [
+      "/home/ben/nanoframe/config/initializers/inflections.rb": [
         null,
         null,
         null,
         null,
         null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null
-      ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/kaminari.rb": [
-        null,
-        null,
-        1,
-        1,
-        1,
-        null
-      ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/mime_types.rb": [
-        null,
-        null,
-        null,
-        null,
-        null
-      ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/omniauth.rb": [
-        null,
-        null,
-        1,
-        1,
-        1,
-        null,
-        null,
-        null,
-        1,
-        null,
-        null,
-        null,
-        1,
-        null,
-        null,
-        null,
-        null,
-        null,
-        1,
-        1,
-        null,
-        1,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        1,
-        1,
-        null,
-        1,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        1,
-        1,
-        null,
-        1,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        1,
-        null,
-        1,
-        1,
-        1,
-        null,
-        1,
-        null,
-        null,
-        null
-      ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/permissions_policy.rb": [
         null,
         null,
         null,
@@ -437,7 +336,103 @@
         null,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/config/initializers/wrap_parameters.rb": [
+      "/home/ben/nanoframe/config/initializers/kaminari.rb": [
+        null,
+        null,
+        1,
+        1,
+        1,
+        null
+      ],
+      "/home/ben/nanoframe/config/initializers/mime_types.rb": [
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "/home/ben/nanoframe/config/initializers/omniauth.rb": [
+        null,
+        null,
+        1,
+        1,
+        1,
+        null,
+        null,
+        null,
+        1,
+        null,
+        null,
+        null,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1,
+        1,
+        null,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1,
+        1,
+        null,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1,
+        1,
+        null,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1,
+        null,
+        1,
+        1,
+        1,
+        null,
+        1,
+        null,
+        null,
+        null
+      ],
+      "/home/ben/nanoframe/config/initializers/permissions_policy.rb": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "/home/ben/nanoframe/config/initializers/wrap_parameters.rb": [
         null,
         null,
         null,
@@ -455,7 +450,7 @@
         null,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/config/routes.rb": [
+      "/home/ben/nanoframe/config/routes.rb": [
         null,
         null,
         1,
@@ -553,64 +548,41 @@
         1,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/app/helpers/application_helper.rb": [
+      "/home/ben/nanoframe/app/helpers/application_helper.rb": [
         null,
         null,
         1,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/app/helpers/guides_helper.rb": [
+      "/home/ben/nanoframe/app/helpers/guides_helper.rb": [
         null,
         null,
         1,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/app/helpers/likes_helper.rb": [
+      "/home/ben/nanoframe/app/helpers/likes_helper.rb": [
         1,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/app/helpers/playground_helper.rb": [
-        null,
-        null,
-        1,
-        null
-      ],
-      "/home/sme777/Desktop/nanoframe/app/helpers/routers_helper.rb": [
+      "/home/ben/nanoframe/app/helpers/playground_helper.rb": [
         null,
         null,
         1,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/app/helpers/session_helper.rb": [
+      "/home/ben/nanoframe/app/helpers/routers_helper.rb": [
         null,
         null,
         1,
         null
       ],
-      "/home/sme777/Desktop/nanoframe/app/models/graph_routines.rb": [
-        1,
-        null,
-        null,
-        null,
-        null,
+      "/home/ben/nanoframe/app/helpers/session_helper.rb": [
         null,
         null,
         1,
-        4,
-        4,
-        4,
-        9,
-        9,
-        3,
-        null,
-        9,
-        9,
-        null,
-        4,
-        null,
         null
       ]
     },
-    "timestamp": 1676958491
+    "timestamp": 1720638633
   }
 }

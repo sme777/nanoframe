@@ -337,7 +337,7 @@ class GeneratorsController < ApplicationController
       dimensions = { height: generator_fields[:height], width: generator_fields[:width],
                      depth: generator_fields[:depth], divisions: generator_fields[:divisions],
                      type: 'Generator' }
-      if Generator.scaffolds[generator_fields[:scaffold_name].to_sym].nil?
+      if Generator.dna_scaffolds[generator_fields[:scaffold_name].to_sym].nil?
 
       else
         scaffold = Generator.public_send(generator_fields[:scaffold_name].parameterize(separator: '_'))

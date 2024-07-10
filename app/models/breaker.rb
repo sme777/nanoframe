@@ -570,7 +570,7 @@ class Breaker
   end
 
   def generate_shape_edges(vertices, scaffold_rotation_labels)
-    sequence = IO.read('./app/assets/scaffolds/7249.txt')
+    sequence = IO.read('./app/assets/scaffolds/dna/7249.txt')
     edges = []
     scaffold_idxs = []
     sequence.size.times { |k| scaffold_idxs << k }

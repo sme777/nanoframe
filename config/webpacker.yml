@@ -31,10 +31,8 @@ default: &default
     - .ttf
     - .woff
     - .woff2
-    - .glsl
 
   extensions:
-    - .erb
     - .mjs
     - .js
     - .sass
@@ -48,7 +46,6 @@ default: &default
     - .gif
     - .jpeg
     - .jpg
-    - .glsl
 
 development:
   <<: *default
@@ -70,9 +67,10 @@ development:
     quiet: false
     pretty: false
     headers:
-      "Access-Control-Allow-Origin": "*"
+      'Access-Control-Allow-Origin': '*'
     watch_options:
-      ignored: "**/node_modules/**"
+      ignored: '**/node_modules/**'
+
 
 test:
   <<: *default
