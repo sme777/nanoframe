@@ -20,7 +20,6 @@ Consider citing the associated paper if you find the project useful.
 - [Playground](#playground)
 - [Guides](#guides)
 - [Experiments](#experiments)
-- [Video Tutorials](#video-tutorials)
 - [Suggestions and Reporting Issues](#suggestions-and-reporting-issues)
 - [Working Locally](#working-locally)
 - [Contributing](#contributing)
