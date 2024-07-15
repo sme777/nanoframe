@@ -183,17 +183,6 @@ In addition, NanoFrame itself relies on a DNA file converter delivered by [popDN
 
 # Experiments
 
-# Video Tutorials
-
-A list of video tutorial on how to use each tool of NanoFrame could be found here.
-
-- Shape Picker: https://youtube.com/playlist?list=PLJfZub7t7u3IMP3gVfIM1P1G8e6bqCVK2
-- Dimension Generator: https://youtube.com/playlist?list=PLJfZub7t7u3IMP3gVfIM1P1G8e6bqCVK2
-- DNA Routing: https://youtube.com/playlist?list=PLJfZub7t7u3IMP3gVfIM1P1G8e6bqCVK2
-- Synthesization: https://youtube.com/playlist?list=PLJfZub7t7u3IMP3gVfIM1P1G8e6bqCVK2
-- Saving work: https://youtube.com/playlist?list=PLJfZub7t7u3IMP3gVfIM1P1G8e6bqCVK2
-- APIs: https://youtube.com/playlist?list=PLJfZub7t7u3IMP3gVfIM1P1G8e6bqCVK2
-
 # Shape Picker
 
 In **Nanobot** tab the user gets to choose a shape from given selection or make their own through _custom shape_ to syntheszie a DNA object. We provide interactive display such that the user can have an approximate idea of what the final object will look like. In following pages, more detail is added until the most granual `oxdna` or `pdb` version is generated. Currently only cuboids are supported, but there is active work in regards to other general shapes. Nanobot will give a warning if the selected shape has greater than 200 leftover base pairs and will propt the user to either continue with the current design or check out dimension generator page.
@@ -201,24 +190,6 @@ In **Nanobot** tab the user gets to choose a shape from given selection or make 
 <p align="center">
   <img src="https://github.com/tilabberkeley/nanoframe/blob/master/docs/shape-maker.gif">
 </p>
-
-# Dimension Generator
-
-We provide a tool for fidning the desired shape with minimum leftover base pairs [nanoframe.org/synthesizer/generator](https://nanoframe.org/synthesizer/generator). One can specifiy the granuality of the output by provindng the step size. A benchmark loopout length can also be set, such that shapes with loopout length greater than the threshold will be discarded. Optionally, we provide max and min dimension as well as the length of the scaffold which by default is M13mp18 bacteriophage DNA.
-
-# DNA Routing
-
-Once an initial design has been chose, the next step is to run the routing algorithm. The routing for cuboids is found by identifying 4 unique routings for a single plane, and then taking product of these planes to generate all possible choice combination (4096). Then each of these is checked to have a single loop (corresponding to the scaffold) and when one is found it's returned as the routing solution. For large number of stripes, the routing are not unique, and can be regnerated as shown in the illustration below.
-
-For finding plane routing we model the plane as a graph and use randomized depth first search to find a routing. The current algorithms in place are not complexity efficient and can be vastly optimized. The prerelease rather serves as a proof-of-concept. The algorithm slow down when the number of stripes exceeds 7. In future work, these methods will be optimized to yield higher space and time complexities and generate shapes with much larger number of sripes in short period of time.
-
-### 3D View and Regeneration
-
-<p align="center">
-  <img src="https://github.com/tilabberkeley/nanoframe/blob/master/docs/shape_routing.gif">
-</p>
-
-### Manual Editing
 
 # Atomic Synthesization
 
