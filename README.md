@@ -61,6 +61,7 @@ In **Nanobot** tab the user gets to choose a shape from given selection or make 
 <p align="center">
   <img src="https://github.com/tilabberkeley/nanoframe/blob/master/docs/shape-maker.gif">
 </p>
+
 ## Visualization
 
 Once you have selected the shape, filled out the parameters, and clicked synthesize, after a brief wait your structure will appear.
