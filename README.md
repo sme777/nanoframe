@@ -59,25 +59,25 @@ All NanoFrame's features are available to any user, but only authenticated users
 In **Nanobot** tab the user gets to choose a shape from given selection or make their own through _custom shape_ to syntheszie a DNA object. We provide interactive display such that the user can have an approximate idea of what the final object will look like. In following pages, more detail is added until the most granual `oxdna` or `pdb` version is generated. Currently only cuboids are supported, but there is active work in regards to other general shapes. Nanobot will give a warning if the selected shape has greater than 200 leftover base pairs and will propt the user to either continue with the current design or check out dimension generator page.
 
 <p align="center">
-  <img src="https://github.com/tilabberkeley/nanoframe/blob/master/docs/shape-maker.gif">
+  <img src="https://github.com/bcsikes/nanoframe/blob/master/docs/Shape_Routing.gif">
 </p>
 
 ## Visualization
 
 Once you have selected the shape, filled out the parameters, and clicked synthesize, after a brief wait your structure will appear.
-*Insert Instruction Video*
 
 When your structure appears, you can change its orientation, zoom in and out, view the staple strands, and view the open form.
-*Insert synthesized cube video*
+
+<p align="center">
+  <img src="https://github.com/bcsikes/nanoframe/blob/master/docs/Synthesizer Display.gif">
+</p>
 
 ## oxDNA
 
 One of the features of NanoFrame is the level fine grain detail. After selecting and editing DNA routing, atomic level visualization is made available through [oxView](https://sulcgroup.github.io/oxdna-viewer/) which uses the `oxview` file format. To view the atomic level visualization, navigate to your synthesized object, select the download files option then select the oxDNA files. Extract the files. Navigate to [oxView](https://sulcgroup.github.io/oxdna-viewer/) click the black file button (third from left on top) add the 2 extracted files, and view your structure!
 
-*FILE OPEN VIDEO HERE*
-
 <p align="center">
-  <img src="https://github.com/tilabberkeley/nanoframe/blob/master/docs/cube.png">
+  <img src="https://github.com/bcsikes/nanoframe/blob/master/docs/oxView_Display.gif">
 </p>
 
 # Guides
