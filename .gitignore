@@ -42,3 +42,6 @@ yarn-debug.log*
 
 /spec/javascript/jasmine_examples
 /coverage/index.html
+
+# Ignore Rspec coverage results
+/coverage/.resultset.json
