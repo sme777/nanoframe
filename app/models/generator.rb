@@ -132,7 +132,7 @@ class Generator < ApplicationRecord
   end
 
   def self.m13mp18_p7249
-    file = File.read('app/assets/scaffolds/7249.txt')
+    file = File.read('app/assets/scaffolds/dna/7249.txt')
   end
 
   def self.supported_files
