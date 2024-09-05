@@ -52,6 +52,7 @@ gem 'spicy-proton'
 gem 'delaunator'
 gem 'oink'
 gem 'ruby-cbc', require: false
+gem 'cbc-wrapper'
 gem 'unicorn'
 # gem 'rack-timeout'
 group :development, :test do

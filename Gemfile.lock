@@ -489,6 +489,7 @@ DEPENDENCIES
   byebug
   capistrano
   capybara (>= 3.26)
+  cbc-wrapper
   cucumber-rails
   database_cleaner
   delaunator
