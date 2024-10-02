@@ -25,11 +25,12 @@ class OxDNAMaker
     r_Y = rotation_matrix(dir_Y, [1, 'bp'])
     r_Z = rotation_matrix(dir_Z, [1, 'bp'])
     r0 = Matrix.identity(3)
-
-    dir_axis, largest_delta_idx = directional_change_axis(positions[1], positions[0])
+    
+    combined_result = combined_directional_change(positions[1], positions[0])
+    dir_axis, largest_delta_idx = combined_result[1]
     dir_axis_prv = dir_axis
     largest_delta_prv_idx = largest_delta_idx
-    dir_ch, dir_vec = directional_change(positions[1], positions[0])
+    dir_ch, dir_vec = combined_result[0]
     dir_ch_prv = dir_ch
 
     a3 = dir_vec <= 0 ? binding.local_variable_get("dir_#{dir_ch}") : -binding.local_variable_get("dir_#{dir_ch}")
@@ -46,13 +47,16 @@ class OxDNAMaker
     current_prime_dir = :X
     prev_prime_dir = :X
     positions.each_with_index do |pos, idx|
-      dir_axis, largest_delta_idx = directional_change_axis(positions[idx], positions[idx - 1]) unless idx < 1
-      unless idx < 2
-        dir_axis_prv, largest_delta_prv_idx = directional_change_axis(positions[idx - 1],
-                                                                      positions[idx - 2])
+      unless idx < 1
+        combined_result = combined_directional_change(positions[idx], positions[idx - 1])
+        dir_axis, largest_delta_idx = combined_result[1]
       end
-      dir_ch_prv, = directional_change(positions[idx - 1], positions[idx - 2]) if idx != 0
-      dir_ch, dir_vec = directional_change(positions[idx], positions[idx - 1]) if idx != 0
+      unless idx < 2
+        combined_result = combined_directional_change(positions[idx - 1], positions[idx - 2])
+        dir_axis_prv, largest_delta_prv_idx = combined_result[1]
+      end
+      dir_ch_prv, = combined_directional_change(positions[idx - 1], positions[idx - 2])[0] if idx != 0
+      dir_ch, dir_vec = combined_directional_change(positions[idx], positions[idx - 1])[0] if idx != 0
 
       if idx != 0
         curr_R = Matrix.identity(3)
@@ -64,7 +68,7 @@ class OxDNAMaker
         euler_angles = sub_vec.euler_angles
         a3 = Vector[0, 0, 0]
         dir_axis.each_with_index do |ax, i|
-          a3 += binding.local_variable_get("dir_#{ax[0]}") * ax[1]
+          a3 += binding.local_variable_get("dir_#{ax[0]}") * ax[1] # Makes it not orthogonal
         end
         a3 = a3.normalize
 
@@ -90,7 +94,7 @@ class OxDNAMaker
       end
 
       position = (rb - CM_CENTER_DS * a1)
-      a1 = curr_R * a1
+      a1 = curr_R * a1 # This line makes it not orthogonal
       a1 = a1.normalize
       rb += a3 * BASE_BASE
       a1_d = -a1
@@ -249,6 +253,26 @@ class OxDNAMaker
     [scaffold_positions, scaffold_a1s, scaffold_a3s, staples_positions, staples_a1s, staples_a3s]
   end
 
+  def orthogonalize(v1, v2)
+    u1 = v1.normalize
+    u2 = v2 - u1 * u1.inner_product(v2)
+    u2 = u2.normalize
+    [u1, u2]
+  end  
+
+  def orthogonal?(vector1, vector2, tolerance = 1e-5)
+    vector1.inner_product(vector2).abs < tolerance
+  end
+
+  def angle_between(vector1, vector2)
+    dot_product = vector1.inner_product(vector2)
+    magnitude_product = vector1.magnitude * vector2.magnitude
+    return 0 if magnitude_product == 0
+    cos_theta = dot_product / magnitude_product
+    cos_theta = [[cos_theta, 1].min, -1].max
+    (Math.acos(cos_theta) * (180 / Math::PI)).round(2)
+  end
+  
   def orthogonal_dimension(v1, v2, shape, dimensions)
     Plane.orthogonal_dimension(Vertex.new(v1[0], v1[1], v1[2]), Vertex.new(v2[0], v2[1], v2[2]), shape, dimensions)
   end
@@ -283,51 +307,55 @@ class OxDNAMaker
            [olc * x * z - st * y, olc * y * z + st * x, olc * z * z + ct]]
   end
 
-  def directional_change(v1, v2)
-    max_of = 0
-    max_dir = :X
-    dir = 0
+  def combined_directional_change(v1, v2)
+  max_of = 0
+  max_dir = :X
+  dir = 0
 
-    if (v1[0] - v2[0]).abs > max_of
-      max_of = (v1[0] - v2[0]).abs
-      max_dir = :X
-      dir = v1[0] - v2[0]
-    elsif (v1[1] - v2[1]).abs > max_of
-      max_of = (v1[1] - v2[1]).abs
-      max_dir = :Y
-      dir = v1[1] - v2[1]
-    elsif (v1[2] - v2[2]).abs > max_of
-      max_of = (v1[2] - v2[2]).abs
-      max_dir = :Z
-      dir = v1[2] - v2[2]
-    end
-    [max_dir, dir]
+  if (v1[0] - v2[0]).abs > max_of
+    max_of = (v1[0] - v2[0]).abs
+    max_dir = :X
+    dir = v1[0] - v2[0]
+  elsif (v1[1] - v2[1]).abs > max_of
+    max_of = (v1[1] - v2[1]).abs
+    max_dir = :Y
+    dir = v1[1] - v2[1]
+  elsif (v1[2] - v2[2]).abs > max_of
+    max_of = (v1[2] - v2[2]).abs
+    max_dir = :Z
+    dir = v1[2] - v2[2]
   end
 
-  def directional_change_axis(v1, v2)
-    axis = {}
-    axis_count = 0
-    dx = v1[0] - v2[0]
-    dy = v1[1] - v2[1]
-    dz = v1[2] - v2[2]
-    if dx != 0
-      axis[:X] = dx
-      axis_count += dx.abs
-    end
+  directional_change_result = [max_dir, dir]
 
-    if dy != 0
-      axis[:Y] = dy
-      axis_count += dy.abs
-    end
+  axis = {}
+  axis_count = 0
+  dx = v1[0] - v2[0]
+  dy = v1[1] - v2[1]
+  dz = v1[2] - v2[2]
 
-    if dz != 0
-      axis[:Z] = dz
-      axis_count += dz.abs
-    end
-    axis.each do |ax|
-      ax[1] /= axis_count
-    end
-    largest_delta_idx = axis.map { |e| e[1] }.each_with_index.max[1]
-    [axis, largest_delta_idx]
+  if dx != 0
+    axis[:X] = dx
+    axis_count += dx.abs
+  end
+
+  if dy != 0
+    axis[:Y] = dy
+    axis_count += dy.abs
+  end
+
+  if dz != 0
+    axis[:Z] = dz
+    axis_count += dz.abs
+  end
+
+  axis.each do |ax|
+    ax[1] /= axis_count
+  end
+  
+  largest_delta_idx = axis.map { |e| e[1] }.each_with_index.max[1]
+  directional_change_axis_result = [axis, largest_delta_idx]
+
+  [directional_change_result, directional_change_axis_result]
   end
 end
